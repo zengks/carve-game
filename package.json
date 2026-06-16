@@ -1,0 +1,31 @@
+{
+  "name": "carve",
+  "version": "1.0.0",
+  "description": "A momentum-based vertical climber where the drift mechanic becomes grip-and-release. Single-file, zero-dependency Canvas 2D + Web Audio game.",
+  "type": "module",
+  "main": "src/carve.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve . -p 5173",
+    "check": "node tests/check-syntax.mjs",
+    "test": "node tests/smoke.mjs && node tests/bot.mjs"
+  },
+  "keywords": [
+    "game",
+    "html5",
+    "canvas",
+    "platformer",
+    "climber",
+    "vanilla-js",
+    "no-dependencies"
+  ],
+  "author": "Steven Zeng",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}
