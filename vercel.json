@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/src/carve.html" }
+  ],
+  "redirects": [
+    { "source": "/src/carve.html", "destination": "/", "permanent": true }
+  ]
+}
