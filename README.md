@@ -16,10 +16,10 @@ Open the game directly — no build step:
 open src/carve.html        # macOS, opens in default browser
 ```
 
-Or serve the folder (the root `index.html` redirects to the game):
+Or serve the game at `http://127.0.0.1:5173` using Node.js 24 or 26:
 
 ```bash
-npm start                  # npx serve .
+npm start                  # built-in Node HTTP server; no install/download needed
 ```
 
 ## Controls
@@ -50,11 +50,12 @@ Touch controls appear automatically on coarse-pointer devices.
 ## Project structure
 
 ```
-carve game/
-├── index.html          # redirect entry point -> src/carve.html
+carve-game/
 ├── src/
 │   └── carve.html       # the entire game (single self-contained file)
+├── scripts/            # dependency-free local server + static build
 ├── tests/
+│   ├── regression.mjs   # momentum, Flow, slips, input, checkpoints, UI lifecycle
 │   ├── harness.mjs      # extracts the script + headless browser stubs
 │   ├── check-syntax.mjs # parses the script body (fast syntax gate)
 │   ├── smoke.mjs        # physics states + 6000-step stress + reachability
@@ -73,7 +74,8 @@ carve game/
 ```bash
 npm run check   # syntax-check the game's script body
 npm test        # smoke (physics + stress + reachability invariant) then bot (end-to-end)
-npm start       # serve the folder for local play
+npm start       # serve the game for local play
+npm run build   # checks + tests, then publishable files in dist/
 ```
 
 The game ships as one HTML file for zero-friction sharing. The `tests/` harness
@@ -81,15 +83,16 @@ extracts the `<script>` block and runs the pure simulation under stubbed
 browser APIs (DOM, canvas 2d, Web Audio, rAF) in Node — so physics, level
 reachability, and end-to-end completability stay verifiable without a browser.
 
-`smoke.mjs` derives the reachability bound from the current `T` constants, so if
-you retune the feel into an unwinnable level, `npm test` fails before you ship.
+The smoke test checks a vertical spacing bound; it does not prove every route is
+reachable. The bot must enter the actual goal to pass (near-top is a failure).
+Neither replaces browser playtesting. Stress inputs use a fixed seed.
 
 ## Architecture (single file)
 
 - Fixed-timestep simulation: `1/120s` accumulator, decoupled from render.
 - World is **y-up**; the render transform flips Y and applies devicePixelRatio.
 - All tuning lives in the `T` constants object at the top of the `<script>`.
-- Player is an explicit state machine: `GROUND / AIR / CARVE / POLE / STUN`.
+- Player is an explicit state machine: `GROUND / AIR / CARVE / POLE` (stun is a cooldown).
 - Per-axis AABB collision against rectangular blocks tagged
   `rock | plain | rail | spike | check | goal`.
 - Subsystems: `Input`, `Sfx` (synthesized Web Audio), `Particles` (pooled),
@@ -99,6 +102,25 @@ you retune the feel into an unwinnable level, `npm test` fails before you ship.
 
 See [`docs/mechanics.md`](docs/mechanics.md) to retune, and
 [`docs/design.md`](docs/design.md) for the rationale.
+
+## Deployment and monitoring
+
+Vercel builds `dist/` with `npm run build`; failures stop the deployment. Only the
+HTML game, sitemap, robots file, and search verification file are published.
+`/src/carve.html` permanently redirects to `/`. Branch pushes create previews;
+production remains on `main`. CI runs on Node 24 and 26 with pinned Actions.
+Node 24 is the Vercel build runtime; Canvas and Web Audio are browser APIs with
+no application package version to upgrade.
+
+The build adds Vercel-hosted Web Analytics and Speed Insights scripts. The source
+HTML remains fully offline playable and the local server does not send telemetry.
+Dashboard configuration and deployed script/event delivery must both be verified;
+loading a script alone does not establish real visitor metrics. No custom gameplay
+events or paid Plus features are enabled. See `docs/verification.md` for evidence.
+
+Best scores and the sound preference are saved locally in the player's browser.
+Blocked storage does not prevent play. Focus loss pauses the game. The menu can
+turn on touch controls on hybrid devices; narrow screens fit the climbing lane.
 
 ## License
 

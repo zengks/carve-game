@@ -14,7 +14,8 @@ subtracts from `vy`). Edit `T`, reload, retune — nothing else needs to change.
 | `AIR_ACCEL`       | 2200    | Horizontal accel from input while airborne. |
 | `MAX_RUN`         | 360     | Horizontal speed cap from input. |
 | `GROUND_FRICTION` | 3000    | Decel toward 0 when grounded with no input. |
-| `AIR_DRAG`        | 0.6     | Reserved horizontal air damping factor. |
+| `AIR_DRAG`        | 0.6     | Decay of launch velocity above the steering cap. |
+| `FLOW_SPEED`     | 0.05    | Adds 5% steering speed and acceleration per Flow tier. |
 | `JUMP_V`          | 700     | Upward velocity of a ground jump. |
 | `COYOTE`          | 0.10    | Grace window (s) to still jump just after leaving ground. |
 | `JUMP_BUFFER`     | 0.10    | Window (s) a pressed jump is remembered before landing. |
@@ -86,7 +87,7 @@ along the tangent with speed `|angVel| * r * POLE_FLING * (0.7 + 0.5*mul)`.
 | `SURGE_CD`     | 0.7     | Surge cooldown (s). |
 
 **Score per carve:** `round((40 + combo*6) * mul * (1 + tier*0.6))`.
-Tier also sets speed multiplier, palette warmth (cyan→gold→magenta), and trail color.
+Tier also sets steering speed and acceleration multiplier, palette warmth (cyan→gold→magenta), and trail color.
 
 ## Level builder (`Level.build()`)
 
@@ -102,10 +103,10 @@ Not in `T` — these are locals inside `build()`. The climb is a uniform zig-zag
 | `STEP`    | 230     | Vertical gap between consecutive rungs. |
 | `stops`   | 18      | Number of rungs in the main ascent. |
 
-**Reachability invariant** (enforced by `tests/smoke.mjs`): `STEP` must stay below
-the height a *non-perfect* carve clears — base arc `WALL_LIFT_BASE²/(2*GRAVITY)`
-plus the wall-climb gained during the carve. Raise `STEP` past that and the climb
-can soft-lock; the smoke test will fail before you ship it.
+**Reachability check** (`tests/smoke.mjs`): the largest vertical grip-base gap must
+fit within a charge-0.5 good-release ballistic arc plus 120px of wall climb. This
+is a coarse tuning guard, not proof of a playable route (horizontal travel and
+collisions also matter). `tests/bot.mjs` must actually enter the goal to pass.
 
 Block kinds: `rock` (solid + grippable), `plain` (solid, no grip), `rail`
 (grippable top), `spike` (hazard), `check` (grippable + checkpoint), `goal`.
@@ -118,6 +119,24 @@ npm test        # smoke (physics + stress + reachability) then bot (end-to-end)
 npm start       # serve and open in a browser
 ```
 
-After any change to `T` or `Level.build()`, run `npm test` — it re-derives the
-reachability bound from your new constants, so it catches an unwinnable level
-automatically.
+After any change to `T` or `Level.build()`, run `npm test` — it checks the spacing guard and requires the bot to finish. Also playtest
+changes in a browser; the bot does not prove every intended route is usable.
+
+## Gameplay revision (2026-10-29)
+
+Cyan rails are one-way: upward and side movement pass through; downward movement
+from above lands on the grippable top. Gold checkpoints save on a successful grip or landing, announce activation, and
+show a lit flag. An older checkpoint cannot replace a higher saved checkpoint.
+
+Contextual opening prompts advance through movement, grip, charging, release,
+and steering. They disappear after releases from two different surfaces.
+
+Each block or pole awards score, Flow, perfect count, and chain only on its first
+successful release per run. Repeated recovery releases retain their full launch
+physics but award nothing, even after a fall. Restart resets eligibility. Personal
+bests use `carve.best.v2`; old scores remain stored separately because the rules
+and course changed. These local scores are not tamper-proof.
+
+The middle terraces narrow crossings and use 210-unit steps; the upper section
+uses 245-unit steps, with an optional mid-climb pole. The main route remains
+completable without the optional shortcut.

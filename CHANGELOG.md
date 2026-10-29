@@ -4,6 +4,24 @@ All notable changes to CARVE are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/);
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] — 2026-10-28
+
+- Recover deep falls promptly at saved checkpoints and face back into the course.
+- Default column-top catches inward while preserving explicit steering.
+- Verify a full summit run using only on-screen controls at phone viewport size.
+- Preserve carve and surge momentum while steering; apply gradual excess-speed drag.
+- Apply the documented Flow boost to steering acceleration and maximum speed.
+- Penalize pole overholds instead of awarding them as normal releases.
+- Separate HUD and toolbar; prevent phone control overlap and fit the climbing lane.
+- Keep off-lane launches visible on phones and snap the camera to respawns.
+- Use pointer capture and cancellation, clear stale inputs, pause on focus loss,
+  stop simulation at victory, and reset transient state on restart.
+- Add a sound toggle, locally saved best scores, and a touch-control menu toggle.
+- Cache HUD nodes and update changed values once per rendered frame.
+- Add deterministic regression checks and require actual bot victory.
+- Update CI Actions, test Node 24/26, and replace unpinned `npx serve` with a local
+  Node server. Build only public game files and add Vercel monitoring scripts.
+
 ## [1.0.0] — 2025
 
 ### Added
@@ -31,3 +49,20 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 - Unreachable opening rung; reworked into a jump-reachable first rung.
 - Loosened carve latch reach (26→40px) and made grip spacing uniform so a
   non-perfect carve always clears the next rung (no soft-locks).
+
+### Gameplay improvements — 2026-10-29
+- Add checkpoint save feedback, one-way bridges and contextual opening coaching.
+- Prevent repeated-surface score/Flow farming and separate revised personal bests.
+- Vary middle/upper route spacing and add an optional swing shortcut.
+- Cover new rules with regression tests and retain full automated completion.
+
+### Checkpoint recovery — 2026-10-29
+- Save gold checkpoints when gripped as well as landed on, avoiding start resets
+  after long continuous climbs. Cover grip, respawn and checkpoint ordering.
+- Complete a full browser keyboard playthrough with pauses for inspection.
+
+### Mobile and tablet usability — 2026-10-29
+- Improve landscape framing, touch-specific coaching and tablet target spacing.
+- Respect safe-area insets and allow touch scrolling on menu overlays.
+- Clear pointer ownership across pauses to prevent stuck gestures.
+- Add simultaneous input, pause, coaching and camera regressions.

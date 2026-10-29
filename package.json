@@ -1,14 +1,15 @@
 {
   "name": "carve",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A momentum-based vertical climber where the drift mechanic becomes grip-and-release. Single-file, zero-dependency Canvas 2D + Web Audio game.",
   "type": "module",
   "main": "src/carve.html",
   "scripts": {
-    "start": "npx serve .",
-    "dev": "npx serve . -p 5173",
+    "start": "node scripts/serve.mjs",
+    "dev": "node --watch scripts/serve.mjs",
     "check": "node tests/check-syntax.mjs",
-    "test": "node tests/smoke.mjs && node tests/bot.mjs"
+    "test": "node tests/regression.mjs && node tests/smoke.mjs && node tests/bot.mjs",
+    "build": "npm run check && npm test && node scripts/build.mjs"
   },
   "keywords": [
     "game",
@@ -22,10 +23,10 @@
   "author": "Steven Zeng",
   "license": "MIT",
   "engines": {
-    "node": ">=18"
+    "node": ">=24 <27"
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/zengks/carve-game.git"
   }
 }

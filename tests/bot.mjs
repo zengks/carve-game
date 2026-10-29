@@ -53,6 +53,5 @@ console.log(`sim time    : ${G.time.toFixed(1)}s`);
 console.log(`longest stall: ${(maxStuck / 120).toFixed(1)}s`);
 
 if (reached) { console.log('\nLEVEL COMPLETED BY BOT'); process.exit(0); }
-if (pct > 92) { console.log('\nNEAR-TOP (bot timing imperfect; human-clearable)'); process.exit(0); }
 console.error(`\nBOT STUCK AT ${pct.toFixed(0)}% — review reachability`);
 process.exit(1);

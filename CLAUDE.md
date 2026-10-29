@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm run check   # fast syntax gate — parse the <script> body only (no Node stubs needed)
 npm test        # smoke.mjs (physics + 6000-step stress + reachability) then bot.mjs (end-to-end completability)
-npm start       # serve at http://localhost:3000 for local play
+npm start       # serve at http://127.0.0.1:5173 for local play
 npm run dev     # same but on port 5173
 open src/carve.html   # open directly without a server (macOS)
 ```
@@ -19,7 +19,7 @@ node tests/bot.mjs
 node tests/check-syntax.mjs
 ```
 
-There is no build step. The game ships as a single self-contained HTML file.
+The source is a self-contained HTML file. `npm run build` runs checks and tests, then creates `dist/` with Vercel monitoring scripts.
 
 ## Architecture
 
@@ -33,7 +33,7 @@ The entire game lives in **`src/carve.html`** — one `<script>` block, no exter
 - **`Particles`** — pooled particle system.
 - **`Cam`** — smoothed follow camera with speed-zoom and shake.
 - **`Level`** — procedural level builder (`Level.build()`). Generates a zig-zag chimney of grip rungs. Layout constants are locals inside `build()`, not in `T`.
-- **`Player`** — explicit state machine: `GROUND / AIR / CARVE / POLE / STUN`. Per-axis AABB collision against tagged blocks.
+- **`Player`** — explicit state machine: `GROUND / AIR / CARVE / POLE (stun cooldown)`. Per-axis AABB collision against tagged blocks.
 - **`Game`** — main loop, fixed-timestep sim at 1/120 s, render, UI.
 
 ### Coordinate system
@@ -45,7 +45,7 @@ World is **y-up** (`+vy` is upward, gravity subtracts from `vy`). The render tra
 ### Test harness
 `tests/harness.mjs` extracts the `<script>` block from the HTML, installs minimal browser stubs (DOM, canvas 2D proxy, rAF, no AudioContext), and evals it in Node. This exposes `T`, `Level`, `Player`, `Game`, `Input` via `globalThis.__*` for the test files to drive.
 
-`smoke.mjs` derives the reachability bound from the live `T` constants — if you tune `T.STEP` past what a non-perfect carve can clear, the test fails before anything ships.
+`smoke.mjs` derives the reachability bound from the live `T` constants — this is a coarse vertical-gap guard. The bot must actually finish; browser playtesting remains necessary.
 
 ## Tuning
 

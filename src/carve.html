@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <title>CARVE — flow climber</title>
     <meta name="description" content="A momentum-based vertical climber where you latch onto surfaces, charge, and release at the perfect instant to fling yourself higher. Free browser game — no download, no install." />
@@ -47,7 +47,7 @@
         font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
         color: var(--ink);
         -webkit-font-smoothing: antialiased;
-        touch-action: none;
+        touch-action: auto;
         user-select: none;
         -webkit-user-select: none;
       }
@@ -56,6 +56,7 @@
         inset: 0;
       }
       canvas {
+        touch-action: none;
         display: block;
         width: 100%;
         height: 100%;
@@ -66,7 +67,8 @@
         position: fixed;
         inset: 0;
         pointer-events: none;
-        padding: 18px 22px;
+        padding: calc(18px + env(safe-area-inset-top)) calc(22px + env(safe-area-inset-right)) 18px calc(22px + env(safe-area-inset-left));
+        padding-right: calc(122px + env(safe-area-inset-right));
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -164,11 +166,14 @@
 
       /* ---------- overlays ---------- */
       .screen {
+        touch-action: pan-y;
         position: fixed;
         inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow-y: auto;
+        padding: 24px 0;
         background:
           radial-gradient(
             120% 120% at 50% 0%,
@@ -186,6 +191,7 @@
         width: min(560px, 92vw);
         text-align: center;
         padding: 8px 6px;
+        margin: auto;
       }
       .eyebrow {
         font-size: 12px;
@@ -351,44 +357,32 @@
         letter-spacing: 0.1em;
         backdrop-filter: blur(4px);
       }
+      .tbtn { touch-action: none; -webkit-touch-callout: none; }
       .tbtn:active {
         background: rgba(56, 240, 224, 0.25);
       }
-      #t-left {
-        left: 18px;
-        bottom: 26px;
-        width: 76px;
-        height: 76px;
+      #t-left, #t-right { bottom: calc(22px + env(safe-area-inset-bottom)); width: 60px; height: 60px; }
+      #t-left { left: calc(12px + env(safe-area-inset-left)); }
+      #t-right { left: calc(80px + env(safe-area-inset-left)); }
+      #t-jump { right: calc(12px + env(safe-area-inset-right)); bottom: calc(122px + env(safe-area-inset-bottom)); width: 66px; height: 66px; border-radius: 50%; }
+      #t-carve { right: calc(12px + env(safe-area-inset-right)); bottom: calc(26px + env(safe-area-inset-bottom)); width: 82px; height: 82px; border-radius: 50%; border-color: var(--cyan); color: var(--cyan); }
+      #t-surge { right: calc(90px + env(safe-area-inset-right)); bottom: calc(124px + env(safe-area-inset-bottom)); width: 62px; height: 62px; border-radius: 50%; font-size: 11px; }
+      .istouch #flowwrap { bottom: 216px; width: 140px; left: 12px; }
+      .istouch #combo { bottom: 216px; right: 12px; }
+      .toolbar { position: fixed; top: calc(16px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right)); display: flex; gap: 8px; z-index: 16; }
+      .toolbar .pausebtn { position: static; }
+      .pausebtn:focus-visible, .tbtn:focus-visible, .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+      @media (min-width: 700px) and (min-height: 600px) {
+        .istouch .tbtn { transform: scale(1.15); transform-origin: bottom right; }
+        .istouch #t-left, .istouch #t-right { transform-origin: bottom left; }
+        .istouch #t-right { left: calc(90px + env(safe-area-inset-left)); }
+        .istouch #t-jump { bottom: calc(138px + env(safe-area-inset-bottom)); }
+        .istouch #t-surge { right: calc(106px + env(safe-area-inset-right)); bottom: calc(140px + env(safe-area-inset-bottom)); }
       }
-      #t-right {
-        left: 106px;
-        bottom: 26px;
-        width: 76px;
-        height: 76px;
-      }
-      #t-jump {
-        right: 18px;
-        bottom: 120px;
-        width: 88px;
-        height: 88px;
-        border-radius: 50%;
-      }
-      #t-carve {
-        right: 120px;
-        bottom: 34px;
-        width: 104px;
-        height: 104px;
-        border-radius: 50%;
-        border-color: var(--cyan);
-        color: var(--cyan);
-      }
-      #t-surge {
-        right: 30px;
-        bottom: 18px;
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        font-size: 11px;
+      @media (max-height: 480px) {
+        #coach { top: calc(72px + env(safe-area-inset-top)) !important; max-width: 52vw; font-size: 11px !important; }
+
+        .istouch #flowwrap, .istouch #combo { bottom: auto; top: 76px; }
       }
       .istouch #touch {
         display: block;
@@ -421,8 +415,9 @@
         color: var(--ink);
       }
       @media (max-width: 620px) {
+        .hud-top { gap: 8px; }
         .stat .v {
-          font-size: 22px;
+          font-size: clamp(14px, 4.5vw, 22px);
         }
         .keys {
           grid-template-columns: 1fr;
@@ -460,15 +455,18 @@
       <div class="n" id="combo-n">x2</div>
       <div class="l">chain</div>
     </div>
-    <div class="pausebtn hidden" id="pausebtn">II</div>
+    <div class="toolbar">
+      <button class="pausebtn" id="mutebtn" aria-label="Mute sound" aria-pressed="false">♪</button>
+      <button class="pausebtn hidden" id="pausebtn" aria-label="Pause game">II</button>
+    </div>
 
     <!-- touch -->
     <div id="touch" class="hidden">
-      <div class="tbtn" id="t-left">◀</div>
-      <div class="tbtn" id="t-right">▶</div>
-      <div class="tbtn" id="t-jump">JUMP</div>
-      <div class="tbtn" id="t-carve">CARVE</div>
-      <div class="tbtn" id="t-surge">SURGE</div>
+      <button class="tbtn" id="t-left" aria-label="Move left">◀</button>
+      <button class="tbtn" id="t-right" aria-label="Move right">▶</button>
+      <button class="tbtn" id="t-jump" aria-label="Jump">JUMP</button>
+      <button class="tbtn" id="t-carve" aria-label="Hold to carve">CARVE</button>
+      <button class="tbtn" id="t-surge" aria-label="Surge">SURGE</button>
     </div>
 
     <!-- start -->
@@ -480,7 +478,7 @@
           There is no brake and no straight line up. You ascend by grabbing
           surfaces, riding them, and releasing at the perfect instant to fling
           yourself higher. Clean releases build
-          <b style="color: var(--cyan)">Flow</b> — the world speeds up and warms
+          <b style="color: var(--cyan)">Flow</b> — your steering speeds up and the world warms
           as you chain.
         </p>
         <div class="keys">
@@ -498,10 +496,13 @@
             <span>Surge (spend Flow)</span><b><kbd>K</kbd></b>
           </div>
         </div>
+        <p class="tag">Hold CARVE near a glowing edge. Release when the ring turns gold. Gold platforms save your progress when you grip them or land on top. Cyan bridges let you jump through from below. Each surface scores once per run; recovery launches still work.</p>
         <button class="btn" id="play">Climb ▸</button>
+        <div><button class="btn ghost" id="touch-toggle" aria-pressed="false" style="margin: 14px 0 0; font-size: 12px; padding: 10px 16px">Touch controls: off</button></div>
       </div>
     </div>
 
+    <div id="coach" role="status" style="position:fixed;top:calc(112px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(88vw,460px);text-align:center;pointer-events:none;color:#eef2ff;background:#101829e8;border-radius:12px;padding:10px 14px;font-size:13px;z-index:8" class="hidden"></div>
     <!-- pause -->
     <div class="screen hidden" id="paused">
       <div class="card">
@@ -559,7 +560,8 @@
         AIR_ACCEL: 2200,
         MAX_RUN: 360,
         GROUND_FRICTION: 3000,
-        AIR_DRAG: 0.6,
+        AIR_DRAG: 0.6, // gradual decay of launch speed above the steering cap
+        FLOW_SPEED: 0.05, // +5% steering speed and acceleration per tier
         JUMP_V: 700,
         COYOTE: 0.1,
         JUMP_BUFFER: 0.1,
@@ -617,6 +619,7 @@
       /* ----------------------------- input ------------------------------------- */
       const Input = {
         keys: Object.create(null),
+        touchResets: [],
         jumpBuf: 0,
         surgeQ: false,
         axis() {
@@ -629,9 +632,18 @@
           return this.k("j") || this.k("shift") || this._tCarve;
         },
         k(n) {
-          return !!this.keys[n];
+          return !!(this.keys[n] || this.touchKeys[n]);
         },
         _tCarve: false,
+        touchKeys: Object.create(null),
+        clear() {
+          for (const reset of this.touchResets) reset();
+          this.keys = Object.create(null);
+          this.touchKeys = Object.create(null);
+          this._tCarve = false;
+          this.jumpBuf = 0;
+          this.surgeQ = false;
+        },
         init() {
           addEventListener(
             "keydown",
@@ -660,8 +672,8 @@
             this.keys[e.key.toLowerCase()] = false;
           });
           addEventListener("blur", () => {
-            this.keys = Object.create(null);
-            this._tCarve = false;
+            this.clear();
+            if (Game.running && !Game.paused) Game.togglePause();
           });
         },
       };
@@ -848,6 +860,7 @@
         poles: [],
         startY: 0,
         goalY: 0,
+        centerX: 405,
         build() {
           this.blocks = [];
           this.poles = [];
@@ -877,11 +890,14 @@
             RUNG_W = 150,
             RUNG_H = 160,
             STEP = 230;
+          this.centerX = (LEFT_X + RIGHT_X + RUNG_W) / 2;
           let y = 150,
             side = 1; // first rung: RIGHT, low enough to jump onto
           const stops = 18;
           for (let i = 0; i < stops; i++) {
-            const x = side > 0 ? RIGHT_X : LEFT_X;
+            // Terraces narrow the crossing; upper switchbacks change the rhythm.
+            const inset = i >= 5 && i < 10 ? 35 : i >= 10 && i < 15 ? 15 : 0;
+            const x = side > 0 ? RIGHT_X - inset : LEFT_X + inset;
             const isCheck = i % 5 === 4;
             add(x, y, RUNG_W, RUNG_H, isCheck ? "check" : "rock");
             if (i > 0 && i % 2 === 0)
@@ -889,15 +905,18 @@
             // spike strip on the *outer* wall well clear of the launch line (dodge flavor)
             if (i % 6 === 4)
               add(
-                side > 0 ? RIGHT_X + RUNG_W : LEFT_X - 30,
+                side > 0 ? x + RUNG_W : x - 30,
                 y + 40,
                 30,
                 70,
                 "spike",
               );
-            y += STEP;
+            y += i >= 5 && i < 10 ? 210 : i >= 10 && i < 15 ? 245 : STEP;
             side *= -1;
           }
+
+          // Optional mid-climb swing shortcut above the narrowed terraces.
+          this.poles.push({ x: 405, y: 2450, r: 1 });
 
           // POLE FLOURISH — an optional faster line. The climb stays fully completable
           // with normal carves; the pole just rewards a flashier route.
@@ -958,6 +977,12 @@
           this.surgeCD = 0;
           this.stun = 0;
           this.trail.length = 0;
+          this.onGround = false;
+          this.wallDir = 0;
+          this.coyote = 0;
+          this.relatch = 0;
+          this.face = 1;
+          this.checkpoint = null;
           this.respawn = { x: 450, y: Level.startY };
         },
         center() {
@@ -971,7 +996,7 @@
           // X
           this.x += this.vx * dt;
           for (const b of Level.blocks) {
-            if (b.kind === "goal") continue;
+            if (b.kind === "goal" || b.kind === "rail") continue;
             if (b.broken) continue;
             if (aabb(this, b)) {
               if (this.vx > 0) {
@@ -986,21 +1011,18 @@
             }
           }
           // Y
+          const previousY = this.y;
           this.y += this.vy * dt;
           for (const b of Level.blocks) {
             if (b.kind === "goal") continue;
             if (b.broken) continue;
+            if (b.kind === "rail" && (this.vy >= 0 || previousY < b.y + b.h - 0.01)) continue;
             if (aabb(this, b)) {
               if (this.vy < 0) {
                 this.y = b.y + b.h;
                 this.onGround = true;
                 if (b.hazard) this.hit();
-                if (b.kind === "check") {
-                  this.respawn = {
-                    x: b.x + b.w / 2 - this.w / 2,
-                    y: b.y + b.h + 1,
-                  };
-                }
+                this.saveCheckpoint(b);
               } else if (this.vy > 0) {
                 this.y = b.y - this.h;
                 if (b.hazard) this.hit();
@@ -1009,7 +1031,15 @@
             }
           }
           // void / fall reset
-          if (this.y < Cam.y - 900) this.hit(true);
+          if (this.y < Math.max(Level.startY - 200, this.respawn.y - 600, Cam.y - 900)) this.hit(true);
+        },
+        saveCheckpoint(b) {
+          if (b.kind !== "check" || (this.checkpoint && b.y <= this.checkpoint.y)) return;
+          this.checkpoint = b;
+          Game.notice = "CHECKPOINT SAVED — return here after a fall";
+          Game.noticeTime = 4;
+          Game.popup("SAVED", b.x + b.w / 2, b.y + b.h + 30, "#ffcf4d");
+          this.respawn = { x: b.x + b.w / 2 - this.w / 2, y: b.y + b.h + 1 };
         },
         hit(fall = false) {
           if (this.stun > 0) return;
@@ -1029,6 +1059,9 @@
           );
           this.x = this.respawn.x;
           this.y = this.respawn.y;
+          this.face = sign(Level.centerX - (this.x + this.w / 2)) || 1;
+          Cam.x = this.x + this.w / 2;
+          Cam.y = this.y + this.h / 2 + 150;
           this.vx = 0;
           this.vy = 0;
           this.state = "AIR";
@@ -1050,7 +1083,7 @@
             const vOver = this.y < b.y + b.h && this.y + this.h > b.y;
             const hOver = this.x < b.x + b.w && this.x + this.w > b.x;
             // right face of block -> player on its right (wallL: wall is to player's left)
-            if (vOver) {
+            if (vOver && b.kind !== "rail") {
               const dR = this.x - (b.x + b.w);
               if (dR >= -2 && dR <= r && dR < bestD) {
                 best = { type: "wallL", block: b };
@@ -1084,8 +1117,14 @@
 
         startCarve(t) {
           this.carve = { ...t, charge: 0 };
+          if (Game.lesson < 2) Game.lesson = 2;
           this.state = "CARVE";
           const b = t.block;
+          this.saveCheckpoint(b);
+          if (t.type === "rail" && b.kind !== "rail") {
+            // A column-top catch should continue into the course unless steered.
+            this.face = Input.axis() || sign(Level.centerX - (b.x + b.w / 2)) || this.face;
+          }
           if (t.type === "wallL") {
             this.x = b.x + b.w;
             this.face = -1;
@@ -1174,14 +1213,22 @@
             this.vx = dir * T.RAIL_FWD + steer;
             this.vy = T.RAIL_LIFT_BASE + c.charge * q.mul * T.RAIL_LIFT_GAIN;
           }
-          this.award(q);
+          this.award(q, c.block);
         },
-        releasePole() {
+        releasePole(slip = false) {
           const p = this.pole;
           if (!p) return;
           this.pole = null;
           this.state = "AIR";
           this.relatch = 0.14;
+          if (slip) {
+            this.vx = 0;
+            this.vy = -40;
+            this.breakCombo();
+            Game.flow = Math.max(0, Game.flow + T.FLOW_SLIP);
+            Sfx.slip();
+            return;
+          }
           const q = this.quality(p.charge);
           const s = sign(p.angVel) || 1;
           const tx = -Math.sin(p.ang) * s,
@@ -1190,9 +1237,16 @@
             Math.abs(p.angVel) * p.r * T.POLE_FLING * (0.7 + 0.5 * q.mul);
           this.vx = tx * spd + Input.axis() * T.STEER;
           this.vy = Math.max(ty * spd, 260) + 120;
-          this.award(q);
+          this.award(q, p.ref);
         },
-        award(q) {
+        award(q, surface) {
+          // A run has a finite set of rewards. Recovery still launches normally.
+          if (!surface || Game.rewarded.has(surface)) {
+            Game.popup("RECOVERY", this.x + this.w / 2, this.y + this.h, "#9fb4ff");
+            return;
+          }
+          Game.rewarded.add(surface);
+          if (Game.lesson < 3) Game.lesson = 3;
           Game.combo++;
           const tier = Game.tier();
           if (q.n === "perfect") {
@@ -1263,7 +1317,7 @@
             this.y = c.y + Math.sin(p.ang) * p.r - this.h / 2;
             this.pushTrail();
             if (!Input.carve() || p.charge >= T.SLIP_AT) {
-              this.releasePole();
+              this.releasePole(p.charge >= T.SLIP_AT);
             }
             return;
           }
@@ -1334,14 +1388,19 @@
           }
 
           /* ---- normal movement (AIR / GROUND / WALL) ---- */
-          const accel = this.onGround ? T.MOVE_ACCEL : T.AIR_ACCEL;
+          const speed = 1 + Game.tier() * T.FLOW_SPEED;
+          const accel = (this.onGround ? T.MOVE_ACCEL : T.AIR_ACCEL) * speed;
+          const maxRun = T.MAX_RUN * speed;
+          // Steering may accelerate up to the cap, but must not erase a launch.
           if (inAxis) {
-            this.vx += inAxis * accel * dt;
-            this.vx = clamp(this.vx, -T.MAX_RUN, T.MAX_RUN);
+            if (this.vx * inAxis < maxRun)
+              this.vx = inAxis * Math.min(maxRun, this.vx * inAxis + accel * dt);
           } else if (this.onGround) {
             const f = T.GROUND_FRICTION * dt;
             this.vx -= clamp(this.vx, -f, f);
           }
+          if (!this.onGround && Math.abs(this.vx) > maxRun)
+            this.vx *= Math.exp(-T.AIR_DRAG * dt);
           this.vy -= T.GRAVITY * dt;
           // wall slide cap
           if (
@@ -1457,6 +1516,7 @@
         H: 0,
         dpr: 1,
         running: false,
+        needsRender: true,
         paused: false,
         acc: 0,
         last: 0,
@@ -1473,6 +1533,13 @@
           return Math.min(5, Math.floor(this.flow / 20));
         },
         init() {
+          this.ui = Object.fromEntries(["h-height", "h-score", "h-time", "flowfill", "flowtier", "combo", "combo-n"].map(id => [id, document.getElementById(id)]));
+          this.lastHUD = {};
+          try {
+            this.best = Math.max(0, Number(localStorage.getItem("carve.best.v2")) || 0);
+            if (!Number.isFinite(this.best)) this.best = 0;
+            Sfx.muted = localStorage.getItem("carve.muted") === "true";
+          } catch {} // Storage may be unavailable in private/file browsing.
           this.cv = document.getElementById("cv");
           this.ctx = this.cv.getContext("2d");
           addEventListener("resize", () => this.resize());
@@ -1481,9 +1548,14 @@
           Input.init();
           this.bindUI();
           this.bindTouch();
+          this.syncMute();
+          document.addEventListener("visibilitychange", () => {
+            if (document.hidden && this.running && !this.paused) this.togglePause();
+          });
           requestAnimationFrame((t) => this.frame(t));
         },
         resize() {
+          this.needsRender = true;
           this.dpr = Math.min(2, window.devicePixelRatio || 1);
           this.W = this.cv.width = Math.floor(innerWidth * this.dpr);
           this.H = this.cv.height = Math.floor(innerHeight * this.dpr);
@@ -1491,7 +1563,16 @@
         start() {
           Level.build();
           Player.reset();
+          Input.clear();
+          Particles.pool.length = 0;
+          this.acc = 0;
+          this.comboTimer = 0;
+          Cam.shake = 0;
           this.flow = 0;
+          this.rewarded = new Set();
+          this.lesson = 0;
+          this.noticeTime = 0;
+          this.notice = "";
           this.score = 0;
           this.combo = 0;
           this.bestChain = 0;
@@ -1510,19 +1591,26 @@
           document.getElementById("flowwrap").classList.remove("hidden");
           document.getElementById("pausebtn").classList.remove("hidden");
           Sfx.resume();
+          this.syncHUD();
         },
         togglePause() {
           if (!this.running) return;
+          Input.clear();
           this.paused = !this.paused;
+          this.needsRender = true;
           show("paused", this.paused);
         },
         victory() {
           if (!this.running) return;
           this.running = false;
+          this.needsRender = true;
           Sfx.win();
           if (this.combo > this.bestChain) this.bestChain = this.combo;
           const nb = this.score > this.best;
-          if (nb) this.best = this.score;
+          if (nb) {
+            this.best = this.score;
+            try { localStorage.setItem("carve.best.v2", String(this.best)); } catch {}
+          }
           document.getElementById("r-score").textContent =
             this.score.toLocaleString();
           document.getElementById("r-time").textContent = this.time.toFixed(1);
@@ -1534,6 +1622,7 @@
           document.getElementById("hud").classList.add("hidden");
           document.getElementById("flowwrap").classList.add("hidden");
           document.getElementById("pausebtn").classList.add("hidden");
+          show("coach", false);
           show("win", true);
         },
         popup(text, x, y, col) {
@@ -1552,16 +1641,23 @@
               dt *= T.TIME_DILATION;
             this.acc += dt;
             const step = 1 / 120;
-            while (this.acc >= step) {
+            while (this.acc >= step && this.running) {
               this.sim(step);
               this.acc -= step;
             }
           }
-          this.render();
+          if (this.running && !this.paused) this.syncHUD();
+          if ((this.running && !this.paused) || this.needsRender) {
+            this.render();
+            this.needsRender = false;
+          }
           requestAnimationFrame((t) => this.frame(t));
         },
         sim(dt) {
           this.time += dt;
+          this.noticeTime = Math.max(0, this.noticeTime - dt);
+          if (this.lesson === 0 && (Input.axis() || Input.jumpBuf)) this.lesson = 1;
+          if (this.lesson === 3 && this.rewarded.size >= 2) this.lesson = 4;
           Player.update(dt);
           // flow drain
           let drain = T.FLOW_DECAY;
@@ -1577,33 +1673,51 @@
           }
           this.popups = this.popups.filter((p) => p.life > 0);
           if (this.comboTimer > 0) this.comboTimer -= dt;
-          this.syncHUD();
         },
         syncHUD() {
-          const h = clamp(
-            ((Player.y - Level.startY) / (Level.goalY - Level.startY)) * 100,
-            0,
-            100,
-          );
-          document.getElementById("h-height").textContent = Math.floor(h);
-          document.getElementById("h-score").textContent =
-            this.score.toLocaleString();
-          document.getElementById("h-time").textContent = this.time.toFixed(1);
+          const text = (id, value) => {
+            if (this.lastHUD[id] !== value) {
+              this.ui[id].textContent = value;
+              this.lastHUD[id] = value;
+            }
+          };
+          const charge = Player.carve?.charge || 0;
+          const touch = document.body.classList.contains("istouch");
+          const hints = [
+            touch ? "1 · APPROACH: hold ▶ with your left thumb; tap JUMP with your right." : "1 · APPROACH: move right + jump toward the cyan wall (D / → + Space).",
+            touch ? "2 · GRIP: hold CARVE beside a cyan wall. Keep steering with your left thumb." : "2 · GRIP: hold J / Shift or CARVE beside a cyan wall.",
+            charge > T.ZONE_PERFECT_HI ? "LATE — release before you slip; try gold on the next wall." : charge >= T.ZONE_PERFECT_LO ? "RELEASE CARVE NOW — gold is the perfect window!" : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.",
+            "4 · STEER: move toward the opposite wall and hold CARVE to catch it.",
+          ];
+          const coach = this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
+          if (this.lastHUD.coach !== coach) {
+            document.getElementById("coach").textContent = coach;
+            show("coach", !!coach);
+            this.lastHUD.coach = coach;
+          }
+          text("h-height", String(Math.floor(clamp((Player.y - Level.startY) / (Level.goalY - Level.startY) * 100, 0, 100))));
+          text("h-score", this.score.toLocaleString());
+          text("h-time", this.time.toFixed(1));
+          const flow = this.flow.toFixed(1);
+          if (this.lastHUD.flow !== flow) {
+            this.ui.flowfill.style.width = flow + "%";
+            this.lastHUD.flow = flow;
+          }
           const tier = this.tier();
-          const ff = document.getElementById("flowfill");
-          ff.style.width = this.flow + "%";
-          const warm = tier / 5;
-          const c1 = mix("#38f0e0", "#ffcf4d", warm);
-          const c2 = mix("#8df7c8", "#ff4d8d", warm);
-          ff.style.background = `linear-gradient(90deg,${c1},${c2})`;
-          const ftEl = document.getElementById("flowtier");
-          ftEl.textContent = "FLOW " + tier;
-          ftEl.style.color = c1;
-          const cm = document.getElementById("combo");
-          if (this.combo >= 2 && this.comboTimer > 0) {
-            cm.style.opacity = 1;
-            document.getElementById("combo-n").textContent = "x" + this.combo;
-          } else cm.style.opacity = 0;
+          if (this.lastHUD.tier !== tier) {
+            const c1 = mix("#38f0e0", "#ffcf4d", tier / 5);
+            const c2 = mix("#8df7c8", "#ff4d8d", tier / 5);
+            this.ui.flowfill.style.background = `linear-gradient(90deg,${c1},${c2})`;
+            this.ui.flowtier.style.color = c1;
+            text("flowtier", "FLOW " + tier);
+            this.lastHUD.tier = tier;
+          }
+          const combo = this.combo >= 2 && this.comboTimer > 0;
+          if (this.lastHUD.combo !== combo) {
+            this.ui.combo.style.opacity = combo ? 1 : 0;
+            this.lastHUD.combo = combo;
+          }
+          if (combo) text("combo-n", "x" + this.combo);
         },
 
         /* ----------------------------- render ---------------------------------- */
@@ -1622,7 +1736,12 @@
           ctx.fillRect(0, 0, W, H);
           this.stars(ctx, W, H, warm);
 
-          const z = Cam.zoom * this.dpr;
+          const z = Cam.zoom * this.dpr * Math.min(1, (W / this.dpr) / 620, (H / this.dpr) / 620);
+          // Keep both columns visible on phones, but follow an overshoot off-lane.
+          const offset = Cam.x - Level.centerX;
+          const viewX = W / this.dpr < 620
+            ? Level.centerX + sign(offset) * Math.max(0, Math.abs(offset) - 200)
+            : Cam.x;
           const sx = (Math.random() - 0.5) * Cam.shake * 22 * this.dpr,
             sy = (Math.random() - 0.5) * Cam.shake * 22 * this.dpr;
           ctx.save();
@@ -1631,7 +1750,7 @@
             0,
             0,
             -z,
-            W / 2 - z * Cam.x + sx,
+            W / 2 - z * viewX + sx,
             H / 2 + z * Cam.y + sy,
           );
 
@@ -1716,7 +1835,7 @@
             return;
           }
           if (b.kind === "rail") {
-            ctx.fillStyle = "#161c2e";
+            ctx.fillStyle = "rgba(56,240,224,.12)";
             ctx.fillRect(b.x, b.y, b.w, b.h);
             ctx.fillStyle = "#38f0e0";
             ctx.globalAlpha = 0.9;
@@ -1755,6 +1874,10 @@
             if (b.kind === "check") {
               ctx.fillStyle = "rgba(255,207,77,.12)";
               ctx.fillRect(b.x, b.y, b.w, b.h);
+              ctx.strokeStyle = "#ffcf4d";
+              ctx.beginPath(); ctx.moveTo(b.x + 15, b.y + b.h); ctx.lineTo(b.x + 15, b.y + b.h + 45); ctx.stroke();
+              ctx.fillStyle = Player.checkpoint === b ? "#ffcf4d" : "#746638";
+              ctx.fillRect(b.x + 15, b.y + b.h + 28, 25, 17);
             }
           }
         },
@@ -1849,7 +1972,19 @@
           ctx.globalAlpha = 1;
         },
 
+        syncMute() {
+          const button = document.getElementById("mutebtn");
+          button.textContent = Sfx.muted ? "×♪" : "♪";
+          button.setAttribute("aria-pressed", String(Sfx.muted));
+          button.setAttribute("aria-label", Sfx.muted ? "Unmute sound" : "Mute sound");
+        },
         bindUI() {
+          document.getElementById("mutebtn").onclick = () => {
+            Sfx.muted = !Sfx.muted;
+            try { localStorage.setItem("carve.muted", String(Sfx.muted)); } catch {}
+            this.syncMute();
+            if (!Sfx.muted) Sfx.resume();
+          };
           document.getElementById("play").onclick = () => {
             Sfx.resume();
             this.start();
@@ -1861,34 +1996,44 @@
             this.togglePause();
         },
         bindTouch() {
-          if (matchMedia("(pointer:coarse)").matches) {
-            document.getElementById("touch").classList.remove("hidden");
-          }
+          const setTouch = (enabled) => {
+            Input.clear();
+            document.getElementById("touch").classList.toggle("hidden", !enabled);
+            document.body.classList.toggle("istouch", enabled);
+            const toggle = document.getElementById("touch-toggle");
+            toggle.setAttribute("aria-pressed", String(enabled));
+            toggle.textContent = "Touch controls: " + (enabled ? "on" : "off");
+          };
+          setTouch(matchMedia("(pointer:coarse)").matches);
+          document.getElementById("touch-toggle").onclick = () => setTouch(!document.body.classList.contains("istouch"));
           const hold = (id, on, off) => {
             const el = document.getElementById(id);
-            const s = (e) => {
-                e.preventDefault();
-                on();
-              },
-              end = (e) => {
-                e.preventDefault();
-                off && off();
-              };
-            el.addEventListener("touchstart", s, { passive: false });
-            el.addEventListener("touchend", end);
-            el.addEventListener("mousedown", s);
-            el.addEventListener("mouseup", end);
-            el.addEventListener("mouseleave", end);
+            const pointers = new Set();
+            Input.touchResets.push(() => pointers.clear());
+            el.addEventListener("pointerdown", (e) => {
+              e.preventDefault();
+              if (!this.running || this.paused) return;
+              el.setPointerCapture(e.pointerId);
+              pointers.add(e.pointerId);
+              on();
+            });
+            const end = (e) => {
+              pointers.delete(e.pointerId);
+              if (!pointers.size) off?.();
+            };
+            el.addEventListener("pointerup", end);
+            el.addEventListener("pointercancel", end);
+            el.addEventListener("lostpointercapture", end);
           };
           hold(
             "t-left",
-            () => (Input.keys["arrowleft"] = true),
-            () => (Input.keys["arrowleft"] = false),
+            () => (Input.touchKeys["arrowleft"] = true),
+            () => (Input.touchKeys["arrowleft"] = false),
           );
           hold(
             "t-right",
-            () => (Input.keys["arrowright"] = true),
-            () => (Input.keys["arrowright"] = false),
+            () => (Input.touchKeys["arrowright"] = true),
+            () => (Input.touchKeys["arrowright"] = false),
           );
           hold(
             "t-jump",
