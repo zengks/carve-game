@@ -121,3 +121,22 @@ npm start       # serve and open in a browser
 
 After any change to `T` or `Level.build()`, run `npm test` — it checks the spacing guard and requires the bot to finish. Also playtest
 changes in a browser; the bot does not prove every intended route is usable.
+
+## Gameplay revision (2026-10-29)
+
+Cyan rails are one-way: upward and side movement pass through; downward movement
+from above lands on the grippable top. Gold checkpoints announce activation and
+show a lit flag. An older checkpoint cannot replace a higher saved checkpoint.
+
+Contextual opening prompts advance through movement, grip, charging, release,
+and steering. They disappear after releases from two different surfaces.
+
+Each block or pole awards score, Flow, perfect count, and chain only on its first
+successful release per run. Repeated recovery releases retain their full launch
+physics but award nothing, even after a fall. Restart resets eligibility. Personal
+bests use `carve.best.v2`; old scores remain stored separately because the rules
+and course changed. These local scores are not tamper-proof.
+
+The middle terraces narrow crossings and use 210-unit steps; the upper section
+uses 245-unit steps, with an optional mid-climb pole. The main route remains
+completable without the optional shortcut.

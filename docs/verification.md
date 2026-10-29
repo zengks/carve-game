@@ -62,3 +62,22 @@ The simulation remains at 120 Hz and active gameplay keeps its animations.
    the repeated left/right pattern dominates much of the level.
 
 These are design suggestions, not claims of validated player demand.
+
+## Gameplay update — 2026-10-29
+
+Implemented all five follow-ups: checkpoint banner/flag and monotonic recovery,
+one-way cyan bridges, action-driven opening coach, finite per-surface rewards,
+and varied terrace/switchback spacing with an optional swing route.
+
+- 18 regressions, syntax, seeded stress, spacing guard, and full bot completion pass.
+- Updated bot reaches the goal trigger in 17.0 simulated seconds, score 15,441,
+  15 perfects and a 30-chain. The trigger begins below the platform's top, so the
+  height meter can be below 100% on the final simulation step.
+- Browser keyboard attempt exercised tutorial progression, bridges, recovery
+  launches and unchanged score on reused surfaces; reached 22%, then fell back.
+  Full manual completion is still not verified. Pauses were used for inspection.
+- Client code, timers, inputs and localStorage can be modified by a player.
+  This single-player app has no authoritative server or competitive leaderboard.
+  The farming fix prevents a normal-play exploit; it is not an anti-cheat system.
+  A future competitive mode would need server-side run validation and abuse controls.
+- Branch preview only; production is not promoted.

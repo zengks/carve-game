@@ -484,12 +484,13 @@
             <span>Surge (spend Flow)</span><b><kbd>K</kbd></b>
           </div>
         </div>
-        <p class="tag">Hold CARVE near a glowing edge. Release when the ring turns gold. Gold platforms save your progress when you land on top.</p>
+        <p class="tag">Hold CARVE near a glowing edge. Release when the ring turns gold. Gold platforms save your progress when you land on top. Cyan bridges let you jump through from below. Each surface scores once per run; recovery launches still work.</p>
         <button class="btn" id="play">Climb ▸</button>
         <div><button class="btn ghost" id="touch-toggle" aria-pressed="false" style="margin: 14px 0 0; font-size: 12px; padding: 10px 16px">Touch controls: off</button></div>
       </div>
     </div>
 
+    <div id="coach" role="status" style="position:fixed;top:112px;left:50%;transform:translateX(-50%);width:min(88vw,460px);text-align:center;pointer-events:none;color:#eef2ff;background:#101829e8;border-radius:12px;padding:10px 14px;font-size:13px;z-index:8" class="hidden"></div>
     <!-- pause -->
     <div class="screen hidden" id="paused">
       <div class="card">
@@ -880,7 +881,9 @@
             side = 1; // first rung: RIGHT, low enough to jump onto
           const stops = 18;
           for (let i = 0; i < stops; i++) {
-            const x = side > 0 ? RIGHT_X : LEFT_X;
+            // Terraces narrow the crossing; upper switchbacks change the rhythm.
+            const inset = i >= 5 && i < 10 ? 35 : i >= 10 && i < 15 ? 15 : 0;
+            const x = side > 0 ? RIGHT_X - inset : LEFT_X + inset;
             const isCheck = i % 5 === 4;
             add(x, y, RUNG_W, RUNG_H, isCheck ? "check" : "rock");
             if (i > 0 && i % 2 === 0)
@@ -888,15 +891,18 @@
             // spike strip on the *outer* wall well clear of the launch line (dodge flavor)
             if (i % 6 === 4)
               add(
-                side > 0 ? RIGHT_X + RUNG_W : LEFT_X - 30,
+                side > 0 ? x + RUNG_W : x - 30,
                 y + 40,
                 30,
                 70,
                 "spike",
               );
-            y += STEP;
+            y += i >= 5 && i < 10 ? 210 : i >= 10 && i < 15 ? 245 : STEP;
             side *= -1;
           }
+
+          // Optional mid-climb swing shortcut above the narrowed terraces.
+          this.poles.push({ x: 405, y: 2450, r: 1 });
 
           // POLE FLOURISH — an optional faster line. The climb stays fully completable
           // with normal carves; the pole just rewards a flashier route.
@@ -962,6 +968,7 @@
           this.coyote = 0;
           this.relatch = 0;
           this.face = 1;
+          this.checkpoint = null;
           this.respawn = { x: 450, y: Level.startY };
         },
         center() {
@@ -975,7 +982,7 @@
           // X
           this.x += this.vx * dt;
           for (const b of Level.blocks) {
-            if (b.kind === "goal") continue;
+            if (b.kind === "goal" || b.kind === "rail") continue;
             if (b.broken) continue;
             if (aabb(this, b)) {
               if (this.vx > 0) {
@@ -990,16 +997,22 @@
             }
           }
           // Y
+          const previousY = this.y;
           this.y += this.vy * dt;
           for (const b of Level.blocks) {
             if (b.kind === "goal") continue;
             if (b.broken) continue;
+            if (b.kind === "rail" && (this.vy >= 0 || previousY < b.y + b.h - 0.01)) continue;
             if (aabb(this, b)) {
               if (this.vy < 0) {
                 this.y = b.y + b.h;
                 this.onGround = true;
                 if (b.hazard) this.hit();
-                if (b.kind === "check") {
+                if (b.kind === "check" && (!this.checkpoint || b.y > this.checkpoint.y)) {
+                  this.checkpoint = b;
+                  Game.notice = "CHECKPOINT SAVED — return here after a fall";
+                  Game.noticeTime = 4;
+                  Game.popup("SAVED", b.x + b.w / 2, b.y + b.h + 30, "#ffcf4d");
                   this.respawn = {
                     x: b.x + b.w / 2 - this.w / 2,
                     y: b.y + b.h + 1,
@@ -1056,7 +1069,7 @@
             const vOver = this.y < b.y + b.h && this.y + this.h > b.y;
             const hOver = this.x < b.x + b.w && this.x + this.w > b.x;
             // right face of block -> player on its right (wallL: wall is to player's left)
-            if (vOver) {
+            if (vOver && b.kind !== "rail") {
               const dR = this.x - (b.x + b.w);
               if (dR >= -2 && dR <= r && dR < bestD) {
                 best = { type: "wallL", block: b };
@@ -1090,6 +1103,7 @@
 
         startCarve(t) {
           this.carve = { ...t, charge: 0 };
+          if (Game.lesson < 2) Game.lesson = 2;
           this.state = "CARVE";
           const b = t.block;
           if (t.type === "wallL") {
@@ -1180,7 +1194,7 @@
             this.vx = dir * T.RAIL_FWD + steer;
             this.vy = T.RAIL_LIFT_BASE + c.charge * q.mul * T.RAIL_LIFT_GAIN;
           }
-          this.award(q);
+          this.award(q, c.block);
         },
         releasePole(slip = false) {
           const p = this.pole;
@@ -1204,9 +1218,16 @@
             Math.abs(p.angVel) * p.r * T.POLE_FLING * (0.7 + 0.5 * q.mul);
           this.vx = tx * spd + Input.axis() * T.STEER;
           this.vy = Math.max(ty * spd, 260) + 120;
-          this.award(q);
+          this.award(q, p.ref);
         },
-        award(q) {
+        award(q, surface) {
+          // A run has a finite set of rewards. Recovery still launches normally.
+          if (!surface || Game.rewarded.has(surface)) {
+            Game.popup("RECOVERY", this.x + this.w / 2, this.y + this.h, "#9fb4ff");
+            return;
+          }
+          Game.rewarded.add(surface);
+          if (Game.lesson < 3) Game.lesson = 3;
           Game.combo++;
           const tier = Game.tier();
           if (q.n === "perfect") {
@@ -1496,7 +1517,7 @@
           this.ui = Object.fromEntries(["h-height", "h-score", "h-time", "flowfill", "flowtier", "combo", "combo-n"].map(id => [id, document.getElementById(id)]));
           this.lastHUD = {};
           try {
-            this.best = Math.max(0, Number(localStorage.getItem("carve.best")) || 0);
+            this.best = Math.max(0, Number(localStorage.getItem("carve.best.v2")) || 0);
             if (!Number.isFinite(this.best)) this.best = 0;
             Sfx.muted = localStorage.getItem("carve.muted") === "true";
           } catch {} // Storage may be unavailable in private/file browsing.
@@ -1529,6 +1550,10 @@
           this.comboTimer = 0;
           Cam.shake = 0;
           this.flow = 0;
+          this.rewarded = new Set();
+          this.lesson = 0;
+          this.noticeTime = 0;
+          this.notice = "";
           this.score = 0;
           this.combo = 0;
           this.bestChain = 0;
@@ -1565,7 +1590,7 @@
           const nb = this.score > this.best;
           if (nb) {
             this.best = this.score;
-            try { localStorage.setItem("carve.best", String(this.best)); } catch {}
+            try { localStorage.setItem("carve.best.v2", String(this.best)); } catch {}
           }
           document.getElementById("r-score").textContent =
             this.score.toLocaleString();
@@ -1578,6 +1603,7 @@
           document.getElementById("hud").classList.add("hidden");
           document.getElementById("flowwrap").classList.add("hidden");
           document.getElementById("pausebtn").classList.add("hidden");
+          show("coach", false);
           show("win", true);
         },
         popup(text, x, y, col) {
@@ -1610,6 +1636,9 @@
         },
         sim(dt) {
           this.time += dt;
+          this.noticeTime = Math.max(0, this.noticeTime - dt);
+          if (this.lesson === 0 && (Input.axis() || Input.jumpBuf)) this.lesson = 1;
+          if (this.lesson === 3 && this.rewarded.size >= 2) this.lesson = 4;
           Player.update(dt);
           // flow drain
           let drain = T.FLOW_DECAY;
@@ -1633,6 +1662,19 @@
               this.lastHUD[id] = value;
             }
           };
+          const charge = Player.carve?.charge || 0;
+          const hints = [
+            "1 · APPROACH: move right + jump toward the cyan wall (D / → + Space).",
+            "2 · GRIP: hold J / Shift or CARVE beside a cyan wall.",
+            charge > T.ZONE_PERFECT_HI ? "LATE — release before you slip; try gold on the next wall." : charge >= T.ZONE_PERFECT_LO ? "RELEASE CARVE NOW — gold is the perfect window!" : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.",
+            "4 · STEER: move toward the opposite wall and hold CARVE to catch it.",
+          ];
+          const coach = this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
+          if (this.lastHUD.coach !== coach) {
+            document.getElementById("coach").textContent = coach;
+            show("coach", !!coach);
+            this.lastHUD.coach = coach;
+          }
           text("h-height", String(Math.floor(clamp((Player.y - Level.startY) / (Level.goalY - Level.startY) * 100, 0, 100))));
           text("h-score", this.score.toLocaleString());
           text("h-time", this.time.toFixed(1));
@@ -1773,7 +1815,7 @@
             return;
           }
           if (b.kind === "rail") {
-            ctx.fillStyle = "#161c2e";
+            ctx.fillStyle = "rgba(56,240,224,.12)";
             ctx.fillRect(b.x, b.y, b.w, b.h);
             ctx.fillStyle = "#38f0e0";
             ctx.globalAlpha = 0.9;
@@ -1812,6 +1854,10 @@
             if (b.kind === "check") {
               ctx.fillStyle = "rgba(255,207,77,.12)";
               ctx.fillRect(b.x, b.y, b.w, b.h);
+              ctx.strokeStyle = "#ffcf4d";
+              ctx.beginPath(); ctx.moveTo(b.x + 15, b.y + b.h); ctx.lineTo(b.x + 15, b.y + b.h + 45); ctx.stroke();
+              ctx.fillStyle = Player.checkpoint === b ? "#ffcf4d" : "#746638";
+              ctx.fillRect(b.x + 15, b.y + b.h + 28, 25, 17);
             }
           }
         },

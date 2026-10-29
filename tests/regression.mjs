@@ -68,7 +68,7 @@ test('victory stops catch-up simulation immediately and persists best score', ()
   const goal = L.blocks.find(b => b.kind === 'goal'); P.x = goal.x; P.y = goal.y;
   G.score = 123; G.last = 0; G.frame(50);
   assert(!G.running); assert.equal(G.time, STEP);
-  assert.equal(localStorage.getItem('carve.best'), '123');
+  assert.equal(localStorage.getItem('carve.best.v2'), '123');
 });
 test('unavailable storage does not prevent victory or mute', () => {
   const original = globalThis.localStorage;
@@ -103,6 +103,42 @@ test('phone camera follows overshoots and snaps back to respawn', () => {
   assert.equal(g.Cam.x, P.x + P.w / 2);
   assert.equal(g.Cam.y, P.y + P.h / 2 + 150);
   delete G.ctx.setTransform;
+});
+
+test('repeat surfaces cannot farm score, Flow, perfects or chain, even after a fall', () => {
+  const b = L.blocks.find(b => b.kind === 'rock');
+  const q = P.quality(0.75); P.award(q, b);
+  const before = [G.score, G.flow, G.combo, G.perfects];
+  for (let i = 0; i < 100; i++) P.award(q, b);
+  assert.deepEqual([G.score, G.flow, G.combo, G.perfects], before);
+  P.hit(); const score = G.score; P.award(q, b); assert.equal(G.score, score);
+  newRun(g); P.award(q, L.blocks.find(b => b.kind === 'rock')); assert(G.score > 0);
+});
+test('one-way rails pass ascent and sides but catch descent from above', () => {
+  const b = L.blocks.find(b => b.kind === 'rail');
+  P.x = b.x + 40; P.y = b.y - P.h - 1; P.vy = 600; P.collide(STEP);
+  assert.equal(P.vy, 600);
+  P.y = b.y + b.h + 1; P.vy = -600; P.collide(STEP);
+  assert(P.onGround); assert.equal(P.y, b.y + b.h);
+  P.x = b.x - P.w - 1; P.y = b.y; P.vx = 600; P.vy = 0; P.collide(STEP);
+  assert.equal(P.vx, 600); assert.notEqual(P.findCarve()?.block, b);
+});
+test('checkpoints announce once and cannot move recovery backwards', () => {
+  const checks = L.blocks.filter(b => b.kind === 'check');
+  const land = b => { P.x = b.x + 40; P.y = b.y + b.h + 1; P.vy = -240; P.collide(STEP); };
+  land(checks[1]); assert.match(G.notice, /CHECKPOINT SAVED/); assert.equal(G.noticeTime, 4);
+  G.noticeTime = 0; land(checks[1]); assert.equal(G.noticeTime, 0);
+  land(checks[0]); assert.equal(P.checkpoint, checks[1]);
+});
+test('playable coaching advances on actions and clears after two distinct releases', () => {
+  G.syncHUD(); assert.match(document.getElementById('coach').textContent, /APPROACH/);
+  I.keys.d = true; G.sim(STEP); assert.equal(G.lesson, 1);
+  const blocks = L.blocks.filter(b => b.kind === 'rock');
+  P.startCarve({type:'wallR', block:blocks[0]}); assert.equal(G.lesson, 2);
+  P.carve.charge = 0.75; G.syncHUD(); assert.match(document.getElementById('coach').textContent, /RELEASE/);
+  P.releaseCarve(); assert.equal(G.lesson, 3);
+  P.award(P.quality(0.75), blocks[1]); G.sim(STEP); assert.equal(G.lesson, 4);
+  G.syncHUD(); assert(document.getElementById('coach').classList.contains('hidden'));
 });
 
 const server = createGameServer();

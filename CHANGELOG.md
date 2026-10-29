@@ -46,3 +46,9 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 - Unreachable opening rung; reworked into a jump-reachable first rung.
 - Loosened carve latch reach (26→40px) and made grip spacing uniform so a
   non-perfect carve always clears the next rung (no soft-locks).
+
+### Gameplay improvements — 2026-10-29
+- Add checkpoint save feedback, one-way bridges and contextual opening coaching.
+- Prevent repeated-surface score/Flow farming and separate revised personal bests.
+- Vary middle/upper route spacing and add an optional swing shortcut.
+- Cover new rules with regression tests and retain full automated completion.

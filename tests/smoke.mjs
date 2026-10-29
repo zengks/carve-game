@@ -28,7 +28,7 @@ step(60, { keys: { arrowright: true }, jump: true });
 console.log(`run/jump   -> state=${P.state} x=${P.x | 0} y=${P.y | 0}`);
 
 // 2) wall carve produces an upward launch and a scored combo
-const rung = L.blocks.find(b => b.kind === 'rock' && b.x > 400);
+let rung = L.blocks.find(b => b.kind === 'rock' && b.x > 400);
 P.x = rung.x - P.w - 2; P.y = rung.y + 10; P.vx = 200; P.vy = 120; P.state = 'AIR'; P.relatch = 0; P.carve = null;
 step(40, { carve: true });
 const yBefore = P.y;
@@ -36,7 +36,9 @@ step(30, { carve: false });
 console.log(`wall carve -> launch vy=${P.vy | 0} combo=${G.combo} score=${G.score}`);
 check(P.vy > 0 || P.y > yBefore, 'wall carve should launch upward');
 
-// 3) perfect-window release yields a bigger launch + perfect count
+// 3) perfect-window release on a fresh run yields a bigger launch + perfect count
+newRun(g);
+rung = L.blocks.find(b => b.kind === "rock" && b.x > 400);
 P.x = rung.x - P.w - 2; P.y = rung.y + 10; P.vx = 150; P.vy = 80; P.state = 'AIR'; P.relatch = 0; P.carve = null; G.combo = 0;
 const perfectsBefore = G.perfects;
 step(Math.round(0.75 * T.CHARGE_TIME * 120), { carve: true });
