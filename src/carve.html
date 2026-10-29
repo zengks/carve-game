@@ -484,7 +484,7 @@
             <span>Surge (spend Flow)</span><b><kbd>K</kbd></b>
           </div>
         </div>
-        <p class="tag">Hold CARVE near a glowing edge. Release when the ring turns gold. Gold platforms save your progress when you land on top. Cyan bridges let you jump through from below. Each surface scores once per run; recovery launches still work.</p>
+        <p class="tag">Hold CARVE near a glowing edge. Release when the ring turns gold. Gold platforms save your progress when you grip them or land on top. Cyan bridges let you jump through from below. Each surface scores once per run; recovery launches still work.</p>
         <button class="btn" id="play">Climb ▸</button>
         <div><button class="btn ghost" id="touch-toggle" aria-pressed="false" style="margin: 14px 0 0; font-size: 12px; padding: 10px 16px">Touch controls: off</button></div>
       </div>
@@ -1008,16 +1008,7 @@
                 this.y = b.y + b.h;
                 this.onGround = true;
                 if (b.hazard) this.hit();
-                if (b.kind === "check" && (!this.checkpoint || b.y > this.checkpoint.y)) {
-                  this.checkpoint = b;
-                  Game.notice = "CHECKPOINT SAVED — return here after a fall";
-                  Game.noticeTime = 4;
-                  Game.popup("SAVED", b.x + b.w / 2, b.y + b.h + 30, "#ffcf4d");
-                  this.respawn = {
-                    x: b.x + b.w / 2 - this.w / 2,
-                    y: b.y + b.h + 1,
-                  };
-                }
+                this.saveCheckpoint(b);
               } else if (this.vy > 0) {
                 this.y = b.y - this.h;
                 if (b.hazard) this.hit();
@@ -1027,6 +1018,14 @@
           }
           // void / fall reset
           if (this.y < Cam.y - 900) this.hit(true);
+        },
+        saveCheckpoint(b) {
+          if (b.kind !== "check" || (this.checkpoint && b.y <= this.checkpoint.y)) return;
+          this.checkpoint = b;
+          Game.notice = "CHECKPOINT SAVED — return here after a fall";
+          Game.noticeTime = 4;
+          Game.popup("SAVED", b.x + b.w / 2, b.y + b.h + 30, "#ffcf4d");
+          this.respawn = { x: b.x + b.w / 2 - this.w / 2, y: b.y + b.h + 1 };
         },
         hit(fall = false) {
           if (this.stun > 0) return;
@@ -1106,6 +1105,7 @@
           if (Game.lesson < 2) Game.lesson = 2;
           this.state = "CARVE";
           const b = t.block;
+          this.saveCheckpoint(b);
           if (t.type === "wallL") {
             this.x = b.x + b.w;
             this.face = -1;

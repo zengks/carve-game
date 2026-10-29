@@ -125,7 +125,7 @@ changes in a browser; the bot does not prove every intended route is usable.
 ## Gameplay revision (2026-10-29)
 
 Cyan rails are one-way: upward and side movement pass through; downward movement
-from above lands on the grippable top. Gold checkpoints announce activation and
+from above lands on the grippable top. Gold checkpoints save on a successful grip or landing, announce activation, and
 show a lit flag. An older checkpoint cannot replace a higher saved checkpoint.
 
 Contextual opening prompts advance through movement, grip, charging, release,

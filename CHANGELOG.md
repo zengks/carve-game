@@ -52,3 +52,8 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 - Prevent repeated-surface score/Flow farming and separate revised personal bests.
 - Vary middle/upper route spacing and add an optional swing shortcut.
 - Cover new rules with regression tests and retain full automated completion.
+
+### Checkpoint recovery — 2026-10-29
+- Save gold checkpoints when gripped as well as landed on, avoiding start resets
+  after long continuous climbs. Cover grip, respawn and checkpoint ordering.
+- Complete a full browser keyboard playthrough with pauses for inspection.

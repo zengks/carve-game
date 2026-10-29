@@ -81,3 +81,22 @@ and varied terrace/switchback spacing with an optional swing route.
   The farming fix prevents a normal-play exploit; it is not an anti-cheat system.
   A future competitive mode would need server-side run validation and abuse controls.
 - Branch preview only; production is not promoted.
+
+## Full manual summit and checkpoint recovery — 2026-10-29
+
+A browser-only keyboard run reached the real SUMMIT REACHED / CLEAR screen on
+the checkpoint patch: 6,077 points, 9 perfect carves, best chain 25, displayed
+active time 33.9 seconds. Pauses between short keyboard sequences were used to
+inspect screenshots and plan the next move. This was not an uninterrupted
+speedrun. No game state, position, score, physics, or victory flags were injected.
+The browser console reported no captured warnings or errors.
+
+Before the patch, a separate attempt reached 72% but a fall reset to the start:
+carving up checkpoint sides had not saved progress. Gold checkpoints now save
+on a successful grip as well as landing, keeping continuous carving compatible
+with recovery. A higher saved checkpoint cannot be overwritten by an older one.
+The successful run visibly activated the first, middle, and final checkpoints.
+
+19 regression tests, seeded stress, syntax, spacing and automated full completion
+pass. No movement constants, goal position, or score eligibility were relaxed.
+The change stays on the review branch; production is unchanged.

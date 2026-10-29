@@ -39,6 +39,18 @@ test('landing activates a checkpoint and hazard returns to it', () => {
   P.x = spike.x + spike.w + 1; P.y = spike.y + 10; P.vx = -300; P.vy = 0; P.collide(STEP);
   assert.equal(P.x, P.respawn.x); assert.equal(P.y, P.respawn.y); assert(P.stun > 0);
 });
+test('carving a gold wall saves recovery without requiring a landing', () => {
+  const b = L.blocks.find(b => b.kind === 'check');
+  P.x = b.x - P.w; P.y = b.y + 30;
+  P.startCarve({type: 'wallR', block: b});
+  assert.equal(P.checkpoint, b); assert.equal(G.noticeTime, 4);
+  assert.equal(P.respawn.y, b.y + b.h + 1);
+  P.hit(); assert.equal(P.y, b.y + b.h + 1);
+  const newer = L.blocks.filter(b => b.kind === 'check')[1];
+  P.startCarve({type:'wallR', block:newer});
+  P.startCarve({type:'wallR', block:b});
+  assert.equal(P.checkpoint, newer);
+});
 test('restart clears transient player and queued input state', () => {
   Object.assign(P, { relatch: 0.14, onGround: true, wallDir: -1, coyote: 0.1 });
   Object.assign(I, { keys: { d: true }, _tCarve: true, jumpBuf: 0.1, surgeQ: true });
