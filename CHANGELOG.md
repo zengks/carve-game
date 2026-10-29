@@ -6,6 +6,9 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [1.1.0] — 2026-10-28
 
+- Recover deep falls promptly at saved checkpoints and face back into the course.
+- Default column-top catches inward while preserving explicit steering.
+- Verify a full summit run using only on-screen controls at phone viewport size.
 - Preserve carve and surge momentum while steering; apply gradual excess-speed drag.
 - Apply the documented Flow boost to steering acceleration and maximum speed.
 - Penalize pole overholds instead of awarding them as normal releases.

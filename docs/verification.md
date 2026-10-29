@@ -121,3 +121,25 @@ leave a new gesture stuck. No movement physics or desktop scoring changes.
 24 regressions pass, including simultaneous steer/carve, steer/jump, cancellation,
 pause with an unreleased old contact, touch coaching and landscape camera bounds.
 Syntax, stress, spacing, full bot completion and static build also pass.
+
+## Full on-screen-control summit — 2026-10-29
+
+A fresh 390×844 browser run reached SUMMIT REACHED / CLEAR using only the
+visible Jump, steering, Carve, Pause and Resume controls. Result: 2,179 points,
+8 perfect carves, best chain 15, 60.2 seconds of displayed active time. Falls
+and recovery occurred within the run; inspection pauses were used between input
+sequences. No keyboard gameplay, injected state or scripted simulation drove
+this manual run. No captured browser warnings or errors were reported.
+
+This verifies the on-screen control path with a single browser pointer, not
+physical simultaneous multi-touch or an uninterrupted mobile speedrun. Hardware
+ergonomics, iOS/Android interruptions and device performance remain unverified.
+
+Issues found and fixed: deep falls now recover relative to the saved checkpoint
+or level start even when the camera follows down; respawns face into the course;
+column-top catches default inward unless the player explicitly steers. Ordinary
+rail direction, launch strengths and score eligibility remain unchanged.
+
+27 regressions pass, including checkpoint-relative falls, inward respawn facing,
+and column-top direction with explicit steering. Syntax, seeded stress, spacing,
+automated full completion and static build pass. Branch preview only.

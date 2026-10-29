@@ -188,6 +188,27 @@ test('landscape camera keeps player and next rung visible', () => {
   assert(screenY < G.H - 60); assert(nextY > 70); delete G.ctx.setTransform;
 });
 
+test('column-top catches default inward and respect explicit steering', () => {
+  const b = L.blocks.find(b => b.kind === 'rock' && b.x > L.centerX);
+  P.face = 1; P.startCarve({type:'rail', block:b});
+  P.carve.charge = 0.75; P.releaseCarve(); assert(P.vx < 0);
+  I.keys.arrowright = true; P.startCarve({type:'rail', block:b});
+  P.carve.charge = 0.75; P.releaseCarve(); assert(P.vx > 0);
+});
+test('deep falls recover below the saved checkpoint even when camera follows', () => {
+  const b = L.blocks.filter(b => b.kind === 'check')[1]; P.saveCheckpoint(b);
+  P.x = 1000; P.y = P.respawn.y - 601; P.vy = -100;
+  g.Cam.y = P.y + 150; P.collide(STEP);
+  assert.equal(P.y, P.respawn.y); assert.equal(P.x, P.respawn.x);
+  assert.equal(P.face, 1, 'left checkpoint faces back into lane');
+  P.stun = 0; P.saveCheckpoint(L.blocks.filter(b => b.kind === 'check')[2]); P.hit();
+  assert.equal(P.face, -1, 'right checkpoint faces back into lane');
+});
+test('falling below the start recovers without waiting for camera lag', () => {
+  P.x = 1000; P.y = L.startY - 201; g.Cam.y = P.y; P.collide(STEP);
+  assert.equal(P.y, P.respawn.y);
+});
+
 const server = createGameServer();
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 try {

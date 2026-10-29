@@ -1031,7 +1031,7 @@
             }
           }
           // void / fall reset
-          if (this.y < Cam.y - 900) this.hit(true);
+          if (this.y < Math.max(Level.startY - 200, this.respawn.y - 600, Cam.y - 900)) this.hit(true);
         },
         saveCheckpoint(b) {
           if (b.kind !== "check" || (this.checkpoint && b.y <= this.checkpoint.y)) return;
@@ -1059,6 +1059,7 @@
           );
           this.x = this.respawn.x;
           this.y = this.respawn.y;
+          this.face = sign(Level.centerX - (this.x + this.w / 2)) || 1;
           Cam.x = this.x + this.w / 2;
           Cam.y = this.y + this.h / 2 + 150;
           this.vx = 0;
@@ -1120,6 +1121,10 @@
           this.state = "CARVE";
           const b = t.block;
           this.saveCheckpoint(b);
+          if (t.type === "rail" && b.kind !== "rail") {
+            // A column-top catch should continue into the course unless steered.
+            this.face = Input.axis() || sign(Level.centerX - (b.x + b.w / 2)) || this.face;
+          }
           if (t.type === "wallL") {
             this.x = b.x + b.w;
             this.face = -1;
