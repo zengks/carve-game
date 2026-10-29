@@ -100,3 +100,24 @@ The successful run visibly activated the first, middle, and final checkpoints.
 19 regression tests, seeded stress, syntax, spacing and automated full completion
 pass. No movement constants, goal position, or score eligibility were relaxed.
 The change stays on the review branch; production is unchanged.
+
+## Mobile/tablet usability — 2026-10-29
+
+Browser viewport checks covered 320×568, 390×844, 844×390, 768×1024,
+1024×768, and 1920×1080. Measured touch buttons, coach, Flow, toolbar, and
+timer had no pairwise overlaps or offscreen bounds in these configurations.
+Portrait phone/tablet and landscape phone screens were visually inspected.
+On-screen pointer clicks/holds exercised jump and a scored carve at phone and
+tablet sizes. This is browser emulation, not physical iOS/Android multi-touch
+or a complete touch-only summit run. Real-device frame rate, safe-area values,
+thumb ergonomics, audio unlock and OS interruptions still need device testing.
+
+Fixes: landscape camera scale now considers height as well as width; tutorial
+uses thumb/button instructions in touch mode; tablet targets are enlarged with
+separation; control offsets include safe-area insets; menu overlays allow vertical
+touch scrolling; clearing input also clears held pointer IDs so a pause cannot
+leave a new gesture stuck. No movement physics or desktop scoring changes.
+
+24 regressions pass, including simultaneous steer/carve, steer/jump, cancellation,
+pause with an unreleased old contact, touch coaching and landscape camera bounds.
+Syntax, stress, spacing, full bot completion and static build also pass.

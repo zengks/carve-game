@@ -57,3 +57,9 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 - Save gold checkpoints when gripped as well as landed on, avoiding start resets
   after long continuous climbs. Cover grip, respawn and checkpoint ordering.
 - Complete a full browser keyboard playthrough with pauses for inspection.
+
+### Mobile and tablet usability — 2026-10-29
+- Improve landscape framing, touch-specific coaching and tablet target spacing.
+- Respect safe-area insets and allow touch scrolling on menu overlays.
+- Clear pointer ownership across pauses to prevent stuck gestures.
+- Add simultaneous input, pause, coaching and camera regressions.

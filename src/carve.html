@@ -47,7 +47,7 @@
         font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
         color: var(--ink);
         -webkit-font-smoothing: antialiased;
-        touch-action: none;
+        touch-action: auto;
         user-select: none;
         -webkit-user-select: none;
       }
@@ -56,6 +56,7 @@
         inset: 0;
       }
       canvas {
+        touch-action: none;
         display: block;
         width: 100%;
         height: 100%;
@@ -66,8 +67,8 @@
         position: fixed;
         inset: 0;
         pointer-events: none;
-        padding: 18px 22px;
-        padding-right: 122px;
+        padding: calc(18px + env(safe-area-inset-top)) calc(22px + env(safe-area-inset-right)) 18px calc(22px + env(safe-area-inset-left));
+        padding-right: calc(122px + env(safe-area-inset-right));
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -165,6 +166,7 @@
 
       /* ---------- overlays ---------- */
       .screen {
+        touch-action: pan-y;
         position: fixed;
         inset: 0;
         display: flex;
@@ -355,21 +357,31 @@
         letter-spacing: 0.1em;
         backdrop-filter: blur(4px);
       }
+      .tbtn { touch-action: none; -webkit-touch-callout: none; }
       .tbtn:active {
         background: rgba(56, 240, 224, 0.25);
       }
-      #t-left, #t-right { bottom: max(22px, env(safe-area-inset-bottom)); width: 60px; height: 60px; }
-      #t-left { left: 12px; }
-      #t-right { left: 80px; }
-      #t-jump { right: 12px; bottom: 122px; width: 66px; height: 66px; border-radius: 50%; }
-      #t-carve { right: 12px; bottom: max(26px, env(safe-area-inset-bottom)); width: 82px; height: 82px; border-radius: 50%; border-color: var(--cyan); color: var(--cyan); }
-      #t-surge { right: 90px; bottom: 124px; width: 62px; height: 62px; border-radius: 50%; font-size: 11px; }
+      #t-left, #t-right { bottom: calc(22px + env(safe-area-inset-bottom)); width: 60px; height: 60px; }
+      #t-left { left: calc(12px + env(safe-area-inset-left)); }
+      #t-right { left: calc(80px + env(safe-area-inset-left)); }
+      #t-jump { right: calc(12px + env(safe-area-inset-right)); bottom: calc(122px + env(safe-area-inset-bottom)); width: 66px; height: 66px; border-radius: 50%; }
+      #t-carve { right: calc(12px + env(safe-area-inset-right)); bottom: calc(26px + env(safe-area-inset-bottom)); width: 82px; height: 82px; border-radius: 50%; border-color: var(--cyan); color: var(--cyan); }
+      #t-surge { right: calc(90px + env(safe-area-inset-right)); bottom: calc(124px + env(safe-area-inset-bottom)); width: 62px; height: 62px; border-radius: 50%; font-size: 11px; }
       .istouch #flowwrap { bottom: 216px; width: 140px; left: 12px; }
       .istouch #combo { bottom: 216px; right: 12px; }
-      .toolbar { position: fixed; top: 16px; right: 12px; display: flex; gap: 8px; z-index: 16; }
+      .toolbar { position: fixed; top: calc(16px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right)); display: flex; gap: 8px; z-index: 16; }
       .toolbar .pausebtn { position: static; }
       .pausebtn:focus-visible, .tbtn:focus-visible, .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+      @media (min-width: 700px) and (min-height: 600px) {
+        .istouch .tbtn { transform: scale(1.15); transform-origin: bottom right; }
+        .istouch #t-left, .istouch #t-right { transform-origin: bottom left; }
+        .istouch #t-right { left: calc(90px + env(safe-area-inset-left)); }
+        .istouch #t-jump { bottom: calc(138px + env(safe-area-inset-bottom)); }
+        .istouch #t-surge { right: calc(106px + env(safe-area-inset-right)); bottom: calc(140px + env(safe-area-inset-bottom)); }
+      }
       @media (max-height: 480px) {
+        #coach { top: calc(72px + env(safe-area-inset-top)) !important; max-width: 52vw; font-size: 11px !important; }
+
         .istouch #flowwrap, .istouch #combo { bottom: auto; top: 76px; }
       }
       .istouch #touch {
@@ -490,7 +502,7 @@
       </div>
     </div>
 
-    <div id="coach" role="status" style="position:fixed;top:112px;left:50%;transform:translateX(-50%);width:min(88vw,460px);text-align:center;pointer-events:none;color:#eef2ff;background:#101829e8;border-radius:12px;padding:10px 14px;font-size:13px;z-index:8" class="hidden"></div>
+    <div id="coach" role="status" style="position:fixed;top:calc(112px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(88vw,460px);text-align:center;pointer-events:none;color:#eef2ff;background:#101829e8;border-radius:12px;padding:10px 14px;font-size:13px;z-index:8" class="hidden"></div>
     <!-- pause -->
     <div class="screen hidden" id="paused">
       <div class="card">
@@ -607,6 +619,7 @@
       /* ----------------------------- input ------------------------------------- */
       const Input = {
         keys: Object.create(null),
+        touchResets: [],
         jumpBuf: 0,
         surgeQ: false,
         axis() {
@@ -624,6 +637,7 @@
         _tCarve: false,
         touchKeys: Object.create(null),
         clear() {
+          for (const reset of this.touchResets) reset();
           this.keys = Object.create(null);
           this.touchKeys = Object.create(null);
           this._tCarve = false;
@@ -1663,9 +1677,10 @@
             }
           };
           const charge = Player.carve?.charge || 0;
+          const touch = document.body.classList.contains("istouch");
           const hints = [
-            "1 · APPROACH: move right + jump toward the cyan wall (D / → + Space).",
-            "2 · GRIP: hold J / Shift or CARVE beside a cyan wall.",
+            touch ? "1 · APPROACH: hold ▶ with your left thumb; tap JUMP with your right." : "1 · APPROACH: move right + jump toward the cyan wall (D / → + Space).",
+            touch ? "2 · GRIP: hold CARVE beside a cyan wall. Keep steering with your left thumb." : "2 · GRIP: hold J / Shift or CARVE beside a cyan wall.",
             charge > T.ZONE_PERFECT_HI ? "LATE — release before you slip; try gold on the next wall." : charge >= T.ZONE_PERFECT_LO ? "RELEASE CARVE NOW — gold is the perfect window!" : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.",
             "4 · STEER: move toward the opposite wall and hold CARVE to catch it.",
           ];
@@ -1716,7 +1731,7 @@
           ctx.fillRect(0, 0, W, H);
           this.stars(ctx, W, H, warm);
 
-          const z = Cam.zoom * this.dpr * Math.min(1, (W / this.dpr) / 620);
+          const z = Cam.zoom * this.dpr * Math.min(1, (W / this.dpr) / 620, (H / this.dpr) / 620);
           // Keep both columns visible on phones, but follow an overshoot off-lane.
           const offset = Cam.x - Level.centerX;
           const viewX = W / this.dpr < 620
@@ -1989,6 +2004,7 @@
           const hold = (id, on, off) => {
             const el = document.getElementById(id);
             const pointers = new Set();
+            Input.touchResets.push(() => pointers.clear());
             el.addEventListener("pointerdown", (e) => {
               e.preventDefault();
               if (!this.running || this.paused) return;

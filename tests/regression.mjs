@@ -153,6 +153,41 @@ test('playable coaching advances on actions and clears after two distinct releas
   G.syncHUD(); assert(document.getElementById('coach').classList.contains('hidden'));
 });
 
+test('simultaneous touch movement and carve release independently', () => {
+  const right = document.getElementById('t-right'), carve = document.getElementById('t-carve');
+  right.dispatch('pointerdown', {pointerId: 30}); carve.dispatch('pointerdown', {pointerId: 31});
+  assert.equal(I.axis(), 1); assert(I.carve());
+  carve.dispatch('pointerup', {pointerId:31}); assert(!I.carve()); assert.equal(I.axis(), 1);
+  right.dispatch('pointerup', {pointerId:30}); assert.equal(I.axis(), 0);
+});
+test('pause discards old touch contacts before a new gesture', () => {
+  const right = document.getElementById('t-right');
+  right.dispatch('pointerdown', {pointerId:40}); G.togglePause(); G.togglePause();
+  right.dispatch('pointerdown', {pointerId:41}); right.dispatch('pointerup', {pointerId:41});
+  assert.equal(I.axis(), 0, 'an old unreleased contact cannot stick the new gesture');
+});
+test('touch jump and steering work together through pointer events', () => {
+  for (let i=0;i<20;i++) G.sim(STEP);
+  document.getElementById('t-right').dispatch('pointerdown', {pointerId:50});
+  document.getElementById('t-jump').dispatch('pointerdown', {pointerId:51});
+  const y = P.y; G.sim(STEP); assert(P.y > y); assert(P.vx > 0);
+  document.getElementById('t-right').dispatch('pointercancel', {pointerId:50}); assert.equal(I.axis(), 0);
+});
+test('touch coaching names visible controls rather than keyboard keys', () => {
+  document.body.classList.add('istouch'); G.lastHUD = {}; G.syncHUD();
+  assert.match(document.getElementById('coach').textContent, /thumb/);
+  assert(!document.getElementById('coach').textContent.includes('Space'));
+  document.body.classList.remove('istouch');
+});
+test('landscape camera keeps player and next rung visible', () => {
+  G.W = 844; G.H = 390; g.Cam.zoom = 1; g.Cam.shake = 0;
+  P.y = 500; g.Cam.y = P.y + P.h / 2 + 150;
+  let m; G.ctx.setTransform = (...args) => { m = args; }; G.render();
+  const screenY = (P.y + P.h / 2) * m[3] + m[5];
+  const nextY = (P.y + 230) * m[3] + m[5];
+  assert(screenY < G.H - 60); assert(nextY > 70); delete G.ctx.setTransform;
+});
+
 const server = createGameServer();
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 try {
