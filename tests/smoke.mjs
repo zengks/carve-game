@@ -3,6 +3,9 @@
 // never produces non-finite state. Pure physics; no rendering required.
 import { loadGame, newRun, STEP } from './harness.mjs';
 
+// A fixed seed makes a failing stress sequence reproducible.
+let seed = 0xCA4E;
+Math.random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 2 ** 32; };
 const g = loadGame();
 const { T, Level: L, Player: P, Game: G, Input: I } = g;
 newRun(g);
@@ -35,16 +38,19 @@ check(P.vy > 0 || P.y > yBefore, 'wall carve should launch upward');
 
 // 3) perfect-window release yields a bigger launch + perfect count
 P.x = rung.x - P.w - 2; P.y = rung.y + 10; P.vx = 150; P.vy = 80; P.state = 'AIR'; P.relatch = 0; P.carve = null; G.combo = 0;
+const perfectsBefore = G.perfects;
 step(Math.round(0.75 * T.CHARGE_TIME * 120), { carve: true });
 step(2, { carve: false });
+check(G.perfects === perfectsBefore + 1, 'perfect release increments perfect count');
 console.log(`perfect    -> launch vy=${P.vy | 0} perfects=${G.perfects}`);
 
 // 4) pole swing attaches and flings
 const pole = L.poles[0];
 P.x = pole.x - P.w / 2; P.y = pole.y - 40 - P.h / 2; P.vx = 260; P.vy = 0; P.state = 'AIR'; P.relatch = 0; P.pole = null; P.carve = null;
-step(50, { carve: true });
-check(P.state === 'POLE' || P.pole === null, 'pole should engage while carve held');
+step(2, { carve: true });
+check(P.state === 'POLE' && P.pole !== null, 'pole should engage while carve held');
 step(4, { carve: false });
+check(P.state === 'AIR' && P.pole === null && P.vy > 0, 'pole releases upward');
 console.log(`pole       -> state=${P.state} vx=${P.vx | 0} vy=${P.vy | 0}`);
 
 // 5) hazard sends player to the last checkpoint
@@ -52,6 +58,7 @@ const spike = L.blocks.find(b => b.kind === 'spike');
 if (spike) {
   P.x = spike.x; P.y = spike.y + spike.h + 5; P.vy = -50; P.stun = 0;
   step(20, {});
+  check(P.stun > 0 && Math.abs(P.x - P.respawn.x) < 1, 'hazard respawns at checkpoint');
   console.log(`hazard     -> respawned x=${P.x | 0} stun=${P.stun.toFixed(2)}`);
 }
 

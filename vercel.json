@@ -1,8 +1,13 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/src/carve.html" }
-  ],
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "redirects": [
-    { "source": "/src/carve.html", "destination": "/", "permanent": true }
+    {
+      "source": "/src/carve.html",
+      "destination": "/",
+      "permanent": true
+    }
   ]
 }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <title>CARVE — flow climber</title>
     <meta name="description" content="A momentum-based vertical climber where you latch onto surfaces, charge, and release at the perfect instant to fling yourself higher. Free browser game — no download, no install." />
@@ -67,6 +67,7 @@
         inset: 0;
         pointer-events: none;
         padding: 18px 22px;
+        padding-right: 122px;
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -169,6 +170,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow-y: auto;
+        padding: 24px 0;
         background:
           radial-gradient(
             120% 120% at 50% 0%,
@@ -186,6 +189,7 @@
         width: min(560px, 92vw);
         text-align: center;
         padding: 8px 6px;
+        margin: auto;
       }
       .eyebrow {
         font-size: 12px;
@@ -354,41 +358,19 @@
       .tbtn:active {
         background: rgba(56, 240, 224, 0.25);
       }
-      #t-left {
-        left: 18px;
-        bottom: 26px;
-        width: 76px;
-        height: 76px;
-      }
-      #t-right {
-        left: 106px;
-        bottom: 26px;
-        width: 76px;
-        height: 76px;
-      }
-      #t-jump {
-        right: 18px;
-        bottom: 120px;
-        width: 88px;
-        height: 88px;
-        border-radius: 50%;
-      }
-      #t-carve {
-        right: 120px;
-        bottom: 34px;
-        width: 104px;
-        height: 104px;
-        border-radius: 50%;
-        border-color: var(--cyan);
-        color: var(--cyan);
-      }
-      #t-surge {
-        right: 30px;
-        bottom: 18px;
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        font-size: 11px;
+      #t-left, #t-right { bottom: max(22px, env(safe-area-inset-bottom)); width: 60px; height: 60px; }
+      #t-left { left: 12px; }
+      #t-right { left: 80px; }
+      #t-jump { right: 12px; bottom: 122px; width: 66px; height: 66px; border-radius: 50%; }
+      #t-carve { right: 12px; bottom: max(26px, env(safe-area-inset-bottom)); width: 82px; height: 82px; border-radius: 50%; border-color: var(--cyan); color: var(--cyan); }
+      #t-surge { right: 90px; bottom: 124px; width: 62px; height: 62px; border-radius: 50%; font-size: 11px; }
+      .istouch #flowwrap { bottom: 216px; width: 140px; left: 12px; }
+      .istouch #combo { bottom: 216px; right: 12px; }
+      .toolbar { position: fixed; top: 16px; right: 12px; display: flex; gap: 8px; z-index: 16; }
+      .toolbar .pausebtn { position: static; }
+      .pausebtn:focus-visible, .tbtn:focus-visible, .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+      @media (max-height: 480px) {
+        .istouch #flowwrap, .istouch #combo { bottom: auto; top: 76px; }
       }
       .istouch #touch {
         display: block;
@@ -421,8 +403,9 @@
         color: var(--ink);
       }
       @media (max-width: 620px) {
+        .hud-top { gap: 8px; }
         .stat .v {
-          font-size: 22px;
+          font-size: clamp(14px, 4.5vw, 22px);
         }
         .keys {
           grid-template-columns: 1fr;
@@ -460,15 +443,18 @@
       <div class="n" id="combo-n">x2</div>
       <div class="l">chain</div>
     </div>
-    <div class="pausebtn hidden" id="pausebtn">II</div>
+    <div class="toolbar">
+      <button class="pausebtn" id="mutebtn" aria-label="Mute sound" aria-pressed="false">♪</button>
+      <button class="pausebtn hidden" id="pausebtn" aria-label="Pause game">II</button>
+    </div>
 
     <!-- touch -->
     <div id="touch" class="hidden">
-      <div class="tbtn" id="t-left">◀</div>
-      <div class="tbtn" id="t-right">▶</div>
-      <div class="tbtn" id="t-jump">JUMP</div>
-      <div class="tbtn" id="t-carve">CARVE</div>
-      <div class="tbtn" id="t-surge">SURGE</div>
+      <button class="tbtn" id="t-left" aria-label="Move left">◀</button>
+      <button class="tbtn" id="t-right" aria-label="Move right">▶</button>
+      <button class="tbtn" id="t-jump" aria-label="Jump">JUMP</button>
+      <button class="tbtn" id="t-carve" aria-label="Hold to carve">CARVE</button>
+      <button class="tbtn" id="t-surge" aria-label="Surge">SURGE</button>
     </div>
 
     <!-- start -->
@@ -480,7 +466,7 @@
           There is no brake and no straight line up. You ascend by grabbing
           surfaces, riding them, and releasing at the perfect instant to fling
           yourself higher. Clean releases build
-          <b style="color: var(--cyan)">Flow</b> — the world speeds up and warms
+          <b style="color: var(--cyan)">Flow</b> — your steering speeds up and the world warms
           as you chain.
         </p>
         <div class="keys">
@@ -498,7 +484,9 @@
             <span>Surge (spend Flow)</span><b><kbd>K</kbd></b>
           </div>
         </div>
+        <p class="tag">Hold CARVE near a glowing edge. Release when the ring turns gold. Gold platforms save your progress when you land on top.</p>
         <button class="btn" id="play">Climb ▸</button>
+        <div><button class="btn ghost" id="touch-toggle" aria-pressed="false" style="margin: 14px 0 0; font-size: 12px; padding: 10px 16px">Touch controls: off</button></div>
       </div>
     </div>
 
@@ -559,7 +547,8 @@
         AIR_ACCEL: 2200,
         MAX_RUN: 360,
         GROUND_FRICTION: 3000,
-        AIR_DRAG: 0.6,
+        AIR_DRAG: 0.6, // gradual decay of launch speed above the steering cap
+        FLOW_SPEED: 0.05, // +5% steering speed and acceleration per tier
         JUMP_V: 700,
         COYOTE: 0.1,
         JUMP_BUFFER: 0.1,
@@ -629,9 +618,17 @@
           return this.k("j") || this.k("shift") || this._tCarve;
         },
         k(n) {
-          return !!this.keys[n];
+          return !!(this.keys[n] || this.touchKeys[n]);
         },
         _tCarve: false,
+        touchKeys: Object.create(null),
+        clear() {
+          this.keys = Object.create(null);
+          this.touchKeys = Object.create(null);
+          this._tCarve = false;
+          this.jumpBuf = 0;
+          this.surgeQ = false;
+        },
         init() {
           addEventListener(
             "keydown",
@@ -660,8 +657,8 @@
             this.keys[e.key.toLowerCase()] = false;
           });
           addEventListener("blur", () => {
-            this.keys = Object.create(null);
-            this._tCarve = false;
+            this.clear();
+            if (Game.running && !Game.paused) Game.togglePause();
           });
         },
       };
@@ -848,6 +845,7 @@
         poles: [],
         startY: 0,
         goalY: 0,
+        centerX: 405,
         build() {
           this.blocks = [];
           this.poles = [];
@@ -877,6 +875,7 @@
             RUNG_W = 150,
             RUNG_H = 160,
             STEP = 230;
+          this.centerX = (LEFT_X + RIGHT_X + RUNG_W) / 2;
           let y = 150,
             side = 1; // first rung: RIGHT, low enough to jump onto
           const stops = 18;
@@ -958,6 +957,11 @@
           this.surgeCD = 0;
           this.stun = 0;
           this.trail.length = 0;
+          this.onGround = false;
+          this.wallDir = 0;
+          this.coyote = 0;
+          this.relatch = 0;
+          this.face = 1;
           this.respawn = { x: 450, y: Level.startY };
         },
         center() {
@@ -1176,12 +1180,20 @@
           }
           this.award(q);
         },
-        releasePole() {
+        releasePole(slip = false) {
           const p = this.pole;
           if (!p) return;
           this.pole = null;
           this.state = "AIR";
           this.relatch = 0.14;
+          if (slip) {
+            this.vx = 0;
+            this.vy = -40;
+            this.breakCombo();
+            Game.flow = Math.max(0, Game.flow + T.FLOW_SLIP);
+            Sfx.slip();
+            return;
+          }
           const q = this.quality(p.charge);
           const s = sign(p.angVel) || 1;
           const tx = -Math.sin(p.ang) * s,
@@ -1263,7 +1275,7 @@
             this.y = c.y + Math.sin(p.ang) * p.r - this.h / 2;
             this.pushTrail();
             if (!Input.carve() || p.charge >= T.SLIP_AT) {
-              this.releasePole();
+              this.releasePole(p.charge >= T.SLIP_AT);
             }
             return;
           }
@@ -1334,14 +1346,19 @@
           }
 
           /* ---- normal movement (AIR / GROUND / WALL) ---- */
-          const accel = this.onGround ? T.MOVE_ACCEL : T.AIR_ACCEL;
+          const speed = 1 + Game.tier() * T.FLOW_SPEED;
+          const accel = (this.onGround ? T.MOVE_ACCEL : T.AIR_ACCEL) * speed;
+          const maxRun = T.MAX_RUN * speed;
+          // Steering may accelerate up to the cap, but must not erase a launch.
           if (inAxis) {
-            this.vx += inAxis * accel * dt;
-            this.vx = clamp(this.vx, -T.MAX_RUN, T.MAX_RUN);
+            if (this.vx * inAxis < maxRun)
+              this.vx = inAxis * Math.min(maxRun, this.vx * inAxis + accel * dt);
           } else if (this.onGround) {
             const f = T.GROUND_FRICTION * dt;
             this.vx -= clamp(this.vx, -f, f);
           }
+          if (!this.onGround && Math.abs(this.vx) > maxRun)
+            this.vx *= Math.exp(-T.AIR_DRAG * dt);
           this.vy -= T.GRAVITY * dt;
           // wall slide cap
           if (
@@ -1457,6 +1474,7 @@
         H: 0,
         dpr: 1,
         running: false,
+        needsRender: true,
         paused: false,
         acc: 0,
         last: 0,
@@ -1473,6 +1491,13 @@
           return Math.min(5, Math.floor(this.flow / 20));
         },
         init() {
+          this.ui = Object.fromEntries(["h-height", "h-score", "h-time", "flowfill", "flowtier", "combo", "combo-n"].map(id => [id, document.getElementById(id)]));
+          this.lastHUD = {};
+          try {
+            this.best = Math.max(0, Number(localStorage.getItem("carve.best")) || 0);
+            if (!Number.isFinite(this.best)) this.best = 0;
+            Sfx.muted = localStorage.getItem("carve.muted") === "true";
+          } catch {} // Storage may be unavailable in private/file browsing.
           this.cv = document.getElementById("cv");
           this.ctx = this.cv.getContext("2d");
           addEventListener("resize", () => this.resize());
@@ -1481,9 +1506,14 @@
           Input.init();
           this.bindUI();
           this.bindTouch();
+          this.syncMute();
+          document.addEventListener("visibilitychange", () => {
+            if (document.hidden && this.running && !this.paused) this.togglePause();
+          });
           requestAnimationFrame((t) => this.frame(t));
         },
         resize() {
+          this.needsRender = true;
           this.dpr = Math.min(2, window.devicePixelRatio || 1);
           this.W = this.cv.width = Math.floor(innerWidth * this.dpr);
           this.H = this.cv.height = Math.floor(innerHeight * this.dpr);
@@ -1491,6 +1521,11 @@
         start() {
           Level.build();
           Player.reset();
+          Input.clear();
+          Particles.pool.length = 0;
+          this.acc = 0;
+          this.comboTimer = 0;
+          Cam.shake = 0;
           this.flow = 0;
           this.score = 0;
           this.combo = 0;
@@ -1510,19 +1545,26 @@
           document.getElementById("flowwrap").classList.remove("hidden");
           document.getElementById("pausebtn").classList.remove("hidden");
           Sfx.resume();
+          this.syncHUD();
         },
         togglePause() {
           if (!this.running) return;
+          Input.clear();
           this.paused = !this.paused;
+          this.needsRender = true;
           show("paused", this.paused);
         },
         victory() {
           if (!this.running) return;
           this.running = false;
+          this.needsRender = true;
           Sfx.win();
           if (this.combo > this.bestChain) this.bestChain = this.combo;
           const nb = this.score > this.best;
-          if (nb) this.best = this.score;
+          if (nb) {
+            this.best = this.score;
+            try { localStorage.setItem("carve.best", String(this.best)); } catch {}
+          }
           document.getElementById("r-score").textContent =
             this.score.toLocaleString();
           document.getElementById("r-time").textContent = this.time.toFixed(1);
@@ -1552,12 +1594,16 @@
               dt *= T.TIME_DILATION;
             this.acc += dt;
             const step = 1 / 120;
-            while (this.acc >= step) {
+            while (this.acc >= step && this.running) {
               this.sim(step);
               this.acc -= step;
             }
           }
-          this.render();
+          if (this.running && !this.paused) this.syncHUD();
+          if ((this.running && !this.paused) || this.needsRender) {
+            this.render();
+            this.needsRender = false;
+          }
           requestAnimationFrame((t) => this.frame(t));
         },
         sim(dt) {
@@ -1577,33 +1623,37 @@
           }
           this.popups = this.popups.filter((p) => p.life > 0);
           if (this.comboTimer > 0) this.comboTimer -= dt;
-          this.syncHUD();
         },
         syncHUD() {
-          const h = clamp(
-            ((Player.y - Level.startY) / (Level.goalY - Level.startY)) * 100,
-            0,
-            100,
-          );
-          document.getElementById("h-height").textContent = Math.floor(h);
-          document.getElementById("h-score").textContent =
-            this.score.toLocaleString();
-          document.getElementById("h-time").textContent = this.time.toFixed(1);
+          const text = (id, value) => {
+            if (this.lastHUD[id] !== value) {
+              this.ui[id].textContent = value;
+              this.lastHUD[id] = value;
+            }
+          };
+          text("h-height", String(Math.floor(clamp((Player.y - Level.startY) / (Level.goalY - Level.startY) * 100, 0, 100))));
+          text("h-score", this.score.toLocaleString());
+          text("h-time", this.time.toFixed(1));
+          const flow = this.flow.toFixed(1);
+          if (this.lastHUD.flow !== flow) {
+            this.ui.flowfill.style.width = flow + "%";
+            this.lastHUD.flow = flow;
+          }
           const tier = this.tier();
-          const ff = document.getElementById("flowfill");
-          ff.style.width = this.flow + "%";
-          const warm = tier / 5;
-          const c1 = mix("#38f0e0", "#ffcf4d", warm);
-          const c2 = mix("#8df7c8", "#ff4d8d", warm);
-          ff.style.background = `linear-gradient(90deg,${c1},${c2})`;
-          const ftEl = document.getElementById("flowtier");
-          ftEl.textContent = "FLOW " + tier;
-          ftEl.style.color = c1;
-          const cm = document.getElementById("combo");
-          if (this.combo >= 2 && this.comboTimer > 0) {
-            cm.style.opacity = 1;
-            document.getElementById("combo-n").textContent = "x" + this.combo;
-          } else cm.style.opacity = 0;
+          if (this.lastHUD.tier !== tier) {
+            const c1 = mix("#38f0e0", "#ffcf4d", tier / 5);
+            const c2 = mix("#8df7c8", "#ff4d8d", tier / 5);
+            this.ui.flowfill.style.background = `linear-gradient(90deg,${c1},${c2})`;
+            this.ui.flowtier.style.color = c1;
+            text("flowtier", "FLOW " + tier);
+            this.lastHUD.tier = tier;
+          }
+          const combo = this.combo >= 2 && this.comboTimer > 0;
+          if (this.lastHUD.combo !== combo) {
+            this.ui.combo.style.opacity = combo ? 1 : 0;
+            this.lastHUD.combo = combo;
+          }
+          if (combo) text("combo-n", "x" + this.combo);
         },
 
         /* ----------------------------- render ---------------------------------- */
@@ -1622,7 +1672,7 @@
           ctx.fillRect(0, 0, W, H);
           this.stars(ctx, W, H, warm);
 
-          const z = Cam.zoom * this.dpr;
+          const z = Cam.zoom * this.dpr * Math.min(1, (W / this.dpr) / 620);
           const sx = (Math.random() - 0.5) * Cam.shake * 22 * this.dpr,
             sy = (Math.random() - 0.5) * Cam.shake * 22 * this.dpr;
           ctx.save();
@@ -1631,7 +1681,7 @@
             0,
             0,
             -z,
-            W / 2 - z * Cam.x + sx,
+            W / 2 - z * (W / this.dpr < 620 ? Level.centerX : Cam.x) + sx,
             H / 2 + z * Cam.y + sy,
           );
 
@@ -1849,7 +1899,19 @@
           ctx.globalAlpha = 1;
         },
 
+        syncMute() {
+          const button = document.getElementById("mutebtn");
+          button.textContent = Sfx.muted ? "×♪" : "♪";
+          button.setAttribute("aria-pressed", String(Sfx.muted));
+          button.setAttribute("aria-label", Sfx.muted ? "Unmute sound" : "Mute sound");
+        },
         bindUI() {
+          document.getElementById("mutebtn").onclick = () => {
+            Sfx.muted = !Sfx.muted;
+            try { localStorage.setItem("carve.muted", String(Sfx.muted)); } catch {}
+            this.syncMute();
+            if (!Sfx.muted) Sfx.resume();
+          };
           document.getElementById("play").onclick = () => {
             Sfx.resume();
             this.start();
@@ -1861,34 +1923,43 @@
             this.togglePause();
         },
         bindTouch() {
-          if (matchMedia("(pointer:coarse)").matches) {
-            document.getElementById("touch").classList.remove("hidden");
-          }
+          const setTouch = (enabled) => {
+            Input.clear();
+            document.getElementById("touch").classList.toggle("hidden", !enabled);
+            document.body.classList.toggle("istouch", enabled);
+            const toggle = document.getElementById("touch-toggle");
+            toggle.setAttribute("aria-pressed", String(enabled));
+            toggle.textContent = "Touch controls: " + (enabled ? "on" : "off");
+          };
+          setTouch(matchMedia("(pointer:coarse)").matches);
+          document.getElementById("touch-toggle").onclick = () => setTouch(!document.body.classList.contains("istouch"));
           const hold = (id, on, off) => {
             const el = document.getElementById(id);
-            const s = (e) => {
-                e.preventDefault();
-                on();
-              },
-              end = (e) => {
-                e.preventDefault();
-                off && off();
-              };
-            el.addEventListener("touchstart", s, { passive: false });
-            el.addEventListener("touchend", end);
-            el.addEventListener("mousedown", s);
-            el.addEventListener("mouseup", end);
-            el.addEventListener("mouseleave", end);
+            const pointers = new Set();
+            el.addEventListener("pointerdown", (e) => {
+              e.preventDefault();
+              if (!this.running || this.paused) return;
+              el.setPointerCapture(e.pointerId);
+              pointers.add(e.pointerId);
+              on();
+            });
+            const end = (e) => {
+              pointers.delete(e.pointerId);
+              if (!pointers.size) off?.();
+            };
+            el.addEventListener("pointerup", end);
+            el.addEventListener("pointercancel", end);
+            el.addEventListener("lostpointercapture", end);
           };
           hold(
             "t-left",
-            () => (Input.keys["arrowleft"] = true),
-            () => (Input.keys["arrowleft"] = false),
+            () => (Input.touchKeys["arrowleft"] = true),
+            () => (Input.touchKeys["arrowleft"] = false),
           );
           hold(
             "t-right",
-            () => (Input.keys["arrowright"] = true),
-            () => (Input.keys["arrowright"] = false),
+            () => (Input.touchKeys["arrowright"] = true),
+            () => (Input.touchKeys["arrowright"] = false),
           );
           hold(
             "t-jump",

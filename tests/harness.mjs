@@ -32,11 +32,31 @@ function fakeCtx() {
   });
 }
 
-function fakeEl() {
+function eventTarget() {
+  const listeners = new Map();
   return {
-    classList: { add: noop, remove: noop, toggle: noop },
-    style: {}, addEventListener: noop,
-    set onclick(_v) {}, set textContent(_v) {}, set innerHTML(_v) {},
+    addEventListener(type, listener) {
+      if (!listeners.has(type)) listeners.set(type, []);
+      listeners.get(type).push(listener);
+    },
+    dispatch(type, detail = {}) {
+      const e = { preventDefault: noop, ...detail };
+      for (const fn of listeners.get(type) || []) fn(e);
+    },
+  };
+}
+function fakeEl() {
+  const classes = new Set();
+  return {
+    ...eventTarget(),
+    classList: {
+      add: name => classes.add(name), remove: name => classes.delete(name),
+      contains: name => classes.has(name),
+      toggle(name, force) { if (force ?? !classes.has(name)) classes.add(name); else classes.delete(name); },
+    },
+    style: {}, textContent: '', innerHTML: '',
+    setAttribute(name, value) { this[name] = value; },
+    setPointerCapture: noop,
     getContext: () => fakeCtx(), width: 800, height: 600,
   };
 }
@@ -44,8 +64,17 @@ function fakeEl() {
 /** Install minimal browser globals so the game's top-level Game.init() runs. */
 export function installDomStubs() {
   globalThis.window = globalThis;
-  globalThis.document = { getElementById: fakeEl, createElement: fakeEl };
-  globalThis.addEventListener = noop;
+  const elements = new Map();
+  globalThis.document = {
+    ...eventTarget(), body: fakeEl(), hidden: false,
+    getElementById(id) { if (!elements.has(id)) elements.set(id, fakeEl()); return elements.get(id); },
+    createElement: fakeEl,
+  };
+  const events = eventTarget();
+  globalThis.addEventListener = events.addEventListener;
+  globalThis.dispatchWindow = events.dispatch;
+  const storage = new Map();
+  globalThis.localStorage = { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) };
   globalThis.requestAnimationFrame = noop;
   globalThis.matchMedia = () => ({ matches: false });
   globalThis.innerWidth = 800;
@@ -68,9 +97,8 @@ export function loadGame() {
 
 /** Begin a fresh playthrough (build level, reset player, clear scores). */
 export function newRun(g) {
-  const { Level, Player, Game } = g;
-  Level.build(); Player.reset();
-  Object.assign(Game, { flow: 0, score: 0, combo: 0, bestChain: 0, perfects: 0, time: 0, popups: [], running: true, dpr: 1, W: 800, H: 600 });
+  g.Game.start();
+  Object.assign(g.Game, { dpr: 1, W: 800, H: 600 });
 }
 
 export const STEP = 1 / 120;

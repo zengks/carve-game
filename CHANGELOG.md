@@ -4,6 +4,20 @@ All notable changes to CARVE are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/);
 this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] — 2026-10-28
+
+- Preserve carve and surge momentum while steering; apply gradual excess-speed drag.
+- Apply the documented Flow boost to steering acceleration and maximum speed.
+- Penalize pole overholds instead of awarding them as normal releases.
+- Separate HUD and toolbar; prevent phone control overlap and fit the climbing lane.
+- Use pointer capture and cancellation, clear stale inputs, pause on focus loss,
+  stop simulation at victory, and reset transient state on restart.
+- Add a sound toggle, locally saved best scores, and a touch-control menu toggle.
+- Cache HUD nodes and update changed values once per rendered frame.
+- Add deterministic regression checks and require actual bot victory.
+- Update CI Actions, test Node 24/26, and replace unpinned `npx serve` with a local
+  Node server. Build only public game files and add Vercel monitoring scripts.
+
 ## [1.0.0] — 2025
 
 ### Added
