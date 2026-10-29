@@ -10,6 +10,7 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 - Apply the documented Flow boost to steering acceleration and maximum speed.
 - Penalize pole overholds instead of awarding them as normal releases.
 - Separate HUD and toolbar; prevent phone control overlap and fit the climbing lane.
+- Keep off-lane launches visible on phones and snap the camera to respawns.
 - Use pointer capture and cancellation, clear stale inputs, pause on focus loss,
   stop simulation at victory, and reset transient state on restart.
 - Add a sound toggle, locally saved best scores, and a touch-control menu toggle.

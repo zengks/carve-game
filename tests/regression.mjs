@@ -92,6 +92,19 @@ test('paused game renders once instead of redrawing continuously', () => {
   assert.equal(renders, 1); assert.equal(G.time, 0); G.render = render;
 });
 
+test('phone camera follows overshoots and snaps back to respawn', () => {
+  G.W = 390; G.H = 844; g.Cam.x = 950; g.Cam.zoom = 1; g.Cam.shake = 0;
+  P.x = 950; let transform;
+  G.ctx.setTransform = (...args) => { transform = args; };
+  G.render();
+  const screenX = (P.x + P.w / 2) * transform[0] + transform[4];
+  assert(screenX > 0 && screenX < 390, 'overshooting player remains on screen');
+  P.hit();
+  assert.equal(g.Cam.x, P.x + P.w / 2);
+  assert.equal(g.Cam.y, P.y + P.h / 2 + 150);
+  delete G.ctx.setTransform;
+});
+
 const server = createGameServer();
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 try {

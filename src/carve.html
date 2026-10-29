@@ -1033,6 +1033,8 @@
           );
           this.x = this.respawn.x;
           this.y = this.respawn.y;
+          Cam.x = this.x + this.w / 2;
+          Cam.y = this.y + this.h / 2 + 150;
           this.vx = 0;
           this.vy = 0;
           this.state = "AIR";
@@ -1673,6 +1675,11 @@
           this.stars(ctx, W, H, warm);
 
           const z = Cam.zoom * this.dpr * Math.min(1, (W / this.dpr) / 620);
+          // Keep both columns visible on phones, but follow an overshoot off-lane.
+          const offset = Cam.x - Level.centerX;
+          const viewX = W / this.dpr < 620
+            ? Level.centerX + sign(offset) * Math.max(0, Math.abs(offset) - 200)
+            : Cam.x;
           const sx = (Math.random() - 0.5) * Cam.shake * 22 * this.dpr,
             sy = (Math.random() - 0.5) * Cam.shake * 22 * this.dpr;
           ctx.save();
@@ -1681,7 +1688,7 @@
             0,
             0,
             -z,
-            W / 2 - z * (W / this.dpr < 620 ? Level.centerX : Cam.x) + sx,
+            W / 2 - z * viewX + sx,
             H / 2 + z * Cam.y + sy,
           );
 

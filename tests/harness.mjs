@@ -24,7 +24,8 @@ const noop = () => {};
  *  good enough to stand in for a CanvasRenderingContext2D. */
 function fakeCtx() {
   return new Proxy({}, {
-    get: (_t, p) => {
+    get: (target, p) => {
+      if (p in target) return target[p];
       if (p === 'canvas') return { width: 800, height: 600 };
       if (p === 'createLinearGradient' || p === 'createRadialGradient') return () => ({ addColorStop: noop });
       return typeof p === 'string' ? noop : undefined;
@@ -88,11 +89,11 @@ export function loadGame() {
   installDomStubs();
   let src = extractScript();
   src += '\nglobalThis.__T=T;globalThis.__Level=Level;globalThis.__Player=Player;'
-       + 'globalThis.__Game=Game;globalThis.__Input=Input;';
+       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;';
   // eslint-disable-next-line no-eval
   (0, eval)(src);
-  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input } = globalThis;
-  return { T, Level, Player, Game, Input };
+  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam } = globalThis;
+  return { T, Level, Player, Game, Input, Cam };
 }
 
 /** Begin a fresh playthrough (build level, reset player, clear scores). */

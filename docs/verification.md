@@ -29,7 +29,36 @@ The simulation remains at 120 Hz and active gameplay keeps its animations.
 
 ## Browser and deployment checks
 
-Results will be recorded after the final branch preview is verified. Web Analytics
-and included Speed Insights are available in the existing Hobby project; no paid
-Plus upgrade or custom-event feature is required. Source HTML/local serving omit
-monitoring; the deployment build injects the hosted scripts.
+- GitHub CI passed on Node 24 and Node 26 for `dc40058`.
+- Vercel created a READY preview for that commit; production stayed at `cb3df71`.
+- Preview start/pause worked without captured JavaScript warnings/errors.
+- At 390×844, measured touch control and timer/toolbar rectangles do not overlap.
+- Manual keyboard play with pauses for inspection reached 74%. This was not an
+  uninterrupted human speedrun or a manual summit completion. The separate bot
+  test confirms a full completion through the simulation.
+- Missed jumps, catch rails, surge, perfect releases, Flow changes, and checkpoint
+  recovery were exercised. Out-of-lane phone visibility and delayed respawn camera
+  recovery found during playtesting were corrected afterward.
+- Web Analytics is already enabled (dashboard offers "Disable Web Analytics").
+  Included Speed Insights is available on the Hobby project; no paid Plus upgrade
+  was enabled. Both deployed script endpoints return HTTP 200 with JavaScript.
+- The in-app browser blocks the Analytics script with `ERR_BLOCKED_BY_CLIENT`;
+  dashboard event ingestion / real-user vitals are therefore not confirmed.
+  A visit in a normal browser without that content blocker is still needed.
+- The legacy `/src/carve.html` route resolves to the game. `/package.json` returns
+  404, confirming repository files are excluded from published output.
+
+## Gameplay follow-ups from manual play
+
+1. Make checkpoint activation unmistakable (a saved message / flag). Brushing a
+   gold wall while chaining does not activate it; only a landing does.
+2. Make the rail undersides easier to read or evaluate one-way platforms. Several
+   apparently good launches hit a bridge overhead and lost their upward speed.
+3. Teach approach, charge, release, and steering in a short playable introduction.
+   The menu explains the controls, but timing feedback arrives during fast motion.
+4. Reward new height or distinct surfaces, not only repeat carves. Score and chain
+   kept rising while recovering around the same section.
+5. Add more varied climbing sections after testing the core feel with players;
+   the repeated left/right pattern dominates much of the level.
+
+These are design suggestions, not claims of validated player demand.
