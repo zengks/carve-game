@@ -98,7 +98,7 @@ released game's engine would defeat this experiment's isolation.
 
 - All existing classic regression/recovery checks, seeded 6,000-step stress test,
   original summit bot and cache-build checks pass.
-- 28 expedition checks cover generation/reconstruction, bounded object counts,
+- 29 expedition checks cover generation/reconstruction, bounded object counts,
   reward claims, purchases and shared cooldowns, all three skills, voluntary portal
   entry, both minigames, success/failure/retreat semantics, paused/reloaded trials,
   high-altitude save restore, duplicate payout prevention, local named records,
@@ -161,3 +161,23 @@ to about 10 km, retaining bounded geometry, reward sets and a small save snapsho
 Mobile app handoff remains entirely inactive; see [its release preparation](mobile-handoff.md).
 Physical-device app opening, real multi-touch ergonomics, retention and fun still
 need real-device/player validation.
+
+## Follow-up preview verification — 2026-10-30
+
+The remaining Node 26 jobs and both PR/push Node 24 jobs for `71cec22` all
+completed successfully. Desktop verification of that deployed preview exercised
+name entry, Space/Z/arrow jumping and a perfect carve, X feedback, C skill use,
+and reload recovery of 63 m / 78 points, bounty and the active cooldown.
+
+Small-phone inspection exposed a clipped Leave button in the secret-rift briefing
+at 320×568. Rift text/track now scroll separately from fixed action controls.
+Accept, Seal, glyphs and Leave/Retreat remain visible; Seal is shown only for an
+active, unpaused timing trial. A regression test covers briefing, playing, focus
+loss, result and memory-room control visibility. Full local build and 29 expedition
+checks pass.
+
+Browser checks of the repair cover 320×568 and 390×844 portrait plus 844×390
+landscape. Both trials were completed through on-screen buttons, and a resolved
+trial survived reload. These are browser viewport/pointer checks, not physical
+iOS/Android multi-touch, safe-area, audio or performance certification. The future
+mobile app handoff stays disabled and outside the deployment output.

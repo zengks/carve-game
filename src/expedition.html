@@ -504,6 +504,13 @@
       dialog { max-height:84dvh; }
       #record-rows { margin-top:18px; list-style:none; }
       #record-rows li { padding:12px 0; border-bottom:1px solid var(--line); font-size:13px; line-height:1.6; }
+      #rift-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
+      .rift-body { overflow-y:auto; min-height:0; padding:26px 26px 0; overscroll-behavior:contain; }
+      .rift-actions { display:flex; flex-wrap:wrap; gap:10px; flex-shrink:0; padding:18px 26px 22px; background:#101829; border-top:1px solid var(--line); }
+      #rift-dialog .rift-actions > .btn { flex:1 1 180px; min-width:0; margin:0; padding:12px; font-size:14px; }
+      .rift-actions #memory-trial { width:100%; }
+      .rift-actions .glyph { margin:0; }
+      @media(max-width:480px) { .rift-body { padding:18px 18px 0; } .rift-actions { padding:14px 18px 18px; } #rift-dialog h2 { font-size:22px; } }
       .rift-track { position:relative; height:44px; margin-top:24px; background:#080d20; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
       .gold-band { position:absolute; top:0; bottom:0; left:34%; width:32%; background:#ffcf4d55; border-inline:2px solid #ffcf4d; }
       #rift-cursor { position:absolute; width:6px; height:100%; top:0; background:#eef2ff; transform:translateX(-50%); box-shadow:0 0 16px #fff; }
@@ -647,11 +654,11 @@
       <ol id="record-rows"></ol><button class="btn" id="records-close">Back</button>
     </dialog>
     <dialog id="rift-dialog" aria-labelledby="rift-title">
-      <div class="eyebrow">a place between places</div><h2 id="rift-title">Secret rift</h2>
+      <div class="rift-body"><div class="eyebrow">a place between places</div><h2 id="rift-title">Secret rift</h2>
       <p id="rift-copy" role="status"></p>
-      <div id="pulse-trial" class="hidden"><div class="rift-track" aria-label="Stop the light in the central gold band"><span class="gold-band"></span><i id="rift-cursor"></i></div><button class="btn" id="rift-action">Seal the gate</button></div>
-      <div id="memory-trial" class="hidden"><button class="btn glyph" id="glyph-0" aria-label="Triangle">△</button><button class="btn glyph" id="glyph-1" aria-label="Circle">○</button><button class="btn glyph" id="glyph-2" aria-label="Square">□</button></div>
-      <button class="btn" id="rift-start">Accept the challenge</button><button class="btn ghost" id="rift-exit">Leave without entering</button>
+      <div id="pulse-trial" class="hidden"><div class="rift-track" aria-label="Stop the light in the central gold band"><span class="gold-band"></span><i id="rift-cursor"></i></div></div></div>
+      <div class="rift-actions"><div id="memory-trial" class="hidden"><button class="btn glyph" id="glyph-0" aria-label="Triangle">△</button><button class="btn glyph" id="glyph-1" aria-label="Circle">○</button><button class="btn glyph" id="glyph-2" aria-label="Square">□</button></div>
+      <button class="btn" id="rift-start">Accept the challenge</button><button class="btn hidden" id="rift-action">Seal the gate</button><button class="btn ghost" id="rift-exit">Leave without entering</button></div>
     </dialog>
     <dialog id="bank-dialog" aria-labelledby="bank-title"><h2 id="bank-title">Bank this expedition?</h2><p>Your highest altitude joins this browser's records. Bounty and unlocks are kept. The next expedition starts at the ground.</p><button class="btn" id="bank-cancel" autofocus>Keep climbing</button><button class="btn ghost" id="bank-confirm">Bank &amp; end run</button></dialog>
 
@@ -1866,6 +1873,7 @@
           document.getElementById('rift-copy').textContent = text;
           const start = document.getElementById('rift-start'); show('rift-start',r.phase === 'brief' || (r.phase === 'playing' && !r.ready)); start.textContent = r.phase === 'brief' ? 'Accept the challenge' : 'Continue trial';
           show('pulse-trial',r.type === 'pulse' && r.phase === 'playing' && r.ready);
+          show('rift-action',r.type === 'pulse' && r.phase === 'playing' && r.ready);
           show('memory-trial',r.type === 'memory' && r.phase === 'playing' && r.ready && r.elapsed >= 2.5);
           document.getElementById('rift-exit').textContent = r.phase === 'playing' ? 'Retreat · descend up to 46 m' : r.phase === 'result' ? 'Return to climb' : 'Leave without entering';
         },

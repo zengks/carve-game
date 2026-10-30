@@ -157,6 +157,17 @@ test('a wrong memory glyph resolves failure once and stays failed after reload',
  g=load({session,local});assert.equal(g.Journey.rift.win,false);assert(!g.Journey.rift.ready);g.Journey.leaveRift();assert(g.Game.paused);
 });
 
+test('fixed rift actions expose only controls for the current trial phase',()=>{
+ const g=load();start(g);g.Journey.update(STEP);g.Journey.enterPortal();
+ const hidden=id=>document.getElementById(id).classList.contains('hidden');
+ assert(!hidden('rift-start'));assert(hidden('rift-action'));assert(hidden('memory-trial'));
+ g.Journey.startTrial();assert(hidden('rift-start'));assert(!hidden('rift-action'));assert(!hidden('pulse-trial'));
+ dispatchWindow('blur');assert(!hidden('rift-start'));assert(hidden('rift-action'));
+ g.Journey.startTrial();g.Journey.resolve(false);assert(hidden('rift-action'));assert(hidden('rift-start'));
+ g.Journey.rift={id:'v:7',row:7,type:'memory',phase:'playing',elapsed:3,ready:true,progress:0,sequence:[0,1,2]};g.Journey.renderRift();
+ assert(!hidden('memory-trial'));assert(hidden('rift-action'));assert(hidden('pulse-trial'));
+});
+
 test('active trial freezes on focus loss without consuming game time or silently failing',()=>{
  const g=load();start(g);g.Journey.update(STEP);g.Journey.enterPortal();g.Journey.startTrial();g.Journey.tickTrial(.4);const elapsed=g.Journey.rift.elapsed;
  dispatchWindow('blur');g.Journey.tickTrial(10);assert.equal(g.Journey.rift.elapsed,elapsed);assert(!g.Journey.rift.ready);assert(g.Game.paused);
