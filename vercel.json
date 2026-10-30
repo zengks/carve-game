@@ -8,6 +8,21 @@
       "source": "/src/carve.html",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/classic",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/classic/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/classic/index.html",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "headers": [

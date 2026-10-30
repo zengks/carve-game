@@ -6,7 +6,7 @@ import { join, extname, basename } from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
 export const assetName = (name, data) => `${basename(name, extname(name))}.${createHash('sha256').update(data).digest('hex').slice(0, 16)}${extname(name)}`;
 
-export async function build(outputDir = join(root, 'dist'), { expedition = false, production = false } = {}) {
+export async function build(outputDir = join(root, 'dist'), { production = false } = {}) {
   // Start clean so removed assets and repository files cannot leak into a release.
   await rm(outputDir, { recursive: true, force: true });
   await mkdir(join(outputDir, 'assets/cache'), { recursive: true });
@@ -16,7 +16,7 @@ export async function build(outputDir = join(root, 'dist'), { expedition = false
     await writeFile(join(outputDir, path), data);
     return path;
   };
-  const entries = expedition ? [['src/expedition.html', 'index.html', 'expedition'], ['src/carve.html', 'classic/index.html', 'carve']] : [['src/carve.html', 'index.html', 'carve']];
+  const entries = [['src/expedition.html', 'index.html', 'expedition']];
   const branding = new Map();
   let manifest = await readFile(join(root, 'site.webmanifest'), 'utf8');
   for (const name of ['carve-logo.webp', 'favicon-96.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'social-card.png', 'favicon.ico']) {
@@ -40,7 +40,7 @@ export async function build(outputDir = join(root, 'dist'), { expedition = false
 `;
   for (const [entry, destination, assetPrefix] of entries) {
     let source = await readFile(join(root, entry), 'utf8');
-    if (expedition && production && assetPrefix === 'expedition') {
+    if (production) {
       // Preview pages stay unindexed; only the explicit production build is public.
       source = source.replace('Endless Expedition preview</title>', 'Endless Expedition</title>')
         .replace('content="noindex,nofollow"', 'content="index,follow"')
@@ -62,6 +62,6 @@ export async function build(outputDir = join(root, 'dist'), { expedition = false
   }
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  await build(undefined, {expedition:process.argv.includes('--expedition'),production:process.env.VERCEL_ENV === 'production'});
+  await build(undefined, {production:process.env.VERCEL_ENV === 'production'});
   console.log('Built static game with content-addressed assets in dist/');
 }

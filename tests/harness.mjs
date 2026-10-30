@@ -7,14 +7,14 @@
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-export const GAME_PATH = fileURLToPath(new URL('../src/carve.html', import.meta.url));
+export const GAME_PATH = fileURLToPath(new URL('../src/expedition.html', import.meta.url));
 
-/** Read src/carve.html and return the JS between the single <script> block. */
+/** Read src/expedition.html and return the JS between the single <script> block. */
 export function extractScript(gamePath = GAME_PATH) {
   const html = fs.readFileSync(gamePath, 'utf8');
   const open = html.indexOf('<script>');
   const close = html.indexOf('</script>', open);
-  if (open === -1 || close === -1) throw new Error('Could not locate <script> block in carve.html');
+  if (open === -1 || close === -1) throw new Error('Could not locate <script> block in expedition.html');
   return html.slice(open + '<script>'.length, close).replace(/^\s*"use strict";\s*/, '');
 }
 
