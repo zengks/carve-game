@@ -495,6 +495,19 @@
       #climber-name { width:150px; border:1px solid var(--line); border-radius:9px; padding:9px 10px; background:#111b30; color:var(--ink); font:inherit; user-select:text; }
       .menu-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px; }
       .menu-actions .btn { margin:0; }
+      .menu-options { display:flex; justify-content:center; gap:8px; width:100%; }
+      #mode-open, #touch-toggle { font-size:12px; padding:10px 12px; }
+      #run-mode-status { position:fixed; left:calc(12px + env(safe-area-inset-left)); bottom:calc(184px + env(safe-area-inset-bottom)); width:154px; padding:6px; z-index:16; border:1px solid #66543b; border-radius:8px; background:#101829ed; color:var(--gold); font-size:12px; text-align:center; pointer-events:none; }
+      #mode-dialog .btn { display:block; width:100%; margin-right:0; }
+      #mode-dialog p { font-size:13px; }
+      #challenge-result[open], #mode-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
+      #challenge-result h2 { font-size:28px; }
+      #challenge-result .result-stats { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0; font-size:12px; color:var(--dim); }
+      #challenge-result .result-stats strong { display:block; color:var(--ink); font-size:24px; margin-top:5px; }
+      .record-tabs { display:flex; gap:8px; }
+      .record-tabs .btn { flex:1; min-width:0; padding:10px; font-size:12px; }
+      .record-tabs [aria-pressed="true"] { border-color:var(--gold); color:var(--gold); }
+      @media(max-height:480px) { #run-mode-status { bottom:164px; } }
       .expedition-links { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
       .expedition-links .btn { margin:12px 0 0; padding:10px 14px; min-height:42px; font-size:12px; }
       #menu-progress { color:var(--gold); font-size:11px; line-height:1.6; margin-top:12px; }
@@ -507,7 +520,7 @@
       #rift-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
       .rift-body { overflow-y:auto; min-height:0; padding:26px 26px 0; overscroll-behavior:contain; }
       .rift-actions { display:flex; flex-wrap:wrap; gap:10px; flex-shrink:0; padding:18px 26px 22px; background:#101829; border-top:1px solid var(--line); }
-      #rift-dialog .rift-actions > .btn { flex:1 1 180px; min-width:0; margin:0; padding:12px; font-size:14px; }
+      .rift-actions > .btn { flex:1 1 180px; min-width:0; margin:0; padding:12px; font-size:14px; }
       .rift-actions #memory-trial { width:100%; }
       .rift-actions .glyph { margin:0; }
       @media(max-width:480px) { .rift-body { padding:18px 18px 0; } .rift-actions { padding:14px 18px 18px; } #rift-dialog h2 { font-size:22px; } }
@@ -585,7 +598,7 @@
         <div class="menu-actions">
           <label class="name-label">Climber name <input id="climber-name" maxlength="16" autocomplete="nickname" value="Climber" /></label>
           <button class="btn" id="play">Begin expedition ▸</button>
-          <button class="btn ghost" id="touch-toggle" aria-pressed="false">Touch controls: off</button>
+          <div class="menu-options"><button class="btn ghost" id="mode-open" aria-haspopup="dialog">Practice · ∞</button><button class="btn ghost" id="touch-toggle" aria-pressed="false" aria-label="Touch controls: off">Touch: off</button></div>
         </div>
         <div class="keys">
           <div>
@@ -605,10 +618,18 @@
         </div>
       </div>
     </div>
+    <dialog id="mode-dialog" aria-labelledby="mode-title">
+      <div class="rift-body"><h2 id="mode-title">Choose your climb</h2>
+      <p><strong>Practice:</strong> unlimited checkpoint recovery. Learn routes and keep climbing at your own pace.</p>
+      <p><strong>Challenge:</strong> start with 3 lives. A fall or spike costs 1 life; checkpoints set your return point. At zero lives the run ends and your highest altitude is recorded.</p>
+      <p>Skills and bounty unlocks are shared. Practice and Challenge records are separate. Rift misses only cost the advertised altitude, not a life. Your mode stays fixed during the run.</p></div>
+      <div class="rift-actions"><button class="btn" id="mode-practice" aria-pressed="true">Practice · ∞ lives</button><button class="btn" id="mode-challenge" aria-pressed="false">Challenge · 3 lives</button><button class="btn ghost" id="mode-close">Keep current mode</button></div>
+    </dialog>
     <dialog id="help-dialog" aria-labelledby="help-title">
       <h2 id="help-title">Expedition field guide</h2>
       <p>Move and jump toward a glowing edge. Hold CARVE to grip it, then release when the charge ring turns gold to launch higher. On a keyboard, use A/D or the arrows to steer, Space/W to jump, Z to carve, X for Flow Surge, and C for your equipped skill. This keeps your left hand together while your right hand uses the arrows. Prefer A/D? J (carve), K (surge) and L (skill) also work; Shift and Q remain available.</p>
       <p>With touch controls enabled, hold a direction with one thumb and use JUMP, CARVE and SURGE with the other. Hold CARVE before reaching a wall to catch it.</p>
+      <p>Choose Practice for unlimited recovery, or Challenge for 3 lives. Falling or hitting spikes costs one Challenge life; the third loss ends the run. Checkpoints do not refill lives. Rift misses only cost altitude. You can bank a run from Pause at any time.</p>
       <p>Clean releases build Flow and help you chain launches. Momentum carries between jumps; steer against your movement to brake.</p>
       <p>Gold beacons save your recovery point. Cyan bridges are one-way; gold chevrons mark springboards. Explore sideways to find richer shards and colored wind or lift lanes. Every 100 m and each contract earns bounty. Press C / L / Q or tap your skill to climb faster; unlock more in the Workshop. Purple rifts are optional: press E nearby to see their rules before entering. There is no roof. Pause and bank your run whenever you like. Records, bounty and unlocks stay on this browser.</p>
       <form method="dialog"><button class="btn">Got it</button></form>
@@ -634,6 +655,7 @@
       <button class="btn ghost" id="restart-confirm">Restart from the beginning</button>
     </dialog>
 
+    <div id="run-mode-status" role="status" class="hidden"></div>
     <div id="expedition-status" class="hidden"></div>
     <div id="contractline" class="hidden"></div>
     <button id="ability" class="btn hidden" aria-label="Use equipped expedition skill"></button>
@@ -650,7 +672,7 @@
     </dialog>
     <dialog id="records-dialog" aria-labelledby="records-title">
       <div class="eyebrow">personal climbing log</div><h2 id="records-title">Highest expeditions</h2>
-      <p>Top 10 on this browser. Includes skills and portal shortcuts. These are local, unverified records, not a global leaderboard.</p>
+      <p id="records-description">Top 10 per mode on this browser. Includes skills and portal shortcuts. These are local, unverified records, not a global leaderboard.</p><div class="record-tabs"><button class="btn ghost" id="records-practice" aria-pressed="true">Practice</button><button class="btn ghost" id="records-challenge" aria-pressed="false">Challenge</button></div>
       <ol id="record-rows"></ol><button class="btn" id="records-close">Back</button>
     </dialog>
     <dialog id="rift-dialog" aria-labelledby="rift-title">
@@ -662,6 +684,13 @@
     </dialog>
     <dialog id="bank-dialog" aria-labelledby="bank-title"><h2 id="bank-title">Bank this expedition?</h2><p>Your highest altitude joins this browser's records. Bounty and unlocks are kept. The next expedition starts at the ground.</p><button class="btn" id="bank-cancel" autofocus>Keep climbing</button><button class="btn ghost" id="bank-confirm">Bank &amp; end run</button></dialog>
 
+    <dialog id="challenge-result" aria-labelledby="challenge-result-title">
+      <div class="rift-body"><div class="eyebrow">challenge complete</div><h2 id="challenge-result-title">GAME OVER</h2>
+      <p id="challenge-result-copy"></p>
+      <div class="result-stats"><div>Highest climb<strong id="challenge-result-height"></strong></div><div>Score<strong id="challenge-result-score"></strong></div><div>Climb time<strong id="challenge-result-time"></strong></div><div>Rifts cleared<strong id="challenge-result-rifts"></strong></div></div>
+      <p id="challenge-result-wallet"></p></div>
+      <div class="rift-actions"><button class="btn" id="challenge-retry">Try challenge again</button><button class="btn ghost" id="challenge-menu" autofocus>Back to menu</button></div>
+    </dialog>
     <!-- win -->
     <div class="screen hidden" id="win">
       <div class="card">
@@ -1160,7 +1189,7 @@
           this.respawn = { x: b.x + b.w / 2 - this.w / 2, y: b.y + b.h + 1 };
         },
         hit(fall = false) {
-          if (this.stun > 0) return;
+          if (!Game.running || Game.paused || this.stun > 0) return;
           this.stun = 0.7;
           this.breakCombo();
           Game.flow = Math.max(0, Game.flow - 30);
@@ -1175,6 +1204,7 @@
             0.6,
             5,
           );
+          if (Journey.onHit(fall)) return;
           this.x = this.respawn.x;
           this.y = this.respawn.y;
           Level.ensure(this.y);
@@ -1186,6 +1216,7 @@
           this.state = "AIR";
           this.carve = null;
           this.pole = null;
+          if (Journey.mode === 'challenge') { RunSave.write(); Game.syncHUD(); }
         },
         breakCombo() {
           if (Game.combo > Game.bestChain) Game.bestChain = Game.combo;
@@ -1631,7 +1662,7 @@
       };
 
       const Profile = {
-        key:'carve.expedition.profile.v1', name:'Climber', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], best:0, storageAvailable:true,
+        key:'carve.expedition.profile.v1', name:'Climber', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], best:0, challengeBest:0, storageAvailable:true,
         load() {
           try {
             const d = JSON.parse(localStorage.getItem(this.key)); this.storageAvailable = true;
@@ -1641,31 +1672,50 @@
             this.unlocked = ['pulse', ...['wing','hook'].filter(id => d.unlocked?.includes(id))];
             this.equipped = this.unlocked.includes(d.equipped) ? d.equipped : 'pulse';
             this.best = Number.isFinite(d.best) && d.best >= 0 ? d.best : 0;
-            this.records = Array.isArray(d.records) ? d.records.filter(r => typeof r.id === 'string' && typeof r.name === 'string' && [r.height,r.score,r.time,r.portals].every(n => Number.isFinite(n) && n >= 0)).slice(0,10) : [];
+            this.challengeBest = Number.isFinite(d.challengeBest) && d.challengeBest >= 0 ? d.challengeBest : 0;
+            this.records = Array.isArray(d.records) ? d.records.filter(r => typeof r.id === 'string' && typeof r.name === 'string' && [r.height,r.score,r.time,r.portals].every(n => Number.isFinite(n) && n >= 0) && (r.mode === undefined || ['practice','challenge'].includes(r.mode))).map(r=>({...r,mode:r.mode || 'practice'})) : [];
+            this.trimRecords();
           } catch { this.storageAvailable = false; }
         },
         save() {
-          try { localStorage.setItem(this.key, JSON.stringify({version:1,name:this.name,coins:this.coins,unlocked:this.unlocked,equipped:this.equipped,best:this.best,records:this.records})); this.storageAvailable = true; return true; }
+          try { localStorage.setItem(this.key, JSON.stringify({version:1,name:this.name,coins:this.coins,unlocked:this.unlocked,equipped:this.equipped,best:this.best,challengeBest:this.challengeBest,records:this.records})); this.storageAvailable = true; return true; }
           catch { this.storageAvailable = false; return false; }
         },
         credit(n) { this.load(); this.coins = Math.min(1000000,this.coins + n); this.save(); },
-        record() {
+        bestFor(mode) { return mode === 'challenge' ? this.challengeBest : this.best; },
+        trimRecords() {
+          this.records.sort((a,b) => b.height - a.height || b.score - a.score || a.time - b.time);
+          this.records = ['practice','challenge'].flatMap(mode=>this.records.filter(r=>(r.mode || 'practice') === mode).slice(0,10));
+        },
+        record(outcome = 'active') {
           if (!Journey.id) return;
           this.load();
-          this.best = Math.max(this.best, Math.floor((Journey.peak - 64) / 10));
-          const record = {id:Journey.id, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
+          const bestKey = Journey.mode === 'challenge' ? 'challengeBest' : 'best';
+          this[bestKey] = Math.max(this[bestKey], Math.floor((Journey.peak - 64) / 10));
+          const record = {id:Journey.id, mode:Journey.mode, outcome, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
           this.records = this.records.filter(r => r.id !== record.id);
           if (record.height > 0) this.records.push(record);
-          this.records.sort((a,b) => b.height - a.height || b.score - a.score || a.time - b.time);
-          this.records = this.records.slice(0,10); this.save();
+          this.trimRecords(); this.save();
         },
       };
       const Journey = {
+        selectedMode:'practice', mode:'practice', lives:null, result:null,
         seed:1, id:'', name:'Climber', peak:64, shards:0, clean:0, wins:0, cooldown:0, wingTime:0,
         collected:new Set(), visited:new Set(), quests:[0,0,0], rift:null, nearest:null, lastUI:'',
         biomes:[['MOSS CATHEDRAL','#38f0e0'],['STORM ARCHIVE','#b8a4ff'],['GLASS ORCHARD','#8df7c8'],['EMBER FOUNDRY','#ffaf75']],
         skills:{pulse:{name:'Rocket Pulse',cost:0,cd:14,description:'A powerful upward burst. Ready every 14s.'},wing:{name:'Windwing',cost:25,cd:24,description:'Eight seconds of light gravity. Great for chaining.'},hook:{name:'Skyhook',cost:50,cd:18,description:'Zip to a safe ledge several floors above.'}},
+        chooseMode(mode) {
+          if (Game.running || !['practice','challenge'].includes(mode)) return false;
+          this.selectedMode = mode; this.renderMode(); return true;
+        },
+        renderMode() {
+          document.getElementById('mode-open').textContent = this.selectedMode === 'challenge' ? 'Challenge · 3 lives' : 'Practice · ∞';
+          for (const mode of ['practice','challenge']) document.getElementById('mode-' + mode).setAttribute('aria-pressed',String(this.selectedMode === mode));
+          this.menuStatus();
+        },
         begin() {
+          if (this.result) this.dismissResult();
+          this.mode = this.selectedMode; this.lives = this.mode === 'challenge' ? 3 : null;
           Profile.load();
           Profile.name = (document.getElementById('climber-name').value || Profile.name || 'Climber').trim().slice(0,16) || 'Climber';
           this.name = Profile.name; Profile.save();
@@ -1674,9 +1724,19 @@
           Object.assign(this,{peak:64,shards:0,clean:0,wins:0,cooldown:0,wingTime:0,quests:[0,0,0],rift:null,nearest:null,lastUI:''});
           this.collected = new Set(); this.visited = new Set();
         },
-        notify(text) { Game.notice = text; Game.noticeTime = 4; },
+        notify(text, urgent = false) { if (!urgent && Game.noticeTime > 0 && /^(FALL|SPIKES) ·/.test(Game.notice)) return; Game.notice = text; Game.noticeTime = 4; },
         init() {
           document.getElementById('climber-name').value = Profile.name;
+          document.getElementById('mode-close').onclick = () => document.getElementById('mode-dialog').close();
+          document.getElementById('mode-open').onclick = () => { if (!Game.running) document.getElementById('mode-dialog').showModal(); };
+          for (const mode of ['practice','challenge']) {
+            document.getElementById('mode-' + mode).onclick = () => { if (this.chooseMode(mode)) document.getElementById('mode-dialog').close(); };
+            document.getElementById('records-' + mode).onclick = () => this.renderRecords(mode);
+          }
+          document.getElementById('challenge-menu').onclick = () => this.dismissResult();
+          document.getElementById('challenge-retry').onclick = () => { this.dismissResult(); Game.start(); };
+          document.getElementById('challenge-result').addEventListener('cancel',e=>{e.preventDefault();this.dismissResult();});
+          this.renderMode();
           for (const id of ['workshop-open','workshop-pause']) document.getElementById(id).onclick = () => this.openWorkshop();
           document.getElementById('records-open').onclick = () => this.openRecords();
           document.getElementById('records-pause').onclick = () => this.openRecords();
@@ -1701,7 +1761,7 @@
           addEventListener('blur',suspend); document.addEventListener('visibilitychange',() => { if (document.hidden) suspend(); });
           this.menuStatus();
         },
-        menuStatus() { document.getElementById('menu-progress').textContent = `${Profile.coins} bounty · Personal best ${Profile.best} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}`; },
+        menuStatus() { document.getElementById('menu-progress').textContent = `${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}`; },
         buy(id) {
           const skill = this.skills[id]; if (!skill) return false;
           Profile.load();
@@ -1721,20 +1781,53 @@
         },
         openWorkshop() { Profile.load(); if (Game.running && !Game.paused) Game.togglePause(); this.renderShop(); document.getElementById('workshop-dialog').showModal(); },
         openRecords() {
-          Profile.record();
+          if (Game.running) Profile.record();
+          this.renderRecords(Game.running ? this.mode : this.selectedMode);
+          document.getElementById('records-dialog').showModal();
+        },
+        renderRecords(mode) {
+          if (!['practice','challenge'].includes(mode)) return;
+          document.getElementById('records-title').textContent = mode === 'challenge' ? 'Challenge expeditions' : 'Practice expeditions';
+          document.getElementById('records-description').textContent = `Top 10 ${mode} runs on this browser. Includes skills and portal shortcuts. Local, unverified records; not a global leaderboard.`;
+          for (const id of ['practice','challenge']) document.getElementById('records-' + id).setAttribute('aria-pressed',String(id === mode));
+          const records = Profile.records.filter(r=>(r.mode || 'practice') === mode);
           const rows = document.getElementById('record-rows'); rows.textContent = '';
-          for (const [i,r] of Profile.records.entries()) {
+          for (const [i,r] of records.entries()) {
             const row = document.createElement('li');
             row.textContent = `${i + 1}. ${r.name} — ${r.height} m · ${r.score} pts · ${r.portals} rift${r.portals === 1 ? '' : 's'} cleared`;
             rows.appendChild(row);
           }
-          if (!Profile.records.length) rows.textContent = 'Your first expedition starts the board. Climb, then bank your run.';
-          document.getElementById('records-dialog').showModal();
+          if (!records.length) rows.textContent = `No ${mode} records yet. Climb to set your first height.`;
         },
-        finish() {
-          Profile.record(); Game.running = false; Game.paused = false; this.rift = null; RunSave.clear(); Input.clear();
-          for (const id of ['paused','hud','flowwrap','coach','pausebtn','expedition-status','contractline','ability','portal-enter']) show(id,false);
+        onHit(fall) {
+          if (this.mode !== 'challenge') return false;
+          this.peak = Math.max(this.peak,Player.y);
+          this.lives = Math.max(0,this.lives - 1); Input.clear();
+          if (this.lives === 0) { this.finish('gameover'); return true; }
+          this.notify(`${fall ? 'FALL' : 'SPIKES'} · ${this.lives} ${this.lives === 1 ? 'life' : 'lives'} left · checkpoint recovery`,true);
+          return false;
+        },
+        finish(outcome = 'banked') {
+          if (!Game.running) return false;
+          this.peak = Math.max(this.peak,Player.y);
+          const result = this.mode === 'challenge' ? {id:this.id,name:this.name,mode:this.mode,lives:this.lives,touch:document.body.classList.contains('istouch'),outcome,height:Math.floor((this.peak - 64) / 10),score:Game.score,time:Game.time,portals:this.wins} : null;
+          Profile.record(outcome); Game.running = false; Game.paused = false; Game.acc = 0; Game.awaitingGrip = false; this.rift = null; RunSave.clear(); Input.clear();
+          for (const id of ['paused','hud','flowwrap','coach','pausebtn','run-mode-status','expedition-status','contractline','ability','portal-enter']) show(id,false);
           show('menu',true); Game.needsRender = true; this.menuStatus();
+          if (result) { this.result = result; RunSave.writeResult(result); this.renderResult(); }
+          return true;
+        },
+        renderResult() {
+          const r = this.result; if (!r) return;
+          document.getElementById('challenge-result-title').textContent = r.outcome === 'gameover' ? 'GAME OVER' : 'CHALLENGE BANKED';
+          document.getElementById('challenge-result-copy').textContent = r.outcome === 'gameover' ? 'All 3 lives used. Your highest climb has been recorded.' : `Run banked with ${r.lives} ${r.lives === 1 ? 'life' : 'lives'} left. Your highest climb has been recorded.`;
+          for (const [id,value] of Object.entries({height:r.height + ' m',score:r.score,time:r.time.toFixed(1) + ' s',rifts:r.portals})) document.getElementById('challenge-result-' + id).textContent = String(value);
+          document.getElementById('challenge-result-wallet').textContent = Profile.storageAvailable ? `${Profile.coins} bounty · Bounty and unlocks are kept. Practice and Challenge records are separate.` : 'Storage is unavailable; progress may be temporary.';
+          document.getElementById('challenge-result').showModal();
+        },
+        dismissResult() {
+          if (!this.result) return;
+          this.result = null; RunSave.clear(); document.getElementById('challenge-result').close();
         },
         floor() { return Math.max(0,Math.floor((this.peak - 150) / 230) - 30); },
         eligible(row) { return row >= this.floor(); },
@@ -1805,12 +1898,16 @@
         },
         syncHUD() {
           const biome = this.biomes[Math.floor(Math.max(0,Player.y - 150) / 2760) % 4];
-          const status = `${biome[0]} · ${Profile.coins} bounty${Profile.storageAvailable ? '' : ' (unsaved)'} · Best ${Math.max(Profile.best,Math.floor((this.peak - 64) / 10))} m`;
+          const status = `${biome[0]} · ${Profile.coins} bounty${Profile.storageAvailable ? '' : ' (unsaved)'} · Best ${Math.max(Profile.bestFor(this.mode),Math.floor((this.peak - 64) / 10))} m`;
           if (document.getElementById('expedition-status').textContent !== status) document.getElementById('expedition-status').textContent = status;
           const nearbyRift = Level.portals.find(p => this.eligible(p.row) && !this.visited.has(p.id) && Math.abs(p.y - Player.y) < 400);
           const compass = nearbyRift ? ` · Rift ${Math.abs(nearbyRift.x - Player.x) < 100 ? (nearbyRift.y > Player.y ? '↑' : '↓') : nearbyRift.x > Player.x ? '→' : '←'} ${Math.ceil(Math.hypot(nearbyRift.x - Player.x - 17,nearbyRift.y - Player.y - 23) / 10)} m` : '';
           const contract = `Shards ${this.shards % 6}/6 · Gold ${this.clean % 3}/3 · Height ${100 - Math.floor((this.peak - 64) / 10) % 100} m${compass}`;
           if (document.getElementById('contractline').textContent !== contract) document.getElementById('contractline').textContent = contract;
+          const modeBadge = document.getElementById('run-mode-status');
+          const modeText = this.mode === 'challenge' ? 'Challenge · ' + '♥'.repeat(this.lives) + '♡'.repeat(3 - this.lives) : 'Practice · ∞ lives';
+          if (modeBadge.textContent !== modeText) { modeBadge.textContent = modeText; modeBadge.setAttribute('aria-label',this.mode === 'challenge' ? `Challenge: ${this.lives} of 3 lives remaining` : 'Practice: unlimited lives'); }
+          show('run-mode-status',Game.running);
           const button = document.getElementById('ability');
           const label = `${this.skills[Profile.equipped].name} · ${this.cooldown > 0 ? Math.ceil(this.cooldown) + 's' : 'C / tap'}${this.wingTime > 0 ? ' · Float ' + Math.ceil(this.wingTime) + 's' : ''}`;
           if (button.textContent !== label) button.textContent = label;
@@ -1909,7 +2006,7 @@
         write() {
           if (!Game.running) return true;
           const pick = (o,fields) => Object.fromEntries(fields.map(k=>[k,o[k]]));
-          const d = {version:1,course:2,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
+          const d = {version:1,course:2,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
             state:Player.state,onGround:Player.onGround,respawn:{...Player.respawn},checkpoint:Player.checkpoint && {id:Player.checkpoint.id,x:Player.checkpoint.x,y:Player.checkpoint.y,kind:'check'},
             rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,
             carve:Player.carve && {type:Player.carve.type,charge:Player.carve.charge,block:Player.carve.block.id},
@@ -1918,11 +2015,22 @@
           Profile.record();
           try { sessionStorage.setItem(this.key,JSON.stringify(d)); return true; } catch { return false; }
         },
-        clear() { try { sessionStorage.setItem(this.key,'null'); } catch {} },
+        clear() { try { if (sessionStorage.removeItem) sessionStorage.removeItem(this.key); else sessionStorage.setItem(this.key,'null'); } catch {} },
+        writeResult(result) { try { sessionStorage.setItem(this.key,JSON.stringify({version:1,finished:result})); return true; } catch { return false; } },
+        readResult() {
+          try {
+            const raw = sessionStorage.getItem(this.key); if (!raw || raw.length > 4096) return null;
+            const d = JSON.parse(raw), r = d?.finished;
+            if (d.version !== 1 || !r || r.mode !== 'challenge' || typeof r.touch !== 'boolean' || !['banked','gameover'].includes(r.outcome) || typeof r.id !== 'string' || r.id.length > 80 || typeof r.name !== 'string' || r.name.length > 16 || ![r.height,r.score,r.time,r.portals].every(n=>Number.isFinite(n) && n >= 0 && n <= 1e12) || !Number.isInteger(r.lives) || r.lives < 0 || r.lives > 3 || (r.outcome === 'gameover' ? r.lives !== 0 : r.lives === 0)) return null;
+            return r;
+          } catch { return null; }
+        },
         read() {
           try {
             const raw = sessionStorage.getItem(this.key); if (!raw || raw.length > 100000) return null;
             const d = JSON.parse(raw), numeric = (o,fields) => o && fields.every(k=>Number.isFinite(o[k]) && typeof o[k] === 'number' && Math.abs(o[k]) <= 1e12);
+            if (d && d.mode === undefined && d.lives === undefined) { d.mode = 'practice'; d.lives = null; }
+            if (!d || !['practice','challenge'].includes(d.mode) || (d.mode === 'practice' ? d.lives !== null : !Number.isInteger(d.lives) || d.lives < 1 || d.lives > 3)) return null;
             const ids = a => Array.isArray(a) && a.length <= 800 && a.every(id=>typeof id === 'string' && /^[btrspv]:\d+:?\d*$/.test(id));
             if (!d || d.version !== 1 || d.course !== 2 || !Number.isSafeInteger(d.seed) || d.seed < 1 || d.seed > 2147483647 || typeof d.id !== 'string' || d.id.length > 80 || typeof d.name !== 'string' || d.name.length > 16 ||
                 !numeric(d.game,this.gameFields) || !numeric(d.player,this.playerFields) || !numeric(d.journey,this.journeyFields) || !numeric(d.respawn,['x','y']) ||
@@ -1940,8 +2048,10 @@
           } catch { return null; }
         },
         restore() {
+          const result = this.readResult();
+          if (result) { Journey.selectedMode = result.mode; Journey.mode = result.mode; Journey.lives = result.lives; Journey.result = result; Game.setTouch(result.touch); Journey.renderMode(); Journey.renderResult(); return true; }
           const d = this.read(); if (!d) return false;
-          Journey.seed = d.seed;
+          Journey.seed = d.seed; Journey.mode = d.mode; Journey.selectedMode = d.mode; Journey.lives = d.lives; Journey.renderMode();
           Game.start(false); Level.ensure(d.player.y);
           const carve = d.carve && Level.blocks.find(b=>b.id === d.carve.block && b.grip);
           const pole = d.pole && Level.poles.find(b=>b.id === d.pole.ref);
@@ -2029,7 +2139,7 @@
           this.H = this.cv.height = Math.floor(innerHeight * this.dpr);
         },
         start(save = true) {
-          if (save) { if (this.running) Profile.record(); Journey.begin(); }
+          if (save) { if (this.running) Profile.record('restarted'); Journey.begin(); }
           Level.build();
           Player.reset();
           Input.clear();
@@ -2142,6 +2252,7 @@
           if (this.lesson === 0 && (Input.axis() || Input.jumpBuf)) this.lesson = 1;
           if (this.lesson === 3 && this.rewarded.size >= 2) this.lesson = 4;
           Player.update(dt);
+          if (!this.running) return;
           Journey.update(dt);
           // flow drain
           let drain = T.FLOW_DECAY;
@@ -2492,7 +2603,8 @@
             document.body.classList.toggle("istouch", enabled);
             const toggle = document.getElementById("touch-toggle");
             toggle.setAttribute("aria-pressed", String(enabled));
-            toggle.textContent = "Touch controls: " + (enabled ? "on" : "off");
+            toggle.textContent = "Touch: " + (enabled ? "on" : "off");
+            toggle.setAttribute("aria-label", "Touch controls: " + (enabled ? "on" : "off"));
           };
           this.setTouch(matchMedia("(pointer:coarse)").matches);
           document.getElementById("touch-toggle").onclick = () => this.setTouch(!document.body.classList.contains("istouch"));
