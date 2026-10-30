@@ -48,6 +48,22 @@ secret rift, and **P / Esc** to pause. The original course retains its original 
 
 Touch controls appear automatically on coarse-pointer devices.
 
+### Practice and Challenge (branch preview)
+
+Choose a mode before beginning an expedition. **Practice** is the default and
+keeps unlimited checkpoint recovery. **Challenge** starts each new run with
+three lives: falling into the void or hitting spikes costs one life. Checkpoints
+set the recovery position without refilling lives. The third loss ends the run
+with a highest-climb summary; Retry starts a fresh three-life challenge.
+Banking from Pause ends either mode voluntarily. Rift misses retain their
+advertised height penalty and do not cost a life.
+
+Modes share bounty and skill unlocks, with separate local bests and top-ten logs.
+Reloading preserves the mode and remaining lives; a finished Challenge reloads
+its summary rather than resurrecting the run. Older saves and records count as
+Practice. This addition is being reviewed on `codex/three-life-challenge` and
+has not been released to production. The mobile download prompt remains disabled.
+
 ## Mechanics
 
 - **Carve** — hold to latch the nearest grippable face. Walls climb upward, rails
