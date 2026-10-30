@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { loadGame, newRun, STEP } from './harness.mjs';
 let passed = 0;
 function test(name, fn) { fn(); passed++; console.log(`PASS ${name}`); }
-const key = 'carve.expedition.run.v1';
+const key = loadGame().RunSave.key;
 
 test('reload restores an airborne run paused, including score, checkpoint and surface rewards', () => {
   const session = new Map(); let g = loadGame({session}); newRun(g);

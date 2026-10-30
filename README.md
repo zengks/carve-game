@@ -18,6 +18,20 @@ score. Miss the window and you slip.
 
 Single file, zero dependencies, plain Canvas 2D + Web Audio.
 
+## Current branch experiment
+
+`codex/ascent-variety-trial` adds a five-section authored opening, an optional
+reward spring, a visible manual rescue wall, resting landmarks and a camera
+that shows wide crossing targets on phones. It inherits the one-thumb preview;
+Practice, three-life Challenge, optional two-thumb input and keyboard remain.
+Relics and a shared backend are later work. This is a review preview; main and
+the live game are unchanged. See the [trial scope and next steps](docs/expedition.md#ascent-variety-implementation-trial--2026-10-30).
+
+The trial uses separate local profile/run keys and course revision 3, preserving
+the existing game's data. Its keyboard launch strength is tuned for the wider
+route. The fall boundary uses world coordinates rather than the camera. There
+is no timed deadline or claim that newcomers finish the opening in three minutes.
+
 ## Run
 
 Open the game directly — no build step:

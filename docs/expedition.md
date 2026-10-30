@@ -1,5 +1,153 @@
 # Endless Expedition
 
+## Combined gameplay roadmap — 2026-10-30
+
+This consolidates the latest mobile-chat planning turn (mobile documentation
+PR #27, main `93a6918`) with the web review that climbing feels repetitive despite
+the visuals, and the subsequent web proposal for a varied three-minute opening.
+The mobile roguelite/discovery section was already mirrored locally below; this
+roadmap preserves it and supplies a common order of work. Planning only: this
+update changes no game code, builds, installed devices, backend, deployment or
+implementation authorization. It does not merge the existing one-thumb preview.
+
+### Product direction and current evidence
+
+- One CARVE game across web, iOS/iPadOS and Android: endless Practice/unlimited
+  recovery and Challenge/three lives, one-thumb manual as the intended primary
+  mobile scheme, selectable two-thumb controls and desktop keyboard support.
+- The intended loop is **read a route → choose an approach → charge/launch →
+  recover deliberately if needed → reach a landmark → choose a bounded passive
+  relic at selected safe checkpoints → adapt the next route**. Preserve the
+  readable climb when testing a version without relics.
+- Combine the web proposal's different encounter types, route decisions,
+  section objectives, useful skill choices and tension/relief rhythm with the
+  mobile plan's visible height, discovery, manual rescues and small relic pool.
+  More columns, higher numbers and more reward menus are not acceptance criteria
+  for reducing repetition.
+- The reported repetition is player feedback, not a measured prevalence or a
+  retention result. A central route that can be repeated with nearly identical
+  actions is the current design concern. Scripted long climbs prove a route is
+  traversable, not interesting. Five launches without drag steering in the web
+  preview demonstrate accessibility of that route, not that all routes lack depth.
+- The web one-thumb prototype is on `codex/one-thumb-controls`, commit `6275d43`,
+  draft PR #9; it is separate from released web revision `e2f5146`. Its touch
+  layouts already use proportional one-thumb steering, stationary wall charge,
+  CARVE ground launch and safe cancellation. Keyboard wall riding, independent
+  jump/wall-jump actions, Flow-dependent steering, grip slow motion, timing,
+  catch rules and clocks still differ from the proposed shared native baseline.
+  The earlier mobile physics comparison described the older web behavior; do
+  not treat all of its web differences as still absent from this preview.
+- Native one-thumb/endless/relic work is still planned, not implemented or
+  validated by the older two-thumb First Ascent device tests. Preserve the
+  authored course, original record categories, installed observation builds,
+  both fresh Stage E profiles, earlier human saves and unfinished retention work.
+
+### Proposed sequence and review gates
+
+The following is the combined recommendation, not a grant to implement it. The
+technical Priority 1–3 sections below describe contracts; they do not require
+building a shared backend before evaluating gameplay variety.
+
+| Step | Deliverable after separate authorization | Review gate |
+| --- | --- | --- |
+| 0. Shared movement contract | Agree stationary charge, explicit ground/wall release, final aim capture, fresh catches, surface/chain/life rules and clock definitions; version fixtures across inputs | A main route works with good releases, stable handling, deliberate recovery and safe interruption; distinguish existing web prototype behavior from the proposed contract |
+| 1. Varied opening, no relic layer | One approximately three-minute authored sequence with distinct sections, an optional shortcut, one visible rescue opportunity, landmarks and broad resting ledges | Players can read targets, recognize the route choice and explain a miss/rescue; ordinary progress needs no perfect, skill unlock or lucky roll |
+| 2. Small relic comparison | The same climb with a six-relic passive pool, three choices per offer and at most three equipped; compare against Step 1 | Players understand effects, make different route/skill choices and choose to retry; offers do not obscure the climb or corrupt recovery |
+| 3. Endless section assembly | Seeded combinations of validated sections and recognizable regional landmarks, with controlled encounter cadence | Variety survives different seeds; required transitions remain reachable, risks visible, recovery bounded and rewards non-repeatable |
+| 4. Platform and data convergence | Qualify the chosen runtime and adapt mobile's existing identity/save foundation for common versioned results/progress | Bidirectional web/native sync, offline/retry/account isolation and legacy import consent pass before an independently authorized hosted release |
+
+Runtime evaluation and contract design can inform the early steps; replacing the
+live renderer is not a prerequisite for every design discussion. The mobile
+chat recommends a shared Godot gameplay implementation for web/native, conditional
+on a browser loading/performance/lifecycle evaluation. Keep Canvas plus matching
+fixtures as the fallback. This is a recommendation to evaluate, not an approved
+engine migration. One runtime also does not by itself establish exact replays
+or trustworthy competitive scores.
+
+### Proposed first three minutes
+
+These timings describe an intended pacing sketch, not a countdown, required
+completion time or claim about actual newcomer behavior. Replays should avoid
+repeating full explanations. First Ascent's final onboarding role remains a
+separate content/versioning decision; do not silently reclassify its old results.
+
+| Approximate stage | Climbing encounter | Player decision / payoff |
+| --- | --- | --- |
+| 0:00–0:30: establish rhythm | Broad launch ledge and three readable catches; no teaching spikes | Learn hold/drag/release and read the launch arrow; success comes from deliberate input |
+| 0:30–1:05: vary the line | An offset target followed by a short lateral crossing and safe ledge | Adjust direction rather than repeat an identical zig-zag; one clear local beacon provides a destination |
+| 1:05–1:40: choose a route | A forgiving checkpoint route beside an exposed optional shortcut with a visible landing and reward | Choose safety or a faster/richer line; the risk and benefit are visible before launch |
+| 1:40–2:15: recovery opportunity | A lower marked grip/shelf under the optional line, above the defined damage boundary | A deliberate fresh catch can rescue a miss without spending a life; ordinary checkpoint recovery remains available |
+| 2:15–3:00: relief and discovery | A controlled faster-climbing section into a broad landmark ledge, revealing the next region | Feel progress, inspect the route and choose a next target; selected safe ledges may host offers only in the relic variant |
+
+Each section should have one readable purpose, such as reaching a beacon,
+crossing to another column or collecting an optional marked cluster. Avoid
+multiple simultaneous HUD chores. Existing skills should solve visible optional
+problems: Windwing can help a lateral crossing, Skyhook can bypass a hard stretch,
+and Surge/Pulse can support an exposed ascent. Their availability must not gate
+the main route. Retain opt-in secret games, but additional minigames are not the
+first remedy for repetitive climbing.
+
+Moving anchors/platforms, timed gates, crumbling surfaces and new barrier
+interactions from the web brainstorming remain later encounter candidates.
+Introduce them separately after the basic route-choice/recovery trial, with
+explicit contact/charge behavior and reachability checks. They are not all
+required for the first opening, and the planning approval does not implement them.
+
+### Relic and recovery constraints carried forward
+
+Keep the mobile plan's six passive relic candidates, three-choice offers and
+three-slot limit, with no duplicate/stacked effects, new currency or purchases.
+Collector, Flow Keeper and Resonance are example candidates; all six identities,
+effect bounds and offer cadence still need design review. Do not present the
+examples or the remaining three open slots as final balance. Decide skip/cap
+behavior before implementation; the simplest first trial would stop new offers
+at the cap instead of introducing a replacement inventory system.
+
+Preserve gravity, steering, catch tolerance and charge windows across relic
+builds. In particular, resolve Flow-dependent steering before a Flow Keeper
+trial: slower Flow decay must not silently change base handling under the new
+contract. Let relics change collection, scoring/Flow spending or explicit skill
+opportunities. Keep perfect-release bonuses optional, with a good-release route
+always available. Safe offers pause simulation and the active climb clock,
+consume UI contacts and require explicit resume with fresh input. Seeded offer
+IDs and saved choices prevent rerolling/duplicate rewards after refresh or retry.
+
+Recovery is a fresh player-controlled catch, not automatic target selection.
+Use one world-space incident boundary and bounded rescue area, independent of
+camera/screen size. Current web fall detection includes a camera-relative term;
+that must be reconciled before calling the proposed boundary implemented or
+equivalent across platforms. One qualifying fall/spike incident costs exactly
+one Challenge life. A successful rescue before the boundary costs none;
+checkpoints and relic offers never heal. Keep Practice unlimited, explicit bank,
+terminal-run non-resurrection and safe saves. Relics persist during an active
+run's recovery and reset only on a new run after banking/Game Over.
+
+### Observation and decisions still open
+
+Compare matching content without/with relic offers so section design and
+upgrades can be assessed separately. Record where repetition/frustration begins,
+whether players notice a shortcut and rescue target, what route they choose and
+why, whether an effect changes their next decision, and voluntary retries.
+Observe unprompted actions as well as comments; technical completion, positive
+graphics feedback or one player's opinion does not establish retention or fun.
+
+Before implementation, settle the common timing bands, launch strengths,
+Flow/steering relationship, catch/rail/pole rules, chain semantics and clocks.
+The mobile recommendation of its timing bands, fixed strength per quality band,
+no grip slow motion and an initially evaluated 120 Hz simulation remains a
+candidate contract, not an approved replacement for current web tuning. Settle
+recovery boundaries/checkpoint spacing, concrete section geometry/objectives,
+skill/rift placement, relic definitions/cadence and comparable result categories.
+Shared results must preserve version IDs, control-layout history and relic
+IDs/effect versions; do not relabel old course scores or sum legacy wallets.
+Active-run handoff, hosted accounts, store release and mobile download/deep-link
+activation remain separate later work.
+
+Exact next planning action: agree the minimal shared movement/life/clock
+contract, then draw and review the opening's main route, one shortcut and its
+recovery shelf against that contract. After those decisions, seek authorization
+for an isolated baseline trial before the relic variant.
+
 ## Cross-platform convergence plan — 2026-10-30
 
 Status: planning only. The user wants one CARVE game and shared player data on
@@ -159,6 +307,124 @@ No installed native build or live configuration changes are part of this work.
   390×844 layouts, and reload/handedness settings. Browser simulation is not
   evidence of physical one-thumb comfort or native iOS/Android behavior.
 
+### Approved gameplay direction: roguelite choices and vertical discovery
+
+Approved for planning on 2026-10-30. Combine CARVE's manual climbing with a light
+roguelite layer and the height, discovery and recovery ideas discussed from the
+original 2023 Only Up! This updates the shared product direction only; it does
+not authorize gameplay implementation, native builds/device tests, backend or
+schema changes, deployments, new USB sessions or resumed retention work. Existing
+separately authorized platform tasks retain their own scope. One-thumb manual
+remains the planned default, two-thumb remains optional, and desktop keyboard
+support remains. Numerical tuning and common physics/runtime selection are still
+unsettled; the earlier Godot-for-web recommendation needs a separate evaluation.
+
+The intended loop is: readable climb -> optional risky shortcut -> possible
+manual recovery -> safe landmark/checkpoint -> relic choice -> next region.
+Endless ascent remains the main target. First Ascent is the recommended onboarding
+role, with its existing authored course/results/builds retained until a separately
+approved migration settles that role. This is not a new summit or a return of the
+retired web classic.
+
+#### Height, route discovery and recovery
+
+- Make height tangible with background parallax, distant ground and recognizable
+  landmarks below. Tease the next region with a readable silhouette or local
+  destination; an endless world can have memorable milestones without a final roof.
+- Arrange tested authored climbing sections through seeded generation. Preserve a
+  main route reachable with good releases and no required relic/skill/perfect.
+  Mix exposed sequences with broad resting ledges so players can read the next
+  target before charging. New geometry must be checked against the agreed physics;
+  reusing the existing web dimensions does not establish native reachability.
+- Offer optional shortcuts with visible landing targets, benefits and risks. No
+  hidden mandatory trick or surprise penalty is needed for the first trial.
+- Place occasional lower shelves/marked walls within the allowed recovery area.
+  A missed launch can be rescued by a deliberate fresh catch before a defined
+  damaging-fall boundary. The camera must show the recovery opportunity without
+  hiding the next target or putting it behind the control area. No automatic
+  targeting, snap-to-save or synthetic catch is added.
+- Keep Practice unlimited and Challenge at three lives. A successful rescue
+  before the damage boundary costs no life. A qualifying fall or spike incident
+  costs exactly one life and returns to the checkpoint if lives remain; the third
+  loss ends the run. Checkpoints and relic offers do not heal or reset lives.
+  Define a world-space incident boundary, bounded recovery space and immunity/reset handling
+  so collision axes or prolonged falling cannot charge multiple lives. The exact
+  boundary and checkpoint spacing remain design decisions; camera framing and
+  screen size must not change what counts as a damaging fall.
+- Retain saves, explicit pause/resume and interruption safety. No no-save rule,
+  mandatory long fall animation, extra camera-control gesture or manual slow-motion
+  button is proposed. The first trial should communicate risk through geometry
+  and presentation while keeping movement reliable.
+
+#### Small roguelite trial
+
+After the common movement baseline is settled and separately authorized, first
+evaluate height presentation, one recovery opportunity and one optional shortcut.
+Then compare a small relic trial with an otherwise matching climb:
+
+- Plan a pool of six passive relics, three choices per offer and at most three
+  equipped per run, without duplicates or stacking in this first trial. The full
+  pool, effect bounds, offer cadence and descriptions still need design review.
+- Offer at selected safe checkpoints, with simulation/charge/active climb clock
+  paused. Require a released gameplay contact before opening; selection/skip and
+  resume touches are consumed. Resume explicitly with fresh input. No swipes,
+  double taps, additional held buttons or auto-selected reward are introduced.
+- Candidate effects: Collector increases shard collection reach; Flow Keeper
+  reduces passive Flow decay; Resonance lets a perfect release reduce the equipped
+  skill cooldown by a bounded amount. These are examples, not implemented effects
+  or finalized balance. The remaining three candidates are still open.
+- Keep gravity, steering response, catch tolerance and charge windows consistent
+  across relic builds in this trial. Offer strategic variety through collection,
+  Flow and skill interactions. Do not require a lucky roll to complete the main
+  route or change the three-life rule.
+- Relics persist through ordinary recovery while that run remains active. They
+  reset on a new run after banking/Game Over; pause, reload, scheme changes and
+  account operations do not reroll offers or reset a damaged run. Keep account
+  scopes isolated; changing accounts must never attach that run to a new owner.
+- Give each offer a stable identity and fixed choices derived from a versioned
+  relic pool and seed, independent of cosmetic randomness. Persist the selection
+  once; reconnect/reload/revisited checkpoints cannot duplicate or reroll it.
+  The future result contract records relic IDs/effect versions and control-layout
+  history alongside course/generator/physics/scoring versions and mode. This is a
+  planning requirement, not an implemented save-schema extension or active-run
+  cross-device handoff.
+- Add no new currency or purchases. Retain existing earned bounty/unlocks under
+  their versioned rules. Prefer future cosmetics and unlocked options over
+  permanent base-stat increases initially; the exact persistent reward policy
+  remains open. Do not automatically convert or sum legacy browser/account totals.
+
+Both control schemes use the same agreed physics, relic pool/effects, life rules
+and rewards. Skill/Surge actions remain explicit between CARVE holds and portals
+remain opt-in. Preserve fixed gesture neutral, visible aim/charge, release aim
+captured before steering clears, and safe cancellation/scheme switching. Equivalent
+rules are not evidence of equal difficulty; legacy and assisted/build categories
+must not be silently pooled into a trusted leaderboard.
+
+#### Future evidence and source boundaries
+
+Use isolated synthetic profiles/builds for reachability, manual rescue versus
+fall classification, one-life damage, safe offer/skip/resume, seeded offer
+reconstruction, no duplicate rewards, saved relics after restart, terminal-run
+non-resurrection, account switching and both control schemes/handedness layouts.
+Keep the two reserved Stage E profiles, installed builds, earlier human saves and
+unfinished retention branch/scripts untouched. Existing Stage E observations stay
+about their actual First Ascent builds, not these future features.
+
+Later player observation should record whether players see the shortcut risk,
+notice recovery targets, understand their relic choice, change route/strategy and
+voluntarily retry; also record frustration and perceived unfairness. Compare
+matching content with/without relic offers so height/recovery and relic effects
+can be assessed separately. No test here has established retention, enjoyment,
+competitive fairness, physical one-thumb comfort or commercial demand.
+
+Research informs the design; it does not demonstrate CARVE outcomes. References:
+[Spelunky's developer description](https://spelunkyworld.com/whatis.html),
+[Hades developer FAQ](https://www.supergiantgames.com/blog/hades-faq/), and the
+contemporary [Only Up! gameplay review](https://www.gamereactor.eu/only-up-1284463/)
+and [mechanics/critique](https://www.dexerto.com/reviews/only-up-review-2193932/).
+The Only Up! assessment used documented gameplay/reviews, not hands-on play in
+this task. Borrow the design lessons with original CARVE content and presentation.
+
 ### Priority 2: reuse mobile's data foundation on the web
 
 - Carry over local play without an account; optional email-code sign-in selects
@@ -203,9 +469,10 @@ or reset the reserved Stage E observation profiles for these checks. Review a
 web branch preview before authorizing production integration; mobile store and
 download/deep-link activation remain separate release gates.
 
-Next planning action: reconcile the two existing save/result contracts and the
-two gameplay rulesets into a small parity matrix with agreed version IDs. No
-implementation, runtime merge or live data connection has begun under this plan.
+Next planning action follows the combined roadmap above: agree a minimal
+movement/life/clock contract and opening route, while reconciling save/result
+version IDs for later parity. No new gameplay implementation, runtime merge or
+live data connection is authorized by this planning consolidation.
 
 Developed on `codex/endless-expedition`, based on main `137c184`. The user
 approved merge and production release on 2026-10-30 after preview verification.
@@ -394,3 +661,90 @@ landscape. Both trials were completed through on-screen buttons, and a resolved
 trial survived reload. These are browser viewport/pointer checks, not physical
 iOS/Android multi-touch, safe-area, audio or performance certification. The future
 mobile app handoff stays disabled and outside the deployment output.
+
+## Ascent variety implementation trial — 2026-10-30
+
+The user subsequently authorized a new branch to try the combined plan.
+`codex/ascent-variety-trial` starts from `6275d43` on the unmerged one-thumb
+branch (PR #9). This authorization covers the web baseline experiment and its
+preview only. It does not authorize a production merge, engine migration,
+relic system, shared backend, native implementation or store handoff activation.
+The earlier planning-only statements still apply to those remaining stages.
+
+### First playable slice
+
+Rows 0–29 form five authored sections before the existing endless generator:
+Launch Garden, Wind Gap, The Fork, Second Chance and Observatory. Each has one
+section hint, a broad resting ledge and a named landmark. The final landmark is
+around 700 m; the proposed three-minute pace remains a hypothesis, not a measured
+new-player completion time. There is no countdown or terminal roof.
+
+Wind Gap moves the two main columns to x=20/640. Deliberate steering reaches the
+opposite target with good releases; an identical neutral touch release falls
+short. A central rail at its checkpoint provides a viable recovery departure.
+The keyboard wall-lift base is 760 for this trial (previously 560); touch remains
+840/420. Keyboard wall riding, slow motion and other existing input differences
+remain. These are trial values, not an agreed cross-platform physics contract.
+
+The Fork has an optional violet spring at x=700, row 13, with an eight-bounty
+shard. Landing launches upward/left toward a higher main wall, with a release
+and fresh catch required after departure. The row-16 wall is offset to leave a
+clear trajectory. The ordinary route requires neither the shortcut nor a skill.
+Second Chance has a marked lower grip at row 20. A deliberate descending manual
+catch can save a miss without losing a life or awarding extra bounty. Rescue
+count is descriptive, not a repeatable reward. Poles are absent from rows 6–29
+to prevent an unhelpful repeated pendulum catch; later procedural poles remain.
+
+The phone camera shows a wider lane for Wind Gap and The Fork, keeping both
+crossing walls and the shortcut pad visible. Landmark labels and distant
+silhouettes give location/height cues. The HUD shows one section destination or,
+while falling, remaining distance to the fall boundary. Existing opt-in rifts
+and all three skills remain available; no new minigames or relic offers are added.
+
+### Recovery and data boundaries
+
+Life loss now uses `max(startY - 200, checkpointY - 600, fallAnchor - 1000)` in
+world units, independent of camera position and viewport size. `fallAnchor` is
+the highest y since the latest actual respawn or intentional warp. Those events
+reset the anchor, preserving the historical peak. Challenge still loses exactly
+one life per qualifying fall/spike incident; Practice remains unlimited.
+
+The isolated profile key is `carve.variety.profile.v1`, active/terminal run key
+`carve.variety.run.v1`, and course revision is 3. Saves include anchor and rescue
+count; records include `course: variety-v1` plus control-layout history. Existing
+released and one-thumb preview wallets, runs and records are not imported or
+overwritten. No cloud synchronization is claimed. Preview host changes still
+have separate browser origins. Mobile app download/deep-link prompts stay disabled.
+
+### Next review steps
+
+1. Play the baseline on the branch preview, including both routes and deliberate
+   misses. Ask where repetition or confusion begins, whether the shortcut and
+   rescue target are noticed, and whether the player voluntarily retries.
+2. Tune section geometry, readability and pacing from those observations. Verify
+   physical iOS/Android comfort, lifecycle, safe areas, audio and performance;
+   browser viewport and pointer tests do not establish physical-device behavior.
+3. Define six bounded passive relics, three-choice offers and a three-slot cap.
+   Compare the same route without/with relic offers only after separate approval.
+4. Assemble validated sections into seeded endless sequences, then evaluate the
+   shared runtime and versioned web/native progress contract. Hosted accounts,
+   score trust, consented imports and store handoff are separate later milestones.
+
+### Trial verification
+
+Full `npm run build` passes on local Node 26. The 17 new checks cover authored
+section reconstruction/bounds, a steered good-release crossing versus a neutral
+miss, actual spring landing and upper-wall catch, eight-bounty deduplication,
+manual rescue versus one-life loss, camera-independent boundaries, intentional
+warp recovery, HUD cues, isolated/versioned saves and fresh input after springs.
+Keyboard good-release input traverses all five sections and reaches 1,000 m
+without a perfect or skill, retaining three lives. Existing pointer-only good
+and perfect routes also reach 1,000 m with all three lives. The keyboard endurance
+route continues to roughly 10 km with bounded geometry/save size; both outer
+routes pass the existing eight-seed checks. These are simulated results.
+
+Manual browser testing reached 192 m during the one-thumb crossing review and
+confirmed paused reload recovery. It exposed the offscreen target and overlapping
+landmark label, both corrected. This is not a completed manual five-section run
+or a physical-device test. The baseline is ready for branch review and further
+human playtesting, not established fun/retention evidence.
