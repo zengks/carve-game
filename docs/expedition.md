@@ -1,5 +1,212 @@
 # Endless Expedition
 
+## Cross-platform convergence plan — 2026-10-30
+
+Status: planning only. The user wants one CARVE game and shared player data on
+web, iOS/iPadOS and Android. This direction supersedes treating `carve-game` and
+`carve-mobile` as unrelated products. It does not authorize implementing the
+convergence, connecting the live web game to a backend, provisioning hosted
+services, deploying mobile builds, changing phone profiles or merging runtime
+code now. Keep the mobile download prompt and app handoff disabled until the
+native releases and verified store links are ready.
+
+Subsequent scope update: the user authorized a new web branch to implement
+one-thumb controls, retaining the two-thumb option. Only that control prototype
+is now being implemented on `codex/one-thumb-controls`; the wider cross-platform
+runtime/data convergence remains planning-only. No production merge or native
+implementation is authorized by this branch task.
+
+The two development chats should remain separate by platform, with one shared
+product/rules/data contract and mirrored planning notes. This section is the web
+coordination record; the mobile chat should record the same direction in its
+existing TASKS.md/decisions without overwriting its current work. Update both
+records when a shared decision changes; chat history is not an automatic sync.
+
+### Current differences and work to retain
+
+| Area | Web, verified in this chat | Mobile, reviewed from its chat and repository |
+| --- | --- | --- |
+| Game | Released six-column endless ascent; Practice/unlimited recovery and Challenge/three lives; shared bounty/skills, separate mode bests; two rift games | Godot First Ascent, short tutorial/course, independent two-thumb controls, checkpoint/replay/next-target UI; this is a different course/ruleset today |
+| Persistence | Browser-local profile and per-tab active recovery; no account/cloud connection | Local-first guest play, account-isolated durable files/queues, optional email-code accounts, local Supabase save/result sync |
+| Import and identity | Display name is not an authenticated identity; browser records are unverified | Explicit reviewed guest-to-account copy, Keep separate default, immutable run IDs, duplicate/conflict protection, native credential storage and account deletion |
+| Evidence | Web production at `e2f5146`, including removal of the old summit game; browser viewport checks do not establish physical mobile support | Local native device and emulator/simulator evidence with documented limits; no hosted production sync or store release; fresh Stage E observation profiles must be preserved |
+
+Mobile PR #24 (`995480f`) contains the completed explicit-import work. A later
+local retention/audit cleanup task is unfinished on `codex/local-retention-cleanup`;
+its partial checkpoint and untracked files are not a completed integration.
+Existing mobile evidence is historical and scoped to its documented builds; do
+not claim it validates the web game or future unified gameplay.
+
+### Priority 1: agree the shared contract before porting
+
+- Target the same endless game and Practice/Challenge rules on all platforms:
+  generation/seed, physics/timing, damage/lives/checkpoints, scoring, bounty,
+  skills/cooldowns, both rifts and their outcomes. Keep controls and presentation
+  appropriate to keyboard, phone and tablet. Reuse mobile's touch ownership,
+  cancellation, interruption and fresh-press safety design where applicable.
+- Treat mobile First Ascent as a candidate onboarding course, not a second
+  unrelated game or automatic resurrection of the retired web classic. Decide
+  its final role before replacing any authored content; preserve existing results
+  under their original course/rules/tutorial versions and reserved phone builds.
+- Choose one canonical ruleset and deterministic test fixtures. Compare the
+  current Canvas and Godot simulations before choosing shared runtime code versus
+  a versioned specification with implementations that pass the same fixtures.
+  Do not assume GDScript and browser JavaScript can be merged directly.
+  Known differences to resolve include web's climbing wall hold and separate
+  jump versus native's stationary grip charge and CARVE ground launch. Decide
+  the intended feel before equating scores or replacing either control model.
+- Define versioned profile, tutorial flags, immutable completed-run events,
+  per-mode/category bests, inventory/unlocks and currency transactions. Results
+  must identify course/rules/tutorial version, mode, completion outcome and
+  continuous/resumed category. Height and completion time are different metrics;
+  incompatible old courses or assisted rules must not share rankings blindly.
+
+### Approved control direction: one-thumb manual, with two-thumb option
+
+User decision, 2026-10-30: prioritize one-thumb manual control while retaining
+two-thumb controls as a selectable option. Portrait remains the primary mobile
+orientation; landscape support does not replace this decision. This is a design
+approval initially. The subsequent branch task authorizes the web implementation
+described below, without implementing the separate native version or releasing
+to production.
+
+One-thumb input combines steering and CARVE in one reachable lower-screen area:
+
+| State/action | Planned behavior |
+| --- | --- |
+| Press while grounded | Begin ground charge; release deliberately to launch |
+| Press while airborne | Prepare a catch; holding in empty air does not accumulate charge |
+| Reach an eligible wall while holding | Catch and begin the agreed wall-charge behavior |
+| Drag horizontally during the same contact | Manual proportional steering in flight, or launch-direction adjustment while charging |
+| Release a ground/wall charge | Launch at its current timing quality |
+| Release in free flight | Cancel catch preparation and steering input; retain momentum, with no extra launch |
+| Next catch | Requires a fresh press after the previous launch |
+
+The starting touch fixes that gesture's neutral point. Use a small dead zone and
+bounded steering; lifting the thumb stops steering acceleration, not momentum.
+Support left- and right-hand layouts. Display charge quality and the intended
+launch direction clearly; neutral uses a visible authored default. Exact reach,
+dead zone, sensitivity and timing values remain to be tested, not assumed.
+This is manual control: no automatic next-wall selection, hidden target seeking
+or automatic launch at charge expiry. Resolve the existing web/native wall-hold
+and ground-launch differences in the common rules contract before implementation.
+
+Keep two-thumb input as an option: independent left steering and right CARVE,
+retaining touch ownership and fresh-input safety. It should map to the same
+gameplay actions and agreed physics as one-thumb input, without different reward
+or life rules. Do not delete the existing two-thumb implementation. Keyboard
+controls remain supported on desktop.
+
+Offer an understandable control choice before a run and retain the preference
+locally for the device; do not force every device signed into an account to use
+the same handedness/layout. A mid-run control change must pause, consume the
+menu gesture, clear contacts/charge and require fresh input after explicit
+resume. Record the scheme/rules version as metadata for later comparison; do
+not promise equivalent difficulty or competitive fairness without evidence.
+
+For the first trial, avoid swipe/double-tap command combinations. Plan separate
+reachable skill/Surge buttons between launches, explicit portal entry and an
+accessible Pause action. UI touches must not become CARVE presses or synthetic
+launch releases. Final skill/Surge placement and whether both fit comfortably
+remain design questions; this decision does not remove either game mechanic.
+Cancellation, focus loss, resize, pause and recovery must clear stale contacts
+and follow the agreed interruption rules without an unintended launch.
+
+Future acceptance checks: deliberate ground launch; three catches; manual
+column changes; weak/good/perfect/expired releases; steering dead zone and
+momentum; skill/portal use; checkpoint and Challenge-life recovery; cancelled or
+extra touches; mode switching; reload/background/resume. Check both handedness
+layouts and both control schemes on web and native, including physical phones
+and tablets before claiming comfort or compatibility. Use isolated synthetic
+profiles and builds; preserve reserved Stage E phones/profiles and earlier saves.
+No installed native build or live configuration changes are part of this work.
+
+#### Web prototype on `codex/one-thumb-controls`
+
+- Controls dialog available from Menu and Pause. First use on a coarse-pointer
+  device selects One thumb; desktop defaults to Keyboard. One thumb, Two thumbs,
+  Keyboard and left/right handedness are device-local preferences. Existing
+  active saves retain their layout through reload; terminal Challenge summaries
+  retain it even if preference storage fails.
+- One owned pad contact combines CARVE and proportional steering. Horizontal
+  displacement has a 10 CSS-pixel dead zone and reaches full steering after a
+  further 65 pixels. The neutral origin never drifts. Additional contacts cannot
+  steal ownership. Leaving the pad retains capture; normal release ends it.
+- Both touch layouts use explicit ground-charge/release and stationary manual
+  wall charging. Touch wall launches use base lift 840 plus charge × quality ×
+  420, compensating for the removed automatic wall climb. Good releases can
+  clear the ordinary route. Keyboard controls retain the existing wall-riding
+  behavior; full native/keyboard physics convergence is not claimed by this
+  prototype. This is a material control/rules difference requiring review.
+- Launch arrows and the character charge ring show direction/timing; the pad
+  also reports steering and charge. Extra skill/Surge taps are accepted between
+  holds. Portals and pause remain explicit. One-thumb camera framing reserves
+  space above the lower controls, with mirrored actions for left-handed use.
+- Cancelling a CARVE gesture pauses without a launch. Resize/focus loss also
+  pause. Manual grip charge resets on interruption while retaining the grip;
+  resuming needs a fresh hold. Falls clear held touch input in both Practice and
+  Challenge. Layout changes leave the game paused for explicit Resume.
+- Legacy saves remain readable. Ground charge/contact ownership are transient;
+  active manual grips recover safely without a synthetic release. Records add
+  selected control-layout history and a `manual-touch-v1` or `web-v2` rules tag.
+  Existing mode bests remain local and unverified; tags do not prove fair
+  competitive comparability. No backend or native save contract is changed.
+- `tests/one-thumb.mjs` covers 21 checks, including ownership, steering, ground
+  and wall releases, expiry, cancellation, scheme changes, interruption/reload,
+  preference-storage failure, action gating, camera clearance and pointer-only
+  Challenge climbs beyond 1,000 m with good and perfect releases and all lives.
+  Local UI checks include a three-release chain reaching 73 m, 320×568 and
+  390×844 layouts, and reload/handedness settings. Browser simulation is not
+  evidence of physical one-thumb comfort or native iOS/Android behavior.
+
+### Priority 2: reuse mobile's data foundation on the web
+
+- Carry over local play without an account; optional email-code sign-in selects
+  the same authenticated player across platforms. A nickname alone must not
+  grant access to another player's saves. Keep guest/account scopes isolated.
+- Review and adapt the existing mobile Supabase API/schema rather than building
+  an independent web database. Extend it for endless modes, bounty and skills
+  only after the common contract is agreed. Never expose server credentials.
+  Hosting/region/mail/budget/privacy decisions and live integration need separate
+  authorization; no production service is being provisioned by this plan.
+- Sync completed results, tutorial progress, comparable bests and supported
+  profile/unlocks across devices. Preserve offline play and durable pending
+  uploads. Deduplicate by stable event/run IDs, reject conflicting contents,
+  merge progress transactionally and derive bests; avoid whole-profile or
+  device-clock last-write-wins overwrites.
+- Use unique reward/purchase transactions and a server-confirmed currency ledger
+  to prevent duplicate credits or double spending across devices. Define how
+  provisional offline earnings and purchases reconcile before exposing a shared
+  wallet. Existing browser totals must not simply be added on each sign-in.
+- Offer an explicit review before importing legacy browser or mobile guest data;
+  retain source copies and active runs. Preserve provenance: unverified client
+  records do not become trusted competitive results because they were uploaded.
+- Reuse account-switch isolation, failed-request retry, visible sync status,
+  sign-out, deletion/recovery and retention concepts. Browser session storage
+  needs a separately reviewed browser strategy; native Keychain/Keystore
+  implementations are not a web session implementation.
+- First sync milestone keeps active expeditions local to their current device,
+  matching mobile's present contract. Full cross-device continuation of an
+  unfinished climb needs a later versioned checkpoint and ownership/lease design,
+  including remaining lives, seed, rewards, cooldowns and conflicts. Do not
+  promise active-run handoff before that work and its tests exist.
+
+### Priority 3: demonstrate parity and cross-platform synchronization
+
+Use disposable synthetic profiles and isolated builds first. Verify web → native
+and native → web results/progress, same-account identity, separate Practice and
+Challenge bests, offline/restart/retry, duplicate/conflicting events, concurrent
+currency updates, account switching/deletion and legacy import consent. Add
+shared gameplay fixtures for charge/release, movement, life loss, rifts and
+rewards. Then qualify actual iOS/Android hardware and tablet behavior; never use
+or reset the reserved Stage E observation profiles for these checks. Review a
+web branch preview before authorizing production integration; mobile store and
+download/deep-link activation remain separate release gates.
+
+Next planning action: reconcile the two existing save/result contracts and the
+two gameplay rulesets into a small parity matrix with agreed version IDs. No
+implementation, runtime merge or live data connection has begun under this plan.
+
 Developed on `codex/endless-expedition`, based on main `137c184`. The user
 approved merge and production release on 2026-10-30 after preview verification.
 Expedition is the only published game, served at `/`. The retired `/classic/`

@@ -45,7 +45,13 @@ secret rift, and **P / Esc** to pause.
 | Surge (spend Flow)| `X` or `K`                     |
 | Pause             | `P` / `Esc`             |
 
-Touch controls appear automatically on coarse-pointer devices.
+Touch controls appear automatically on coarse-pointer devices. On the
+`codex/one-thumb-controls` preview branch, **Controls** offers One thumb, Two
+thumbs or Keyboard, plus a left/right-hand layout. One thumb combines hold to
+catch/charge, drag to steer and release to launch; ground holds charge a jump.
+Both touch layouts use stationary wall charging and require a fresh press after
+launch/slip. Keyboard wall riding remains available. Controls can be changed
+from Pause without restarting the run. The live game is unchanged pending review.
 
 ### Practice and Challenge
 

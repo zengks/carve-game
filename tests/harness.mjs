@@ -83,7 +83,7 @@ export function installDomStubs(options = {}) {
   const session = options.session || new Map();
   globalThis.sessionStorage = { getItem: key => session.get(key) ?? null, setItem: (key, value) => session.set(key, value) };
   globalThis.requestAnimationFrame = noop;
-  globalThis.matchMedia = () => ({ matches: false });
+  globalThis.matchMedia = () => ({ matches: !!options.coarse });
   globalThis.innerWidth = 800;
   globalThis.innerHeight = 600;
   globalThis.devicePixelRatio = 1;
