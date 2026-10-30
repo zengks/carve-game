@@ -1,6 +1,7 @@
-# Three-life Challenge preview
+# Three-life Challenge
 
-Branch: `codex/three-life-challenge`. Production remains on `bc0dfba`.
+Developed on `codex/three-life-challenge`; production release approved on
+2026-10-30 after preview verification and passing Node 24/26 CI.
 This work does not alter the original `/classic/` game or enable mobile app links.
 
 ## Rules and presentation
