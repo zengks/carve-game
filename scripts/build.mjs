@@ -44,7 +44,7 @@ export async function build(outputDir = join(root, 'dist'), { expedition = false
       // Preview pages stay unindexed; only the explicit production build is public.
       source = source.replace('Endless Expedition preview</title>', 'Endless Expedition</title>')
         .replace('content="noindex,nofollow"', 'content="index,follow"')
-        .replace('EXPERIMENTAL · ENDLESS EXPEDITION', 'ENDLESS EXPEDITION');
+        .replace(/experimental · endless expedition/gi, 'endless expedition');
     }
     for (const [name, {stablePath, path}] of branding) source = source.replaceAll(`../assets/branding/${name}`, path).replaceAll(`"${stablePath}"`, `"${path}"`);
     const css = source.match(/<style>([\s\S]*?)<\/style>/);
