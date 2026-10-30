@@ -13,7 +13,12 @@ const telemetry = `
     <script defer src="/_vercel/speed-insights/script.js"></script>
 `;
 await writeFile(new URL('../dist/index.html', import.meta.url), source.replace('</head>', `${telemetry}</head>`));
-for (const file of ['robots.txt', 'sitemap.xml', 'googlefd0692e33131ffd2.html']) {
+for (const file of ['robots.txt', 'sitemap.xml', 'googlefd0692e33131ffd2.html', 'site.webmanifest']) {
   await copyFile(new URL(`../${file}`, import.meta.url), new URL(`../dist/${file}`, import.meta.url));
 }
+await mkdir(new URL('../dist/assets/branding/', import.meta.url), { recursive: true });
+for (const file of ['carve-logo.webp', 'favicon-96.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'social-card.png']) {
+  await copyFile(new URL(`../assets/branding/${file}`, import.meta.url), new URL(`../dist/assets/branding/${file}`, import.meta.url));
+}
+await copyFile(new URL('../assets/branding/favicon.ico', import.meta.url), new URL('../dist/favicon.ico', import.meta.url));
 console.log('Built static game in dist/');

@@ -216,6 +216,15 @@ try {
   assert.match(await (await fetch(base)).text(), /CARVE — flow climber/);
   assert.equal((await fetch(`${base}/package.json`)).status, 404);
   assert.equal((await fetch(base, { method: 'POST' })).status, 405);
+  const manifest = await (await fetch(`${base}/site.webmanifest`)).json();
+  for (const icon of manifest.icons) {
+    const response = await fetch(base + icon.src);
+    assert.equal(response.status, 200); assert.equal(response.headers.get('content-type'), 'image/png');
+  }
+  const favicon = await fetch(`${base}/favicon.ico`);
+  assert.equal(favicon.status, 200);
+  assert.deepEqual([...new Uint8Array(await favicon.arrayBuffer()).slice(0, 4)], [0, 0, 1, 0]);
+  assert.equal((await fetch(`${base}/assets/branding/carve-grip-selected.png`)).status, 404, 'master stays outside public output');
   passed++; console.log('PASS local root serves game and excludes repository files');
 } finally { await new Promise(resolve => server.close(resolve)); }
 console.log(`${passed} regression tests passed`);

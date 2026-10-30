@@ -10,6 +10,14 @@
     <meta name="description" content="A momentum-based vertical climber where you latch onto surfaces, charge, and release at the perfect instant to fling yourself higher. Free browser game — no download, no install." />
     <meta name="keywords" content="browser game, html5 game, platformer, climber, canvas game, free game, skill game, flow" />
     <link rel="canonical" href="https://carve-game.vercel.app/" />
+    <meta name="theme-color" content="#080d20" />
+    <meta name="application-name" content="CARVE" />
+    <meta name="msvalidate.01" content="48B9CA8DF853DFF4C7E753A51BC981D5" />
+    <meta name="apple-mobile-web-app-title" content="CARVE" />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48 64x64" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/branding/favicon-96.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/branding/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -17,9 +25,15 @@
     <meta property="og:title" content="CARVE — flow climber" />
     <meta property="og:description" content="Latch onto surfaces, charge, and release at the perfect instant to fling yourself higher. Chain perfect carves to build Flow and speed up the world." />
     <meta property="og:site_name" content="CARVE" />
+    <meta property="og:image" content="https://carve-game.vercel.app/assets/branding/social-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="CARVE: gold climber launching between cyan and mint walls" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://carve-game.vercel.app/assets/branding/social-card.png" />
+    <meta name="twitter:image:alt" content="CARVE: gold climber launching between cyan and mint walls" />
     <meta name="twitter:title" content="CARVE — flow climber" />
     <meta name="twitter:description" content="Latch onto surfaces, charge, and release at the perfect instant to fling yourself higher. Free browser game." />
     <style>
@@ -199,6 +213,17 @@
         color: var(--cyan);
         text-transform: uppercase;
         margin-bottom: 14px;
+      }
+      .brand-logo {
+        display: block;
+        width: clamp(76px, 12vh, 116px);
+        height: auto;
+        margin: 0 auto 18px;
+        border-radius: 18px;
+      }
+      #paused .brand-logo, #win .brand-logo { width: 64px; margin-bottom: 16px; }
+      @media (max-height: 600px) {
+        #menu .brand-logo { width: 64px; margin-bottom: 12px; }
       }
       .title {
         font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
@@ -472,6 +497,7 @@
     <!-- start -->
     <div class="screen" id="menu">
       <div class="card">
+        <img class="brand-logo" src="../assets/branding/carve-logo.webp" width="320" height="320" alt="CARVE emblem: a gold climber launching between two walls" decoding="async" />
         <div class="eyebrow">a flow climber</div>
         <h1 class="title">CARVE</h1>
         <p class="tag">
@@ -506,6 +532,7 @@
     <!-- pause -->
     <div class="screen hidden" id="paused">
       <div class="card">
+        <img class="brand-logo" src="../assets/branding/carve-logo.webp" width="320" height="320" alt="" decoding="async" />
         <div class="eyebrow">paused</div>
         <h1 class="title" style="font-size: clamp(46px, 10vw, 92px)">HOLD</h1>
         <p class="tag">Time to read the next line.</p>
@@ -517,6 +544,7 @@
     <!-- win -->
     <div class="screen hidden" id="win">
       <div class="card">
+        <img class="brand-logo" src="../assets/branding/carve-logo.webp" width="320" height="320" alt="" decoding="async" />
         <div class="eyebrow">summit reached</div>
         <h1 class="title" style="font-size: clamp(48px, 12vw, 110px)">CLEAR</h1>
         <div class="results">
