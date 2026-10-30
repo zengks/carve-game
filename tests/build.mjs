@@ -37,7 +37,11 @@ try {
   const production=await readFile(join(output,'production/index.html'),'utf8');
   assert(preview.includes('Endless Expedition preview</title>'));assert(preview.includes('content="noindex,nofollow"'));
   assert(production.includes('Endless Expedition</title>'));assert(production.includes('content="index,follow"'));
-  assert(!production.includes('EXPERIMENTAL ·'));assert(!production.includes('mobile-handoff'));
+  const modeLabel = html => html.match(/<div class="eyebrow">([^<]*endless expedition)<\/div>/i)?.[1].trim();
+  assert.equal(modeLabel(preview), 'experimental · endless expedition');
+  assert.equal(modeLabel(production), 'endless expedition', 'production displays the released mode label');
+  assert(!/experimental/i.test(production), 'production has no Experimental label in any casing');
+  assert(!production.includes('mobile-handoff'));
   const gameAsset=html=>html.match(/src="(\/assets\/cache\/expedition\.[a-f\d]+\.js)"/)[1];
   assert.equal(gameAsset(preview),gameAsset(production),'release metadata does not change gameplay');
   assert.equal(await readFile(join(output,'production/classic/index.html'),'utf8'),html,'production preserves the original course');
