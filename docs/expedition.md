@@ -73,7 +73,8 @@ Expedition profile/wallet/records use `carve.expedition.profile.v1`; the active 
 uses per-tab `carve.expedition.run.v1`. Classic records and active saves use their
 original keys and are never imported or overwritten. Checkpoints, reward IDs,
 seed, cooldowns, buffs and trial phase survive refresh. Blocked/cleared storage
-cannot guarantee persistence. Sequential updates from separate tabs reread the
+cannot guarantee persistence. A course revision invalidates an incompatible active
+preview run; the player chooses to begin again and the profile/records remain. Sequential updates from separate tabs reread the
 profile before crediting, spending or recording; this is not a transactional
 server economy.
 
@@ -97,7 +98,7 @@ released game's engine would defeat this experiment's isolation.
 
 - All existing classic regression/recovery checks, seeded 6,000-step stress test,
   original summit bot and cache-build checks pass.
-- 22 expedition checks cover generation/reconstruction, bounded object counts,
+- 23 expedition checks cover generation/reconstruction, bounded object counts,
   reward claims, purchases and shared cooldowns, all three skills, voluntary portal
   entry, both minigames, success/failure/retreat semantics, paused/reloaded trials,
   high-altitude save restore, duplicate payout prevention, local named records,
@@ -113,6 +114,9 @@ released game's engine would defeat this experiment's isolation.
   vault result. Menu buttons fit at 320×568, 390×844 and 844×390. At 390×844 the
   touch controls, skill button, rift prompt, coaching and HUD did not overlap.
   A landscape status/Flow overlap and phone prompt obscuring the player were fixed.
+- The outer-route pitch was constrained after a random layout caused a CI bot
+  failure. A sweep of 80 seeds on both outer routes then passed all 160 runs;
+  eight fixed seeds per side now include those former failure cases in CI.
 - Physical iOS/Android multi-touch, long sessions and player fun/retention have not
   been validated. More mechanics are not evidence that the game is commercially
   successful or that every optional route feels equally good.

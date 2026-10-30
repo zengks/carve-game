@@ -1028,7 +1028,9 @@
             const cols = [main, r % 2, 4 + r % 2];
             for (const c of cols) {
               const spine = c === main;
-              const offset = spine ? 0 : Math.floor(this.random(r,c) * 45) - 20;
+              // Keep each region's route rhythm consistent; random offsets may not
+              // turn consecutive gaps into an accidental difficulty spike.
+              const offset = spine || r < 4 ? 0 : Math.floor(this.random(Math.floor(r / 12),c < 2 ? 12 : 13) * 15) - 7;
               const kind = r % 5 === 4 ? 'check' : 'rock';
               const b = add(`b:${r}:${c}`, this.columns[c], y + offset, 150, 160, kind, {row:r, column:c, spine, biome});
               this.tokens.push({id:`t:${r}:${c}`, row:r, x:b.x + (c % 2 ? -30 : 180), y:b.y + 65, value:spine ? 2 : 4});
@@ -1887,7 +1889,7 @@
         write() {
           if (!Game.running) return true;
           const pick = (o,fields) => Object.fromEntries(fields.map(k=>[k,o[k]]));
-          const d = {version:1,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
+          const d = {version:1,course:2,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
             state:Player.state,onGround:Player.onGround,respawn:{...Player.respawn},checkpoint:Player.checkpoint && {id:Player.checkpoint.id,x:Player.checkpoint.x,y:Player.checkpoint.y,kind:'check'},
             rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,
             carve:Player.carve && {type:Player.carve.type,charge:Player.carve.charge,block:Player.carve.block.id},
@@ -1902,7 +1904,7 @@
             const raw = sessionStorage.getItem(this.key); if (!raw || raw.length > 100000) return null;
             const d = JSON.parse(raw), numeric = (o,fields) => o && fields.every(k=>Number.isFinite(o[k]) && typeof o[k] === 'number' && Math.abs(o[k]) <= 1e12);
             const ids = a => Array.isArray(a) && a.length <= 800 && a.every(id=>typeof id === 'string' && /^[btrspv]:\d+:?\d*$/.test(id));
-            if (!d || d.version !== 1 || !Number.isSafeInteger(d.seed) || d.seed < 1 || d.seed > 2147483647 || typeof d.id !== 'string' || d.id.length > 80 || typeof d.name !== 'string' || d.name.length > 16 ||
+            if (!d || d.version !== 1 || d.course !== 2 || !Number.isSafeInteger(d.seed) || d.seed < 1 || d.seed > 2147483647 || typeof d.id !== 'string' || d.id.length > 80 || typeof d.name !== 'string' || d.name.length > 16 ||
                 !numeric(d.game,this.gameFields) || !numeric(d.player,this.playerFields) || !numeric(d.journey,this.journeyFields) || !numeric(d.respawn,['x','y']) ||
                 !['AIR','GROUND','CARVE','POLE'].includes(d.state) || typeof d.touch !== 'boolean' || typeof d.onGround !== 'boolean' ||
                 !ids(d.rewarded) || !ids(d.collected) || !ids(d.visited) || !Array.isArray(d.quests) || d.quests.length !== 3 || !d.quests.every(n=>Number.isSafeInteger(n) && n >= 0) ||

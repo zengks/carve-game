@@ -135,6 +135,12 @@ test('separate expedition tabs preserve each others wallet, unlocks and records 
  b.Journey.peak=1000;b.RunSave.write();const c=load({local});assert.equal(c.Profile.coins,9);assert.equal(c.Profile.records.length,2);
 });
 
+test('incompatible preview courses do not restore mismatched geometry or erase the profile',()=>{
+ const session=new Map(),local=new Map();let g=load({session,local});start(g);g.Profile.credit(30);g.Journey.peak=3000;g.RunSave.write();
+ const d=JSON.parse(session.get('carve.expedition.run.v1'));d.course=1;session.set('carve.expedition.run.v1',JSON.stringify(d));g=load({session,local});
+ assert(!g.Game.running);assert.equal(g.Profile.coins,30);assert.equal(g.Profile.best,293);
+});
+
 test('malformed expedition storage and unavailable storage never crash boot or play',()=>{
  const g=load({session:new Map([['carve.expedition.run.v1','{"version":1}']]),local:new Map([['carve.expedition.profile.v1','bad']])});assert(!g.Game.running);
  globalThis.localStorage={getItem(){throw Error('blocked');},setItem(){throw Error('blocked');}};globalThis.sessionStorage={getItem(){throw Error('blocked');},setItem(){throw Error('blocked');}};
@@ -160,15 +166,18 @@ test('malformed expedition storage and unavailable storage never crash boot or p
 
 // Both outer route pairs are also reachable using the same public inputs.
 for (const side of ['left','right']) {
- const g=load(),{Game:G,Player:P,Input:I,Level:L,T}=g;start(g);let peak=64;
- for(let i=0;i<120*180&&peak<9000;i++){
-  const r=L.blocks.filter(b=>b.column!==undefined&&(side==='left'?b.column<2:b.column>3)).sort((a,b)=>a.y-b.y);
-  const target=P.carve?r.find(b=>b.y>P.carve.block.y+5):r.find(b=>b.y+b.h>P.y+20);
-  const x=target?target.x+75:P.x+17,ax=x>P.x+27?1:x<P.x+7?-1:0;
-  I.keys=ax>0?{arrowright:true}:ax<0?{arrowleft:true}:{};I._tCarve=!(P.carve?.charge>=T.ZONE_PERFECT_LO||P.pole?.charge>=T.ZONE_PERFECT_LO);
-  if(P.onGround)I.jumpBuf=T.JUMP_BUFFER;G.sim(STEP);peak=Math.max(peak,P.y);
+ for (const seed of [1,8,39,44,60,69,71,76]) {
+  const g=load(),{Game:G,Player:P,Input:I,Level:L,T}=g;start(g);g.Journey.seed=seed;L.build();let peak=64;
+  for(let i=0;i<120*180&&peak<9000;i++){
+   const r=L.blocks.filter(b=>b.column!==undefined&&(side==='left'?b.column<2:b.column>3)).sort((a,b)=>a.y-b.y);
+   const target=P.carve?r.find(b=>b.y>P.carve.block.y+5):r.find(b=>b.y+b.h>P.y+20);
+   const x=target?target.x+75:P.x+17,ax=x>P.x+27?1:x<P.x+7?-1:0;
+   I.keys=ax>0?{arrowright:true}:ax<0?{arrowleft:true}:{};I._tCarve=!(P.carve?.charge>=T.ZONE_PERFECT_LO||P.pole?.charge>=T.ZONE_PERFECT_LO);
+   if(P.onGround)I.jumpBuf=T.JUMP_BUFFER;G.sim(STEP);peak=Math.max(peak,P.y);
+  }
+  assert(peak>=9000,`${side} branch seed ${seed} must remain climbable`);assert(L.blocks.length<85);
  }
- assert(peak>=9000,side+' branch must remain climbable');assert(L.blocks.length<85);passed++;console.log('PASS expedition: input-only bot climbs beyond 890 m on '+side+' outer route');
+ passed++;console.log('PASS expedition: input-only bot climbs beyond 890 m on '+side+' outer route for eight fixed seeds');
 }
 
 const output=await mkdtemp(join(tmpdir(),'carve-expedition-'));
