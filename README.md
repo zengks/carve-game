@@ -111,8 +111,12 @@ there. The build publishes only the optimized exports, favicon and web manifest.
 Logo images are external assets; core gameplay still works when opening the source
 HTML directly, with the repository's relative asset paths intact.
 
-Vercel builds `dist/` with `npm run build`; failures stop the deployment. Only the
-HTML game, sitemap, robots file, and search verification file are published.
+Vercel builds `dist/` with `npm run build`; failures stop the deployment. The build
+extracts the source CSS and game script into content-hashed files under
+`/assets/cache/`, alongside hashed logos and icons. Only those immutable files get
+one-year browser caching. HTML, the manifest, root favicon and stable branding
+aliases revalidate, so new releases and logo changes remain discoverable. The
+source HTML still runs directly without a build. Repository files are not published.
 `/src/carve.html` permanently redirects to `/`. Branch pushes create previews;
 production remains on `main`. CI runs on Node 24 and 26 with pinned Actions.
 Node 24 is the Vercel build runtime; Canvas and Web Audio are browser APIs with
@@ -122,10 +126,24 @@ The build adds Vercel-hosted Web Analytics and Speed Insights scripts. The sourc
 HTML remains fully offline playable and the local server does not send telemetry.
 Dashboard configuration and deployed script/event delivery must both be verified;
 loading a script alone does not establish real visitor metrics. No custom gameplay
-events or paid Plus features are enabled. See `docs/verification.md` for evidence.
+events or paid Plus features are enabled. Vercel custom events require Pro or
+Enterprise, so the free setup cannot measure tutorial or summit completion. A
+separate analytics service would need to be chosen and configured for that. See
+`docs/verification.md` for evidence.
 
 Best scores and the sound preference are saved locally in the player's browser.
-Blocked storage does not prevent play. Focus loss pauses the game. The menu can
+An active run is saved in per-tab session storage once per second and on pause,
+page hiding and reload. Refreshing returns to a paused run with position, momentum,
+time, score, checkpoints, tutorial progress and already claimed rewards intact.
+Resume continues that run; Restart asks for confirmation. A restored wall/pole grip
+waits for a fresh CARVE hold. Separate tabs have separate runs. Closing a tab,
+clearing site data or changing origins is not a cloud save; abrupt browser/process
+termination can lose up to the last autosave interval. Saves from incompatible
+course/physics versions or corrupt storage are ignored without auto-starting a run.
+Blocked storage does not prevent play; the browser's leave-page warning is used
+when recovery cannot be saved. Browsers may suppress that warning, especially on
+mobile, so preservation cannot be guaranteed when tab storage is unavailable.
+Focus loss pauses the game. The menu can
 turn on touch controls on hybrid devices; narrow screens fit the climbing lane.
 
 ## License
