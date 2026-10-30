@@ -6,6 +6,7 @@ import { extractScript } from './harness.mjs';
 try {
   // eslint-disable-next-line no-new, no-new-func
   new Function(extractScript());
+  new Function(extractScript(new URL('../src/expedition.html', import.meta.url)));
   console.log('SYNTAX OK');
 } catch (e) {
   console.error('SYNTAX ERROR:', e.message);

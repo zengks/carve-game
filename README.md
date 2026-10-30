@@ -1,5 +1,14 @@
 # CARVE — a flow climber
 
+> **Experimental branch: Endless Expedition**
+>
+> `npm start` opens the new six-column endless game. The branch preview serves it
+> at `/`; the unchanged original game is available at `/classic/`. Bounty,
+> unlockable movement skills, two optional secret-room minigames, four regions,
+> wind/lift lanes, springboards and named local highest-climb records are included.
+> See [the experiment design and verification notes](docs/expedition.md).
+> This branch is for review; it does not update production or the mobile repository.
+
 A momentum-based vertical climber where the core mechanic is a reinterpreted
 "drift": instead of redirecting a kart through a slide, you latch onto surfaces,
 ride/charge them, and release at a timed sweet-spot to fling yourself higher.

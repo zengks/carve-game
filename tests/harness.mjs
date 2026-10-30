@@ -10,8 +10,8 @@ import { fileURLToPath } from 'node:url';
 export const GAME_PATH = fileURLToPath(new URL('../src/carve.html', import.meta.url));
 
 /** Read src/carve.html and return the JS between the single <script> block. */
-export function extractScript() {
-  const html = fs.readFileSync(GAME_PATH, 'utf8');
+export function extractScript(gamePath = GAME_PATH) {
+  const html = fs.readFileSync(gamePath, 'utf8');
   const open = html.indexOf('<script>');
   const close = html.indexOf('</script>', open);
   if (open === -1 || close === -1) throw new Error('Could not locate <script> block in carve.html');
@@ -56,7 +56,8 @@ function fakeEl() {
       contains: name => classes.has(name),
       toggle(name, force) { if (force ?? !classes.has(name)) classes.add(name); else classes.delete(name); },
     },
-    style: {}, textContent: '', innerHTML: '',
+    style: {}, textContent: '', innerHTML: '', children: [], value: '',
+    appendChild(child) { this.children.push(child); },
     setAttribute(name, value) { this[name] = value; },
     showModal() { this.open = true; }, close() { this.open = false; },
     setPointerCapture: noop,
@@ -77,7 +78,7 @@ export function installDomStubs(options = {}) {
   const events = eventTarget();
   globalThis.addEventListener = events.addEventListener;
   globalThis.dispatchWindow = events.dispatch;
-  const storage = new Map();
+  const storage = options.local || new Map();
   globalThis.localStorage = { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) };
   const session = options.session || new Map();
   globalThis.sessionStorage = { getItem: key => session.get(key) ?? null, setItem: (key, value) => session.set(key, value) };
@@ -92,13 +93,13 @@ export function installDomStubs(options = {}) {
 /** Load the game into this process and return its internal objects. */
 export function loadGame(options = {}) {
   installDomStubs(options);
-  let src = extractScript();
+  let src = extractScript(options.path);
   src += '\nglobalThis.__T=T;globalThis.__Level=Level;globalThis.__Player=Player;'
-       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;globalThis.__RunSave=RunSave;';
+       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;globalThis.__RunSave=RunSave;globalThis.__Journey=typeof Journey === "undefined" ? null : Journey;globalThis.__Profile=typeof Profile === "undefined" ? null : Profile;';
   // eslint-disable-next-line no-eval
   (0, eval)(src);
-  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam, __RunSave: RunSave } = globalThis;
-  return { T, Level, Player, Game, Input, Cam, RunSave };
+  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam, __RunSave: RunSave, __Journey: Journey, __Profile: Profile } = globalThis;
+  return { T, Level, Player, Game, Input, Cam, RunSave, Journey, Profile };
 }
 
 /** Begin a fresh playthrough (build level, reset player, clear scores). */

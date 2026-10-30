@@ -2,11 +2,13 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
-export function createGameServer() {
+export function createGameServer({ expedition = false } = {}) {
   return createServer(async (req, res) => {
     const path = new URL(req.url, 'http://localhost').pathname;
     const files = {
-      '/': ['src/carve.html', 'text/html; charset=utf-8'],
+      '/': [expedition ? 'src/expedition.html' : 'src/carve.html', 'text/html; charset=utf-8'],
+      '/classic/': ['src/carve.html', 'text/html; charset=utf-8'],
+      '/expedition/': ['src/expedition.html', 'text/html; charset=utf-8'],
       '/src/carve.html': ['src/carve.html', 'text/html; charset=utf-8'],
       '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8'],
       '/sitemap.xml': ['sitemap.xml', 'application/xml; charset=utf-8'],
@@ -28,5 +30,5 @@ export function createGameServer() {
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = Number(process.env.PORT || 5173);
-  createGameServer().listen(port, '127.0.0.1', () => console.log(`CARVE: http://127.0.0.1:${port}`));
+  createGameServer({expedition:process.argv.includes('--expedition')}).listen(port, '127.0.0.1', () => console.log(`CARVE: http://127.0.0.1:${port}`));
 }

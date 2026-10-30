@@ -5,11 +5,11 @@
   "type": "module",
   "main": "src/carve.html",
   "scripts": {
-    "start": "node scripts/serve.mjs",
-    "dev": "node --watch scripts/serve.mjs",
+    "start": "node scripts/serve.mjs --expedition",
+    "dev": "node --watch scripts/serve.mjs --expedition",
     "check": "node tests/check-syntax.mjs",
-    "test": "node tests/regression.mjs && node tests/recovery.mjs && node tests/build.mjs && node tests/smoke.mjs && node tests/bot.mjs",
-    "build": "npm run check && npm test && node scripts/build.mjs"
+    "test": "node tests/regression.mjs && node tests/recovery.mjs && node tests/build.mjs && node tests/smoke.mjs && node tests/bot.mjs && node tests/expedition.mjs",
+    "build": "npm run check && npm test && node scripts/build.mjs --expedition"
   },
   "keywords": [
     "game",
