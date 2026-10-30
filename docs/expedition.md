@@ -36,7 +36,7 @@ New runs can earn their own bounty; this is a solo progression system.
 | Windwing | 25 bounty | Upward launch plus eight seconds of lower gravity | 24 s |
 | Skyhook | 50 bounty | Move to a safe higher ledge in range | 18 s |
 
-One skill is equipped at a time, chosen in the menu or paused Workshop. Press Q
+One skill is equipped at a time, chosen in the menu or paused Workshop. Press C / L / Q
 or use its on-screen button. Changing equipment does not reset an existing
 cooldown. The ordinary Flow Surge remains a separate action. No purchases, ads,
 authentication service, or third-party analytics were added.
@@ -98,12 +98,12 @@ released game's engine would defeat this experiment's isolation.
 
 - All existing classic regression/recovery checks, seeded 6,000-step stress test,
   original summit bot and cache-build checks pass.
-- 23 expedition checks cover generation/reconstruction, bounded object counts,
+- 28 expedition checks cover generation/reconstruction, bounded object counts,
   reward claims, purchases and shared cooldowns, all three skills, voluntary portal
   entry, both minigames, success/failure/retreat semantics, paused/reloaded trials,
   high-altitude save restore, duplicate payout prevention, local named records,
   separate-tab sequential profile updates, blocked storage and dual build output.
-- Input-only bots climb approximately 1,993 m on the central route and beyond
+- Input-only bots climb approximately 9,993 m on the central route and beyond
   890 m on both outer routes. These are synthetic simulated runs, not human scores.
 - Manual browser play reached 312 m, 664 points and one cleared Echo Vault,
   crossing into Storm Archive. Rocket Pulse and Windwing were used, both upgrades
@@ -128,3 +128,36 @@ should widen further, and decide whether portal rewards need more variety. Futur
 candidates include timed chase rooms, relic loadouts, route-specific contracts,
 a daily seeded expedition and server-verified seasonal records. None is required
 to understand or play this first experiment.
+
+## Keyboard comfort
+
+The default arrow layout uses the right hand for ←/→ and the left hand for
+Z (hold/release Carve), X (Flow Surge), C (equipped skill), and Space (jump).
+A/D + J/K/L is an alternative. Shift and Q remain compatible; E opens a nearby
+rift, P/Esc pauses. Inputs no longer intercept names, editable fields, menu
+navigation or modal controls. Holding P does not repeatedly toggle pause.
+
+## Extended manual review — 2026-10-30
+
+A new UI-only browser run banked **1,013 m, 2,535 points, three rifts cleared**,
+under the name Quest Explorer (151.2 seconds on the climb clock, plus inspection
+pauses and trial time). It used Rocket Pulse, Windwing and Skyhook, Z with arrows,
+X Flow Surge, normal carves, the right outer route/lift lane and all four biomes.
+Both Echo Vault (observed △ △ ○) and Pendulum Gate were won. A first Pendulum
+attempt failed safely. A mid-climb reload and a completed trial result reload
+preserved the expedition. This was manual keyboard/mouse input, without setting
+player position, rewards, seed or trial results. Previously earned local unlocks
+were available at the start; this does not re-prove the initial unlock economy.
+
+Fixed name-field/global shortcut interference, pause-key autorepeat, keyboard
+ergonomics, missing Windwing float-time feedback, and silent low-Flow surge
+attempts. The float countdown lives on the skill button, keeping the phone
+status and contract lines from overlapping; narrow phones also use a compact
+status font. Core movement difficulty was left unchanged: the run reached all four
+regions; tool-paced play alone is not a reason to retune human reaction windows.
+The central input-only endurance test now climbs through repeated biome cycles
+to about 10 km, retaining bounded geometry, reward sets and a small save snapshot.
+
+Mobile app handoff remains entirely inactive; see [its release preparation](mobile-handoff.md).
+Physical-device app opening, real multi-touch ergonomics, retention and fun still
+need real-device/player validation.

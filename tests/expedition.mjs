@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFile,mkdtemp,rm} from 'node:fs/promises';
+import {readFile,mkdtemp,rm,readdir} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {loadGame,STEP} from './harness.mjs';
@@ -10,6 +10,45 @@ const load = options => loadGame({path,...options});
 let passed = 0;
 function test(name,fn) { fn(); passed++; console.log('PASS expedition: ' + name); }
 function start(g) { g.Game.start(); }
+
+test('arrow layout and WASD aliases support independent holds, surge and skills',()=>{
+ const g=load();start(g);
+ dispatchWindow('keydown',{key:'z'});dispatchWindow('keydown',{key:'ArrowRight'});
+ assert(g.Input.carve());assert.equal(g.Input.axis(),1);
+ dispatchWindow('keyup',{key:'ArrowRight'});assert(g.Input.carve());assert.equal(g.Input.axis(),0);
+ dispatchWindow('keyup',{key:'z'});assert(!g.Input.carve());
+ for(const key of ['j','Shift']) {dispatchWindow('keydown',{key});assert(g.Input.carve());dispatchWindow('keyup',{key});}
+ for(const key of ['x','k']) {dispatchWindow('keydown',{key});assert(g.Input.surgeQ);g.Input.surgeQ=false;dispatchWindow('keyup',{key});}
+ for(const key of ['c','l','q']) {
+  g.Journey.cooldown=0;dispatchWindow('keydown',{key});assert.equal(g.Journey.cooldown,14);g.Journey.cooldown=0;
+  dispatchWindow('keydown',{key,repeat:true});assert.equal(g.Journey.cooldown,0);dispatchWindow('keyup',{key});
+ }
+ dispatchWindow('keydown',{key:'z'});dispatchWindow('blur');assert(!g.Input.carve());assert(g.Game.paused);
+});
+
+test('X surge spends earned Flow, and explains an attempt without enough Flow',()=>{
+ const g=load();start(g);g.Game.flow=50;dispatchWindow('keydown',{key:'x'});g.Game.sim(STEP);
+ assert(g.Game.flow<25);assert(g.Player.surgeCD>0);assert(g.Player.vy>500);assert(g.Player.vx>700);
+ dispatchWindow('keyup',{key:'x'});g.Player.surgeCD=0;g.Game.flow=0;dispatchWindow('keydown',{key:'x'});g.Game.sim(STEP);
+ assert(g.Game.notice.includes('SURGE NEEDS 26 FLOW'));assert.equal(g.Player.surgeCD,0);
+});
+
+test('shortcuts preserve name editing, menu navigation, dialogs and browser modifiers',()=>{
+ const g=load();let prevented=0;const preventDefault=()=>prevented++;
+ for(const key of ['q','e',' ','ArrowLeft']) dispatchWindow('keydown',{key,preventDefault});
+ assert.equal(prevented,0);assert.equal(Object.keys(g.Input.keys).length,0);
+ start(g);
+ for(const target of [{tagName:'INPUT'},{tagName:'TEXTAREA'},{tagName:'SELECT'},{isContentEditable:true}]) {
+  for(const key of ['q','e','c','z','p',' ','ArrowLeft']) dispatchWindow('keydown',{key,target,preventDefault});
+ }
+ for(const modifier of ['ctrlKey','metaKey','altKey']) dispatchWindow('keydown',{key:'c',[modifier]:true,preventDefault});
+ assert.equal(prevented,0);assert.equal(g.Journey.cooldown,0);assert(!g.Game.paused);assert(!g.Input.carve());
+ dispatchWindow('keydown',{key:'p',preventDefault});assert(g.Game.paused);
+ dispatchWindow('keydown',{key:'p',repeat:true});assert(g.Game.paused);
+ dispatchWindow('keydown',{key:' ',preventDefault});assert.equal(prevented,1);assert.equal(g.Input.jumpBuf,0);
+ dispatchWindow('keydown',{key:'p'});assert(!g.Game.paused);
+ document.getElementById('help-dialog').showModal();dispatchWindow('keydown',{key:'c',preventDefault});assert.equal(g.Journey.cooldown,0);assert.equal(prevented,1);
+});
 
 test('six-column world has no goal, deterministic reconstruction and bounded streamed geometry',()=>{
  const g=load();start(g);const L=g.Level;
@@ -59,6 +98,14 @@ test('Windwing changes gravity and Skyhook ends on a safe higher ledge',()=>{
  assert(g.Level.blocks.some(b=>b.grip&&g.Player.x>=b.x&&g.Player.x+g.Player.w<=b.x+b.w&&Math.abs(g.Player.y-b.y-b.h-1)<.01));
 });
 
+test('Windwing exposes its remaining float time and freezes it while paused',()=>{
+ const g=load();start(g);g.Profile.credit(25);g.Journey.buy('wing');g.Journey.useSkill();g.Journey.syncHUD();
+ assert(document.getElementById('ability').textContent.includes('Float 8s'));
+ g.Game.togglePause();g.Game.frame(50);assert.equal(g.Journey.wingTime,8);
+ g.Game.togglePause();g.Game.sim(.5);g.Journey.syncHUD();assert.equal(g.Journey.wingTime,7.5);
+ g.Journey.wingTime=0;g.Journey.syncHUD();assert(!document.getElementById('ability').textContent.includes('Float'));
+});
+
 test('springboards and environmental lanes affect movement without forcing portal entry',()=>{
  const g=load();start(g);const spring=g.Level.blocks.find(b=>b.feature==='spring');
  g.Player.x=spring.x+30;g.Player.y=spring.y+spring.h;g.Player.onGround=true;g.Journey.update(STEP);
@@ -100,6 +147,14 @@ test('memory trial ignores early taps, resumes explicitly after reload, and reso
  g.Journey.rift={id:'v:7',row:7,type:'memory',phase:'playing',elapsed:1,ready:true,progress:0,sequence:[2,0,1]};g.Journey.chooseGlyph(2);assert.equal(g.Journey.rift.progress,0);
  g.Journey.rift.elapsed=3;g.Journey.chooseGlyph(2);g.RunSave.write();g=load({session,local});assert.equal(g.Journey.rift.progress,1);assert(!g.Journey.rift.ready);
  g.Journey.chooseGlyph(0);assert.equal(g.Journey.rift.progress,1);g.Journey.startTrial();g.Journey.chooseGlyph(0);g.Journey.chooseGlyph(1);assert(g.Journey.rift.win);
+});
+
+test('a wrong memory glyph resolves failure once and stays failed after reload',()=>{
+ const session=new Map(),local=new Map();let g=load({session,local});start(g);g.Game.togglePause();
+ g.Journey.rift={id:'v:7',row:7,type:'memory',phase:'playing',elapsed:3,ready:true,progress:0,sequence:[0,1,2]};
+ const coins=g.Profile.coins;g.Journey.chooseGlyph(2);assert.equal(g.Journey.rift.win,false);assert.equal(g.Profile.coins,coins);
+ g.Journey.chooseGlyph(0);assert.equal(g.Journey.rift.phase,'result');assert.equal(g.Profile.coins,coins);
+ g=load({session,local});assert.equal(g.Journey.rift.win,false);assert(!g.Journey.rift.ready);g.Journey.leaveRift();assert(g.Game.paused);
 });
 
 test('active trial freezes on focus loss without consuming game time or silently failing',()=>{
@@ -151,7 +206,7 @@ test('malformed expedition storage and unavailable storage never crash boot or p
 {
  const g=load(),{Game:G,Player:P,Input:I,Level:L,T}=g;start(g);
  let peak=64;
- for(let i=0;i<120*180&&peak<20000;i++){
+ for(let i=0;i<120*480&&peak<100000;i++){
   const r=L.blocks.filter(b=>b.spine).sort((a,b)=>a.y-b.y);
   const target=P.carve?r.find(b=>b.y>P.carve.block.y+5):r.find(b=>b.y+b.h>P.y+20);
   const x=target?target.x+75:P.x+17;const ax=x>P.x+27?1:x<P.x+7?-1:0;
@@ -160,7 +215,8 @@ test('malformed expedition storage and unavailable storage never crash boot or p
   if(P.onGround)I.jumpBuf=T.JUMP_BUFFER;
   G.sim(STEP);peak=Math.max(peak,P.y);
  }
- assert(peak>=20000,'input-only bot must cross the old roof and multiple biomes');assert(G.running);assert(L.blocks.length<85);assert(G.rewarded.size<250);
+ assert(peak>=100000,'input-only bot must sustain a long climb through repeated biomes');assert(G.running);assert(L.blocks.length<85);assert(G.rewarded.size<250);
+ g.RunSave.write();assert(JSON.stringify(g.RunSave.read()).length<20000,'long runs keep a bounded recovery snapshot');
  passed++;console.log(`PASS expedition: input-only bot climbs ${Math.floor((peak-64)/10)} m in ${G.time.toFixed(1)} simulated seconds with bounded world (${L.blocks.length} blocks)`);
 }
 
@@ -185,6 +241,7 @@ try {
  await build(output,{expedition:true});
  const html=await readFile(join(output,'index.html'),'utf8'),classic=await readFile(join(output,'classic/index.html'),'utf8');
  assert(html.includes('Endless Expedition'));assert(html.includes('noindex,nofollow'));assert(classic.includes('id="play">Climb'));
+ assert(!html.includes('mobile-handoff'));assert(!classic.includes('mobile-handoff'));assert(!(await readdir(output,{recursive:true})).some(f=>f.includes('mobile-handoff') || f.startsWith('future/')));
  assert(!classic.includes('id="rift-dialog"'));assert(html.includes('/classic/'));
  await build(join(output,'baseline'));assert.equal(classic,await readFile(join(output,'baseline/index.html'),'utf8'),'classic output is identical to a classic-only build');
  for(const entry of [html,classic])for(const m of entry.matchAll(/(?:src|href)="(\/assets\/cache\/[^"?#]+)"/g))await readFile(join(output,m[1]));

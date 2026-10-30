@@ -508,6 +508,7 @@
       .gold-band { position:absolute; top:0; bottom:0; left:34%; width:32%; background:#ffcf4d55; border-inline:2px solid #ffcf4d; }
       #rift-cursor { position:absolute; width:6px; height:100%; top:0; background:#eef2ff; transform:translateX(-50%); box-shadow:0 0 16px #fff; }
       #memory-trial { display:flex; gap:8px; }
+      @media(max-width:380px) { #expedition-status { font-size:10px; letter-spacing:0; } }
       @media(max-height:480px) and (min-width:560px) { #expedition-status { left:160px; right:120px; font-size:10px; } }
       .glyph { flex:1; min-width:0; justify-content:center; font-size:28px; padding:14px 8px; margin-right:0; }
       @media(max-width:620px) { .menu-layout { padding-top:14px; padding-bottom:16px; } .menu-layout .keys { display:none; } .menu-layout .title { font-size:60px; } .menu-layout .brand-logo { width:66px; height:66px; } #menu-progress { font-size:10px; } }
@@ -587,10 +588,10 @@
             <span>Jump</span><b><kbd>Space / W</kbd></b>
           </div>
           <div>
-            <span>Carve</span><b><kbd>J / Shift</kbd></b>
+            <span>Carve</span><b><kbd>Z / J / Shift</kbd></b>
           </div>
           <div>
-            <span>Surge (spend Flow)</span><b><kbd>K</kbd></b>
+            <span>Surge (spend Flow)</span><b><kbd>X / K</kbd></b>
           </div>
         </div>
         <div class="expedition-links"><button class="btn ghost" id="workshop-open">Workshop</button><button class="btn ghost" id="records-open">Records</button><button class="btn ghost" id="help-open" aria-haspopup="dialog">Field guide</button></div><p id="menu-progress"></p><a class="classic-link" href="/classic/">Play the original summit course ↗</a>
@@ -599,10 +600,10 @@
     </div>
     <dialog id="help-dialog" aria-labelledby="help-title">
       <h2 id="help-title">Expedition field guide</h2>
-      <p>Move and jump toward a glowing edge. Hold CARVE to grip it, then release when the charge ring turns gold to launch higher. On a keyboard, use A/D or the arrows to steer, Space/W to jump, J/Shift to carve, and K to surge.</p>
+      <p>Move and jump toward a glowing edge. Hold CARVE to grip it, then release when the charge ring turns gold to launch higher. On a keyboard, use A/D or the arrows to steer, Space/W to jump, Z to carve, X for Flow Surge, and C for your equipped skill. This keeps your left hand together while your right hand uses the arrows. Prefer A/D? J (carve), K (surge) and L (skill) also work; Shift and Q remain available.</p>
       <p>With touch controls enabled, hold a direction with one thumb and use JUMP, CARVE and SURGE with the other. Hold CARVE before reaching a wall to catch it.</p>
       <p>Clean releases build Flow and help you chain launches. Momentum carries between jumps; steer against your movement to brake.</p>
-      <p>Gold beacons save your recovery point. Cyan bridges are one-way; gold chevrons mark springboards. Explore sideways to find richer shards and colored wind or lift lanes. Every 100 m and each contract earns bounty. Press Q or tap your skill to climb faster; unlock more in the Workshop. Purple rifts are optional: press E nearby to see their rules before entering. There is no roof. Pause and bank your run whenever you like. Records, bounty and unlocks stay on this browser.</p>
+      <p>Gold beacons save your recovery point. Cyan bridges are one-way; gold chevrons mark springboards. Explore sideways to find richer shards and colored wind or lift lanes. Every 100 m and each contract earns bounty. Press C / L / Q or tap your skill to climb faster; unlock more in the Workshop. Purple rifts are optional: press E nearby to see their rules before entering. There is no roof. Pause and bank your run whenever you like. Records, bounty and unlocks stay on this browser.</p>
       <form method="dialog"><button class="btn">Got it</button></form>
     </dialog>
 
@@ -770,7 +771,7 @@
           return x;
         },
         carve() {
-          return this.k("j") || this.k("shift") || this._tCarve;
+          return this.k("z") || this.k("j") || this.k("shift") || this._tCarve;
         },
         k(n) {
           return !!(this.keys[n] || this.touchKeys[n]);
@@ -785,12 +786,22 @@
           this.jumpBuf = 0;
           this.surgeQ = false;
         },
+        editing(e) {
+          const target = e.target;
+          return target?.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target?.tagName || "");
+        },
         init() {
           addEventListener(
             "keydown",
             (e) => {
-              if (e.ctrlKey || e.metaKey || e.altKey || document.querySelector("dialog[open]")) return;
+              if (e.ctrlKey || e.metaKey || e.altKey || this.editing(e) || document.querySelector("dialog[open]") || !Game.running) return;
               const n = e.key.toLowerCase();
+              if (n === "p" || n === "escape") {
+                e.preventDefault();
+                if (!e.repeat) Game.togglePause();
+                return;
+              }
+              if (Game.paused) return;
               if (
                 [
                   "arrowup",
@@ -805,8 +816,7 @@
               this.keys[n] = true;
               if (n === " " || n === "w" || n === "arrowup")
                 this.jumpBuf = T.JUMP_BUFFER;
-              if (n === "k") this.surgeQ = true;
-              if (n === "p" || n === "escape") Game.togglePause();
+              if (n === "x" || n === "k") this.surgeQ = true;
             },
             { passive: false },
           );
@@ -1577,6 +1587,8 @@
                 0.5,
                 5,
               );
+            } else if (Game.flow < T.SURGE_COST) {
+              Journey.notify("SURGE NEEDS 26 FLOW · earn Flow with clean releases");
             }
           }
           if (this.surgeCD > 0) this.surgeCD -= dt;
@@ -1674,8 +1686,8 @@
           document.getElementById('bank-cancel').onclick = () => document.getElementById('bank-dialog').close();
           document.getElementById('bank-confirm').onclick = () => { document.getElementById('bank-dialog').close(); this.finish(); };
           addEventListener('keydown', e => {
-            if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || document.querySelector('dialog[open]')) return;
-            if (e.key.toLowerCase() === 'q') { e.preventDefault(); this.useSkill(); }
+            if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || Input.editing(e) || !Game.running || Game.paused || document.querySelector('dialog[open]')) return;
+            if (['c','l','q'].includes(e.key.toLowerCase())) { e.preventDefault(); this.useSkill(); }
             if (e.key.toLowerCase() === 'e') { e.preventDefault(); this.enterPortal(); }
           });
           const suspend = () => { if (this.rift?.phase === 'playing') { this.rift.ready = false; this.renderRift(); RunSave.write(); } };
@@ -1793,7 +1805,7 @@
           const contract = `Shards ${this.shards % 6}/6 · Gold ${this.clean % 3}/3 · Height ${100 - Math.floor((this.peak - 64) / 10) % 100} m${compass}`;
           if (document.getElementById('contractline').textContent !== contract) document.getElementById('contractline').textContent = contract;
           const button = document.getElementById('ability');
-          const label = `${this.skills[Profile.equipped].name} · ${this.cooldown > 0 ? Math.ceil(this.cooldown) + 's' : 'Q / tap'}`;
+          const label = `${this.skills[Profile.equipped].name} · ${this.cooldown > 0 ? Math.ceil(this.cooldown) + 's' : 'C / tap'}${this.wingTime > 0 ? ' · Float ' + Math.ceil(this.wingTime) + 's' : ''}`;
           if (button.textContent !== label) button.textContent = label;
           button.disabled = this.cooldown > 0 || Game.paused;
           button.setAttribute('aria-label',label);
@@ -2149,11 +2161,11 @@
           const touch = document.body.classList.contains("istouch");
           const hints = [
             touch ? "1 · APPROACH: hold ▶ with your left thumb; tap JUMP with your right." : "1 · APPROACH: move right + jump toward the cyan wall (D / → + Space).",
-            touch ? "2 · GRIP: hold CARVE beside a cyan wall. Keep steering with your left thumb." : "2 · GRIP: hold J / Shift or CARVE beside a cyan wall.",
+            touch ? "2 · GRIP: hold CARVE beside a cyan wall. Keep steering with your left thumb." : "2 · GRIP: hold Z (or J / Shift) beside a cyan wall.",
             charge > T.ZONE_PERFECT_HI ? "LATE — release before you slip; try gold on the next wall." : charge >= T.ZONE_PERFECT_LO ? "RELEASE CARVE NOW — gold is the perfect window!" : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.",
             "4 · STEER: move toward the opposite wall and hold CARVE to catch it.",
           ];
-          const coach = this.awaitingGrip ? "Hold CARVE to continue your saved grip." : this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
+          const coach = this.awaitingGrip ? (touch ? "Hold CARVE to continue your saved grip." : "Hold Z (or J / Shift) to continue your saved grip.") : this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
           if (this.lastHUD.coach !== coach) {
             document.getElementById("coach").textContent = coach;
             show("coach", !!coach);
