@@ -1,9 +1,15 @@
-# Endless Expedition experiment
+# Endless Expedition
 
-Branch: `codex/endless-expedition`. Based on released main `137c184`.
-This is a playable design experiment, not a production replacement. Do not merge
-or promote it until the user reviews it. `src/carve.html` is unchanged. The branch
-preview opens Expedition at `/`; the original summit game is at `/classic/`.
+Developed on `codex/endless-expedition`, based on main `137c184`. The user
+approved merge and production release on 2026-10-30 after preview verification.
+Expedition is served at `/`; the unchanged original summit game remains at
+`/classic/`. Both modes keep separate progress. The mobile download prompt stays
+disabled and is not included in deployment output.
+
+Production builds (`VERCEL_ENV=production`) remove the preview title/badge and
+allow indexing. Preview/local builds remain labeled experimental and noindex.
+The production and preview game scripts are identical; release metadata does
+not alter gameplay.
 
 ## The loop
 
