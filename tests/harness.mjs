@@ -43,6 +43,7 @@ function eventTarget() {
     dispatch(type, detail = {}) {
       const e = { preventDefault: noop, ...detail };
       for (const fn of listeners.get(type) || []) fn(e);
+      return e;
     },
   };
 }
@@ -57,25 +58,29 @@ function fakeEl() {
     },
     style: {}, textContent: '', innerHTML: '',
     setAttribute(name, value) { this[name] = value; },
+    showModal() { this.open = true; }, close() { this.open = false; },
     setPointerCapture: noop,
     getContext: () => fakeCtx(), width: 800, height: 600,
   };
 }
 
 /** Install minimal browser globals so the game's top-level Game.init() runs. */
-export function installDomStubs() {
+export function installDomStubs(options = {}) {
   globalThis.window = globalThis;
   const elements = new Map();
   globalThis.document = {
     ...eventTarget(), body: fakeEl(), hidden: false,
     getElementById(id) { if (!elements.has(id)) elements.set(id, fakeEl()); return elements.get(id); },
     createElement: fakeEl,
+    querySelector() { return [...elements.values()].find(el => el.open) || null; },
   };
   const events = eventTarget();
   globalThis.addEventListener = events.addEventListener;
   globalThis.dispatchWindow = events.dispatch;
   const storage = new Map();
   globalThis.localStorage = { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) };
+  const session = options.session || new Map();
+  globalThis.sessionStorage = { getItem: key => session.get(key) ?? null, setItem: (key, value) => session.set(key, value) };
   globalThis.requestAnimationFrame = noop;
   globalThis.matchMedia = () => ({ matches: false });
   globalThis.innerWidth = 800;
@@ -85,15 +90,15 @@ export function installDomStubs() {
 }
 
 /** Load the game into this process and return its internal objects. */
-export function loadGame() {
-  installDomStubs();
+export function loadGame(options = {}) {
+  installDomStubs(options);
   let src = extractScript();
   src += '\nglobalThis.__T=T;globalThis.__Level=Level;globalThis.__Player=Player;'
-       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;';
+       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;globalThis.__RunSave=RunSave;';
   // eslint-disable-next-line no-eval
   (0, eval)(src);
-  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam } = globalThis;
-  return { T, Level, Player, Game, Input, Cam };
+  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam, __RunSave: RunSave } = globalThis;
+  return { T, Level, Player, Game, Input, Cam, RunSave };
 }
 
 /** Begin a fresh playthrough (build level, reset player, clear scores). */

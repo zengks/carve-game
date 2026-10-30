@@ -143,3 +143,36 @@ rail direction, launch strengths and score eligibility remain unchanged.
 27 regressions pass, including checkpoint-relative falls, inward respawn facing,
 and column-top direction with explicit steering. Syntax, seeded stress, spacing,
 automated full completion and static build pass. Branch preview only.
+
+## Cache and reload-recovery preview — 2026-10-30
+
+Review branch: `codex/cache-and-run-recovery`. No production promotion is authorized.
+
+- Built CSS, game JavaScript, logo and browser/manifest icons use SHA-256 content
+  filenames. Only `/assets/cache/` receives one-year immutable caching. Entry HTML,
+  manifest and stable branding aliases revalidate. Build output is cleaned first;
+  source HTML remains self-contained and directly playable.
+- Per-tab session snapshots restore active runs paused after browser reload. The
+  saved data includes velocity, score/Flow, clock, tutorial, checkpoint, cooldowns,
+  wall/pole attachment and the set of already rewarded surfaces. Inputs are cleared;
+  attached grips wait for the player to hold CARVE again. Restart is an explicit
+  modal choice with Keep my run focused by default.
+- Snapshot validation checks schema, finite fields, course/physics compatibility
+  and surface references. This is local recovery, not anti-cheat or a cloud save.
+  Storage errors are handled; a browser warning is requested when reload cannot be
+  saved. It cannot guarantee protection if browser storage is blocked or cleared.
+- Automated coverage: existing 27 regressions plus 9 recovery cases and built-asset
+  integrity/cache-policy checks; seeded 6,000-step stress test and actual-goal bot
+  completion. Snapshot writes are throttled and stay outside physics steps.
+- Browser check on built output: touch movement/jump/carve earned 39 points at 4%
+  height, 4.6 seconds. Reload restored the same displayed values, paused, with touch
+  controls enabled. Repeated reload preserved them; Escape canceled the restart
+  dialog while the run remained paused. These are browser checks, not physical
+  iOS/Android or a fresh complete manual summit run.
+- Vercel Advanced page successfully rechecked: directory listing disabled; Skew
+  Protection disabled (Pro feature); bulk redirects 0, no paid allocation. No
+  dashboard setting changes were needed.
+- Vercel free page-view Analytics and Speed Insights remain enabled. Official
+  custom-event documentation restricts gameplay events to Pro/Enterprise:
+  https://vercel.com/docs/analytics/custom-events . No plan upgrade, additional
+  analytics provider, fake page views or paid custom events were configured.

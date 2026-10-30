@@ -265,11 +265,11 @@
       #menu .keys div { font-size: 12px; align-items: center; gap: 6px; }
       #menu kbd { white-space: nowrap; padding: 2px 5px; }
       #menu #help-open { font-size: 12px; padding: 10px 16px; }
-      #help-dialog { margin: auto; width: min(520px, 92vw); max-height: 90dvh; overflow-y: auto; padding: 26px; border: 1px solid var(--line); border-radius: 18px; background: #101829; color: var(--ink); }
-      #help-dialog::backdrop { background: #030711d9; backdrop-filter: blur(5px); }
-      #help-dialog h2 { color: var(--cyan); font-size: 24px; }
-      #help-dialog p { margin-top: 16px; color: var(--ink); font-size: 14px; line-height: 1.6; }
-      #help-dialog .btn { margin-top: 22px; min-height: 44px; }
+      dialog { margin: auto; width: min(520px, 92vw); max-height: 90dvh; overflow-y: auto; padding: 26px; border: 1px solid var(--line); border-radius: 18px; background: #101829; color: var(--ink); }
+      dialog::backdrop { background: #030711d9; backdrop-filter: blur(5px); }
+      dialog h2 { color: var(--cyan); font-size: 24px; }
+      dialog p { margin-top: 16px; color: var(--ink); font-size: 14px; line-height: 1.6; }
+      dialog .btn { margin-top: 22px; min-height: 44px; }
       @media (max-width: 620px) {
         .menu-layout { grid-template-columns: 1fr; gap: 22px; }
         #menu .tag { margin-top: 14px; }
@@ -581,11 +581,18 @@
         <img class="brand-logo" src="../assets/branding/carve-logo.webp" width="320" height="320" alt="" decoding="async" />
         <div class="eyebrow">paused</div>
         <h1 class="title" style="font-size: clamp(46px, 10vw, 92px)">HOLD</h1>
-        <p class="tag">Time to read the next line.</p>
+        <p class="tag" id="pause-message">Time to read the next line.</p>
         <button class="btn" id="resume">Resume</button>
         <button class="btn ghost" id="restart1">Restart</button>
       </div>
     </div>
+
+    <dialog id="restart-dialog" aria-labelledby="restart-title">
+      <h2 id="restart-title">Restart this climb?</h2>
+      <p>Your current run will be replaced. Your best score stays saved.</p>
+      <button class="btn" id="restart-cancel" autofocus>Keep my run</button>
+      <button class="btn ghost" id="restart-confirm">Restart from the beginning</button>
+    </dialog>
 
     <!-- win -->
     <div class="screen hidden" id="win">
@@ -722,6 +729,7 @@
           addEventListener(
             "keydown",
             (e) => {
+              if (e.ctrlKey || e.metaKey || e.altKey || document.querySelector("dialog[open]")) return;
               const n = e.key.toLowerCase();
               if (
                 [
@@ -1582,6 +1590,92 @@
         },
       };
 
+      // Reload recovery is per tab: separate tabs cannot overwrite one another's run.
+      // This is local recovery, not a trusted leaderboard or a cloud save.
+      const RunSave = {
+        key: "carve.run.v1",
+        gameFields: ["flow", "score", "combo", "bestChain", "perfects", "time", "comboTimer", "lesson", "noticeTime"],
+        playerFields: ["x", "y", "vx", "vy", "face", "coyote", "wallDir", "surgeCD", "stun", "relatch"],
+        signature() {
+          const course = JSON.stringify([T, Level.blocks.map(({x,y,w,h,kind}) => [x,y,w,h,kind]), Level.poles]);
+          let hash = 2166136261;
+          for (let i = 0; i < course.length; i++) hash = Math.imul(hash ^ course.charCodeAt(i), 16777619);
+          return (hash >>> 0).toString(16);
+        },
+        write() {
+          if (!Game.running) return true;
+          const surfaces = [...Level.blocks, ...Level.poles];
+          const pick = (object, fields) => Object.fromEntries(fields.map(k => [k, object[k]]));
+          const data = {
+            version: 1, course: this.signature(),
+            game: pick(Game, this.gameFields), player: pick(Player, this.playerFields),
+            state: Player.state, onGround: Player.onGround,
+            respawn: {...Player.respawn}, checkpoint: Level.blocks.indexOf(Player.checkpoint),
+            rewarded: [...Game.rewarded].map(b => surfaces.indexOf(b)),
+            carve: Player.carve && {type: Player.carve.type, charge: Player.carve.charge, block: Level.blocks.indexOf(Player.carve.block)},
+            pole: Player.pole && {...pick(Player.pole, ["ang", "r", "angVel", "charge"]), ref: Level.poles.indexOf(Player.pole.ref)},
+            touch: document.body.classList.contains("istouch"),
+          };
+          try { sessionStorage.setItem(this.key, JSON.stringify(data)); return true; }
+          catch { return false; }
+        },
+        clear() {
+          // A tombstone also prevents replaying the last run after a win.
+          try { sessionStorage.setItem(this.key, "null"); } catch {}
+        },
+        read() {
+          try {
+            const raw = sessionStorage.getItem(this.key);
+            if (!raw || raw.length > 20000) return null;
+            const d = JSON.parse(raw);
+            const numeric = (o, keys) => o && keys.every(k => typeof o[k] === "number" && Number.isFinite(o[k]) && Math.abs(o[k]) <= 1e12);
+            const index = (i, list) => Number.isInteger(i) && i >= 0 && i < list.length;
+            const surfaces = [...Level.blocks, ...Level.poles];
+            if (!d || d.version !== 1 || d.course !== this.signature() ||
+                !numeric(d.game, this.gameFields) || !numeric(d.player, this.playerFields) ||
+                !numeric(d.respawn, ["x", "y"]) || typeof d.onGround !== "boolean" || typeof d.touch !== "boolean" ||
+                !["GROUND", "AIR", "CARVE", "POLE"].includes(d.state) ||
+                d.game.flow < 0 || d.game.flow > T.FLOW_MAX || d.game.time < 0 || d.game.score < 0 ||
+                !Number.isInteger(d.game.lesson) || d.game.lesson < 0 || d.game.lesson > 4 ||
+                !(d.checkpoint === -1 || (index(d.checkpoint, Level.blocks) && Level.blocks[d.checkpoint].kind === "check")) ||
+                !Array.isArray(d.rewarded) || d.rewarded.length > surfaces.length || !d.rewarded.every(i => index(i, surfaces))) return null;
+            if (d.state === "CARVE") {
+              if (!d.carve || !index(d.carve.block, Level.blocks) || !Level.blocks[d.carve.block].grip ||
+                  !["wallL", "wallR", "rail"].includes(d.carve.type) || !numeric(d.carve, ["charge"]) ||
+                  d.carve.charge < 0 || d.carve.charge > 1.3 || d.pole) return null;
+            } else if (d.carve) return null;
+            if (d.state === "POLE") {
+              if (!d.pole || !index(d.pole.ref, Level.poles) || !numeric(d.pole, ["ang", "r", "angVel", "charge"]) ||
+                  d.pole.r < 48 || d.pole.r > T.POLE_GRAB || d.pole.charge < 0 || d.pole.charge > 1.3) return null;
+            } else if (d.pole) return null;
+            return d;
+          } catch { return null; }
+        },
+        restore() {
+          const d = this.read();
+          if (!d) return false;
+          Game.start(false);
+          for (const k of this.gameFields) Game[k] = d.game[k];
+          for (const k of this.playerFields) Player[k] = d.player[k];
+          Player.state = d.state;
+          Player.onGround = d.onGround;
+          Player.respawn = {...d.respawn};
+          Player.checkpoint = Level.blocks[d.checkpoint] || null;
+          Game.notice = Player.checkpoint && Game.noticeTime > 0 ? "CHECKPOINT SAVED — return here after a fall" : "";
+          Player.carve = d.carve && {...d.carve, block: Level.blocks[d.carve.block]};
+          Player.pole = d.pole && {...d.pole, ref: Level.poles[d.pole.ref]};
+          const surfaces = [...Level.blocks, ...Level.poles];
+          Game.rewarded = new Set(d.rewarded.map(i => surfaces[i]));
+          Game.setTouch(d.touch);
+          Game.awaitingGrip = !!(Player.carve || Player.pole);
+          Cam.x = Player.x + Player.w / 2; Cam.y = Player.y + Player.h / 2 + 150;
+          Game.togglePause();
+          document.getElementById("pause-message").textContent = "Run restored after reload. Resume when you're ready, or choose Restart.";
+          Game.lastHUD = {}; Game.syncHUD();
+          return true;
+        },
+      };
+
       /* ----------------------------- game -------------------------------------- */
       const Game = {
         cv: null,
@@ -1626,6 +1720,17 @@
           document.addEventListener("visibilitychange", () => {
             if (document.hidden && this.running && !this.paused) this.togglePause();
           });
+          addEventListener("pagehide", () => {
+            if (this.running && !this.paused) this.togglePause();
+            RunSave.write();
+          });
+          addEventListener("beforeunload", (e) => {
+            if (this.running && !RunSave.write()) {
+              // The browser owns this warning; it is a fallback when tab storage is blocked.
+              e.preventDefault(); e.returnValue = "";
+            }
+          });
+          RunSave.restore();
           requestAnimationFrame((t) => this.frame(t));
         },
         resize() {
@@ -1634,12 +1739,14 @@
           this.W = this.cv.width = Math.floor(innerWidth * this.dpr);
           this.H = this.cv.height = Math.floor(innerHeight * this.dpr);
         },
-        start() {
+        start(save = true) {
           Level.build();
           Player.reset();
           Input.clear();
           Particles.pool.length = 0;
           this.acc = 0;
+          this.awaitingGrip = false;
+          this.lastSaveAt = 0;
           this.comboTimer = 0;
           Cam.shake = 0;
           this.flow = 0;
@@ -1664,7 +1771,7 @@
           document.getElementById("hud").classList.remove("hidden");
           document.getElementById("flowwrap").classList.remove("hidden");
           document.getElementById("pausebtn").classList.remove("hidden");
-          Sfx.resume();
+          if (save) { Sfx.resume(); RunSave.write(); }
           this.syncHUD();
         },
         togglePause() {
@@ -1673,10 +1780,14 @@
           this.paused = !this.paused;
           this.needsRender = true;
           show("paused", this.paused);
+          document.getElementById("pause-message").textContent = "Time to read the next line.";
+          if (!this.paused) Sfx.resume();
+          RunSave.write();
         },
         victory() {
           if (!this.running) return;
           this.running = false;
+          RunSave.clear();
           this.needsRender = true;
           Sfx.win();
           if (this.combo > this.bestChain) this.bestChain = this.combo;
@@ -1709,7 +1820,8 @@
         frame(t) {
           const dtReal = Math.min(0.05, (t - this.last) / 1000 || 0);
           this.last = t;
-          if (this.running && !this.paused) {
+          if (this.awaitingGrip && Input.carve()) this.awaitingGrip = false;
+          if (this.running && !this.paused && !this.awaitingGrip) {
             let dt = dtReal;
             if (Player.state === "CARVE" || Player.state === "POLE")
               dt *= T.TIME_DILATION;
@@ -1720,7 +1832,10 @@
               this.acc -= step;
             }
           }
-          if (this.running && !this.paused) this.syncHUD();
+          if (this.running && !this.paused) {
+            this.syncHUD();
+            if (t - this.lastSaveAt >= 1000) { RunSave.write(); this.lastSaveAt = t; }
+          }
           if ((this.running && !this.paused) || this.needsRender) {
             this.render();
             this.needsRender = false;
@@ -1763,7 +1878,7 @@
             charge > T.ZONE_PERFECT_HI ? "LATE — release before you slip; try gold on the next wall." : charge >= T.ZONE_PERFECT_LO ? "RELEASE CARVE NOW — gold is the perfect window!" : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.",
             "4 · STEER: move toward the opposite wall and hold CARVE to catch it.",
           ];
-          const coach = this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
+          const coach = this.awaitingGrip ? "Hold CARVE to continue your saved grip." : this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
           if (this.lastHUD.coach !== coach) {
             document.getElementById("coach").textContent = coach;
             show("coach", !!coach);
@@ -2069,12 +2184,15 @@
           };
           document.getElementById("again").onclick = () => this.start();
           document.getElementById("resume").onclick = () => this.togglePause();
-          document.getElementById("restart1").onclick = () => this.start();
+          const restartDialog = document.getElementById("restart-dialog");
+          document.getElementById("restart1").onclick = () => restartDialog.showModal();
+          document.getElementById("restart-cancel").onclick = () => restartDialog.close();
+          document.getElementById("restart-confirm").onclick = () => { restartDialog.close(); this.start(); };
           document.getElementById("pausebtn").onclick = () =>
             this.togglePause();
         },
         bindTouch() {
-          const setTouch = (enabled) => {
+          this.setTouch = (enabled) => {
             Input.clear();
             document.getElementById("touch").classList.toggle("hidden", !enabled);
             document.body.classList.toggle("istouch", enabled);
@@ -2082,8 +2200,8 @@
             toggle.setAttribute("aria-pressed", String(enabled));
             toggle.textContent = "Touch controls: " + (enabled ? "on" : "off");
           };
-          setTouch(matchMedia("(pointer:coarse)").matches);
-          document.getElementById("touch-toggle").onclick = () => setTouch(!document.body.classList.contains("istouch"));
+          this.setTouch(matchMedia("(pointer:coarse)").matches);
+          document.getElementById("touch-toggle").onclick = () => this.setTouch(!document.body.classList.contains("istouch"));
           const hold = (id, on, off) => {
             const el = document.getElementById(id);
             const pointers = new Set();

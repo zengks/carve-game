@@ -1,10 +1,42 @@
-import { mkdir, readFile, writeFile, copyFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, copyFile, rm } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { join, extname, basename } from 'node:path';
 
-// Publish only game assets; repository documents and test code stay private to GitHub.
-await mkdir(new URL('../dist/', import.meta.url), { recursive: true });
-const source = await readFile(new URL('../src/carve.html', import.meta.url), 'utf8');
-const telemetry = `
-    <!-- Vercel-hosted scripts update independently of the self-contained game. -->
+const root = fileURLToPath(new URL('../', import.meta.url));
+export const assetName = (name, data) => `${basename(name, extname(name))}.${createHash('sha256').update(data).digest('hex').slice(0, 16)}${extname(name)}`;
+
+export async function build(outputDir = join(root, 'dist')) {
+  // Start clean so removed assets and repository files cannot leak into a release.
+  await rm(outputDir, { recursive: true, force: true });
+  await mkdir(join(outputDir, 'assets/cache'), { recursive: true });
+  await mkdir(join(outputDir, 'assets/branding'), { recursive: true });
+  const hashedAsset = async (name, data) => {
+    const path = `/assets/cache/${assetName(name, data)}`;
+    await writeFile(join(outputDir, path), data);
+    return path;
+  };
+  let source = await readFile(join(root, 'src/carve.html'), 'utf8');
+  let manifest = await readFile(join(root, 'site.webmanifest'), 'utf8');
+  for (const name of ['carve-logo.webp', 'favicon-96.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'social-card.png', 'favicon.ico']) {
+    const data = await readFile(join(root, 'assets/branding', name));
+    const stablePath = name === 'favicon.ico' ? '/favicon.ico' : `/assets/branding/${name}`;
+    await writeFile(join(outputDir, stablePath), data);
+    // Social-card URLs remain stable for crawlers and existing shared links.
+    if (name === 'social-card.png') continue;
+    const path = await hashedAsset(name, data);
+    source = source.replaceAll(`../assets/branding/${name}`, path).replaceAll(`"${stablePath}"`, `"${path}"`);
+    manifest = manifest.replaceAll(stablePath, path);
+  }
+  const css = source.match(/<style>([\s\S]*?)<\/style>/);
+  const script = source.match(/<script>([\s\S]*?)<\/script>/);
+  if (!css || !script) throw new Error('Expected the self-contained source style and game script');
+  const cssPath = await hashedAsset('carve.css', css[1]);
+  const scriptPath = await hashedAsset('carve.js', script[1]);
+  source = source.replace(css[0], `<link rel="stylesheet" href="${cssPath}" />`)
+    .replace(script[0], `<script defer src="${scriptPath}"></script>`);
+  const telemetry = `
+    <!-- Included Vercel page views and performance metrics; no paid custom events. -->
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
       window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
@@ -12,13 +44,13 @@ const telemetry = `
     <script defer src="/_vercel/insights/script.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
 `;
-await writeFile(new URL('../dist/index.html', import.meta.url), source.replace('</head>', `${telemetry}</head>`));
-for (const file of ['robots.txt', 'sitemap.xml', 'googlefd0692e33131ffd2.html', 'site.webmanifest']) {
-  await copyFile(new URL(`../${file}`, import.meta.url), new URL(`../dist/${file}`, import.meta.url));
+  await writeFile(join(outputDir, 'index.html'), source.replace('</head>', `${telemetry}</head>`));
+  await writeFile(join(outputDir, 'site.webmanifest'), manifest);
+  for (const file of ['robots.txt', 'sitemap.xml', 'googlefd0692e33131ffd2.html']) {
+    await copyFile(join(root, file), join(outputDir, file));
+  }
 }
-await mkdir(new URL('../dist/assets/branding/', import.meta.url), { recursive: true });
-for (const file of ['carve-logo.webp', 'favicon-96.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'social-card.png']) {
-  await copyFile(new URL(`../assets/branding/${file}`, import.meta.url), new URL(`../dist/assets/branding/${file}`, import.meta.url));
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  await build();
+  console.log('Built static game with content-addressed assets in dist/');
 }
-await copyFile(new URL('../assets/branding/favicon.ico', import.meta.url), new URL('../dist/favicon.ico', import.meta.url));
-console.log('Built static game in dist/');
