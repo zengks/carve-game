@@ -105,6 +105,12 @@ See [`docs/mechanics.md`](docs/mechanics.md) to retune, and
 
 ## Deployment and monitoring
 
+The selected Grip logo master and committed browser/home-screen/social exports
+live in `assets/branding/`. Export instructions and provenance are documented
+there. The build publishes only the optimized exports, favicon and web manifest.
+Logo images are external assets; core gameplay still works when opening the source
+HTML directly, with the repository's relative asset paths intact.
+
 Vercel builds `dist/` with `npm run build`; failures stop the deployment. Only the
 HTML game, sitemap, robots file, and search verification file are published.
 `/src/carve.html` permanently redirects to `/`. Branch pushes create previews;

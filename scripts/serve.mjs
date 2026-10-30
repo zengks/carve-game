@@ -10,7 +10,12 @@ export function createGameServer() {
       '/src/carve.html': ['src/carve.html', 'text/html; charset=utf-8'],
       '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8'],
       '/sitemap.xml': ['sitemap.xml', 'application/xml; charset=utf-8'],
+      '/site.webmanifest': ['site.webmanifest', 'application/manifest+json'],
+      '/favicon.ico': ['assets/branding/favicon.ico', 'image/x-icon'],
     };
+    for (const name of ['carve-logo.webp', 'favicon-96.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'social-card.png']) {
+      files[`/assets/branding/${name}`] = [`assets/branding/${name}`, name.endsWith('.webp') ? 'image/webp' : 'image/png'];
+    }
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
     const file = files[path];
     if (!file) { res.writeHead(404).end('Not found'); return; }
