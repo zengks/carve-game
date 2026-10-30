@@ -5,6 +5,7 @@ const g = loadGame();
 const { Player: P, Game: G, Input: I, Level: L, T } = g;
 let passed = 0;
 function test(name, fn) { newRun(g); fn(); passed++; console.log(`PASS ${name}`); }
+function checkpoints() { L.ensure(1200); return L.blocks.filter(b=>b.kind==='check' && b.spine); }
 function airborne() { P.x = 400; P.y = 700; P.onGround = false; }
 
 test('surge retains momentum while steering; opposing steering brakes', () => {
@@ -36,7 +37,7 @@ test('landing activates a checkpoint and hazard returns to it', () => {
   P.x = check.x + 40; P.y = check.y + check.h + 1; P.vy = -240; P.collide(STEP);
   assert.equal(P.respawn.y, check.y + check.h + 1);
   const spike = L.blocks.find(b => b.hazard);
-  P.x = spike.x + spike.w + 1; P.y = spike.y + 10; P.vx = -300; P.vy = 0; P.collide(STEP);
+  P.x = spike.x - P.w - 1; P.y = spike.y + 10; P.vx = 300; P.vy = 0; P.collide(STEP);
   assert.equal(P.x, P.respawn.x); assert.equal(P.y, P.respawn.y); assert(P.stun > 0);
 });
 test('carving a gold wall saves recovery without requiring a landing', () => {
@@ -46,7 +47,7 @@ test('carving a gold wall saves recovery without requiring a landing', () => {
   assert.equal(P.checkpoint, b); assert.equal(G.noticeTime, 4);
   assert.equal(P.respawn.y, b.y + b.h + 1);
   P.hit(); assert.equal(P.y, b.y + b.h + 1);
-  const newer = L.blocks.filter(b => b.kind === 'check')[1];
+  const newer = checkpoints()[1];
   P.startCarve({type:'wallR', block:newer});
   P.startCarve({type:'wallR', block:b});
   assert.equal(P.checkpoint, newer);
@@ -76,17 +77,11 @@ test('focus loss pauses and clears all queued input', () => {
   G.togglePause(); document.hidden = true; document.dispatch('visibilitychange');
   assert(G.paused); document.hidden = false;
 });
-test('victory stops catch-up simulation immediately and persists best score', () => {
-  const goal = L.blocks.find(b => b.kind === 'goal'); P.x = goal.x; P.y = goal.y;
-  G.score = 123; G.last = 0; G.frame(50);
-  assert(!G.running); assert.equal(G.time, STEP);
-  assert.equal(localStorage.getItem('carve.best.v2'), '123');
-});
-test('unavailable storage does not prevent victory or mute', () => {
+test('unavailable storage does not prevent banking or mute', () => {
   const original = globalThis.localStorage;
-  globalThis.localStorage = { setItem() { throw new Error('blocked'); } };
-  G.score = 124; assert.doesNotThrow(() => G.victory());
-  assert.doesNotThrow(() => document.getElementById('mutebtn').onclick());
+  globalThis.localStorage = { getItem() { throw Error('blocked'); }, setItem() { throw Error('blocked'); } };
+  G.score = 124; assert.doesNotThrow(() => g.Journey.finish());
+  assert(!G.running); assert.doesNotThrow(() => document.getElementById('mutebtn').onclick());
   globalThis.localStorage = original;
 });
 test('HUD writes are outside the physics loop and skip unchanged values', () => {
@@ -136,7 +131,7 @@ test('one-way rails pass ascent and sides but catch descent from above', () => {
   assert.equal(P.vx, 600); assert.notEqual(P.findCarve()?.block, b);
 });
 test('checkpoints announce once and cannot move recovery backwards', () => {
-  const checks = L.blocks.filter(b => b.kind === 'check');
+  const checks = checkpoints();
   const land = b => { P.x = b.x + 40; P.y = b.y + b.h + 1; P.vy = -240; P.collide(STEP); };
   land(checks[1]); assert.match(G.notice, /CHECKPOINT SAVED/); assert.equal(G.noticeTime, 4);
   G.noticeTime = 0; land(checks[1]); assert.equal(G.noticeTime, 0);
@@ -196,12 +191,12 @@ test('column-top catches default inward and respect explicit steering', () => {
   P.carve.charge = 0.75; P.releaseCarve(); assert(P.vx > 0);
 });
 test('deep falls recover below the saved checkpoint even when camera follows', () => {
-  const b = L.blocks.filter(b => b.kind === 'check')[1]; P.saveCheckpoint(b);
+  const b = checkpoints()[1]; P.saveCheckpoint(b);
   P.x = 1000; P.y = P.respawn.y - 601; P.vy = -100;
   g.Cam.y = P.y + 150; P.collide(STEP);
   assert.equal(P.y, P.respawn.y); assert.equal(P.x, P.respawn.x);
   assert.equal(P.face, 1, 'left checkpoint faces back into lane');
-  P.stun = 0; P.saveCheckpoint(L.blocks.filter(b => b.kind === 'check')[2]); P.hit();
+  P.stun = 0; P.saveCheckpoint(checkpoints()[2]); P.hit();
   assert.equal(P.face, -1, 'right checkpoint faces back into lane');
 });
 test('falling below the start recovers without waiting for camera lag', () => {
@@ -213,7 +208,7 @@ const server = createGameServer();
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 try {
   const base = `http://127.0.0.1:${server.address().port}`;
-  assert.match(await (await fetch(base)).text(), /CARVE — flow climber/);
+  assert.match(await (await fetch(base)).text(), /CARVE · Endless Expedition/);
   assert.equal((await fetch(`${base}/package.json`)).status, 404);
   assert.equal((await fetch(base, { method: 'POST' })).status, 405);
   const manifest = await (await fetch(`${base}/site.webmanifest`)).json();

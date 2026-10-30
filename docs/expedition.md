@@ -2,8 +2,8 @@
 
 Developed on `codex/endless-expedition`, based on main `137c184`. The user
 approved merge and production release on 2026-10-30 after preview verification.
-Expedition is served at `/`; the unchanged original summit game remains at
-`/classic/`. Both modes keep separate progress. The mobile download prompt stays
+Expedition is the only published game, served at `/`. The retired `/classic/`
+address redirects to `/`. Practice and Challenge keep separate records. The mobile download prompt stays
 disabled and is not included in deployment output.
 
 Production builds (`VERCEL_ENV=production`) remove the preview title/badge and

@@ -1,7 +1,7 @@
 # CARVE — mechanics & tuning reference
 
 Every value that shapes the feel lives in the `T` constants object at the top of
-the `<script>` in [`../src/carve.html`](../src/carve.html). World units are
+the `<script>` in [`../src/expedition.html`](../src/expedition.html). World units are
 pixels, time is seconds, and the world is **y-up** (so `+vy` is upward and gravity
 subtracts from `vy`). Edit `T`, reload, retune — nothing else needs to change.
 
@@ -91,35 +91,31 @@ Tier also sets steering speed and acceleration multiplier, palette warmth (cyan�
 
 ## Level builder (`Level.build()`)
 
-Not in `T` — these are locals inside `build()`. The climb is a uniform zig-zag
-"chimney" of grip rungs alternating left/right.
+`Level.ensure()` reconstructs the current sixteen-row neighborhood from the
+run seed and row IDs. Six column X positions are `[-460, -160, 140, 520, 820,
+1120]`; each row has a central route block plus two outer blocks. Rungs are
+150×160 units, spaced 230 units vertically; every fifth row is a checkpoint.
+There is no roof or goal zone. Optional rails, spikes, poles, shards, rifts and
+wind/lift lanes vary by row and region.
 
-| Local     | Default | Meaning |
-|-----------|---------|---------|
-| `LEFT_X`  | 140     | X of left-column rungs. |
-| `RIGHT_X` | 520     | X of right-column rungs. |
-| `RUNG_W`  | 150     | Rung width. |
-| `RUNG_H`  | 160     | Rung height. |
-| `STEP`    | 230     | Vertical gap between consecutive rungs. |
-| `stops`   | 18      | Number of rungs in the main ascent. |
-
-**Reachability check** (`tests/smoke.mjs`): the largest vertical grip-base gap must
-fit within a charge-0.5 good-release ballistic arc plus 120px of wall climb. This
-is a coarse tuning guard, not proof of a playable route (horizontal travel and
-collisions also matter). `tests/bot.mjs` must actually enter the goal to pass.
+The smoke test checks a coarse grip-spacing bound. Input-only bots in
+`tests/expedition.mjs` climb roughly 10 km centrally and check multiple seeded
+outer routes; `tests/challenge.mjs` also climbs beyond 1,990 m with three lives.
+These do not prove every route is usable or replace human playtesting.
 
 Block kinds: `rock` (solid + grippable), `plain` (solid, no grip), `rail`
-(grippable top), `spike` (hazard), `check` (grippable + checkpoint), `goal`.
+(grippable top), `spike` (hazard), `check` (grippable + checkpoint).
 
 ## Workflow
 
 ```bash
 npm run check   # parse the script body (fast syntax gate)
-npm test        # smoke (physics + stress + reachability) then bot (end-to-end)
+npm test        # physics, recovery, stress, streaming, skills, rifts, lives and bots
 npm start       # serve and open in a browser
 ```
 
-After any change to `T` or `Level.build()`, run `npm test` — it checks the spacing guard and requires the bot to finish. Also playtest
+After any change to `T` or level generation, run `npm test` — it checks physics,
+streaming and sustained bot climbs. Also playtest
 changes in a browser; the bot does not prove every intended route is usable.
 
 ## Gameplay revision (2026-10-29)
@@ -133,10 +129,8 @@ and steering. They disappear after releases from two different surfaces.
 
 Each block or pole awards score, Flow, perfect count, and chain only on its first
 successful release per run. Repeated recovery releases retain their full launch
-physics but award nothing, even after a fall. Restart resets eligibility. Personal
-bests use `carve.best.v2`; old scores remain stored separately because the rules
-and course changed. These local scores are not tamper-proof.
-
-The middle terraces narrow crossings and use 210-unit steps; the upper section
-uses 245-unit steps, with an optional mid-climb pole. The main route remains
-completable without the optional shortcut.
+physics but award nothing, even after a fall. Restart resets eligibility.
+Practice and Challenge bests and unlocks use `carve.expedition.profile.v1`;
+per-tab active runs use `carve.expedition.run.v1`. Legacy browser storage is left
+untouched, but the old course is no longer shipped. These local records are not
+tamper-proof. See `challenge.md` for life and save rules.

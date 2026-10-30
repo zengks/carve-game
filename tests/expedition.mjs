@@ -213,7 +213,7 @@ test('malformed expedition storage and unavailable storage never crash boot or p
  assert.doesNotThrow(()=>g.Game.start());assert.doesNotThrow(()=>g.Journey.update(STEP));assert.equal(g.RunSave.write(),false);
 });
 
-// Input-only climb through multiple streamed regions, well beyond the classic roof.
+// Input-only climb through multiple streamed regions, through the endless course.
 {
  const g=load(),{Game:G,Player:P,Input:I,Level:L,T}=g;start(g);
  let peak=64;
@@ -249,15 +249,22 @@ for (const side of ['left','right']) {
 
 const output=await mkdtemp(join(tmpdir(),'carve-expedition-'));
 try {
- await build(output,{expedition:true});
- const html=await readFile(join(output,'index.html'),'utf8'),classic=await readFile(join(output,'classic/index.html'),'utf8');
- assert(html.includes('Endless Expedition'));assert(html.includes('noindex,nofollow'));assert(classic.includes('id="play">Climb'));
- assert(!html.includes('mobile-handoff'));assert(!classic.includes('mobile-handoff'));assert(!(await readdir(output,{recursive:true})).some(f=>f.includes('mobile-handoff') || f.startsWith('future/')));
- assert(!classic.includes('id="rift-dialog"'));assert(html.includes('/classic/'));
- await build(join(output,'baseline'));assert.equal(classic,await readFile(join(output,'baseline/index.html'),'utf8'),'classic output is identical to a classic-only build');
- for(const entry of [html,classic])for(const m of entry.matchAll(/(?:src|href)="(\/assets\/cache\/[^"?#]+)"/g))await readFile(join(output,m[1]));
- const server=createGameServer({expedition:true});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
- try {const base=`http://127.0.0.1:${server.address().port}`;assert((await(await fetch(base)).text()).includes('Endless Expedition'));assert(!(await(await fetch(base+'/classic/')).text()).includes('id="rift-dialog"'));assert.equal((await fetch(base+'/package.json')).status,404);} finally {await new Promise(resolve=>server.close(resolve));}
- console.log('PASS expedition: branch preview builds experiment and preserves original course at /classic/');passed++;
+ await build(output);
+ const html=await readFile(join(output,'index.html'),'utf8');
+ assert(html.includes('Endless Expedition'));assert(html.includes('noindex,nofollow'));
+ assert(!html.includes('mobile-handoff'));assert(!html.includes('/classic/'));
+ assert(!(await readdir(output,{recursive:true})).some(f=>f.includes('mobile-handoff') || f.startsWith('future/') || f.startsWith('classic/')));
+ for(const m of html.matchAll(/(?:src|href)="(\/assets\/cache\/[^"?#]+)"/g))await readFile(join(output,m[1]));
+ const server=createGameServer();await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ try {
+  const base=`http://127.0.0.1:${server.address().port}`;
+  assert((await(await fetch(base)).text()).includes('Endless Expedition'));
+  for(const path of ['/classic','/classic/','/classic/index.html','/src/carve.html'])for(const method of ['GET','HEAD']){
+   const response=await fetch(base+path,{method,redirect:'manual'});assert.equal(response.status,308);assert.equal(response.headers.get('location'),'/');
+  }
+  assert.equal((await fetch(base+'/classic/',{method:'POST',redirect:'manual'})).status,405);
+  assert.equal((await fetch(base+'/package.json')).status,404);
+ } finally {await new Promise(resolve=>server.close(resolve));}
+ console.log('PASS expedition: only current course is published; retired course URLs redirect to it');passed++;
 } finally {await rm(output,{recursive:true,force:true});}
 console.log(`${passed} expedition checks passed`);

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { loadGame, newRun, STEP } from './harness.mjs';
 let passed = 0;
 function test(name, fn) { fn(); passed++; console.log(`PASS ${name}`); }
-const key = 'carve.run.v1';
+const key = 'carve.expedition.run.v1';
 
 test('reload restores an airborne run paused, including score, checkpoint and surface rewards', () => {
   const session = new Map(); let g = loadGame({session}); newRun(g);
@@ -38,7 +38,7 @@ test('restored wall grip waits for a deliberate CARVE hold before simulation res
   assert.equal(g.Player.carve.block, g.Level.blocks.find(b => b.kind === 'rock'));
   g.Game.togglePause(); g.Game.frame(1000);
   assert.equal(g.Game.time, 10); assert.equal(g.Player.carve.charge, 0.72);
-  assert.match(document.getElementById('coach').textContent, /Hold CARVE/);
+  assert.match(document.getElementById('coach').textContent, /Hold Z .*saved grip/);
   document.getElementById('t-carve').dispatch('pointerdown', {pointerId: 1});
   g.Game.frame(1017); assert(g.Game.time > 10); assert(g.Player.carve.charge > 0.72);
   document.getElementById('t-carve').dispatch('pointerup', {pointerId:1});
@@ -50,10 +50,10 @@ test('pole geometry, momentum, charge and claimed pole rewards survive a reload'
   const pole = g.Level.poles[0];
   g.Player.x = pole.x - 17; g.Player.y = pole.y - 80;
   g.Player.startPole(pole); g.Player.pole.charge = 0.6;
-  g.Game.rewarded.add(pole); const expected = {...g.Player.pole}; g.RunSave.write();
+  g.Game.rewarded.add(pole.id); const expected = {...g.Player.pole}; g.RunSave.write();
   g = loadGame({session});
   for (const k of ['r','ang','angVel','charge']) assert.equal(g.Player.pole[k], expected[k]);
-  assert.equal(g.Player.pole.ref, g.Level.poles[0]); assert(g.Game.rewarded.has(g.Level.poles[0]));
+  assert.equal(g.Player.pole.ref, g.Level.poles[0]); assert(g.Game.rewarded.has(g.Level.poles[0].id));
   assert(g.Game.awaitingGrip && g.Game.paused);
 });
 
@@ -83,7 +83,7 @@ test('page hiding pauses and saves; periodic saving is throttled outside physics
 
 test('completed runs are cleared and do not reappear after a reload', () => {
   const session = new Map(); let g = loadGame({session}); newRun(g);
-  g.Game.victory(); dispatchWindow('pagehide'); g = loadGame({session});
+  g.Journey.finish(); dispatchWindow('pagehide'); g = loadGame({session});
   assert(!g.Game.running); assert.equal(session.get(key), 'null');
 });
 
@@ -91,7 +91,7 @@ test('corrupt or incompatible saves are ignored without starting or crashing the
   const session = new Map(); const g = loadGame({session}); newRun(g);
   const valid = JSON.parse(session.get(key));
   const cases = [
-    '{invalid', 'x'.repeat(20001), 'null',
+    '{invalid', 'x'.repeat(100001), 'null',
     JSON.stringify({...valid, version: 999}),
     JSON.stringify({...valid, course:'old physics'}),
     JSON.stringify({...valid, player:{...valid.player, vx:'NaN'}}),
@@ -113,7 +113,7 @@ test('unavailable session storage keeps play working and warns before a destruct
   let prevented = false;
   dispatchWindow('beforeunload', {preventDefault() { prevented = true; }});
   assert(prevented); assert(g.Game.running);
-  assert.doesNotThrow(() => g.Game.togglePause()); assert.doesNotThrow(() => g.Game.victory());
+  assert.doesNotThrow(() => g.Game.togglePause()); assert.doesNotThrow(() => g.Journey.finish());
 });
 
 test('browser keyboard shortcuts are not treated as game controls', () => {

@@ -57,12 +57,14 @@ tier drives speed multiplier, palette warmth, score multiplier, and trail color.
 
 ## Level
 
-`Level.build()` generates a uniform-spacing zig-zag chimney of grip "rungs"
-alternating left/right, plus rails, sparse spikes, checkpoints, an optional pole
-flourish, a short final tower, and a generous summit goal zone. Spacing
-(`STEP`) is held below the reach of a *good* (non-perfect) carve so the climb is
-always completable; perfects simply feel better and score more. See
-[`mechanics.md`](./mechanics.md) for the tunable reference.
+`Level.build()` reconstructs a deterministic, streamed six-column ascent. The
+central zig-zag route provides a consistent climbing rhythm; outer columns add
+shards, spikes, checkpoints, springboards, wind/lift lanes and optional rifts.
+There is no summit. Practice supports unlimited recovery; Challenge ends after
+three life losses. Both can be banked from Pause. Input-only bots check long
+climbs and multiple seeded outer routes; human playtesting is still needed to
+judge difficulty and fun. See [`expedition.md`](./expedition.md) and
+[`challenge.md`](./challenge.md) for current rules.
 
 ## Why a single HTML file
 

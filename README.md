@@ -3,7 +3,7 @@
 > **Endless Expedition**
 >
 > `npm start` opens the six-column endless game. Production and previews serve it
-> at `/`; the unchanged original game is available at `/classic/`. Bounty,
+> at `/`. Bounty,
 > unlockable movement skills, two optional secret-room minigames, four regions,
 > wind/lift lanes, springboards and named local highest-climb records are included.
 > See [the design and verification notes](docs/expedition.md).
@@ -24,7 +24,6 @@ Open the game directly — no build step:
 
 ```bash
 open src/expedition.html   # endless game, opens in default browser
-open src/carve.html        # original summit course
 ```
 
 Or serve the game at `http://127.0.0.1:5173` using Node.js 24 or 26:
@@ -36,7 +35,7 @@ npm start                  # built-in Node HTTP server; no install/download need
 ## Controls
 
 Expedition also uses **C / L / Q** for the equipped skill, **E** for a nearby
-secret rift, and **P / Esc** to pause. The original course retains its original keys.
+secret rift, and **P / Esc** to pause.
 
 | Action            | Keys                    |
 |-------------------|-------------------------|
@@ -82,14 +81,15 @@ verification. The mobile download prompt remains disabled.
 ```
 carve-game/
 ├── src/
-│   └── carve.html       # the entire game (single self-contained file)
+│   └── expedition.html  # the current game (single self-contained file)
 ├── scripts/            # dependency-free local server + static build
 ├── tests/
 │   ├── regression.mjs   # momentum, Flow, slips, input, checkpoints, UI lifecycle
 │   ├── harness.mjs      # extracts the script + headless browser stubs
 │   ├── check-syntax.mjs # parses the script body (fast syntax gate)
 │   ├── smoke.mjs        # physics states + 6000-step stress + reachability
-│   └── bot.mjs          # greedy auto-player; proves the level is completable
+│   ├── expedition.mjs   # endless streaming, skills, rifts and input-only bots
+│   └── challenge.mjs    # three-life runs, records and recovery
 ├── docs/
 │   ├── design.md        # why the game is shaped this way
 │   └── mechanics.md     # full tunable reference for every constant
@@ -103,7 +103,7 @@ carve-game/
 
 ```bash
 npm run check   # syntax-check the game's script body
-npm test        # smoke (physics + stress + reachability invariant) then bot (end-to-end)
+npm test        # physics, recovery, streaming, skills, rifts, lives and climbing bots
 npm start       # serve the game for local play
 npm run build   # checks + tests, then publishable files in dist/
 ```
@@ -114,7 +114,7 @@ browser APIs (DOM, canvas 2d, Web Audio, rAF) in Node — so physics, level
 reachability, and end-to-end completability stay verifiable without a browser.
 
 The smoke test checks a vertical spacing bound; it does not prove every route is
-reachable. The bot must enter the actual goal to pass (near-top is a failure).
+reachable. Input-only bots check sustained climbing through the endless course and its outer routes.
 Neither replaces browser playtesting. Stress inputs use a fixed seed.
 
 ## Architecture (single file)
@@ -124,7 +124,7 @@ Neither replaces browser playtesting. Stress inputs use a fixed seed.
 - All tuning lives in the `T` constants object at the top of the `<script>`.
 - Player is an explicit state machine: `GROUND / AIR / CARVE / POLE` (stun is a cooldown).
 - Per-axis AABB collision against rectangular blocks tagged
-  `rock | plain | rail | spike | check | goal`.
+  `rock | plain | rail | spike | check`.
 - Subsystems: `Input`, `Sfx` (synthesized Web Audio), `Particles` (pooled),
   `Cam` (smoothed follow + speed-zoom + shake), `Level` (procedural builder),
   `Player`, `Game` (loop / sim / render / UI).
@@ -147,7 +147,9 @@ extracts the source CSS and game script into content-hashed files under
 one-year browser caching. HTML, the manifest, root favicon and stable branding
 aliases revalidate, so new releases and logo changes remain discoverable. The
 source HTML still runs directly without a build. Repository files are not published.
-`/src/carve.html` permanently redirects to `/`. Branch pushes create previews;
+The retired `/classic/`, `/classic`, `/classic/index.html` and `/src/carve.html`
+addresses permanently redirect to `/`; the old course and bundles are no longer
+shipped. Branch pushes create previews;
 production remains on `main`. CI runs on Node 24 and 26 with pinned Actions.
 Node 24 is the Vercel build runtime; Canvas and Web Audio are browser APIs with
 no application package version to upgrade.

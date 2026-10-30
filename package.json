@@ -3,13 +3,13 @@
   "version": "1.1.0",
   "description": "A momentum-based vertical climber where the drift mechanic becomes grip-and-release. Single-file, zero-dependency Canvas 2D + Web Audio game.",
   "type": "module",
-  "main": "src/carve.html",
+  "main": "src/expedition.html",
   "scripts": {
-    "start": "node scripts/serve.mjs --expedition",
-    "dev": "node --watch scripts/serve.mjs --expedition",
+    "start": "node scripts/serve.mjs",
+    "dev": "node --watch scripts/serve.mjs",
     "check": "node tests/check-syntax.mjs",
-    "test": "node tests/regression.mjs && node tests/recovery.mjs && node tests/build.mjs && node tests/smoke.mjs && node tests/bot.mjs && node tests/expedition.mjs && node tests/challenge.mjs && node tests/mobile-handoff.mjs",
-    "build": "npm run check && npm test && node scripts/build.mjs --expedition"
+    "test": "node tests/regression.mjs && node tests/recovery.mjs && node tests/build.mjs && node tests/smoke.mjs && node tests/expedition.mjs && node tests/challenge.mjs && node tests/mobile-handoff.mjs",
+    "build": "npm run check && npm test && node scripts/build.mjs"
   },
   "keywords": [
     "game",
