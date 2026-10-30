@@ -31,5 +31,17 @@ try {
   for (const path of ['/', '/site.webmanifest', '/favicon.ico']) {
     assert(config.headers.some(r => r.source === path && r.headers.some(h => h.value.includes('must-revalidate'))));
   }
+  await build(join(output,'preview'),{expedition:true});
+  await build(join(output,'production'),{expedition:true,production:true});
+  const preview=await readFile(join(output,'preview/index.html'),'utf8');
+  const production=await readFile(join(output,'production/index.html'),'utf8');
+  assert(preview.includes('Endless Expedition preview</title>'));assert(preview.includes('content="noindex,nofollow"'));
+  assert(production.includes('Endless Expedition</title>'));assert(production.includes('content="index,follow"'));
+  assert(!production.includes('EXPERIMENTAL ·'));assert(!production.includes('mobile-handoff'));
+  const gameAsset=html=>html.match(/src="(\/assets\/cache\/expedition\.[a-f\d]+\.js)"/)[1];
+  assert.equal(gameAsset(preview),gameAsset(production),'release metadata does not change gameplay');
+  assert.equal(await readFile(join(output,'production/classic/index.html'),'utf8'),html,'production preserves the original course');
+  assert(!(await readdir(join(output,'production'),{recursive:true})).some(f=>f.includes('mobile-handoff') || f.startsWith('future/')));
+  console.log('PASS production metadata, preview noindex, identical gameplay and disabled mobile handoff');
   console.log('PASS built asset references, content hashes, fresh entry points and scoped immutable caching');
 } finally { await rm(output, { recursive: true, force: true }); }

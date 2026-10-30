@@ -1,5 +1,15 @@
 # CARVE — a flow climber
 
+> **Endless Expedition**
+>
+> `npm start` opens the six-column endless game. Production and previews serve it
+> at `/`; the unchanged original game is available at `/classic/`. Bounty,
+> unlockable movement skills, two optional secret-room minigames, four regions,
+> wind/lift lanes, springboards and named local highest-climb records are included.
+> See [the design and verification notes](docs/expedition.md).
+> Production release was approved on 2026-10-30. The mobile app download prompt
+> remains disabled, excluded from deployment, and separate from the mobile repository.
+
 A momentum-based vertical climber where the core mechanic is a reinterpreted
 "drift": instead of redirecting a kart through a slide, you latch onto surfaces,
 ride/charge them, and release at a timed sweet-spot to fling yourself higher.
@@ -13,7 +23,8 @@ Single file, zero dependencies, plain Canvas 2D + Web Audio.
 Open the game directly — no build step:
 
 ```bash
-open src/carve.html        # macOS, opens in default browser
+open src/expedition.html   # endless game, opens in default browser
+open src/carve.html        # original summit course
 ```
 
 Or serve the game at `http://127.0.0.1:5173` using Node.js 24 or 26:
@@ -24,12 +35,15 @@ npm start                  # built-in Node HTTP server; no install/download need
 
 ## Controls
 
+Expedition also uses **C / L / Q** for the equipped skill, **E** for a nearby
+secret rift, and **P / Esc** to pause. The original course retains its original keys.
+
 | Action            | Keys                    |
 |-------------------|-------------------------|
 | Move / steer      | `A` `D` or `←` `→`      |
 | Jump / wall-jump  | `Space` / `W` / `↑`     |
-| Carve (hold)      | `J` / `Shift`           |
-| Surge (spend Flow)| `K`                     |
+| Carve (hold)      | `Z` / `J` / `Shift`           |
+| Surge (spend Flow)| `X` or `K`                     |
 | Pause             | `P` / `Esc`             |
 
 Touch controls appear automatically on coarse-pointer devices.
