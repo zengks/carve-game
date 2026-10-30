@@ -249,6 +249,39 @@
         max-width: 420px;
         line-height: 1.6;
       }
+      /* Keep the initial actions visible; longer guidance has its own dialog. */
+      #menu { padding: 16px 0; }
+      #menu .card { width: min(820px, 92vw); padding: 0; }
+      .menu-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+      .menu-identity { display: flex; justify-content: center; align-items: center; gap: 14px; }
+      #menu .brand-logo { width: 64px; margin: 0; border-radius: 14px; flex: 0 0 auto; }
+      #menu .title { font-size: clamp(48px, 6.8vw, 76px); }
+      #menu .eyebrow { font-size: 10px; letter-spacing: .24em; margin: 0 0 10px; }
+      #menu .tag { margin-top: 18px; font-size: 14px; line-height: 1.5; max-width: 340px; }
+      .menu-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+      #menu .btn { margin: 0; min-height: 44px; }
+      #menu #touch-toggle { font-size: 12px; padding: 10px 14px; }
+      #menu .keys { margin: 20px auto 16px; gap: 12px 16px; }
+      #menu .keys div { font-size: 12px; align-items: center; gap: 6px; }
+      #menu kbd { white-space: nowrap; padding: 2px 5px; }
+      #menu #help-open { font-size: 12px; padding: 10px 16px; }
+      #help-dialog { margin: auto; width: min(520px, 92vw); max-height: 90dvh; overflow-y: auto; padding: 26px; border: 1px solid var(--line); border-radius: 18px; background: #101829; color: var(--ink); }
+      #help-dialog::backdrop { background: #030711d9; backdrop-filter: blur(5px); }
+      #help-dialog h2 { color: var(--cyan); font-size: 24px; }
+      #help-dialog p { margin-top: 16px; color: var(--ink); font-size: 14px; line-height: 1.6; }
+      #help-dialog .btn { margin-top: 22px; min-height: 44px; }
+      @media (max-width: 620px) {
+        .menu-layout { grid-template-columns: 1fr; gap: 22px; }
+        #menu .tag { margin-top: 14px; }
+        #menu .keys { max-width: 340px; margin-top: 18px; }
+      }
+      @media (max-height: 480px) and (min-width: 621px) {
+        #menu .card { width: min(820px, 94vw); }
+        .menu-layout { gap: 24px; }
+        #menu .brand-logo { width: 56px; }
+        #menu .title { font-size: 58px; }
+        #menu .keys { margin: 14px auto 12px; }
+      }
       .keys {
         margin: 26px auto 0;
         display: grid;
@@ -496,37 +529,50 @@
 
     <!-- start -->
     <div class="screen" id="menu">
-      <div class="card">
+      <div class="card menu-layout">
+        <div class="menu-intro">
+        <div class="menu-identity">
         <img class="brand-logo" src="../assets/branding/carve-logo.webp" width="320" height="320" alt="CARVE emblem: a gold climber launching between two walls" decoding="async" />
+        <div>
         <div class="eyebrow">a flow climber</div>
         <h1 class="title">CARVE</h1>
+        </div>
+        </div>
         <p class="tag">
-          There is no brake and no straight line up. You ascend by grabbing
-          surfaces, riding them, and releasing at the perfect instant to fling
-          yourself higher. Clean releases build
-          <b style="color: var(--cyan)">Flow</b> — your steering speeds up and the world warms
-          as you chain.
+          Grip a wall. Charge your launch. Release on gold and chain your way to the summit.
         </p>
+        </div>
+        <div class="menu-controls">
+        <div class="menu-actions">
+          <button class="btn" id="play">Climb ▸</button>
+          <button class="btn ghost" id="touch-toggle" aria-pressed="false">Touch controls: off</button>
+        </div>
         <div class="keys">
           <div>
-            <span>Move / steer</span
-            ><b><kbd>A</kbd> <kbd>D</kbd> / <kbd>←</kbd><kbd>→</kbd></b>
+            <span>Steer</span><b><kbd>A / D</kbd> <kbd>← →</kbd></b>
           </div>
           <div>
-            <span>Jump · wall-jump</span><b><kbd>Space</kbd> / <kbd>W</kbd></b>
+            <span>Jump</span><b><kbd>Space / W</kbd></b>
           </div>
           <div>
-            <span>Carve (hold)</span><b><kbd>J</kbd> / <kbd>Shift</kbd></b>
+            <span>Carve</span><b><kbd>J / Shift</kbd></b>
           </div>
           <div>
             <span>Surge (spend Flow)</span><b><kbd>K</kbd></b>
           </div>
         </div>
-        <p class="tag">Hold CARVE near a glowing edge. Release when the ring turns gold. Gold platforms save your progress when you grip them or land on top. Cyan bridges let you jump through from below. Each surface scores once per run; recovery launches still work.</p>
-        <button class="btn" id="play">Climb ▸</button>
-        <div><button class="btn ghost" id="touch-toggle" aria-pressed="false" style="margin: 14px 0 0; font-size: 12px; padding: 10px 16px">Touch controls: off</button></div>
+        <button class="btn ghost" id="help-open" aria-haspopup="dialog">How to play</button>
+        </div>
       </div>
     </div>
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <h2 id="help-title">How to play CARVE</h2>
+      <p>Move and jump toward a glowing edge. Hold CARVE to grip it, then release when the charge ring turns gold to launch higher. On a keyboard, use A/D or the arrows to steer, Space/W to jump, J/Shift to carve, and K to surge.</p>
+      <p>With touch controls enabled, hold a direction with one thumb and use JUMP, CARVE and SURGE with the other. Hold CARVE before reaching a wall to catch it.</p>
+      <p>Clean releases build Flow and help you chain launches. Momentum carries between jumps; steer against your movement to brake.</p>
+      <p>Gold platforms save progress when you grip them or land on top. Cyan bridges let you pass through from below. Each surface scores once per run; recovery launches still work.</p>
+      <form method="dialog"><button class="btn">Got it</button></form>
+    </dialog>
 
     <div id="coach" role="status" style="position:fixed;top:calc(112px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(88vw,460px);text-align:center;pointer-events:none;color:#eef2ff;background:#101829e8;border-radius:12px;padding:10px 14px;font-size:13px;z-index:8" class="hidden"></div>
     <!-- pause -->
@@ -2007,6 +2053,10 @@
           button.setAttribute("aria-label", Sfx.muted ? "Unmute sound" : "Mute sound");
         },
         bindUI() {
+          document.getElementById("help-open").onclick = () => {
+            Input.clear();
+            document.getElementById("help-dialog").showModal();
+          };
           document.getElementById("mutebtn").onclick = () => {
             Sfx.muted = !Sfx.muted;
             try { localStorage.setItem("carve.muted", String(Sfx.muted)); } catch {}
