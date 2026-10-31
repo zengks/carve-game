@@ -75,3 +75,15 @@ This is not a full manual relic climb or physical-device validation. Fun,
 retention, demand, sustainable revenue and native parity remain unproven. Keep
 the experiment on preview while pursuing longer real-input runs and reviewing
 whether choices create interesting route decisions rather than only extra bounty.
+
+The gameplay checkpoint `7105f5b` is published in draft
+[PR #14](https://github.com/zengks/carve-game/pull/14), with passing Node 24/26
+push and PR checks. Its
+[Vercel preview](https://carve-game-ogdtuhqdq-zengksoutlookcoms-projects.vercel.app/?relics=1)
+is Ready. A separate deployed touch attempt missed the first timing gate and
+returned seamlessly to a lower ledge; a fresh test attempt then cleared it using
+input timed from the rendered cursor. Pulse plus a leftward pad drag reached the
+143 m cache (peak 172 m). Its three choices survived refresh at 320×568, and Skip
+returned directly with no equipped relic or repeated cache. Desktop inventory
+was checked at 1366×768; no browser console errors occurred during these checks.
+Production remains Ready on main `37bd5f0` with no trial deployment promoted.

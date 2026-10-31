@@ -18,8 +18,14 @@ Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
   refresh/recovery; bank/Game Over starts a fresh loadout only on a new run.
 - [x] Verify both control layouts, safe offer input/clock handling, both rifts,
   skill/reward idempotency, data isolation and good-release route reachability.
-- [ ] Publish only a branch preview and perform browser interaction checks. Keep
+- [x] Publish only a branch preview and perform browser interaction checks. Keep
   it separate from the live game; record player-fun/retention evidence as open.
+
+Checkpoint: draft PR #14, gameplay commit `7105f5b`; all Node 24/26 push and PR
+checks pass, and its Vercel preview is Ready. Deployed touch play reached the
+143 m cache, preserved choices through refresh and returned directly on Skip.
+Local UI testing separately verified equipping Resonance and both control schemes.
+See `docs/relic-trial.md` for limits and the result contract.
 
 The mobile chat independently owns current First Ascent tablet/window/local-save
 compatibility. Shared native endless/relic implementation remains a later task.
@@ -28,8 +34,12 @@ advertising is included in this gameplay trial.
 
 ## Queued after this milestone
 
-1. Review trial findings and the mirrored native compatibility evidence; fix
+1. Continue the real-input relic route beyond the first cache to the second and
+   third caches, and exercise alternate loadouts. The 1,000 m automated climbs
+   establish reachability only. Review whether choices create interesting route
+   decisions before adding more bounty-only effects.
+2. Review trial findings and the mirrored native compatibility evidence; fix
    concrete usability or correctness failures before expanding content.
-2. Reconcile a minimal shared rules/result contract and deterministic fixtures
+3. Reconcile a minimal shared rules/result contract and deterministic fixtures
    for the eventual one-game/native direction, preserving old record provenance.
-3. Develop the next local gameplay comparison based on what the trial reveals.
+4. Develop the next local gameplay comparison based on what the trial reveals.
