@@ -748,3 +748,50 @@ confirmed paused reload recovery. It exposed the offscreen target and overlappin
 landmark label, both corrected. This is not a completed manual five-section run
 or a physical-device test. The baseline is ready for branch review and further
 human playtesting, not established fun/retention evidence.
+
+## Manual touch review and second trial revision — 2026-10-30
+
+A UI-only browser run traversed all five opening sections, reached **717 m** by
+ordinary movement after earlier skill assistance, then used Skyhook to continue
+to **784 m / 7,050 points / 82.3 active seconds**. It used One thumb followed by
+Two thumbs, two Rocket Pulse activations and three Skyhook activations, with
+inspection pauses. No keyboard gameplay, player-state injection or autoplay was
+used. The banked Practice record lists both touch layouts and zero rift clears.
+This is browser pointer testing, not physical multi-touch or a no-skill run.
+
+The marked rescue wall was approached while descending with separate touch
+steering, then a fresh CARVE contact launched the player back upward. A separate
+three-life run physically landed on the shortcut but hit an overhang and fell;
+the miss cost exactly one life and restored the checkpoint with two remaining.
+That exposed a geometry problem missed by the original ideal-position test.
+
+The second trial revision repairs the spring corridor: the pad is x=740–880,
+its shard is at x=810, row 15's main wall moves to x=300, and row 16's to x=740.
+The right outer pair shifts together by 90 units across rows 11–17 to preserve
+its alternating rhythm and clear the spring's overhead exit. The spring is a
+landing-only surface; held CARVE cannot latch its edge and interrupt the boost.
+This keeps the normal good-release route and both outer routes traversable.
+
+Skyhook now selects main/resting ledges and excludes springboards, rather than
+silently putting players on an optional spring or exposed outer ledge. A missing
+safe target leaves the cooldown untouched. Second Chance and Observatory use a
+wider, centered main-lane view; an actual outer overshoot still follows the player.
+A falling rescue direction/distance cue remains available outside the centered
+view. The marked wall has its own rescue notice. The two-thumb rift action moves
+beside the lower controls instead of covering the next landmark. Passing the
+opening remains acknowledged when returning below the final landmark.
+
+Geometry revision is now **course 4**, with records marked **variety-v2** (Trial 2
+in Records). Profile/run keys remain unchanged. Older trial records and wallet
+are retained, with trial labels; local bests include both unverified trial
+revisions. A course-3 active snapshot is retained but not resumed into mismatched
+geometry: the menu explains the revision and waits for an explicit Begin action
+before replacing it. Released-game storage remains separate and untouched.
+
+Full build passes, including all prior regression/recovery/challenge/input,
+endurance, outer-route, cache and disabled-handoff checks. There are 23 variety
+checks; the expanded physical spring test covers eight fixed seeds, five landing
+positions spanning the pad and three incoming horizontal speeds (120 cases),
+requiring a fresh upper main-wall catch without losing a Challenge life. Added
+checks cover safe Skyhook landings/refusal, late-section camera/overshoot/rescue
+cues, completion after reload and the explicit older-course restart boundary.

@@ -35,7 +35,7 @@ test('the shortcut shard cannot pay twice across reload or checkpoint reconstruc
 test('a fresh descending catch on the visible rescue wall saves a life without granting bounty',()=>{
  const g=load();g.Level.ensure(4750);const b=g.Level.blocks.find(b=>b.rescue);assert(b&&b.grip&&!b.hazard);
  Object.assign(g.Player,{x:b.x+b.w,y:b.y+70,vx:0,vy:-350,onGround:false});g.Journey.peak=b.y+500;g.Journey.fallAnchor=b.y+500;g.Journey.contracts();const coins=g.Profile.coins;down();step(g);
- assert.equal(g.Player.carve?.block.id,b.id);assert(g.Player.carve.manual);assert.equal(g.Journey.rescues,1);assert.equal(g.Journey.lives,3);assert.equal(g.Profile.coins,coins);assert.match(g.Game.notice,/RESCUED/);
+ assert.equal(g.Player.carve?.block.id,b.id);assert(g.Player.carve.manual);assert.equal(g.Journey.rescues,1);assert.equal(g.Journey.lives,3);assert.equal(g.Profile.coins,coins);assert.match(g.Game.notice,/RESCUE WALL/);
 });
 test('missing the rescue wall costs one life at the world boundary and resets its recovery anchor',()=>{
  const g=load();g.Level.ensure(4750);const b=g.Level.blocks.find(b=>b.rescue);g.Journey.peak=b.y+500;g.Journey.fallAnchor=b.y+500;
@@ -57,7 +57,7 @@ test('falling HUD reports the remaining rescue space; normal HUD names a section
 });
 test('reload retains trial course, remaining lives, rescue count and exact fall boundary',()=>{
  const session=new Map(),local=new Map();let g=load({session,local});g.Player.y=1700;g.Journey.peak=2200;g.Journey.fallAnchor=2200;g.Journey.rescues=2;g.Journey.lives=1;g.RunSave.write();const floor=g.Level.fallFloor();
- g=loadGame({session,local});assert(g.Game.running&&g.Game.paused);assert.equal(g.RunSave.read().course,3);assert.equal(g.Level.fallFloor(),floor);assert.equal(g.Journey.rescues,2);assert.equal(g.Journey.lives,1);
+ g=loadGame({session,local});assert(g.Game.running&&g.Game.paused);assert.equal(g.RunSave.read().course,4);assert.equal(g.Level.fallFloor(),floor);assert.equal(g.Journey.rescues,2);assert.equal(g.Journey.lives,1);
 });
 test('legacy game profile, wallet and active run remain untouched by the isolated experiment',()=>{
  const oldProfile=JSON.stringify({version:1,name:'Existing',coins:90,best:500}),oldRun='old active run';const local=new Map([['carve.expedition.profile.v1',oldProfile]]),session=new Map([['carve.expedition.run.v1',oldRun]]);
@@ -95,5 +95,40 @@ test('keyboard good releases clear all five sections without skills or perfects'
   if(P.onGround)I.jumpBuf=T.JUMP_BUFFER;G.sim(STEP);peak=Math.max(peak,P.y);
  }
  assert(peak>=10064);assert.equal(G.perfects,0);assert.equal(g.Journey.cooldown,0);assert.equal(g.Journey.lives,3);
+});
+test('Skyhook chooses a resting main ledge instead of the optional reward spring',()=>{
+ const g=load(),{Player:P,Journey:J,Level:L,Profile:F}=g;P.x=405;P.y=2450;L.ensure(P.y);F.unlocked.push('hook');F.equipped='hook';
+ assert(J.useSkill());const landed=L.blocks.find(b=>Math.abs(P.y-b.y-b.h-1)<1&&P.x>=b.x&&P.x+P.w<=b.x+b.w);
+ assert(landed&&(landed.spine||landed.rest));assert.notEqual(landed.feature,'spring');assert(!landed.shortcut);step(g,10);assert(P.onGround);assert.equal(P.vy,0);assert(!J.collected.has('t:13:9'));assert.equal(J.lives,3);
+});
+test('Skyhook refuses a region with only springs or exposed outer ledges without spending cooldown',()=>{
+ const g=load(),{Player:P,Journey:J,Level:L,Profile:F}=g;F.unlocked.push('hook');F.equipped='hook';P.x=400;P.y=3000;
+ L.blocks=[{id:'r:13:1',x:700,y:3260,w:180,h:18,grip:true,feature:'spring',shortcut:true},{id:'b:14:4',x:820,y:3370,w:150,h:160,grip:true}];
+ const before=[P.x,P.y];assert(!J.useSkill());assert.deepEqual([P.x,P.y],before);assert.equal(J.cooldown,0);
+});
+test('late opening camera shows rescue and landmark targets while an outer overshoot stays visible',()=>{
+ for(const y of [4510,6860])for(const x of [200,600,1200]){
+  const g=load();g.Level.ensure(y);Object.assign(g.Player,{x,y});Object.assign(g.Game,{W:390,H:844,dpr:1});Object.assign(g.Cam,{x:x+17,y:y+173,zoom:1,shake:0});
+  let m;g.Game.ctx.setTransform=(...a)=>m=a;g.Game.render();const playerX=(x+17)*m[0]+m[4];assert(playerX>20&&playerX<370);
+  if(x<1000)for(const b of g.Level.blocks.filter(b=>b.rescue||b.rest||b.spine&&Math.abs(b.y-y)<300)){assert(b.x*m[0]+m[4]>=0);assert((b.x+b.w)*m[0]+m[4]<=390);}
+ }
+ const g=load();g.Level.ensure(4750);g.Player.x=1200;g.Player.y=4750;g.Player.vy=-400;g.Journey.fallAnchor=5300;g.Game.syncHUD();assert.match(document.getElementById('contractline').textContent,/Rescue ←/);
+});
+test('passing all five sections stays acknowledged when revisiting lower ground after reload',()=>{
+ const session=new Map(),local=new Map();let g=load({session,local});g.Journey.peak=7240;g.Journey.fallAnchor=7240;g.Player.y=6900;g.Player.vy=0;g.Level.ensure(6900);g.Game.syncHUD();assert.match(document.getElementById('contractline').textContent,/OPENING CLEARED/);g.RunSave.write();
+ g=loadGame({session,local});g.Game.syncHUD();assert.match(document.getElementById('contractline').textContent,/OPENING CLEARED/);g.Player.vy=-400;g.Game.syncHUD();assert.match(document.getElementById('contractline').textContent,/RECOVERY/);
+});
+test('every part of the shortcut pad clears the overhang and permits a fresh upper catch',()=>{
+ for(const seed of [1,8,39,44,60,69,71,76])for(const x of [712,740,790,840,874])for(const vx of [-360,0,360]){
+  const g=load(),{Player:P,Level:L,Journey:J}=g;J.seed=seed;L.build();L.ensure(3140);const b=L.blocks.find(b=>b.shortcut);Object.assign(P,{x,y:b.y+b.h+1,vx,vy:-240,onGround:false});J.fallAnchor=P.y;
+  P.collide(STEP);J.update(STEP);assert.equal(P.vy,1450);down();move(125);let caught=false;
+  for(let i=0;i<200;i++){step(g);if(P.carve?.block.spine&&P.carve.block.row>=15){caught=true;break;}}
+  assert(caught,`seed ${seed}, landing ${x}, incoming speed ${vx}`);assert.equal(J.lives,3);
+ }
+});
+test('an older trial run is kept with an explanation until the player explicitly starts the revised course',()=>{
+ const session=new Map(),local=new Map();let g=load({session,local});g.Profile.credit(30);g.RunSave.write();const old=JSON.parse(session.get(g.RunSave.key));old.course=3;const raw=JSON.stringify(old);session.set(g.RunSave.key,raw);
+ g=loadGame({session,local});assert(!g.Game.running);assert.equal(session.get(g.RunSave.key),raw);assert.equal(g.Profile.coins,30);assert.match(document.getElementById('menu-progress').textContent,/Course revised.*Choose Begin/);
+ document.getElementById('play').onclick();assert(g.Game.running);assert.equal(g.RunSave.read().course,4);assert(!g.RunSave.incompatibleCourse);assert.equal(g.Profile.coins,30);
 });
 console.log(`${passed} variety checks passed`);

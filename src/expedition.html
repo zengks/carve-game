@@ -533,6 +533,10 @@
       @media(max-width:620px) { .menu-layout { padding-top:14px; padding-bottom:16px; } .menu-layout .keys { display:none; } .menu-layout .title { font-size:60px; } .menu-layout .brand-logo { width:66px; height:66px; } #menu-progress { font-size:10px; } }
       @media(max-height:480px) { #expedition-status { top:58px; } #contractline { display:none; } #coach { top:85px !important; max-width:44vw; font-size:10px !important; } #portal-enter { top:auto; bottom:22px; } #ability { bottom:104px; max-width:130px; min-height:48px; } .istouch #flowwrap,.istouch #combo { top:62px; } }
 
+      /* Keep optional portal actions beside touch controls, clear of the climbing view. */
+      .istouch:not(.one-thumb) #portal-enter { top:auto; bottom:calc(26px + env(safe-area-inset-bottom)); left:calc(148px + env(safe-area-inset-left)); transform:none; width:74px; min-height:58px; padding:7px; white-space:normal; font-size:11px; }
+      @media(min-width:700px) and (min-height:600px) { .istouch:not(.one-thumb) #portal-enter { left:calc(172px + env(safe-area-inset-left)); width:100px; } }
+
       /* One owned contact combines proportional steering and manual CARVE. */
       #one-pad { display:none; width:min(260px,calc(100vw - 32px)); height:132px; right:calc(16px + env(safe-area-inset-right)); bottom:calc(20px + env(safe-area-inset-bottom)); flex-direction:column; gap:8px; border-color:var(--cyan); border-radius:28px; font-size:14px; }
       #one-feedback { font-size:11px; font-weight:400; letter-spacing:0; color:var(--gold); }
@@ -1069,7 +1073,7 @@
       // Deterministic six-column streams. Only the current 16-row neighborhood lives
       // in memory; returning to an old checkpoint reconstructs its geometry.
       const Level = {
-        course:3,
+        course:4,
         encounters:[
           {name:'LAUNCH GARDEN',hint:'Find the gold beacon. Hold, steer and release through the first catches.',color:'#38f0e0'},
           {name:'WIND GAP',hint:'The gap opens wide. Drag toward the opposite wall; neutral launches may fall short.',color:'#9bcaff'},
@@ -1081,7 +1085,7 @@
         stage(y) { return Math.min(4,Math.floor(Math.max(0,y-150)/1380)); },
         shape(row,column,spine) {
           const stage=Math.floor(row/6);
-          const shift=spine && stage===1 ? (column===2?-120:120) : spine && row===16 ? 120 : 0;
+          const shift=spine && stage===1 ? (column===2?-120:120) : spine && row===16 ? 220 : spine && row===15 ? 160 : !spine && column>=4 && row>=11 && row<=17 ? 90 : 0;
           return {x:this.columns[column]+shift,w:spine && stage===4?190:150,h:spine && stage===1?180:160};
         },
         fallFloor() { return Math.max(this.startY-200,Player.respawn.y-600,Journey.fallAnchor-1000); },
@@ -1124,8 +1128,8 @@
             }
             if ((r % 2 === 0 && !(r>=6 && r<12)) || r===9) add(`r:${r}`, 330, y + 190, r>=24&&r<30?190:140, 16, 'rail', {row:r, feature:r % 6 === 2 ? 'spring' : '', biome});
             if (r===13) {
-              add('r:13:1',700,y+120,180,18,'rail',{row:r,feature:'spring',shortcut:true,biome});
-              this.tokens.push({id:'t:13:9',row:r,x:790,y:y+220,value:8});
+              add('r:13:1',740,y+120,140,18,'rail',{row:r,feature:'spring',shortcut:true,grip:false,biome});
+              this.tokens.push({id:'t:13:9',row:r,x:810,y:y+220,value:8});
             }
             if (r===20) add('b:20:9',375,y-270,50,180,'rock',{row:r,rescue:true,biome});
             if (r<30 && r%6===5) {
@@ -1318,7 +1322,7 @@
         },
 
         startCarve(t) {
-          if (Input.manualHeld() && this.vy < -250 && this.y < Journey.fallAnchor-160) Journey.onRescue();
+          if (Input.manualHeld() && this.vy < -250 && this.y < Journey.fallAnchor-160) Journey.onRescue(t.block);
           this.carve = { ...t, charge: 0, manual: Input.manualHeld() };
           if (Game.lesson < 2) Game.lesson = 2;
           this.state = "CARVE";
@@ -1763,7 +1767,7 @@
           this.load();
           const bestKey = Journey.mode === 'challenge' ? 'challengeBest' : 'best';
           this[bestKey] = Math.max(this[bestKey], Math.floor((Journey.peak - 64) / 10));
-          const record = {id:Journey.id, course:'variety-v1', rescues:Journey.rescues, mode:Journey.mode, rules:Journey.controlsUsed.some(c=>c==='one'||c==='two')?'manual-touch-v1':'web-v2', controls:[...Journey.controlsUsed], outcome, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
+          const record = {id:Journey.id, course:'variety-v2', rescues:Journey.rescues, mode:Journey.mode, rules:Journey.controlsUsed.some(c=>c==='one'||c==='two')?'manual-touch-v1':'web-v2', controls:[...Journey.controlsUsed], outcome, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
           this.records = this.records.filter(r => r.id !== record.id);
           if (record.height > 0) this.records.push(record);
           this.trimRecords(); this.save();
@@ -1796,9 +1800,9 @@
           Object.assign(this,{peak:64,fallAnchor:64,rescues:0,shards:0,clean:0,wins:0,cooldown:0,wingTime:0,quests:[0,0,0],rift:null,nearest:null,lastUI:''});
           this.collected = new Set(); this.visited = new Set();
         },
-        onRescue() {
+        onRescue(block) {
           // A catch is a rescue only during a genuine descending flight. No extra payout.
-          this.rescues++; this.notify('RESCUED · fresh catch · no life lost');
+          this.rescues++; this.notify(`${block?.rescue ? 'RESCUE WALL' : 'RESCUED'} · fresh catch · no life lost`);
         },
         notify(text, urgent = false) { if (!urgent && Game.noticeTime > 0 && /^(FALL|SPIKES) ·/.test(Game.notice)) return; Game.notice = text; Game.noticeTime = 4; },
         init() {
@@ -1837,7 +1841,7 @@
           addEventListener('blur',suspend); document.addEventListener('visibilitychange',() => { if (document.hidden) suspend(); });
           this.menuStatus();
         },
-        menuStatus() { document.getElementById('menu-progress').textContent = `Variety trial · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}`; },
+        menuStatus() { document.getElementById('menu-progress').textContent = `Variety trial · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}`; },
         buy(id) {
           const skill = this.skills[id]; if (!skill) return false;
           Profile.load();
@@ -1871,7 +1875,7 @@
           for (const [i,r] of records.entries()) {
             const row = document.createElement('li');
             const layout = Array.isArray(r.controls) ? r.controls.filter(c=>['one','two','keyboard'].includes(c)).map(c=>({one:'1 thumb',two:'2 thumbs',keyboard:'keyboard'})[c]).join(' / ') : '';
-            row.textContent = `${i + 1}. ${r.name} — ${r.height} m · ${r.score} pts · ${r.portals} rift${r.portals === 1 ? '' : 's'} cleared${layout ? ' · ' + layout : ''}`;
+            row.textContent = `${i + 1}. ${r.name} — ${r.height} m · ${r.score} pts · ${r.portals} rift${r.portals === 1 ? '' : 's'} cleared${r.course === 'variety-v1' ? ' · Trial 1' : r.course === 'variety-v2' ? ' · Trial 2' : ''}${layout ? ' · ' + layout : ''}`;
             rows.appendChild(row);
           }
           if (!records.length) rows.textContent = `No ${mode} records yet. Climb to set your first height.`;
@@ -1924,7 +1928,7 @@
           Player.groundCharge = null;
           if (!Profile.unlocked.includes(id)) return false;
           if (id === 'hook') {
-            const targets = Level.blocks.filter(b => b.grip && !b.hazard && b.y > Player.y + 220 && b.y < Player.y + 850 && Math.abs(b.x - Player.x) < 600);
+            const targets = Level.blocks.filter(b => b.grip && !b.hazard && (b.spine || b.rest) && b.feature !== 'spring' && b.y > Player.y + 220 && b.y < Player.y + 850 && Math.abs(b.x - Player.x) < 600);
             if (!targets.length) { this.notify('SKYHOOK · climb closer to an upper ledge'); return false; }
             targets.sort((a,b) => b.y - a.y); this.landOn(targets[0]);
           } else {
@@ -1986,7 +1990,9 @@
           const compass = nearbyRift ? ` · Rift ${Math.abs(nearbyRift.x - Player.x) < 100 ? (nearbyRift.y > Player.y ? '↑' : '↓') : nearbyRift.x > Player.x ? '→' : '←'} ${Math.ceil(Math.hypot(nearbyRift.x - Player.x - 17,nearbyRift.y - Player.y - 23) / 10)} m` : '';
           const stage=Level.stage(Player.y), encounter=Level.encounter(Player.y);
           const falling=Player.vy < -250 && Player.y < this.fallAnchor-160;
-          const contract = falling ? `RECOVERY · ${Math.max(0,Math.ceil((Player.y-Level.fallFloor())/10))} m to fall limit · ${this.rescues} rescues` : Player.y<7050 ? `${stage+1}/5 · ${encounter.name} · ${Math.max(0,Math.ceil((150+(stage*6+5)*230+210-Player.y)/10))} m to landmark` : `ENDLESS FRONTIER · ${this.rescues} rescues${compass}`;
+          const rescue = Level.blocks.find(b=>b.rescue && Player.y>b.y && Player.y<b.y+b.h+700);
+          const rescueCue = falling && rescue ? `Rescue ${rescue.x + rescue.w/2 > Player.x+17 ? '→' : '←'} ${Math.ceil(Math.abs(rescue.x+rescue.w/2-Player.x-17)/10)} m` : `${this.rescues} rescues`;
+          const contract = falling ? `RECOVERY · ${Math.max(0,Math.ceil((Player.y-Level.fallFloor())/10))} m to fall limit · ${rescueCue}` : Player.y<7050 && this.peak>=7050 ? `OPENING CLEARED · revisit ${encounter.name}` : Player.y<7050 ? `${stage+1}/5 · ${encounter.name} · ${Math.max(0,Math.ceil((150+(stage*6+5)*230+210-Player.y)/10))} m to landmark` : `ENDLESS FRONTIER · ${this.rescues} rescues${compass}`;
           if (document.getElementById('contractline').textContent !== contract) document.getElementById('contractline').textContent = contract;
           const modeBadge = document.getElementById('run-mode-status');
           const modeText = this.mode === 'challenge' ? 'Challenge · ' + '♥'.repeat(this.lives) + '♡'.repeat(3 - this.lives) : 'Practice · ∞ lives';
@@ -1997,6 +2003,9 @@
           if (button.textContent !== label) button.textContent = label;
           button.disabled = this.cooldown > 0 || Game.paused;
           button.setAttribute('aria-label',label);
+          const portalButton = document.getElementById('portal-enter');
+          const portalLabel = document.body.classList.contains('istouch') ? 'Enter rift' : 'Enter secret rift · E';
+          if (portalButton.textContent !== portalLabel) portalButton.textContent = portalLabel;
           show('portal-enter',Game.running && !Game.paused && !!this.nearest);
           show('ability',Game.running); show('expedition-status',Game.running); show('contractline',Game.running);
         },
@@ -2098,12 +2107,13 @@
       };
 
       const RunSave = {
-        key:'carve.variety.run.v1',
+        key:'carve.variety.run.v1', incompatibleCourse:false,
         gameFields:['flow','score','combo','bestChain','perfects','time','comboTimer','lesson','noticeTime'],
         playerFields:['x','y','vx','vy','face','coyote','wallDir','surgeCD','stun','relatch'],
         journeyFields:['peak','fallAnchor','rescues','shards','clean','wins','cooldown','wingTime'],
         write() {
           if (!Game.running) return true;
+          this.incompatibleCourse = false;
           const pick = (o,fields) => Object.fromEntries(fields.map(k=>[k,o[k]]));
           const d = {version:1,course:Level.course,controlsUsed:Journey.controlsUsed,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
             state:Player.state,onGround:Player.onGround,respawn:{...Player.respawn},checkpoint:Player.checkpoint && {id:Player.checkpoint.id,x:Player.checkpoint.x,y:Player.checkpoint.y,kind:'check'},
@@ -2128,7 +2138,8 @@
         read() {
           try {
             const raw = sessionStorage.getItem(this.key); if (!raw || raw.length > 100000) return null;
-            const d = JSON.parse(raw), numeric = (o,fields) => o && fields.every(k=>Number.isFinite(o[k]) && typeof o[k] === 'number' && Math.abs(o[k]) <= 1e12);
+            const d = JSON.parse(raw); this.incompatibleCourse = d?.version === 1 && d.course === 3;
+            const numeric = (o,fields) => o && fields.every(k=>Number.isFinite(o[k]) && typeof o[k] === 'number' && Math.abs(o[k]) <= 1e12);
             if (d && d.mode === undefined && d.lives === undefined) { d.mode = 'practice'; d.lives = null; }
             if (!d || !['practice','challenge'].includes(d.mode) || (d.mode === 'practice' ? d.lives !== null : !Number.isInteger(d.lives) || d.lives < 1 || d.lives > 3)) return null;
             if (d.controls !== undefined && (!d.controls || !['one','two'].includes(d.controls.scheme) || !['left','right'].includes(d.controls.hand))) return null;
@@ -2236,6 +2247,7 @@
             }
           });
           RunSave.restore();
+          if (!this.running) Journey.menuStatus();
           requestAnimationFrame((t) => this.frame(t));
         },
         resize() {
@@ -2424,11 +2436,14 @@
             ctx.fillRect(x,base-height,52*this.dpr,height);
           }
 
-          const wide = [1,2].includes(Level.stage(Player.y)) && Player.y<4290;
-          const z = Cam.zoom * this.dpr * Math.min(1, (W / this.dpr) / (wide?1000:620), (H / this.dpr) / 620);
+          const section = Level.stage(Player.y);
+          const wide = section >= 1 && Player.y < 7050;
+          const span = wide ? (section <= 2 ? 1000 : 850) : 620;
+          const z = Cam.zoom * this.dpr * Math.min(1, (W / this.dpr) / span, (H / this.dpr) / 620);
           this.worldScale = z/this.dpr;
           // Keep both columns visible on phones, but follow an overshoot off-lane.
-          const viewX = wide && Player.x>-160 && Player.x<970 ? Level.centerX : Cam.x;
+          const laneHalf = W / (2 * z);
+          const viewX = wide && Math.abs(Player.x + Player.w/2 - Level.centerX) < laneHalf - 60 ? Level.centerX : Cam.x;
           const sx = (Math.random() - 0.5) * Cam.shake * 22 * this.dpr,
             sy = (Math.random() - 0.5) * Cam.shake * 22 * this.dpr;
           ctx.save();
