@@ -936,3 +936,31 @@ was checked at 390×844 with the modal closed, pause overlay hidden and the clea
 notice visible. Timing input was selected from the rendered cursor position;
 no player state, rewards or trial outcomes were injected. Physical-device behavior
 remains unverified.
+
+## Native input evidence and a remaining rules difference
+
+The mobile chat reports its OS-delivered input milestone merged in mobile PR #39,
+main `3242cf6aa80a57def30d820f49ca0a50df92b17b`. Android shell input and public
+XCTest coordinate gestures passed outside-pad one-thumb release, pause, exact
+run/clock restoration in a different OS process and fresh input on the task
+tablets. These are emulator/simulator delivery checks. Physical performance,
+ergonomics and simultaneous multi-pointer behavior remain separate open gates.
+The mobile chat independently owns follow-up interruption/cancellation checks;
+all existing virtual-device data stays retained.
+
+The currently qualified games have a direction-rule difference, beyond tuning
+and coordinate systems. Native First Ascent starts facing right and a full
+negative release aim still launches right: the reported GOOD velocity is
+`(130.4, -470.4)` and PERFECT is `(148.4, -519.4)` in native coordinates. Web ground
+release uses the sign of horizontal drag as its launch direction. A focused web
+simulation with initial facing right, axis −1 and charge 0.45/0.70 produced
+GOOD `(-198, 598.5)` / PERFECT `(-198, 1064.7)`, setting facing to −1 in web's
+y-up coordinates. Vertical signs and magnitudes are not directly comparable;
+the horizontal-facing behavior is the product-rule difference to resolve.
+
+Keep both qualified behaviors and their existing record provenance for now.
+Before a common movement port, agree whether dragging aims within the next
+launch direction or can reverse it, then pin equivalent world-space cases and
+name a new compatible rules version. A common logo, field name or app data model
+does not establish physics parity. No native or web movement change is made by
+this coordination update; the relic preview remains isolated from production.

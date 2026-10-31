@@ -140,6 +140,12 @@ npm start       # serve the game for local play
 npm run build   # checks + tests, then publishable files in dist/
 ```
 
+The `codex/relic-choice-trial` branch adds an opt-in comparison at `/?relics=1`.
+The same preview without that query retains the baseline. Three safe-rest caches
+offer a choice of passive relics with isolated saves, wallets and bests. This
+experiment has not been released to production. See the
+[trial contract and evidence](docs/relic-trial.md).
+
 The game ships as one HTML file for zero-friction sharing. The `tests/` harness
 extracts the `<script>` block and runs the pure simulation under stubbed
 browser APIs (DOM, canvas 2d, Web Audio, rAF) in Node — so physics, level

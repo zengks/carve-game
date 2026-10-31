@@ -15,6 +15,9 @@
 - Preserve every existing simulator, app, save, profile and unrelated change.
   A failing test is not permission to reset data. Keep physical-device evidence,
   scripted checks, browser emulation and manual playthrough results distinct.
+- Continue useful milestones from `TASKS.md` without routine user-input gates.
+  Use Android emulators/iOS simulators only for device testing; do not request
+  phone unlocks or test participation under the current unattended-work steering.
 - Follow the latest release instructions and verify a branch preview before
   production. Keep gameplay experiments isolated. Autonomy does not authorize
   purchases, new hosted services, store publication or expanded security access.
