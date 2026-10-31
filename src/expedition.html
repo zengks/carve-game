@@ -614,6 +614,7 @@
       #return-layer p { font-size:15px; line-height:1.6; }
       .return-progress { height:3px; background:var(--cyan); margin-top:24px; transform-origin:left; transform:scaleX(var(--progress,0)); }
       #journal-dialog[open],#skill-dialog[open],#camp-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
+      #journal-dialog summary { min-height:44px; box-sizing:border-box; padding:12px 0; color:var(--cyan); font-size:13px; cursor:pointer; }
       #journal-entries { padding:0 20px; font-size:13px; line-height:1.7; }
       #camp-options { display:grid; gap:12px; margin-top:18px; }
       #camp-options button:disabled { opacity:1; color:var(--ink); border-style:dashed; cursor:default; }
@@ -748,7 +749,7 @@
         <h1 class="title">HOLD</h1>
         <p class="tag" id="pause-message">Time to read the next line.</p>
         <button class="btn" id="resume">Resume</button>
-        <button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost hidden" id="relic-loadout" aria-haspopup="dialog">Relics</button><button class="btn ghost" id="journal-open">Journal</button><button class="btn ghost" id="bank-open">Bank run</button><button class="btn ghost" id="controls-pause" aria-haspopup="dialog">Controls</button></div>
+        <button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost hidden" id="relic-loadout" aria-haspopup="dialog">Relics</button><button class="btn ghost" id="journal-open">Journal</button><button class="btn ghost hidden" id="camp-pause">Stop at camp</button><button class="btn ghost" id="bank-open">Bank run</button><button class="btn ghost" id="controls-pause" aria-haspopup="dialog">Controls</button></div>
       </div>
     </div>
 
@@ -787,9 +788,9 @@
       <button class="btn" id="rift-start">Accept the challenge</button><button class="btn hidden" id="rift-action">Seal the gate</button><button class="btn ghost" id="rift-exit">Leave without entering</button></div>
     </dialog>
     <div id="return-layer" class="hidden" role="status" aria-live="polite"><div><div class="eyebrow" id="return-label">returning to the climb</div><h2 id="return-title"></h2><p id="return-copy"></p><div class="return-progress"></div></div></div>
-    <dialog id="journal-dialog" aria-labelledby="journal-title"><div class="rift-body"><h2 id="journal-title">Field journal</h2><p>Gold shards earn bounty. Spend it on skill unlocks or camp services. Flow powers Surge. Perfect catches earn more Flow; neither currency is a life. Gold walls save the place you return to after losing a life.</p><p>Public runs have 3 lives. Your height record and bounty survive Game Over. Optional camp contracts risk only their stated deposit, and marked directional rings need you to cross in the arrow's direction.</p><p>In the new course, skills recharge by climbing: a PERFECT fresh catch restores 3 points, GOOD restores 2, other catches 1; a shard restores 1 and a directional ring 4. Waiting does not refill skills. Contracts can grant a ready skill, one Overdrive activation or a life.</p><ol id="journal-entries"></ol></div><div class="rift-actions"><button class="btn ghost" id="camp-guide">Plan the next camp</button><button class="btn" id="journal-close">Back</button></div></dialog>
+    <dialog id="journal-dialog" aria-labelledby="journal-title"><div class="rift-body"><h2 id="journal-title">Field journal</h2><details><summary>How bounty, Flow and lives work</summary><p>Gold shards earn bounty. Spend it on skill unlocks or camp services. Surge spends 26 Flow for a dash, separate from skill recharge. Perfect catches earn more Flow; neither currency is a life. Gold walls save the place you return to after losing a life.</p><p>Public runs have 3 lives. Your height record and bounty survive Game Over. Optional camp contracts risk only their stated deposit, and marked directional rings need you to cross in the arrow's direction.</p><p>Hollow gold shards above central ledges pay 1 bounty; wall-side shards pay 2 or 4. Both count for Courier, so the high route can finish its goal without diving below the ledges.</p><p>In the new course, skills recharge by climbing: a PERFECT fresh catch restores 3 points, GOOD restores 2, other catches 1; a shard restores 1 and a directional ring 4. Waiting does not refill skills. Contracts can grant a ready skill, one Overdrive activation or a life.</p></details><ol id="journal-entries"></ol></div><div class="rift-actions"><button class="btn ghost" id="camp-guide">Plan the next camp</button><button class="btn" id="journal-close">Back</button></div></dialog>
     <dialog id="skill-dialog" aria-labelledby="skill-title"><div class="rift-body"><div class="eyebrow">understand your equipment</div><h2 id="skill-title"></h2><p id="skill-copy"></p><p>Use between catches, after lifting your thumb. Changing equipment never refills your skill. In the new course, fresh catches and shards recharge it; waiting does not. You can read all skills again in the Workshop.</p></div><div class="rift-actions"><button class="btn" id="skill-confirm">Use this skill</button><button class="btn ghost" id="skill-cancel">Keep climbing</button></div></dialog>
-    <dialog id="camp-dialog" aria-labelledby="camp-title"><div class="rift-body"><div class="eyebrow">a moment to choose</div><h2 id="camp-title">Trail camp</h2><p id="camp-copy"></p><p id="camp-status" role="status"></p><div id="camp-options"></div></div><div class="rift-actions"><button class="btn" id="camp-repair">Restore one life · 18 bounty</button><button class="btn ghost" id="camp-close">Leave camp</button></div></dialog>
+    <dialog id="camp-dialog" aria-labelledby="camp-title"><div class="rift-body"><div class="eyebrow">a moment to choose</div><h2 id="camp-title">Trail camp</h2><p id="camp-copy"></p><p id="camp-status" role="status"></p><div id="camp-options"></div></div><div class="rift-actions"><button class="btn" id="camp-repair">Restore one life · 18 bounty</button><button class="btn ghost hidden" id="camp-rift">Explore nearby rift</button><button class="btn ghost" id="camp-close">Leave camp</button></div></dialog>
     <dialog id="bank-dialog" aria-labelledby="bank-title"><h2 id="bank-title">Bank this expedition?</h2><p>Your highest altitude joins this browser's records. Bounty and unlocks are kept. The next expedition starts at the ground.</p><button class="btn" id="bank-cancel" autofocus>Keep climbing</button><button class="btn ghost" id="bank-confirm">Bank &amp; end run</button></dialog>
 
     <dialog id="challenge-result" aria-labelledby="challenge-result-title">
@@ -1211,6 +1212,7 @@
               const shape=this.shape(r,c,spine);
               const b = add(`b:${r}:${c}`, shape.x, y + offset, shape.w, shape.h, kind, {row:r, column:c, spine, biome});
               this.tokens.push({id:`t:${r}:${c}`, row:r, x:b.x + (c % 2 ? -30 : 180), y:b.y + 65, value:spine ? 2 : 4});
+              if(FLOW_TRIAL&&spine)this.tokens.push({id:`t:${r}:7`,row:r,x:b.x+b.w/2+sign(this.centerX-b.x-b.w/2)*45,y:b.y+b.h+200,value:1,highLine:true});
               if (!spine && r > 3 && r % 6 === 3) add(`s:${r}:${c}`, b.x + (c < 2 ? -24 : 150), b.y + 25, 24, 65, 'spike', {row:r});
             }
             if ((r % 2 === 0 && !(FLOW_TRIAL ? r%30>=6&&r%30<12 : r>=6&&r<12)) || r===9) add(`r:${r}`, 330, y + 190, r>=24&&r<30?190:140, 16, 'rail', {row:r, feature:r % 6 === 2 ? 'spring' : '', biome});
@@ -1326,13 +1328,14 @@
         saveCheckpoint(b) {
           if (b.kind !== "check" || (this.checkpoint && b.y <= this.checkpoint.y)) return;
           this.checkpoint = b;
-          Game.notice = "CHECKPOINT SAVED — return here after a fall";
-          Game.noticeTime = 4;
+          if(FLOW_TRIAL)Journey.notify('CHECKPOINT SAVED — return here after a fall');
+          else { Game.notice = "CHECKPOINT SAVED — return here after a fall"; Game.noticeTime = 4; }
           Game.popup("SAVED", b.x + b.w / 2, b.y + b.h + 30, "#ffcf4d");
           this.respawn = { x: b.x + b.w / 2 - this.w / 2, y: b.y + b.h + 1 };
         },
         hit(fall = false) {
           if (!Game.running || Game.paused || this.stun > 0) return;
+          const origin={x:Cam.x,y:Cam.y};
           this.stun = 0.7;
           this.breakCombo();
           Game.flow = Math.max(0, Game.flow - 30);
@@ -1360,6 +1363,7 @@
           this.state = "AIR";
           this.carve = null;
           this.pole = null; this.groundCharge = null; Game.awaitingGrip = false; Journey.fallAnchor = this.y;
+          if(FLOW_TRIAL)Game.startReturn({kind:'recovery',duration:.8,origin,to:Math.max(0,Math.floor((this.y-64)/10))});
           if (Journey.mode === 'challenge') { RunSave.write(); Game.syncHUD(); }
         },
         breakCombo() {
@@ -2026,30 +2030,55 @@
       // Optional course decisions use the existing safe spine. Wallet and claim IDs
       // are committed together, so replaying a saved camp cannot pay twice.
       const Routes = {
-        contract:null, used:[], overdrive:0, campRow:null, previewing:false,
+        contract:null, used:[], overdrive:0, campRow:null, previewing:false, retryAt:0,
         kinds:{courier:{name:'Courier',goal:3,payout:18,copy:'Collect 3 different gold shards before the next camp. Earn 18 bounty total and refresh your skill.'},precision:{name:'Precision relay',goal:3,payout:26,copy:'Make 3 PERFECT catches on different surfaces before the next camp. Earn 26 bounty total and one Overdrive activation that bypasses a skill cooldown.'},rescue:{name:'Recovery specialist',goal:1,payout:20,copy:'Catch a wall with fresh input while descending after a miss. Earn 20 bounty total and restore one life, up to 3.'}},
-        reset(){this.contract=null;this.used=[];this.overdrive=0;this.campRow=null;this.previewing=false;},
+        reset(){this.contract=null;this.used=[];this.overdrive=0;this.campRow=null;this.previewing=false;this.retryAt=0;},
         snapshot(){return FLOW_TRIAL?{contract:this.contract,used:this.used.slice(-128),overdrive:this.overdrive}:null;},
         valid(d){return !FLOW_TRIAL || d===undefined || d===null || (Array.isArray(d.used)&&d.used.length<=128&&d.used.every(r=>Number.isInteger(r)&&r>=5&&r%6===5)&&[0,1].includes(d.overdrive)&&(!d.contract||(Object.hasOwn(this.kinds,d.contract.kind)&&['active','paid','failed'].includes(d.contract.state)&&Number.isInteger(d.contract.start)&&d.contract.start>=5&&d.contract.start%6===5&&Array.isArray(d.contract.targets)&&d.contract.targets.length<=3&&d.contract.targets.every(id=>typeof id==='string'&&id.length<80))));},
         restore(d){this.reset();if(FLOW_TRIAL&&d){this.contract=d.contract;this.used=d.used;this.overdrive=d.overdrive;}},
         nearby(){if(!FLOW_TRIAL||!Player.onGround||Math.abs(Player.vx)>30||Input.manualHeld())return null;return Level.blocks.find(b=>b.rest&&Journey.eligible(b.row)&&Player.x+Player.w>b.x&&Player.x<b.x+b.w&&Math.abs(Player.y-b.y-b.h)<3)?.row??null;},
+        beacon(){if(!FLOW_TRIAL||Input.manualHeld())return null;return Level.blocks.filter(b=>b.rest&&Journey.eligible(b.row)&&Math.hypot(Player.x+Player.w/2-b.x-b.w/2,Player.y-b.y-b.h)<320).sort((a,b)=>Math.abs(Player.y-a.y)-Math.abs(Player.y-b.y))[0]||null;},
+        riftTarget(){return Level.portals.find(p=>Journey.eligible(p.row)&&!Journey.visited.has(p.id)&&Math.hypot(Player.x+Player.w/2-p.x,Player.y+Player.h/2-p.y)<240)||null;},
+        enterRift(){if(this.previewing||!Game.paused||!document.getElementById('camp-dialog').open)return false;const p=this.riftTarget();if(!p)return false;this.close();if(Game.paused)return false;Journey.nearest=p;return Journey.enterPortal();},
         transaction(kind,amount){Profile.load();const id=Journey.id+':'+kind;if(Profile.routeLedger.includes(id)||Profile.coins+amount<0)return false;const coins=Profile.coins,ledger=[...Profile.routeLedger];Profile.coins=Math.min(1000000,Profile.coins+amount);Profile.routeLedger.push(id);Profile.routeLedger=Profile.routeLedger.slice(-1024);if(Profile.save())return true;Profile.coins=coins;Profile.routeLedger=ledger;return false;},
         preview(){this.previewing=true;this.campRow=Math.max(5,(Math.floor(Math.max(0,Player.y-150)/1380)+1)*6-1);this.render();document.getElementById('camp-dialog').showModal();},
-        open(){const row=this.nearby();if(row===null||Game.paused)return false;this.previewing=false;this.campRow=row;Game.togglePause();this.render();document.getElementById('camp-dialog').showModal();return true;},
+        present(row){this.previewing=false;this.campRow=row;this.render();document.getElementById('camp-dialog').showModal();},
+        open(fromPause=false){if(!Game.running||Game.returning||(Game.paused&&!fromPause))return false;const row=this.nearby();if(row!==null){if(!Game.paused)Game.togglePause();show('paused',false);this.present(row);return true;}const b=this.beacon();if(!b)return false;const origin={x:Cam.x,y:Cam.y};Journey.landOn(b);Player.y=b.y+b.h;Player.onGround=true;Player.state='GROUND';Game.startReturn({kind:'camp',camp:b.row,duration:.6,origin,to:Math.max(0,Math.floor((Player.y-64)/10))});RunSave.write();return true;},
         choices(row){return [['courier','precision'],['courier','rescue'],['precision','rescue']][Math.floor(row/6)%3];},
         coach(){const c=this.contract;return c?.state==='active'?this.kinds[c.kind].name.toUpperCase()+' · '+c.targets.length+'/'+this.kinds[c.kind].goal+' · '+({courier:'collect gold shards',precision:'PERFECT catches on new surfaces',rescue:'fresh descending rescue catch'}[c.kind])+' · 6 bounty staked':null;},
-        render(){const row=this.campRow;if(row===null)return;document.getElementById('camp-title').textContent=(this.previewing?'Next camp · ':'')+Level.encounters[Math.floor(row/6)%5].name;document.getElementById('camp-copy').textContent='Stake 6 bounty on a contract for the next section. Finish its goal for the listed total reward. A fall or passing the next camp loses only that deposit. Or buy a life and continue.';const options=document.getElementById('camp-options');options.textContent='';const choices=this.choices(row);for(const kind of choices){const k=this.kinds[kind],button=document.createElement('button');button.className='btn ghost';button.textContent=k.name+' · '+k.copy;button.disabled=this.previewing||this.used.includes(row)||Profile.coins<6;button.onclick=()=>this.accept(kind);options.appendChild(button);}document.getElementById('camp-status').textContent=(this.previewing?'Planning only · reach the marked rest ledge to buy or accept. ':'')+Profile.coins+' bounty · '+(this.contract?this.kinds[this.contract.kind].name+': '+this.contract.targets.length+'/'+this.kinds[this.contract.kind].goal+' · '+this.contract.state:'No contract active.');const repair=document.getElementById('camp-repair');document.getElementById('camp-close').textContent=this.previewing?'Back to journal':'Return to climb';repair.disabled=this.previewing||Journey.mode!=='challenge'||Journey.lives>=3||Profile.coins<18||Profile.routeLedger.includes(Journey.id+':repair:'+row);},
-        accept(kind){if(this.previewing||this.nearby()!==this.campRow||this.campRow===null||this.used.includes(this.campRow)||!this.choices(this.campRow).includes(kind)||!this.transaction('contract:'+this.campRow,-6))return false;if(this.contract?.state==='active')this.fail('replaced at camp');this.contract={kind,start:this.campRow,state:'active',targets:[]};this.used.push(this.campRow);Journey.notify(this.kinds[kind].name.toUpperCase()+' · 6 bounty staked · '+this.kinds[kind].copy,true);this.render();RunSave.write();return true;},
+        render(){const row=this.campRow;if(row===null)return;show('camp-rift',!this.previewing&&!!this.riftTarget());document.getElementById('camp-title').textContent=(this.previewing?'Next camp · ':'')+Level.encounters[Math.floor(row/6)%5].name;document.getElementById('camp-copy').textContent='Stake 6 bounty on a contract for the next section. Finish its goal for the listed total reward. A fall or passing the next camp loses only that deposit. Or buy a life and continue.';const options=document.getElementById('camp-options');options.textContent='';const choices=this.choices(row);for(const kind of choices){const k=this.kinds[kind],button=document.createElement('button');button.className='btn ghost';button.textContent=k.name+' · '+k.copy;button.disabled=this.previewing||this.used.includes(row)||Profile.coins<6;button.onclick=()=>this.accept(kind);options.appendChild(button);}document.getElementById('camp-status').textContent=(this.previewing?'Planning only · use Stop at camp near its beacon to buy or accept. ':'')+Profile.coins+' bounty · '+(this.contract?this.kinds[this.contract.kind].name+': '+this.contract.targets.length+'/'+this.kinds[this.contract.kind].goal+' · '+this.contract.state:'No contract active.');const repair=document.getElementById('camp-repair');document.getElementById('camp-close').textContent=this.previewing?'Back to journal':'Return to climb';repair.disabled=this.previewing||Journey.mode!=='challenge'||Journey.lives>=3||Profile.coins<18||Profile.routeLedger.includes(Journey.id+':repair:'+row);},
+        accept(kind){if(this.contract?.state==='active'&&this.contract.targets.length>=this.kinds[this.contract.kind].goal){this.settle();if(this.contract.state==='active')return false;}if(this.previewing||this.nearby()!==this.campRow||this.campRow===null||this.used.includes(this.campRow)||!this.choices(this.campRow).includes(kind)||!this.transaction('contract:'+this.campRow,-6))return false;if(this.contract?.state==='active')this.fail('replaced at camp');this.contract={kind,start:this.campRow,state:'active',targets:[]};this.used.push(this.campRow);Journey.notify(this.kinds[kind].name.toUpperCase()+' · 6 bounty staked · '+this.kinds[kind].copy,true);this.render();RunSave.write();return true;},
         repair(){if(this.previewing||this.nearby()!==this.campRow||this.campRow===null||Journey.mode!=='challenge'||Journey.lives>=3||!this.transaction('repair:'+this.campRow,-18))return false;Journey.lives++;Journey.notify('CAMP REPAIR · −18 bounty · '+Journey.lives+'/3 lives',true);this.render();Game.syncHUD();RunSave.write();return true;},
         close(){document.getElementById('camp-dialog').close();this.campRow=null;if(this.previewing){this.previewing=false;return;}Input.clear();if(Game.paused&&Game.windowFocused&&!document.hidden)Game.togglePause();},
-        event(kind,id,row){const c=this.contract;if(!FLOW_TRIAL||!c||c.state!=='active'||kind!==c.kind||row<c.start||row>c.start+6||c.targets.includes(id))return;c.targets.push(id);const k=this.kinds[kind];if(c.targets.length<k.goal)return;c.state='paid';if(this.transaction('payout:'+c.start,k.payout)){if(kind==='precision')this.overdrive=1;if(kind==='courier')Journey.cooldown=0;if(kind==='rescue'&&Journey.mode==='challenge')Journey.lives=Math.min(3,Journey.lives+1);Journey.notify('CONTRACT COMPLETE · '+k.name+' · +'+k.payout+' bounty · '+(kind==='precision'?'Overdrive ready':kind==='courier'?'skill ready':'one life restored, capped at 3'),true);}RunSave.write();},
-        fail(reason){if(this.contract?.state==='active'){this.contract.state='failed';Journey.notify('CONTRACT ENDED · '+reason+' · 6 bounty deposit lost',true);RunSave.write();}},
-        update(){if(this.contract?.state==='active'&&Player.y>150+(this.contract.start+6)*230+220)this.fail('next camp passed');},
+        event(kind,id,row){
+          const c=this.contract;
+          if(!FLOW_TRIAL||!c||c.state!=='active'||kind!==c.kind||row<c.start||row>c.start+6)return false;
+          const goal=this.kinds[kind].goal;
+          if(!c.targets.includes(id)&&c.targets.length<goal)c.targets.push(id);
+          if(c.targets.length<goal)return false;
+          return this.settle();
+        },
+        settle(){
+          const c=this.contract;if(!c||c.state!=='active')return false;
+          const k=this.kinds[c.kind];if(c.targets.length<k.goal)return false;
+          this.retryAt=Game.time+1;Profile.load();
+          if(Profile.routeLedger.includes(Journey.id+':payout:'+c.start)){c.state='paid';RunSave.write();return false;}
+          if(!this.transaction('payout:'+c.start,k.payout)){Journey.notify('CONTRACT EARNED · reward saving is unavailable; your completed goal is kept and will retry.',true);RunSave.write();return false;}
+          c.state='paid';
+          if(c.kind==='precision')this.overdrive=1;
+          if(c.kind==='courier')Journey.cooldown=0;
+          const livesBefore=Journey.lives;
+          if(c.kind==='rescue'&&Journey.mode==='challenge')Journey.lives=Math.min(3,Journey.lives+1);
+          const extra=c.kind==='precision'?'Overdrive ready':c.kind==='courier'?'skill ready':Journey.mode!=='challenge'?'Practice · no life limit':Journey.lives>livesBefore?'+1 life · '+Journey.lives+'/3':'lives already full · 3/3';
+          Journey.notify('CONTRACT COMPLETE · '+k.name+' · +'+k.payout+' bounty · '+extra,true);RunSave.write();return true;
+        },
+        fail(reason){if(this.contract?.state==='active'&&this.contract.targets.length<this.kinds[this.contract.kind].goal){this.contract.state='failed';Journey.notify('CONTRACT ENDED · '+reason+' · 6 bounty deposit lost',true);RunSave.write();return true;}return false;},
+        update(){const c=this.contract;if(c?.state!=='active')return;if(c.targets.length>=this.kinds[c.kind].goal){if(Game.time>=this.retryAt)this.settle();return;}if(Player.y>150+(c.start+6)*230+220)this.fail('next camp passed');},
       };
       const Journal = {
         entries:[], pendingSkill:null,
         log(text) { if(this.entries[0]!==text)this.entries.unshift(text);this.entries=this.entries.slice(0,12); },
-        open() { if(Game.running&&!Game.paused)Game.togglePause();Input.clear();const list=document.getElementById('journal-entries');list.textContent='';for(const text of this.entries){const li=document.createElement('li');li.textContent=text;list.appendChild(li);}document.getElementById('journal-dialog').showModal(); },
+        open() { if(Game.running&&!Game.paused)Game.togglePause();Input.clear();const list=document.getElementById('journal-entries');list.textContent='';if(FLOW_TRIAL&&Routes.contract){const c=Routes.contract,k=Routes.kinds[c.kind],li=document.createElement('li');li.textContent='Contract: '+k.name+' · '+c.targets.length+'/'+k.goal+' · '+c.state+(c.state==='failed'?' · only the 6 bounty deposit was lost':'');list.appendChild(li);}for(const text of this.entries){const li=document.createElement('li');li.textContent=text;list.appendChild(li);}document.getElementById('journal-dialog').showModal(); },
         skill() { if(!Game.running||Game.paused||Input.manualHeld())return false;if(Journey.cooldown>0&&!Routes.overdrive){Journey.notify('SKILL RECHARGING · '+Math.ceil(Journey.cooldown)+(FLOW_TRIAL?' recharge points needed · fresh catches and shards refill skills':' seconds remaining'));return false;}const id=Profile.equipped;if(Profile.lessons.includes(id))return Journey.useSkill();this.pendingSkill=id;Game.togglePause();const skill=Journey.skills[id];document.getElementById('skill-title').textContent=skill.name;document.getElementById('skill-copy').textContent=(FLOW_TRIAL?({pulse:'Launch upward from your current position.',wing:'Launch and float with light gravity for eight seconds.',hook:'Zip to a higher safe ledge in reach.'}[id])+' Needs '+skill.cd+' recharge points after use. Fresh catches restore 1–3 points, shards 1, directional rings 4. Waiting does not recharge. ':skill.description+' '+skill.cd+' second cooldown. ')+(id==='hook'?'Requires a safe higher ledge in reach; it will not spend the activation when no ledge is available.':id==='wing'?'After the launch you can steer with lighter gravity for eight seconds.':'An upward impulse from your current position; keep steering to find the next catch.');document.getElementById('skill-dialog').showModal();return false; },
         closeSkill(use) { const id=this.pendingSkill;this.pendingSkill=null;document.getElementById('skill-dialog').close();if(use&&id){Profile.load();if(!Profile.lessons.includes(id))Profile.lessons.push(id);Profile.save();}if(Game.paused&&Game.windowFocused&&!document.hidden)Game.togglePause();if(use&&id===Profile.equipped&&!Game.paused)Journey.useSkill(); },
       };
@@ -2091,7 +2120,7 @@
         },
         notify(text, urgent = false) {
           Journal.log(text);
-          if (!urgent && Game.noticeTime > 0 && (/^(FALL|SPIKES) ·/.test(Game.notice) ||
+          if (!urgent && Game.noticeTime > 0 && (/^(FALL|SPIKES|CONTRACT COMPLETE) ·/.test(Game.notice) ||
               (Game.notice.startsWith('OBSERVATORY CLEARED ·') && !text.includes(' · RELIC +')))) return;
           Game.notice = text; Game.noticeTime = 5;
         },
@@ -2127,6 +2156,8 @@
           document.getElementById('skill-dialog').addEventListener('cancel',e=>{e.preventDefault();Journal.closeSkill(false);});
           document.getElementById('portal-enter').onclick = () => this.openNearby();
           document.getElementById('camp-close').onclick=()=>Routes.close();
+          document.getElementById('camp-rift').onclick=()=>Routes.enterRift();
+          document.getElementById('camp-pause').onclick=()=>Routes.open(true);
           document.getElementById('camp-repair').onclick=()=>Routes.repair();
           document.getElementById('camp-dialog').addEventListener('cancel',e=>{e.preventDefault();Routes.close();});
           for(const type of ['pulse','memory'])document.getElementById('rift-'+type).onclick=()=>this.pickTrial(type);
@@ -2189,7 +2220,7 @@
           if (!records.length) rows.textContent = `No ${mode} records yet. Climb to set your first height.`;
         },
         onHit(fall) {
-          const contractLost=Routes.contract?.state==='active';Routes.fail(fall?'fall':'spike hit');
+          const contractLost=Routes.fail(fall?'fall':'spike hit');
           if (this.mode !== 'challenge') {
             this.notify(`${fall ? 'FALL' : 'SPIKES'} · returned to checkpoint · Practice: unlimited lives`,true);
             return false;
@@ -2325,7 +2356,12 @@
           const rescue = Level.blocks.find(b=>b.rescue && Player.y>b.y && Player.y<b.y+b.h+700);
           const rescueCue = falling && rescue ? `Rescue ${rescue.x + rescue.w/2 > Player.x+17 ? '→' : '←'} ${Math.ceil(Math.abs(rescue.x+rescue.w/2-Player.x-17)/10)} m` : `${this.rescues} rescues`;
           const contract = falling ? `RECOVERY · ${Math.max(0,Math.ceil((Player.y-Level.fallFloor())/10))} m to fall limit · ${rescueCue}` : Player.y<7050 && this.peak>=7050 ? `OPENING CLEARED · revisit ${encounter.name}` : Player.y<7050 ? `${stage+1}/5 · ${encounter.name} · ${Math.max(0,Math.ceil((150+(stage*6+5)*230+210-Player.y)/10))} m to landmark` : `5/5 CLEARED · ENDLESS FRONTIER · ${this.rescues} rescues${compass}`;
-          if (document.getElementById('contractline').textContent !== contract) document.getElementById('contractline').textContent = contract;
+          const active=FLOW_TRIAL&&Routes.contract?.state==='active'?Routes.contract:null;
+          const nextCampRow=Math.max(0,Math.ceil((Player.y-1498)/1380))*6+5;
+          const campHeight=Math.floor((348+nextCampRow*230-64)/10);
+          const frontier=FLOW_TRIAL&&Player.y>=7050?'TRAIL '+(Math.floor(Math.max(0,Player.y-150)/6900)+1)+' · '+encounter.name+' · camp '+campHeight+' m ↑':contract;
+          const line=active?(falling?'RECOVERY · '+Math.max(0,Math.ceil((Player.y-Level.fallFloor())/10))+' m to fall limit':encounter.name)+' · '+Routes.kinds[active.kind].name+' '+active.targets.length+'/'+Routes.kinds[active.kind].goal:frontier;
+          if (document.getElementById('contractline').textContent !== line) document.getElementById('contractline').textContent = line;
           const modeBadge = document.getElementById('run-mode-status');
           const modeText = this.mode === 'challenge' ? 'Challenge · ' + '♥'.repeat(this.lives) + '♡'.repeat(3 - this.lives) : 'Practice · ∞ lives';
           if (modeBadge.textContent !== modeText) { modeBadge.textContent = modeText; modeBadge.setAttribute('aria-label',this.mode === 'challenge' ? `Challenge: ${this.lives} of 3 lives remaining` : 'Practice: unlimited lives'); }
@@ -2333,17 +2369,18 @@
           const button = document.getElementById('ability');
           const label = `${this.skills[Profile.equipped].name} · ${Routes.overdrive ? 'OVERDRIVE · C / tap' : this.cooldown > 0 ? Math.ceil(this.cooldown) + (FLOW_TRIAL?' charge':'s') : 'C / tap'}${this.wingTime > 0 ? ' · Float ' + Math.ceil(this.wingTime) + 's' : ''}`;
           if (button.textContent !== label) button.textContent = label;
-          button.disabled = this.cooldown > 0 || Game.paused;
+          button.disabled = (this.cooldown > 0 && !Routes.overdrive) || Game.paused;
           button.setAttribute('aria-label',label);
           const portalButton = document.getElementById('portal-enter');
-          const cache=Relics.availableRow()!==null, camp=Routes.nearby()!==null;
-          const portalLabel = cache ? (document.body.classList.contains('istouch') ? 'Relic cache' : 'Inspect relic cache · E') : camp ? 'Trail camp · E / tap' : document.body.classList.contains('istouch') ? 'Enter rift' : 'Enter secret rift · E';
+          const cache=Relics.availableRow()!==null, camp=!!Routes.beacon();
+          show('camp-pause',Game.running&&Game.paused&&camp&&!Game.returning);
+          const portalLabel = cache ? (document.body.classList.contains('istouch') ? 'Relic cache' : 'Inspect relic cache · E') : camp ? 'Stop at camp · E / tap' : document.body.classList.contains('istouch') ? 'Enter rift' : 'Enter secret rift · E';
           if (portalButton.textContent !== portalLabel) portalButton.textContent = portalLabel;
           show('portal-enter',Game.running && !Game.paused && (cache || camp || !!this.nearest));
           if(RELIC_TRIAL)document.getElementById('relic-loadout').textContent=`Relics · ${Relics.owned.length}/3`;
           show('ability',Game.running); show('expedition-status',Game.running); show('contractline',Game.running);
         },
-        openNearby(){if(Relics.availableRow()!==null)return Relics.open(true);if(Routes.nearby()!==null)return Routes.open();return this.enterPortal();},
+        openNearby(){if(Relics.availableRow()!==null)return Relics.open(true);if(Routes.beacon())return Routes.open();return this.enterPortal();},
         enterPortal() {
           if (!Game.running || Game.paused || !this.nearest) return false;
           const p = this.nearest;
@@ -2462,6 +2499,7 @@
           for (const t of Level.tokens) {
             if (t.row < floor || this.collected.has(t.id)) continue;
             if(t.direction){ctx.strokeStyle='#8df7c8';ctx.lineWidth=4;ctx.beginPath();ctx.arc(t.x,t.y,28,0,Math.PI*2);ctx.stroke();ctx.save();ctx.translate(t.x,t.y);ctx.scale(1,-1);ctx.fillStyle='#8df7c8';ctx.font='bold 24px monospace';ctx.textAlign='center';ctx.fillText(t.direction>0?'→':'←',0,8);ctx.restore();continue;}
+            if(t.highLine){ctx.strokeStyle='#ffcf4d';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(t.x,t.y+16);ctx.lineTo(t.x+11,t.y);ctx.lineTo(t.x,t.y-16);ctx.lineTo(t.x-11,t.y);ctx.closePath();ctx.stroke();continue;}
             ctx.fillStyle = '#ffcf4d'; ctx.shadowColor = '#ffcf4d'; ctx.shadowBlur = 12;
             ctx.beginPath(); ctx.moveTo(t.x,t.y + 10); ctx.lineTo(t.x + 7,t.y); ctx.lineTo(t.x,t.y - 10); ctx.lineTo(t.x - 7,t.y); ctx.closePath(); ctx.fill();
           }
@@ -2678,11 +2716,11 @@
         startReturn(receipt) {
           Input.clear();this.acc=0;this.paused=true;show('paused',false);
           if(!this.windowFocused||document.hidden){show('paused',true);return;}
-          this.returning={elapsed:0,duration:receipt.duration||1,origin:receipt.origin,target:{x:Cam.x,y:Cam.y}};
+          this.returning={elapsed:0,duration:receipt.duration||1,camp:receipt.camp,origin:receipt.origin,target:{x:Cam.x,y:Cam.y}};
           Cam.x=receipt.origin.x;Cam.y=receipt.origin.y;
-          document.getElementById('return-label').textContent=receipt.kind==='hook'?'SKYHOOK TRANSFER':'RETURNING TO THE CLIMB';
+          document.getElementById('return-label').textContent=receipt.kind==='recovery'?'CHECKPOINT RECOVERY':receipt.kind==='camp'?'STOPPING AT CAMP':receipt.kind==='hook'?'SKYHOOK TRANSFER':'RETURNING TO THE CLIMB';
           document.getElementById('return-title').textContent=receipt.to+' m · safe ledge';
-          document.getElementById('return-copy').textContent=receipt.kind==='hook'?'Your hook carries you to a safe anchor. Fresh input controls the next catch.':receipt.success?'Your rift shortcut carries you to this ledge. Fresh input will control the next jump.':'Returning to the checkpoint route after the rift setback. Your best height is kept. Fresh input controls the next jump.';
+          document.getElementById('return-copy').textContent=receipt.kind==='recovery'?(Journey.mode==='challenge'?'Returning to your checkpoint after losing one life. '+Journey.lives+' of 3 lives remain. ':'Returning to your checkpoint. Testing Practice has unlimited recovery. ')+'Your height record is kept.':receipt.kind==='camp'?'Taking a safe rest at the nearby beacon. Read your contract choices before continuing.':receipt.kind==='hook'?'Your hook carries you to a safe anchor. Fresh input controls the next catch.':receipt.success?'Your rift shortcut carries you to this ledge. Fresh input will control the next jump.':'Returning to the checkpoint route after the rift setback. Your best height is kept. Fresh input controls the next jump.';
           show('return-layer',true);this.needsRender=true;
         },
         tickReturn(dt) {
@@ -2691,7 +2729,7 @@
           r.elapsed=Math.min(1,r.elapsed+dt/r.duration);const t=r.elapsed*r.elapsed*(3-2*r.elapsed);
           Cam.x=lerp(r.origin.x,r.target.x,t);Cam.y=lerp(r.origin.y,r.target.y,t);
           document.getElementById('return-layer').style.setProperty('--progress',String(t));this.needsRender=true;
-          if(r.elapsed>=1){this.returning=null;show('return-layer',false);this.paused=false;Input.clear();this.acc=0;Sfx.resume();RunSave.write();}
+          if(r.elapsed>=1){this.returning=null;show('return-layer',false);Input.clear();this.acc=0;if(Number.isInteger(r.camp)){this.paused=true;Routes.present(r.camp);}else{this.paused=false;Sfx.resume();}RunSave.write();}
         },
         togglePause() {
           if(this.returning){this.windowFocused=false;this.tickReturn(0);this.windowFocused=true;return;}
@@ -2815,8 +2853,16 @@
             const c2 = mix("#8df7c8", "#ff4d8d", tier / 5);
             this.ui.flowfill.style.background = `linear-gradient(90deg,${c1},${c2})`;
             this.ui.flowtier.style.color = c1;
-            text("flowtier", "FLOW " + tier);
+            if(!FLOW_TRIAL)text("flowtier", "FLOW " + tier);
             this.lastHUD.tier = tier;
+          }
+          if(FLOW_TRIAL){
+            text('flowtier',Math.floor(this.flow)+' / 100');
+            const surge=document.getElementById('t-surge');
+            const ready=this.flow>=T.SURGE_COST&&Player.surgeCD<=0;
+            surge.textContent=ready?'SURGE · READY':'SURGE · 26 FLOW';
+            surge.disabled=this.paused||Input.manualHeld()||!ready;
+            surge.setAttribute('aria-label',ready?'Surge ready · spend 26 Flow':'Surge needs 26 Flow · '+Math.floor(this.flow)+' available');
           }
           const combo = this.combo >= 2 && this.comboTimer > 0;
           if (this.lastHUD.combo !== combo) {

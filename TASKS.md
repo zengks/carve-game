@@ -19,8 +19,12 @@ Branch `codex/flow-and-encounters`, preview entry `/?flow=1`. See
   repeating encounter families; preserve released course records and saves.
 - [x] Cover invariants and 1,000 m reachability in simulation; complete both
   mini-games through browser UI and inspect the compiled public life gate.
-- [ ] Finish extended three-life UI testing with actual camp transactions and
-  all contract types; qualify device frame times and continuous charged aiming.
+- [x] Complete extended one-thumb browser UI play: 1,523 m, all skills/Surge,
+  all three contracts, repairs, mirror vault and reload; preserve the paused run.
+- [x] Repair camp access, overlapping rifts, reward readability, upper-route
+  pickups, Overdrive touch activation and checkpoint camera travel.
+- [ ] Qualify device frame times and continuous charged aiming; evaluate route
+  balance and return intent with players.
 - [ ] Review the new preview before production; keep download prompts disabled.
 
 ## Released prior milestone: optional relic comparison
