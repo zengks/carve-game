@@ -29,6 +29,24 @@ test('short ground tap hops; expired charge never launches and requires lift plu
  g.Game.start();settle(g);down();step(g,200);assert(g.Player.onGround);assert.equal(g.Player.vy,0);assert(g.Input.blocked);assert.equal(g.Player.groundCharge,null);
  step(g,100);assert(g.Player.onGround);up();down();assert.equal(g.Player.groundCharge,0);up();assert(g.Player.vy>0);
 });
+test('a fresh accepted charge clears the old expiry instruction in either touch layout without launching',()=>{
+ for(const scheme of ['one','two']){
+  const g=load();if(scheme==='two'){g.Game.configureControls('two');g.Game.togglePause();}settle(g);
+  const control=el(scheme==='one'?'one-pad':'t-carve');control.dispatch('pointerdown',{pointerId:1,clientX:200,button:0});step(g,80);assert.match(g.Game.notice,/CHARGE EXPIRED/);
+  control.dispatch('pointerup',{pointerId:1});control.dispatch('pointerdown',{pointerId:2,clientX:200,button:0});
+  assert.equal(g.Game.notice,'');assert.equal(g.Game.noticeTime,0);assert.equal(g.Player.vy,0);assert.equal(g.Game.score,0);assert(g.Input.manualHeld());
+ }
+});
+test('extra fingers, nonprimary presses and paused input cannot dismiss the expiry instruction',()=>{
+ const g=load();settle(g);down();step(g,80);const notice=g.Game.notice;assert.match(notice,/CHARGE EXPIRED/);
+ down(2);assert.equal(g.Game.notice,notice);up();el('one-pad').dispatch('pointerdown',{pointerId:3,clientX:200,button:2});assert.equal(g.Game.notice,notice);
+ g.Game.togglePause();down(4);assert.equal(g.Game.notice,notice);assert.equal(g.Input.oneId,null);
+});
+test('fresh pad input preserves fall and reward feedback while dismissing only a resolved expiry',()=>{
+ const g=load();settle(g);for(const notice of ['FALL · checkpoint recovery','SPRINGBOARD · RELIC +5 bounty']){
+  g.Game.notice=notice;g.Game.noticeTime=3;down();assert.equal(g.Game.notice,notice);assert.equal(g.Game.noticeTime,3);g.Input.clear();
+ }
+});
 test('touch wall holds stay still; only release launches, using the last dragged steering axis',()=>{
  const g=load();grip(g);const y=g.Player.y;move(125);step(g,45);assert.equal(g.Player.y,y);assert.equal(g.Player.vy,0);assert(g.Player.carve.charge>.6);assert.equal(g.Game.score,0);
  up();assert(!g.Player.carve);assert(g.Player.vy>1000);assert(g.Player.vx<0);assert(g.Game.score>0);assert(!g.Input.carve());

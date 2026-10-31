@@ -1,0 +1,25 @@
+{
+  "contract": "carve.relic-trial",
+  "version": 1,
+  "status": "preview-only",
+  "numericCourse": 5,
+  "cacheRows": [5, 11, 17],
+  "poolOrder": ["collector", "prospector", "resonance", "gatekeeper", "spring", "rescue"],
+  "offerVectors": [
+    {"seed": 1, "row": 5, "owned": [], "choices": ["gatekeeper", "resonance", "prospector"]},
+    {"seed": 127, "row": 11, "owned": ["collector"], "choices": ["prospector", "gatekeeper", "resonance"]},
+    {"seed": 2048, "row": 17, "owned": ["collector", "resonance"], "choices": ["rescue", "spring", "prospector"]},
+    {"seed": 2147483647, "row": 5, "owned": [], "choices": ["collector", "prospector", "resonance"]},
+    {"seed": 2147483647, "row": 17, "owned": ["gatekeeper", "spring"], "choices": ["rescue", "collector", "prospector"]},
+    {"seed": 19373841, "row": 11, "owned": ["rescue", "prospector"], "choices": ["collector", "gatekeeper", "resonance"]}
+  ],
+  "recordProvenance": {
+    "course": "relic-trial-v1",
+    "rules": "relic-v1",
+    "assisted": true,
+    "relics": {"version": 1, "owned": ["collector", "resonance"]},
+    "mode": "challenge",
+    "controls": ["one"],
+    "outcome": "banked"
+  }
+}

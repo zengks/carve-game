@@ -14,6 +14,17 @@ test('Practice stays the default and supports unlimited falls with the original 
  assert(g.Game.running);assert.equal(g.Journey.lives,null);assert.equal(g.Game.combo,0);assert.equal(g.Game.flow,0);
  assert.equal(g.Journey.peak,2064);assert.equal(g.Profile.coins,20);assert(!g.Journey.result);
 });
+test('a real Practice fall explains checkpoint recovery while preserving the run, score and unlimited lives',()=>{
+ const session=new Map(),local=new Map();let g=load({session,local});start(g,'practice');const cp=g.Level.blocks.find(b=>b.kind==='check'&&b.spine);g.Player.saveCheckpoint(cp);
+ const id=g.Journey.id,respawn={...g.Player.respawn};g.Journey.peak=respawn.y;g.Journey.contracts();g.Game.score=91;g.Profile.credit(17);const coins=g.Profile.coins;g.Player.y=-400;g.Player.onGround=false;g.Game.sim(STEP);
+ assert.match(g.Game.notice,/^FALL · returned to checkpoint · Practice: unlimited lives$/);assert.equal(g.Journey.id,id);assert.equal(g.Journey.lives,null);assert(g.Game.running);assert.equal(g.Game.score,91);assert.equal(g.Profile.coins,coins);assert.equal(g.Player.x,respawn.x);assert.equal(g.Player.y,respawn.y);
+ g.RunSave.write();g=load({session,local});assert(g.Game.paused);assert.equal(g.Journey.id,id);assert.match(g.Game.notice,/returned to checkpoint/);assert.equal(g.Journey.lives,null);
+});
+test('a real Practice spike collision names the hazard without ending or reclassifying the run',()=>{
+ const g=load();start(g,'practice');g.Level.ensure(3500);const spike=g.Level.blocks.find(b=>b.hazard);assert(spike);
+ Object.assign(g.Player,{x:spike.x+10,y:spike.y+10,vx:0,vy:0,onGround:false});g.Game.sim(STEP);
+ assert.match(g.Game.notice,/^SPIKES · returned to checkpoint · Practice: unlimited lives$/);assert(g.Game.running);assert.equal(g.Journey.mode,'practice');assert.equal(g.Journey.lives,null);assert(!g.Journey.result);
+});
 
 test('a simulated void fall costs one life and restores the checkpoint, with no duplicate damage',()=>{
  const g=load();start(g);const cp=g.Level.blocks.find(b=>b.kind==='check'&&b.spine);g.Player.saveCheckpoint(cp);

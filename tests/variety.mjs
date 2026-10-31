@@ -118,6 +118,23 @@ test('passing all five sections stays acknowledged when revisiting lower ground 
  const session=new Map(),local=new Map();let g=load({session,local});g.Journey.peak=7240;g.Journey.fallAnchor=7240;g.Player.y=6900;g.Player.vy=0;g.Level.ensure(6900);g.Game.syncHUD();assert.match(document.getElementById('contractline').textContent,/OPENING CLEARED/);g.RunSave.write();
  g=loadGame({session,local});g.Game.syncHUD();assert.match(document.getElementById('contractline').textContent,/OPENING CLEARED/);g.Player.vy=-400;g.Game.syncHUD();assert.match(document.getElementById('contractline').textContent,/RECOVERY/);
 });
+test('crossing the Observatory exit acknowledges completion without interrupting the climb or adding a reward',()=>{
+ const g=load(),{Player:P,Journey:J,Game:G}=g;g.Level.ensure(7049);Object.assign(P,{x:380,y:7049,vx:0,vy:300,onGround:false,state:'AIR'});J.peak=7049;J.fallAnchor=7049;J.contracts();
+ const coins=g.Profile.coins,score=G.score,time=G.time;step(g);G.syncHUD();
+ assert.match(G.notice,/^OBSERVATORY CLEARED · five sections complete · keep climbing in Endless Frontier$/);assert.match(document.getElementById('coach').textContent,/OBSERVATORY CLEARED/);assert.match(document.getElementById('contractline').textContent,/5\/5 CLEARED · ENDLESS FRONTIER/);
+ assert(G.running&&!G.paused);assert(P.y>7050&&P.vy>0);assert.equal(G.time,time+STEP);assert.equal(J.lives,3);assert.equal(g.Profile.coins,coins);assert.equal(G.score,score);assert(!g.Input.manualHeld());
+ J.notify('SHARD HUNTER · +12 bounty');assert.match(G.notice,/OBSERVATORY CLEARED/);G.noticeTime=0;J.notify('ordinary feedback');assert.equal(G.notice,'ordinary feedback');
+});
+test('completion feedback resumes with its remaining time and never replays after reload or a lower revisit',()=>{
+ const session=new Map(),local=new Map();let g=load({session,local});g.Level.ensure(7049);Object.assign(g.Player,{x:380,y:7049,vx:0,vy:300,onGround:false});g.Journey.peak=7049;g.Journey.fallAnchor=7049;step(g);g.Game.noticeTime=1.25;g.RunSave.write();
+ g=loadGame({session,local});assert(g.Game.paused);assert.match(g.Game.notice,/OBSERVATORY CLEARED/);assert.equal(g.Game.noticeTime,1.25);g.Game.togglePause();step(g);assert(g.Game.noticeTime<1.25);
+ g.Game.notice='';g.Game.noticeTime=0;g.Player.y=6900;g.Player.vy=0;g.Journey.update(STEP);g.Player.y=7060;g.Journey.update(STEP);assert(!g.Game.notice.includes('OBSERVATORY CLEARED'));g.RunSave.write();
+ g=loadGame({session,local});g.Game.togglePause();g.Journey.update(STEP);assert(!g.Game.notice.includes('OBSERVATORY CLEARED'));
+});
+test('completion feedback preserves hazard priority and lets a unique relic explanation take precedence',()=>{
+ const g=load();g.Journey.notify('OBSERVATORY CLEARED · five sections complete');g.Journey.onHit(true);assert.match(g.Game.notice,/^FALL ·/);g.Journey.notify('OBSERVATORY CLEARED · five sections complete');assert.match(g.Game.notice,/^FALL ·/);
+ g.Game.noticeTime=0;g.Journey.notify('OBSERVATORY CLEARED · five sections complete');g.Journey.notify('SPRINGBOARD · lift, then press to catch · RELIC +5 bounty');assert.match(g.Game.notice,/RELIC \+5/);
+});
 test('every part of the shortcut pad clears the overhang and permits a fresh upper catch',()=>{
  for(const seed of [1,8,39,44,60,69,71,76])for(const x of [712,740,790,840,874])for(const vx of [-360,0,360]){
   const g=load(),{Player:P,Level:L,Journey:J}=g;J.seed=seed;L.build();L.ensure(3140);const b=L.blocks.find(b=>b.shortcut);Object.assign(P,{x,y:b.y+b.h+1,vx,vy:-240,onGround:false});J.fallAnchor=P.y;
