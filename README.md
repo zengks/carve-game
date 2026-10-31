@@ -68,6 +68,11 @@ Both touch layouts use stationary wall charging and require a fresh press after
 launch/slip. Keyboard wall riding remains available. Controls can be changed
 from Pause without restarting the run.
 
+The one-thumb pad includes a timing strip: the white marker moves through the
+cyan GOOD and gold PERFECT bands while charging. Its text also names the current
+quality; an overhold asks for a fresh press. The strip uses the existing release
+windows and does not change jump strength or timing.
+
 ### Practice and Challenge
 
 Choose a mode before beginning an expedition. **Practice** is the default and

@@ -94,6 +94,31 @@ test('one-thumb camera leaves the player above lower controls in portrait and la
   const actionTop=height-(height<=480?164:212);assert(y+Math.abs(transform[3])*23<actionTop,`${width}x${height}: player ${y} overlaps actions ${actionTop}`);assert(y>100);
  }
 });
+test('pad timing bands follow a real ground hold from good through perfect, late and expiry',()=>{
+ const g=load();settle(g);g.Game.syncHUD();assert.equal(el('one-pad')['data-charging'],'false');
+ down();step(g,30);g.Game.syncHUD();assert.equal(el('one-pad')['data-quality'],'good');
+ let marker=parseFloat(el('one-marker').style.left),goldStart=parseFloat(el('one-perfect').style.left),goldEnd=goldStart+parseFloat(el('one-perfect').style.width);
+ assert(marker<goldStart);assert(marker>=parseFloat(el('one-good').style.left));
+ step(g,15);g.Game.syncHUD();assert.equal(el('one-pad')['data-quality'],'perfect');marker=parseFloat(el('one-marker').style.left);assert(marker>=goldStart&&marker<=goldEnd);
+ step(g,14);g.Game.syncHUD();assert.equal(el('one-pad')['data-quality'],'late');assert(parseFloat(el('one-marker').style.left)>goldEnd);
+ step(g,15);g.Game.syncHUD();assert(g.Input.blocked);assert.equal(el('one-marker').style.left,'0%');assert.equal(el('one-pad')['data-charging'],'false');assert.match(el('one-feedback').textContent,/Lift, then press again/);assert.equal(g.Player.vy,0);assert.equal(g.Game.score,0);
+});
+test('timing feedback resets on pause and reload while saved grips request the visible pad',()=>{
+ const session=new Map(),local=new Map();let g=load({session,local});grip(g);step(g,45);g.Game.syncHUD();assert.equal(el('one-pad')['data-quality'],'perfect');
+ g.Game.togglePause();assert.equal(el('one-marker').style.left,'0%');assert.equal(el('one-pad')['data-charging'],'false');
+ g=loadGame({session,local});g.Game.syncHUD();assert(g.Game.awaitingGrip);assert.equal(el('one-pad')['data-charging'],'false');assert.match(el('coach').textContent,/Press the pad/);assert(!el('coach').textContent.includes('Hold CARVE'));assert.equal(el('one-marker').style.left,'0%');
+});
+test('one-thumb coaching names the pad for charging and steering; two-thumb coaching retains CARVE',()=>{
+ const g=load();g.Game.lesson=2;g.Game.syncHUD();assert.match(el('coach').textContent,/hold the pad/);
+ g.Game.lesson=3;g.Game.syncHUD();assert.match(el('coach').textContent,/press the pad again/);
+ g.Game.configureControls('two');g.Game.lesson=2;g.Game.syncHUD();assert.match(el('coach').textContent,/CARVE/);
+});
+test('unchanged charge feedback skips marker and attribute writes between render frames',()=>{
+ const g=load();settle(g);down();step(g,45);g.Game.syncHUD();let writes=0;
+ const marker=el('one-marker'),pad=el('one-pad');let left=marker.style.left;Object.defineProperty(marker.style,'left',{get:()=>left,set:value=>{left=value;writes++;}});
+ const attr=pad.setAttribute.bind(pad);pad.setAttribute=(name,value)=>{writes++;attr(name,value);};g.Game.syncHUD();g.Game.syncHUD();assert.equal(writes,0);
+ step(g,1);g.Game.syncHUD();assert(writes>0);up();g.Game.syncHUD();assert.equal(el('one-marker').style.left,'0%');
+});
 for (const releaseAt of [0.45,0.7]) test(`pointer-only one-thumb bot climbs 1,000 metres using ${releaseAt<0.6?'good':'perfect'} releases`,()=>{
  const g=load();g.Journey.mode='challenge';g.Journey.lives=3;let peak=64,releases=0,lastRow=-1,id=100,held=false;const {Player:P,Game:G,Level:L,T}=g;
  for(let i=0;i<120*300&&peak<10064;i++){

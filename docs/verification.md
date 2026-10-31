@@ -176,3 +176,20 @@ Review branch: `codex/cache-and-run-recovery`. No production promotion is author
   custom-event documentation restricts gameplay events to Pro/Enterprise:
   https://vercel.com/docs/analytics/custom-events . No plan upgrade, additional
   analytics provider, fake page views or paid custom events were configured.
+
+## One-thumb timing feedback — 2026-10-30
+
+The pad now shows a charge marker and GOOD/PERFECT bands derived from the actual
+release thresholds. One-thumb coaching names the visible pad, including saved
+grip recovery. Physics, rewards, course/save versions and mobile handoff stay
+unchanged. Marker/attribute updates skip unchanged values.
+
+The full build passes, with 25 one-thumb checks covering actual charged pointer
+holds through GOOD/PERFECT/LATE/expiry, pause and reload recovery, scheme wording
+and unchanged-frame DOM writes. Existing pointer-only good/perfect bots still
+reach 1,000 m. These are scripted checks, not new human acceptance.
+
+Local browser checks exercised a real held pointer on the pad (GOOD feedback
+observed during the hold, marker and bands visible), then measured child bounds
+and page overflow at 320×568, 390×844, 844×390 and 768×1024, including left-hand
+320×568. All pad contents fit, including a live PERFECT hold in left-hand landscape. Physical thumb ergonomics remain unverified.
