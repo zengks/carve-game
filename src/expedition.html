@@ -2413,7 +2413,7 @@
         },
         renderRift() {
           const r = this.rift; if (!r) return;
-          const key = [r.id,r.phase,r.ready,r.progress,r.elapsed < MEMORY_PREVIEW,r.win,r.sequence.join('')].join(':');
+          const key = [r.id,r.type,r.phase,r.ready,r.progress,r.elapsed < MEMORY_PREVIEW,r.win,r.sequence.join('')].join(':');
           if (this.riftUIKey === key) return; this.riftUIKey = key;
           document.getElementById('rift-title').textContent = r.type === 'pulse' ? 'THE PENDULUM GATE' : 'THE ECHO VAULT';
           const mirror=FLOW_TRIAL&&Math.floor(r.row/14)%2===1, shown=mirror?[...r.sequence].reverse():r.sequence;
