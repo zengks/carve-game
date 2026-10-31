@@ -32,8 +32,16 @@ Seal, traversed all five sections with normally unlocked skills and reached
 cache and a no-skill manual route remain open; the Skyhook cooldown-wait route
 is a concrete repetition concern for the next comparison.
 
-The mobile chat independently owns current First Ascent tablet/window/local-save
-compatibility. Shared native endless/relic implementation remains a later task.
+The mobile chat reports its First Ascent tablet/window/local-save milestone
+merged in mobile PR #38, main `785ddfad10298ad75f5f68a3bcc5b698328bda9a`:
+127 Android tablet assertions, 119 iPad/iOS 26.5 assertions, 94 engine assertions
+and 19 host checks. This is reported simulator/emulator evidence, not physical
+device qualification or a web-gameplay change. All prior devices/data are kept.
+Its next independent ownership is OS-delivered one-thumb gesture verification
+on fresh probe IDs. Web does not operate those shared virtual devices.
+Shared native endless/relic implementation remains a later task. Portable fixed
+offer/provenance vectors now live in `tests/fixtures/relic-trial-v1.json`; native
+consumption is deferred, with no shared leaderboard or wallet compatibility claim.
 The income-capability roadmap remains in `docs/expedition.md`; no live billing or
 advertising is included in this gameplay trial.
 
@@ -45,6 +53,7 @@ advertising is included in this gameplay trial.
    decisions before adding more bounty-only effects.
 2. Review trial findings and the mirrored native compatibility evidence; fix
    concrete usability or correctness failures before expanding content.
-3. Reconcile a minimal shared rules/result contract and deterministic fixtures
-   for the eventual one-game/native direction, preserving old record provenance.
+3. Extend the agreed relic offer/result fixtures into a minimal shared movement
+   contract when both repos adopt the same course. Preserve existing provenance;
+   First Ascent and the web relic trial remain separate rulesets.
 4. Develop the next local gameplay comparison based on what the trial reveals.

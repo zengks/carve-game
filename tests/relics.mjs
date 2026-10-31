@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {loadGame,STEP} from './harness.mjs';
 let passed=0;
 const el=id=>document.getElementById(id);
@@ -7,6 +8,14 @@ function load(options={}){const g=loadGame({search:'?relics=1',...options});g.Ga
 function rest(g,row=5){g.Level.ensure(150+row*230);const b=g.Level.blocks.find(b=>b.rest&&b.row===row);assert(b);Object.assign(g.Player,{x:b.x+50,y:b.y+b.h,vx:0,vy:0,onGround:true,state:'GROUND',carve:null,pole:null});g.Journey.peak=Math.max(g.Journey.peak,g.Player.y);return b;}
 const step=(g,n=1)=>{for(let i=0;i<n;i++)g.Game.sim(STEP);};
 function equipped(g,ids){g.Relics.owned=[...ids];g.Relics.consumed=[5,11,17].slice(0,ids.length);}
+
+test('portable contract vectors pin seeded offers and assisted record provenance for a future native implementation',()=>{
+ const contract=JSON.parse(readFileSync(new URL('./fixtures/relic-trial-v1.json',import.meta.url),'utf8'));
+ const g=load();assert.equal(g.Level.course,contract.numericCourse);assert.deepEqual(g.Relics.rows,contract.cacheRows);assert.deepEqual(Object.keys(g.Relics.catalog),contract.poolOrder);
+ for(const v of contract.offerVectors)assert.deepEqual(g.Relics.choices(v.seed,v.row,v.owned),v.choices,`seed ${v.seed}, row ${v.row}`);
+ g.Journey.mode='challenge';g.Journey.lives=3;g.Journey.peak=1064;equipped(g,['collector','resonance']);g.Profile.record('banked');
+ const actual=g.Profile.records[0];assert.deepEqual(Object.fromEntries(Object.keys(contract.recordProvenance).map(key=>[key,actual[key]])),contract.recordProvenance);
+});
 
 test('opt-in trial uses separate course, wallet, preferences and run keys without importing baseline assets',()=>{
  const local=new Map(),session=new Map();let base=loadGame({local,session});base.Game.start();base.Profile.credit(33);base.RunSave.write();const oldProfile=local.get(base.Profile.key),oldRun=session.get(base.RunSave.key);

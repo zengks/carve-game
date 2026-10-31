@@ -53,9 +53,25 @@ spring launch velocity or Challenge lives. Flow-altering relics remain deferred.
 - Mobile has reviewed the contract. Native implementation remains deferred; its
   current First Ascent course and results must not be ranked against this trial.
 
+The portable [fixed vectors](../tests/fixtures/relic-trial-v1.json) pin six offer
+examples, including the maximum allowed seed, owned-relic exclusions and an
+assisted Challenge record's provenance. `tests/relics.mjs` checks the actual web
+implementation against them. A future native implementation can consume the
+same JSON without running browser JavaScript. These fixtures do not assert that
+native First Ascent currently supports relics or shares this course's movement.
+
+To reproduce offers in another language, preserve the pool order in the fixture.
+For each non-owned pool index `i`, compute `n = imul32(seed XOR (row + 1),
+1597334677) XOR imul32(i + 81, 3812015801)`, then `rank = unsigned32(n XOR
+logicalRightShift(n, 16))`. Sort by ascending unsigned rank and take three.
+`imul32` retains the low 32 bits; a language's ordinary unbounded multiply or
+signed right shift is not equivalent. A pool/order/hash change needs a new rules
+version and an explicit saved-offer migration; do not regenerate these fixed
+expectations merely to make a changed implementation pass.
+
 ## Verification
 
-`npm run build` passes with 20 added relic checks plus all existing suites. Tests
+`npm run build` passes with 21 added relic checks plus all existing suites. Tests
 exercise safe cache gating, clock/input lifecycle, deterministic offers, skip/cap,
 all six effects, both secret games, payout replay, malformed snapshots, result
 provenance, terminal Challenge recovery and data isolation. A deterministic
