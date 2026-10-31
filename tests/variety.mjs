@@ -72,7 +72,7 @@ test('spring departure requires releasing a held keyboard CARVE before catching 
 });
 test('both crossing walls and the shortcut landing line fit inside a phone viewport',()=>{
  for(const y of [1560,3170]){
-  const g=load();g.Level.ensure(y);Object.assign(g.Player,{x:606,y});Object.assign(g.Game,{W:390,H:844,dpr:1});Object.assign(g.Cam,{x:623,y:y+173,zoom:1,shake:0});
+  const g=load();g.Level.ensure(y);Object.assign(g.Player,{x:606,y});Object.assign(g.Game,{W:390,H:844,dpr:1});Object.assign(g.Cam,{x:405,y:y+173,zoom:1,shake:0});for(let i=0;i<240;i++)g.Cam.follow(623,y,0,STEP);
   let m;g.Game.ctx.setTransform=(...a)=>m=a;g.Game.render();
   const targets=y<2000?g.Level.blocks.filter(b=>b.spine&&[6,7].includes(b.row)):g.Level.blocks.filter(b=>b.shortcut||b.spine&&b.row===14);
   for(const b of targets){assert(b.x*m[0]+m[4]>=0);assert((b.x+b.w)*m[0]+m[4]<=390,`${b.id} lies beyond the phone camera`);}

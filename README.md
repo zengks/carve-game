@@ -18,13 +18,21 @@ score. Miss the window and you slip.
 
 Single file, zero dependencies, plain Canvas 2D + Web Audio.
 
-## Current course
+## Current Flow course
+
+Public builds serve the Flow course at `/`; testing previews use `/?flow=1`: steady camera, readable secret-trial
+results and return travel, first-use skill explanations, a Journal, movement
+recharge, directional rings and optional camp contracts/repairs. Production
+artifacts enforce three lives; unlimited Practice is test-build only. Earlier
+course data is retained separately. See [the design and verification](docs/flow-course.md).
+
+## Gameplay
 
 Five authored sections lead into an endless climb, with an optional reward
-spring, a marked manual rescue wall and resting landmarks. Practice, three-life
-Challenge, one-thumb controls, optional two-thumb input and desktop keyboard are
-available. Crossing and rescue cameras keep the main targets visible on phones.
-Relics and a shared backend remain later work.
+spring, a marked manual rescue wall and resting landmarks. Public builds use
+three-life Challenge; source and preview builds also allow Practice for testing.
+One-thumb controls, optional two-thumb input and desktop keyboard are available. Crossing and rescue cameras keep the main targets visible on phones.
+Relics are an opt-in comparison at `?relics=1`; a shared backend remains planned.
 
 Both browser and native CARVE also have an explicit post-launch income goal.
 The [shared revenue-capability plan](docs/expedition.md#post-launch-revenue-capability--2026-10-30)
@@ -32,6 +40,10 @@ stages player validation, business-model trials, purchase/entitlement design and
 operating-cost checks. Monetization is planned; no paid products or live ads are
 enabled by this update.
 
+The released Flow course uses separate current-route records. Public returning
+players can explicitly carry their prior course name, bounty and unlocked skills;
+previous scores and active snapshots remain separate and untouched. The
+following earlier course migration also remains available in legacy test builds.
 Course revision 4 uses separate current-route records. Returning players can
 explicitly carry their previous name, bounty and skills through **Previous
 progress**. Old scores remain readable in that log and are not mixed into the

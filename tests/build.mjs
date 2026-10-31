@@ -43,12 +43,14 @@ try {
   assert(!/experimental/i.test(production), 'production has no Experimental label in any casing');
   assert(!production.includes('mobile-handoff'));
   const gameAsset=html=>html.match(/src="(\/assets\/cache\/expedition\.[a-f\d]+\.js)"/)[1];
-  assert.equal(gameAsset(preview),gameAsset(production),'release metadata does not change gameplay');
+  const previewCode=await readFile(join(output,'preview',gameAsset(preview)),'utf8'),productionCode=await readFile(join(output,'production',gameAsset(production)),'utf8');
+  assert(previewCode.includes('const TESTING = true;'));assert(productionCode.includes('const TESTING = false;'));
+  assert.equal(previewCode.replace('const TESTING = true;','const TESTING = false;'),productionCode,'only the compile-time testing gate differs');
   const files = await readdir(join(output,'production'),{recursive:true});
   assert(!files.some(f=>f.startsWith('classic/') || /^assets\/cache\/carve\.[a-f\d]{16}\.(js|css)$/.test(f)), 'retired course and its bundles are not published');
   assert(!production.includes('/classic/') && !production.includes('original summit'));
   for (const path of ['/classic','/classic/','/classic/index.html','/src/carve.html']) assert(config.redirects.some(r=>r.source===path && r.destination==='/' && r.permanent));
   assert(!(await readdir(join(output,'production'),{recursive:true})).some(f=>f.includes('mobile-handoff') || f.startsWith('future/')));
-  console.log('PASS production metadata, preview noindex, identical gameplay and disabled mobile handoff');
+  console.log('PASS production metadata, preview noindex, compile-time public lives gate and disabled mobile handoff');
   console.log('PASS built asset references, content hashes, fresh entry points and scoped immutable caching');
 } finally { await rm(output, { recursive: true, force: true }); }

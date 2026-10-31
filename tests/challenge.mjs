@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {loadGame,STEP} from './harness.mjs';
 const path=new URL('../src/expedition.html',import.meta.url);
 const load=options=>loadGame({path,...options});
+function returnAfterReceipt(g){if(g.Journey.rift?.phase==='result'){g.Journey.leaveRift();if(g.Game.returning)g.Game.tickReturn(2);}}
 let passed=0;
 function test(name,fn){fn();passed++;console.log('PASS challenge: '+name);}
 function start(g,mode='challenge'){assert(g.Journey.chooseMode(mode));g.Game.start();}
@@ -58,7 +59,7 @@ test('pause, grip slips, rift misses, checkpoints and skills neither charge nor 
  assert(g.Journey.useSkill());assert.equal(g.Journey.lives,2);
  const b=g.Level.blocks.find(b=>b.spine);g.Player.y=b.y+20;g.Player.startCarve({type:'wallR',block:b});g.Player.releaseCarve(true);assert.equal(g.Journey.lives,2);
  g.Game.togglePause();g.Player.stun=0;g.Player.hit();assert.equal(g.Journey.lives,2);
- g.Journey.rift={id:'v:7',row:7,type:'pulse',phase:'playing',elapsed:0,ready:true,progress:0,sequence:[0,1,2]};g.Journey.resolve(false);
+ g.Journey.rift={id:'v:7',row:7,type:'pulse',phase:'playing',elapsed:0,ready:true,progress:0,sequence:[0,1,2]};g.Journey.resolve(false);returnAfterReceipt(g);
  assert.equal(g.Journey.lives,2);assert(!g.Game.paused);dispatchWindow('blur');assert(g.Game.paused);assert.equal(g.Journey.lives,2);
 });
 

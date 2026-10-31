@@ -42,7 +42,7 @@ export async function build(outputDir = join(root, 'dist'), { production = false
     let source = await readFile(join(root, entry), 'utf8');
     if (production) {
       // Preview pages stay unindexed; only the explicit production build is public.
-      source = source.replace('Endless Expedition preview</title>', 'Endless Expedition</title>')
+      source = source.replace('const TESTING = true;', 'const TESTING = false;').replace('Practice · ∞</button>', 'Challenge · 3 lives</button>').replace('Endless Expedition preview</title>', 'Endless Expedition</title>')
         .replace('content="noindex,nofollow"', 'content="index,follow"')
         .replace(/experimental · endless expedition/gi, 'endless expedition');
     }
