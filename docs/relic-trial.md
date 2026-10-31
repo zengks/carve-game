@@ -71,7 +71,7 @@ expectations merely to make a changed implementation pass.
 
 ## Verification
 
-`npm run build` passes with 21 added relic checks plus all existing suites. Tests
+`npm run build` passes with 22 added relic checks plus all existing suites. Tests
 exercise safe cache gating, clock/input lifecycle, deterministic offers, skip/cap,
 all six effects, both secret games, payout replay, malformed snapshots, result
 provenance, terminal Challenge recovery and data isolation. A deterministic
@@ -126,3 +126,42 @@ dominant low-risk route. More bounty-only passives would not resolve that
 repetition. The next comparison should reward active route choices and clean
 play, and compare skill-assisted versus ordinary routes before changing shared
 skill/economy rules. No unreviewed balance change is included here.
+
+## Same-run cache and skill follow-up
+
+The retained local UI run subsequently completed Echo Vault by entering its
+displayed three-symbol pattern, returning directly to 256 m. Short one-thumb
+drag attempts did not complete the broad Wind Gap crossing. The alternate
+two-thumb layout reached the second cache at 281 m by steering off the checkpoint
+before triggering Pulse, clearing the overhang. It offered Collector, Prospector
+and Gatekeeper, excluding the equipped Resonance. Refresh retained that exact
+offer; choosing Collector continued immediately and Pause showed both effects.
+
+With normally earned bounty, the same run used Skyhook to 369 m and unlocked
+Windwing for 25 bounty. Returning to one-thumb mode and activating Windwing after
+the shared cooldown reached the third cache at 419 m (peak 427 m). Its choices
+were Gatekeeper, Prospector and Springfinder, excluding both owned relics.
+Choosing Springfinder produced a three-item loadout. Refresh retained 419 m,
+53 bounty, the three effects and the remaining cooldown. All three caches are
+therefore UI-verified in the same run using a mixture of the two supported touch
+layouts and normal skills. An exclusively one-thumb Wind Gap crossing remains
+open; the input-driven simulations do not close that manual test gap.
+
+Further real UI play exposed unclear spring-relic feedback: the ordinary spring
+hint did not name the bonus, and a simultaneous shard contract could overwrite
+it. Spring and marked-wall rescue notices now append **RELIC +5/+6 bounty** only
+when that unique reward is granted. A recent relic explanation remains visible
+when a contract pays; wallet transactions and contract totals still advance.
+Repeat contacts show the normal action hint, without another reward claim. The
+regression covers a spring, shard contract and two height contracts in one frame,
+including the next normal contract after the relic explanation expires.
+
+The updated local UI run reached a fresh Observatory/frontier spring and visibly
+showed **SPRINGBOARD · lift, then press to catch · RELIC +5 bounty** while the
+wallet also received other earned rewards. It then deliberately banked at a
+highest climb of **813 m / 170 bounty / two cleared rifts**, with Resonance,
+Collector and Springfinder listed together in Records. Reload returned to the
+menu with that best and wallet, rather than resurrecting the ended Practice run.
+No browser console errors occurred. The record's control list denotes layouts
+configured during the run (including its initial keyboard configuration), not
+an OS input trace; movement in this UI follow-up used the touch controls.

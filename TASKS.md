@@ -29,8 +29,19 @@ See `docs/relic-trial.md` for limits and the result contract.
 The later deployed touch run reached the third cache at 419 m, equipped Rescue
 Seal, traversed all five sections with normally unlocked skills and reached
 714 m. Refresh retained 714 m / 120 bounty / 225.1 s and the relic. The second
-cache and a no-skill manual route remain open; the Skyhook cooldown-wait route
-is a concrete repetition concern for the next comparison.
+cache and a no-skill manual route were still open at that checkpoint; the Skyhook
+cooldown-wait route is a concrete repetition concern for the next comparison.
+Follow-up local UI play has now visited all three caches in the same run, using
+one- and two-thumb layouts plus normally earned skills. The second offer survived
+refresh and excluded Resonance; the third excluded both owned relics. Collector
+and Springfinder completed a three-item loadout that survived refresh at 419 m.
+All three skills have now been used in this UI run. The exclusively one-thumb
+wide Wind Gap crossing and a no-skill manual route remain open.
+The same run subsequently banked a highest 813 m with all three relics, two
+cleared rifts and 170 bounty; menu recovery and Records retained it. The spring
+bonus was hard to distinguish and could be hidden by a simultaneous contract.
+Preview feedback now names the granted relic payout and retains that explanation
+while still paying contracts; 22 relic checks and the full build pass locally.
 
 The mobile chat reports its First Ascent tablet/window/local-save milestone
 merged in mobile PR #38, main `785ddfad10298ad75f5f68a3bcc5b698328bda9a`:
@@ -47,10 +58,10 @@ advertising is included in this gameplay trial.
 
 ## Queued after this milestone
 
-1. Continue the real-input relic route beyond the first cache to the second and
-   third caches, and exercise alternate loadouts. The 1,000 m automated climbs
-   establish reachability only. Review whether choices create interesting route
-   decisions before adding more bounty-only effects.
+1. Continue the exclusively one-thumb Wind Gap crossing and no-skill manual
+   route; the mixed-touch skill-assisted route has visited all three caches.
+   The 1,000 m automated climbs establish reachability only. Review whether
+   choices create interesting route decisions before adding bounty-only effects.
 2. Review trial findings and the mirrored native compatibility evidence; fix
    concrete usability or correctness failures before expanding content.
 3. Extend the agreed relic offer/result fixtures into a minimal shared movement

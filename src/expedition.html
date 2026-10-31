@@ -2016,7 +2016,9 @@
         onRescue(block) {
           // Rescue classification requires a genuine descending flight. The
           // optional trial seal pays only on each marked wall's first rescue.
-          this.rescues++; if (block?.rescue) Relics.reward('rescue',block,6); this.notify(`${block?.rescue ? 'RESCUE WALL' : 'RESCUED'} · fresh catch · no life lost`);
+          this.rescues++;
+          const bonus=block?.rescue && Relics.reward('rescue',block,6);
+          this.notify(`${block?.rescue ? 'RESCUE WALL' : 'RESCUED'} · fresh catch · no life lost${bonus ? ' · RELIC +6 bounty' : ''}`);
         },
         notify(text, urgent = false) { if (!urgent && Game.noticeTime > 0 && /^(FALL|SPIKES) ·/.test(Game.notice)) return; Game.notice = text; Game.noticeTime = 4; },
         init() {
@@ -2134,7 +2136,13 @@
           const goals = [6,3,1], prizes = [12,15,20], names = ['SHARD HUNTER','GOLDEN TOUCH','HIGHER GROUND'];
           for (let i = 0; i < 3; i++) {
             const earned = Math.floor(totals[i] / goals[i]);
-            if (earned > this.quests[i]) { Profile.creditContract(i,earned,this.quests[i],prizes[i]); this.quests[i] = earned; this.notify(`${names[i]} · +${prizes[i]} bounty`); }
+            if (earned > this.quests[i]) {
+              Profile.creditContract(i,earned,this.quests[i],prizes[i]); this.quests[i] = earned;
+              // A simultaneous contract still pays, while the recent relic
+              // explanation remains readable during the spring/rescue action.
+              if (!(RELIC_TRIAL && Game.noticeTime>0 && Game.notice.includes(' · RELIC +')))
+                this.notify(`${names[i]} · +${prizes[i]} bounty`);
+            }
           }
         },
         useSkill() {
@@ -2191,7 +2199,14 @@
           }
           if (Player.onGround) {
             const spring = Level.blocks.find(b => b.feature === 'spring' && Player.x + Player.w > b.x && Player.x < b.x + b.w && Math.abs(Player.y - b.y - b.h) < 3);
-            if (spring) { Relics.reward('spring',spring,5); Input.retire(); Player.groundCharge = null; Player.vy = spring.shortcut ? 1450 : 1350; if (spring.shortcut) Player.vx = -520; Player.onGround = false; Player.state = 'AIR'; Player.relatch = 0.3; Sfx.jump(); this.notify(spring.shortcut ? 'SHORTCUT · steer left; fresh hold for an upper wall' : 'SPRINGBOARD · lift, then press to catch'); }
+            if (spring) {
+              const bonus=Relics.reward('spring',spring,5);
+              Input.retire(); Player.groundCharge = null; Player.vy = spring.shortcut ? 1450 : 1350;
+              if (spring.shortcut) Player.vx = -520;
+              Player.onGround = false; Player.state = 'AIR'; Player.relatch = 0.3; Sfx.jump();
+              const hint=spring.shortcut ? 'SHORTCUT · steer left; fresh hold for an upper wall' : 'SPRINGBOARD · lift, then press to catch';
+              this.notify(hint+(bonus ? ' · RELIC +5 bounty' : ''));
+            }
           }
           this.nearest = Level.portals.find(p => this.eligible(p.row) && !this.visited.has(p.id) && Math.hypot(Player.x + 17 - p.x,Player.y + 23 - p.y) < 240) || null;
           this.contracts();

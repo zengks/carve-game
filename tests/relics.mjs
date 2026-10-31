@@ -62,13 +62,20 @@ for(const row of [0,7])test(`Gatekeeper rewards ${row===0?'timing':'memory'} suc
  const g=load();equipped(g,['gatekeeper']);g.Journey.mode='challenge';g.Journey.lives=2;g.Level.ensure(150+row*230);const p=g.Level.portals.find(p=>p.row===row);assert(p);Object.assign(g.Player,{x:p.x-17,y:p.y-23,vx:0,vy:0,onGround:false,state:'AIR'});g.Journey.update(STEP);const before=g.Profile.coins,quests=[...g.Journey.quests];assert(g.Journey.enterPortal());g.Journey.startTrial();g.Journey.resolve(true);const questDelta=g.Journey.quests.reduce((sum,n,i)=>sum+(n-quests[i])*[12,15,20][i],0);assert.equal(g.Profile.coins-before,28+questDelta);assert.equal(g.Journey.lives,2);assert(!g.Game.paused);const coins=g.Profile.coins;g.Journey.resolve(true);assert.equal(g.Profile.coins,coins);
 });
 test('Springfinder is paid once by real spring contact and keeps the original launch',()=>{
- const g=load();equipped(g,['spring']);g.Level.ensure(800);const b=g.Level.blocks.find(b=>b.feature==='spring');assert(b);Object.assign(g.Player,{x:b.x+20,y:b.y+b.h,onGround:true,vx:0,vy:0});g.Journey.update(STEP);assert.equal(g.Player.vy,1350);assert.equal(g.Profile.coins,5);assert(!g.Player.onGround);
- Object.assign(g.Player,{x:b.x+20,y:b.y+b.h,onGround:true,vx:0,vy:0});g.Journey.update(STEP);assert.equal(g.Profile.coins,5);
+ const g=load();equipped(g,['spring']);g.Level.ensure(800);const b=g.Level.blocks.find(b=>b.feature==='spring');assert(b);Object.assign(g.Player,{x:b.x+20,y:b.y+b.h,onGround:true,vx:0,vy:0});g.Journey.update(STEP);assert.equal(g.Player.vy,1350);assert.equal(g.Profile.coins,5);assert(!g.Player.onGround);assert.match(g.Game.notice,/RELIC \+5 bounty/);
+ Object.assign(g.Player,{x:b.x+20,y:b.y+b.h,onGround:true,vx:0,vy:0});g.Journey.update(STEP);assert.equal(g.Profile.coins,5);assert.doesNotMatch(g.Game.notice,/RELIC \+5 bounty/);
+});
+test('simultaneous shard and height contracts pay without replacing the one-time spring reward explanation',()=>{
+ const g=load();equipped(g,['spring']);g.Level.ensure(800);const b=g.Level.blocks.find(b=>b.feature==='spring');assert(b);
+ Object.assign(g.Player,{x:b.x+20,y:b.y+b.h,onGround:true,vx:0,vy:0});g.Journey.shards=5;g.Journey.peak=2064;
+ g.Level.tokens=[{id:'t:2:3',row:2,x:g.Player.x+17,y:g.Player.y+23,value:2}];g.Journey.update(STEP);
+ assert.match(g.Game.notice,/SPRINGBOARD.*RELIC \+5 bounty/);assert.deepEqual(g.Journey.quests,[1,0,2]);assert.equal(g.Profile.coins,59);
+ g.Journey.contracts();assert.equal(g.Profile.coins,59);g.Game.noticeTime=0;g.Journey.shards=12;g.Journey.contracts();assert.match(g.Game.notice,/SHARD HUNTER/);assert.equal(g.Profile.coins,71);
 });
 test('Rescue Seal pays a real descending marked-wall catch once and never heals a Challenge life',()=>{
  const g=load();equipped(g,['rescue']);g.Journey.mode='challenge';g.Journey.lives=2;g.Level.ensure(4700);const b=g.Level.blocks.find(b=>b.rescue);assert(b);
  function catchWall(id){g.Input.clear();Object.assign(g.Player,{x:b.x-g.Player.w,y:b.y+20,vx:0,vy:-230,onGround:false,state:'AIR',carve:null,pole:null,relatch:0});g.Journey.peak=g.Player.y+500;g.Journey.fallAnchor=g.Player.y+500;el('one-pad').dispatch('pointerdown',{pointerId:id,clientX:200});step(g);assert(g.Player.carve);}
- g.Journey.peak=b.y+520;g.Journey.contracts();const before=g.Profile.coins;catchWall(1);assert.equal(g.Profile.coins-before,6);assert.equal(g.Journey.lives,2);catchWall(2);assert.equal(g.Profile.coins-before,6);assert.equal(g.Journey.lives,2);
+ g.Journey.peak=b.y+520;g.Journey.contracts();const before=g.Profile.coins;catchWall(1);assert.equal(g.Profile.coins-before,6);assert.equal(g.Journey.lives,2);assert.match(g.Game.notice,/RELIC \+6 bounty/);catchWall(2);assert.equal(g.Profile.coins-before,6);assert.equal(g.Journey.lives,2);assert.doesNotMatch(g.Game.notice,/RELIC \+6 bounty/);
 });
 test('malformed inventories, rerolled offers and concurrent rift/offer snapshots cannot resume',()=>{
  const session=new Map();const g=load({session});rest(g);g.Relics.open(true);const valid=JSON.parse(session.get(g.RunSave.key));
