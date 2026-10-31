@@ -540,6 +540,14 @@
       /* One owned contact combines proportional steering and manual CARVE. */
       #one-pad { display:none; width:min(260px,calc(100vw - 32px)); height:132px; right:calc(16px + env(safe-area-inset-right)); bottom:calc(20px + env(safe-area-inset-bottom)); flex-direction:column; gap:8px; border-color:var(--cyan); border-radius:28px; font-size:14px; }
       #one-feedback { font-size:11px; font-weight:400; letter-spacing:0; color:var(--gold); }
+      #one-timing { position:relative; display:block; width:84%; height:12px; flex-shrink:0; overflow:hidden; border:1px solid #63728b; border-radius:6px; background:#142033; opacity:.45; }
+      #one-timing > span { position:absolute; top:0; bottom:0; pointer-events:none; }
+      #one-good { background:#38f0e044; }
+      #one-perfect { background:#ffcf4d99; }
+      #one-marker { width:3px; background:#fff; transform:translateX(-50%); }
+      #one-pad[data-charging="true"] #one-timing { opacity:1; }
+      #one-pad[data-quality="perfect"] { border-color:var(--gold); }
+      #one-pad[data-quality="late"] { border-color:#ff8a5a; }
       .one-thumb #one-pad { display:flex; transform:none; }
       .one-thumb #t-left,.one-thumb #t-right,.one-thumb #t-jump,.one-thumb #t-carve { display:none; }
       .one-thumb #t-surge { right:calc(156px + env(safe-area-inset-right)); bottom:calc(164px + env(safe-area-inset-bottom)); width:120px; height:48px; border-radius:12px; transform:none; }
@@ -559,6 +567,8 @@
       #controls-dialog [aria-pressed="true"] { border-color:var(--gold); color:var(--gold); }
       @media(max-height:480px) {
         .one-thumb #one-pad { height:94px; bottom:12px; }
+        .one-thumb #one-pad { gap:4px; font-size:12px; }
+        #one-timing { height:10px; }
         .one-thumb #t-surge,.one-thumb #ability { bottom:116px; }
         .one-thumb #run-mode-status { bottom:172px; }
         .one-thumb #portal-enter { bottom:172px; }
@@ -608,7 +618,7 @@
       <button class="tbtn" id="t-jump" aria-label="Jump">JUMP</button>
       <button class="tbtn" id="t-carve" aria-label="Hold to carve">CARVE</button>
       <button class="tbtn" id="t-surge" aria-label="Surge">SURGE</button>
-      <button class="tbtn" id="one-pad" aria-label="One-thumb pad: hold to charge or catch, drag to steer, release to launch"><span>HOLD · DRAG · RELEASE</span><span id="one-feedback">Hold to prepare a catch</span></button>
+      <button class="tbtn" id="one-pad" aria-label="One-thumb pad: hold to charge or catch, drag to steer, release to launch" aria-describedby="one-feedback"><span>HOLD · DRAG · RELEASE</span><span id="one-timing" aria-hidden="true"><span id="one-good"></span><span id="one-perfect"></span><span id="one-marker"></span></span><span id="one-feedback">Hold to prepare a catch</span></button>
     </div>
 
     <!-- start -->
@@ -2457,15 +2467,24 @@
           const hints = [
             one ? "1 · HOLD the pad, DRAG to steer, RELEASE to jump. Press again to catch." : touch ? "1 · APPROACH: hold ▶ with your left thumb; tap JUMP with your right." : "1 · APPROACH: move right + jump toward the cyan wall (D / → + Space).",
             one ? "2 · CATCH: hold the pad beside a wall; drag to aim, release on gold." : touch ? "2 · GRIP: hold CARVE beside a cyan wall. Keep steering with your left thumb." : "2 · GRIP: hold Z (or J / Shift) beside a cyan wall.",
-            charge > T.ZONE_PERFECT_HI ? "LATE — release before you slip; try gold on the next wall." : charge >= T.ZONE_PERFECT_LO ? "RELEASE CARVE NOW — gold is the perfect window!" : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.",
-            "4 · STEER: move toward the opposite wall and hold CARVE to catch it.",
+            charge > T.ZONE_PERFECT_HI ? "LATE — release before you slip; try gold on the next wall." : charge >= T.ZONE_PERFECT_LO ? (one ? "RELEASE THE PAD NOW — gold is the perfect window!" : "RELEASE CARVE NOW — gold is the perfect window!") : one ? "3 · CHARGE: hold the pad; release as the marker reaches gold." : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.",
+            one ? "4 · STEER: drag toward the opposite wall; press the pad again to catch." : "4 · STEER: move toward the opposite wall and hold CARVE to catch it.",
           ];
           const feedback = Player.groundCharge !== null || Player.carve || Player.pole ? `${Player.quality(charge).n.toUpperCase()} · ${Math.round(charge * 100)}% · release to launch` : Input.blocked ? 'Lift, then press again' : Input.oneHeld ? 'Catch ready · drag to steer' : 'Hold to charge or catch · drag to steer';
           const padFeedback = document.getElementById('one-feedback');
           const steering = Input.oneHeld && Math.abs(Input.oneAxis) > 0 ? `${Input.oneAxis < 0 ? '←' : '→'} ${Math.round(Math.abs(Input.oneAxis)*100)}% · ` : '';
           const padText = steering + feedback; if (padFeedback.textContent !== padText) padFeedback.textContent = padText;
+          if (one) {
+            const pad = document.getElementById('one-pad');
+            const charging = !this.paused && !this.awaitingGrip && (Player.groundCharge !== null || !!Player.carve || !!Player.pole);
+            const quality = charging ? Player.quality(charge).n : 'ready';
+            const marker = Math.round(clamp(charge / T.SLIP_AT,0,1)*100);
+            if (this.lastHUD.padCharging !== charging) { pad.setAttribute('data-charging',String(charging)); this.lastHUD.padCharging = charging; }
+            if (this.lastHUD.padQuality !== quality) { pad.setAttribute('data-quality',quality); this.lastHUD.padQuality = quality; }
+            if (this.lastHUD.padMarker !== marker) { document.getElementById('one-marker').style.left = marker+'%'; this.lastHUD.padMarker = marker; }
+          }
           if (this.lesson >= 4) hints[4] = Journey.recovering() ? 'FALLING · fresh hold to catch a marked wall; lower cyan grips can rescue a miss.' : Player.y<7050 ? Level.encounter(Player.y).hint : 'Read the next line. Bank your run from Pause whenever you choose.';
-          const coach = this.awaitingGrip ? (touch ? "Hold CARVE to continue your saved grip." : "Hold Z (or J / Shift) to continue your saved grip.") : this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
+          const coach = this.awaitingGrip ? (one ? "Press the pad to continue your saved grip with fresh input." : touch ? "Hold CARVE to continue your saved grip." : "Hold Z (or J / Shift) to continue your saved grip.") : this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
           if (this.lastHUD.coach !== coach) {
             document.getElementById("coach").textContent = coach;
             show("coach", !!coach);
@@ -2800,6 +2819,10 @@
           return true;
         },
         bindTouch() {
+          for (const [id,lo,hi] of [['one-good',T.ZONE_GOOD,T.ZONE_PERFECT_LO],['one-perfect',T.ZONE_PERFECT_LO,T.ZONE_PERFECT_HI]]) {
+            const band = document.getElementById(id);
+            band.style.left = (lo/T.SLIP_AT*100)+'%'; band.style.width = ((hi-lo)/T.SLIP_AT*100)+'%';
+          }
           this.controlScheme = matchMedia('(pointer:coarse)').matches ? 'one' : 'two'; this.controlHand = 'right';
           let enabled = matchMedia('(pointer:coarse)').matches;
           try { const saved = JSON.parse(localStorage.getItem('carve.controls.v1')); if (saved && ['one','two'].includes(saved.scheme) && ['left','right'].includes(saved.hand) && typeof saved.enabled === 'boolean') { this.controlScheme = saved.scheme; this.controlHand = saved.hand; enabled = saved.enabled; } } catch {}
