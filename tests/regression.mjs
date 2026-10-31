@@ -137,7 +137,7 @@ test('checkpoints announce once and cannot move recovery backwards', () => {
   G.noticeTime = 0; land(checks[1]); assert.equal(G.noticeTime, 0);
   land(checks[0]); assert.equal(P.checkpoint, checks[1]);
 });
-test('playable coaching advances on actions and clears after two distinct releases', () => {
+test('playable coaching advances on actions then yields to the current route objective', () => {
   G.syncHUD(); assert.match(document.getElementById('coach').textContent, /APPROACH/);
   I.keys.d = true; G.sim(STEP); assert.equal(G.lesson, 1);
   const blocks = L.blocks.filter(b => b.kind === 'rock');
@@ -145,7 +145,7 @@ test('playable coaching advances on actions and clears after two distinct releas
   P.carve.charge = 0.75; G.syncHUD(); assert.match(document.getElementById('coach').textContent, /RELEASE/);
   P.releaseCarve(); assert.equal(G.lesson, 3);
   P.award(P.quality(0.75), blocks[1]); G.sim(STEP); assert.equal(G.lesson, 4);
-  G.syncHUD(); assert(document.getElementById('coach').classList.contains('hidden'));
+  G.syncHUD(); assert.equal(document.getElementById('coach').textContent,L.encounter(P.y).hint);
 });
 
 test('simultaneous touch movement and carve release independently', () => {

@@ -532,6 +532,38 @@
       .glyph { flex:1; min-width:0; justify-content:center; font-size:28px; padding:14px 8px; margin-right:0; }
       @media(max-width:620px) { .menu-layout { padding-top:14px; padding-bottom:16px; } .menu-layout .keys { display:none; } .menu-layout .title { font-size:60px; } .menu-layout .brand-logo { width:66px; height:66px; } #menu-progress { font-size:10px; } }
       @media(max-height:480px) { #expedition-status { top:58px; } #contractline { display:none; } #coach { top:85px !important; max-width:44vw; font-size:10px !important; } #portal-enter { top:auto; bottom:22px; } #ability { bottom:104px; max-width:130px; min-height:48px; } .istouch #flowwrap,.istouch #combo { top:62px; } }
+
+      /* Keep optional portal actions beside touch controls, clear of the climbing view. */
+      .istouch:not(.one-thumb) #portal-enter { top:auto; bottom:calc(26px + env(safe-area-inset-bottom)); left:calc(148px + env(safe-area-inset-left)); transform:none; width:74px; min-height:58px; padding:7px; white-space:normal; font-size:11px; }
+      @media(min-width:700px) and (min-height:600px) { .istouch:not(.one-thumb) #portal-enter { left:calc(172px + env(safe-area-inset-left)); width:100px; } }
+
+      /* One owned contact combines proportional steering and manual CARVE. */
+      #one-pad { display:none; width:min(260px,calc(100vw - 32px)); height:132px; right:calc(16px + env(safe-area-inset-right)); bottom:calc(20px + env(safe-area-inset-bottom)); flex-direction:column; gap:8px; border-color:var(--cyan); border-radius:28px; font-size:14px; }
+      #one-feedback { font-size:11px; font-weight:400; letter-spacing:0; color:var(--gold); }
+      .one-thumb #one-pad { display:flex; transform:none; }
+      .one-thumb #t-left,.one-thumb #t-right,.one-thumb #t-jump,.one-thumb #t-carve { display:none; }
+      .one-thumb #t-surge { right:calc(156px + env(safe-area-inset-right)); bottom:calc(164px + env(safe-area-inset-bottom)); width:120px; height:48px; border-radius:12px; transform:none; }
+      .one-thumb #ability { left:auto; right:calc(16px + env(safe-area-inset-right)); bottom:calc(164px + env(safe-area-inset-bottom)); width:132px; max-width:132px; min-height:48px; padding:8px; }
+      .one-thumb #run-mode-status { bottom:calc(224px + env(safe-area-inset-bottom)); }
+      .one-thumb #flowwrap { bottom:calc(264px + env(safe-area-inset-bottom)); }
+      .one-thumb #combo { bottom:264px; }
+      .one-thumb #portal-enter { top:auto; bottom:calc(224px + env(safe-area-inset-bottom)); left:auto; right:calc(16px + env(safe-area-inset-right)); transform:none; width:132px; white-space:normal; padding:8px; min-height:44px; }
+      .one-thumb.left-hand #one-pad,.one-thumb.left-hand #ability,.one-thumb.left-hand #portal-enter { right:auto; left:calc(16px + env(safe-area-inset-left)); }
+      .one-thumb.left-hand #t-surge { right:auto; left:calc(156px + env(safe-area-inset-left)); }
+      .one-thumb.left-hand #run-mode-status { left:auto; right:calc(12px + env(safe-area-inset-right)); }
+      #controls-dialog[open], #previous-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
+      #previous-records { padding-left:20px; font-size:13px; line-height:1.6; }
+      #previous-records li { margin:8px 0; }
+      #controls-dialog .control-options { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+      #controls-dialog .control-options .btn { flex:1; min-width:110px; margin:0; padding:12px; font-size:12px; }
+      #controls-dialog [aria-pressed="true"] { border-color:var(--gold); color:var(--gold); }
+      @media(max-height:480px) {
+        .one-thumb #one-pad { height:94px; bottom:12px; }
+        .one-thumb #t-surge,.one-thumb #ability { bottom:116px; }
+        .one-thumb #run-mode-status { bottom:172px; }
+        .one-thumb #portal-enter { bottom:172px; }
+        .one-thumb #flowwrap,.one-thumb #combo { top:62px; bottom:auto; }
+      }
     </style>
   </head>
   <body>
@@ -576,6 +608,7 @@
       <button class="tbtn" id="t-jump" aria-label="Jump">JUMP</button>
       <button class="tbtn" id="t-carve" aria-label="Hold to carve">CARVE</button>
       <button class="tbtn" id="t-surge" aria-label="Surge">SURGE</button>
+      <button class="tbtn" id="one-pad" aria-label="One-thumb pad: hold to charge or catch, drag to steer, release to launch"><span>HOLD · DRAG · RELEASE</span><span id="one-feedback">Hold to prepare a catch</span></button>
     </div>
 
     <!-- start -->
@@ -590,14 +623,14 @@
         </div>
         </div>
         <p class="tag">
-          Six columns. No summit. Hunt bounty, unlock movement skills and gamble on secret rifts.
+          Read the route, choose a shortcut and rescue a miss. Five landmarks lead into an endless ascent.
         </p>
         </div>
         <div class="menu-controls">
         <div class="menu-actions">
           <label class="name-label">Climber name <input id="climber-name" maxlength="16" autocomplete="nickname" value="Climber" /></label>
           <button class="btn" id="play">Begin expedition ▸</button>
-          <div class="menu-options"><button class="btn ghost" id="mode-open" aria-haspopup="dialog">Practice · ∞</button><button class="btn ghost" id="touch-toggle" aria-pressed="false" aria-label="Touch controls: off">Touch: off</button></div>
+          <div class="menu-options"><button class="btn ghost" id="mode-open" aria-haspopup="dialog">Practice · ∞</button><button class="btn ghost" id="touch-toggle" aria-haspopup="dialog">Controls</button></div>
         </div>
         <div class="keys">
           <div>
@@ -613,10 +646,26 @@
             <span>Surge (spend Flow)</span><b><kbd>X / K</kbd></b>
           </div>
         </div>
-        <div class="expedition-links"><button class="btn ghost" id="workshop-open">Workshop</button><button class="btn ghost" id="records-open">Records</button><button class="btn ghost" id="help-open" aria-haspopup="dialog">Field guide</button></div><p id="menu-progress"></p>
+        <div class="expedition-links"><button class="btn ghost" id="workshop-open">Workshop</button><button class="btn ghost" id="records-open">Records</button><button class="btn ghost" id="help-open" aria-haspopup="dialog">Field guide</button><button class="btn ghost hidden" id="previous-open" aria-haspopup="dialog">Previous progress</button></div><p id="menu-progress"></p>
         </div>
       </div>
     </div>
+    <dialog id="previous-dialog" aria-labelledby="previous-title">
+      <div class="rift-body"><h2 id="previous-title" tabindex="-1" autofocus>Your previous progress</h2>
+      <p id="previous-summary"></p>
+      <p>The climbing route has changed. Bring your name, bounty and unlocked skills if you choose. New course records start at zero; previous scores stay in this log. Nothing is added to an existing wallet.</p>
+      <p id="previous-run"></p><ol id="previous-records"></ol><p id="previous-message" role="status"></p></div>
+      <div class="rift-actions"><button class="btn" id="previous-import">Use previous progress</button><button class="btn ghost" id="previous-separate">Start separate</button><button class="btn ghost" id="previous-close">Back</button></div>
+    </dialog>
+    <dialog id="controls-dialog" aria-labelledby="controls-title">
+      <div class="rift-body"><h2 id="controls-title">Choose your controls</h2>
+      <div class="control-options"><button class="btn ghost" id="controls-one" aria-pressed="false">One thumb</button><button class="btn ghost" id="controls-two" aria-pressed="false">Two thumbs</button><button class="btn ghost" id="controls-keyboard" aria-pressed="true">Keyboard</button></div>
+      <div class="control-options"><button class="btn ghost" id="controls-left" aria-pressed="false">Left hand</button><button class="btn ghost" id="controls-right" aria-pressed="true">Right hand</button></div>
+      <p>One thumb: hold to catch or charge, drag to steer, release to launch. Press again for each catch. On a platform, hold and release to jump.</p>
+      <p>Two thumbs: steer with the left, hold/release CARVE with the right. JUMP is also available. Touch grips stay still until release; holding too long slips. Use skills and Surge between launches.</p>
+      <p>Handedness moves the one-thumb pad and action buttons. Settings stay on this device. Changes during a run leave it paused until you choose Resume.</p></div>
+      <div class="rift-actions"><button class="btn" id="controls-close">Done</button></div>
+    </dialog>
     <dialog id="mode-dialog" aria-labelledby="mode-title">
       <div class="rift-body"><h2 id="mode-title">Choose your climb</h2>
       <p><strong>Practice:</strong> unlimited checkpoint recovery. Learn routes and keep climbing at your own pace.</p>
@@ -625,9 +674,11 @@
       <div class="rift-actions"><button class="btn" id="mode-practice" aria-pressed="true">Practice · ∞ lives</button><button class="btn" id="mode-challenge" aria-pressed="false">Challenge · 3 lives</button><button class="btn ghost" id="mode-close">Keep current mode</button></div>
     </dialog>
     <dialog id="help-dialog" aria-labelledby="help-title">
-      <h2 id="help-title">Expedition field guide</h2>
+      <h2 id="help-title" tabindex="-1" autofocus>Expedition field guide</h2>
+      <p>Five landmarks: Launch Garden, Wind Gap, The Fork, Second Chance and Observatory. Wide crossings need deliberate steering. The violet outer spring at The Fork is an optional shortcut with an 8-bounty shard. A lower cyan wall in Second Chance can rescue a missed catch. Broad ledges let you rest; there is no timer or final roof.</p>
+      <p>A fresh catch during a fall can save a life before the world-space fall boundary. Practice remains unlimited; Challenge still has three lives. Previous progress lets returning players bring their name, bounty and skills into this course. Old course records stay separate and readable; old saves are kept. Relics are not included.</p>
       <p>Move and jump toward a glowing edge. Hold CARVE to grip it, then release when the charge ring turns gold to launch higher. On a keyboard, use A/D or the arrows to steer, Space/W to jump, Z to carve, X for Flow Surge, and C for your equipped skill. This keeps your left hand together while your right hand uses the arrows. Prefer A/D? J (carve), K (surge) and L (skill) also work; Shift and Q remain available.</p>
-      <p>With touch controls enabled, hold a direction with one thumb and use JUMP, CARVE and SURGE with the other. Hold CARVE before reaching a wall to catch it.</p>
+      <p>Choose One thumb to hold/catch/charge, drag to steer and release to launch. Choose Two thumbs for independent steering and CARVE, plus optional JUMP. Touch wall grips stay still until release. Ground charging launches only on release. A cancelled gesture pauses safely. Press again after each launch or slip.</p>
       <p>Choose Practice for unlimited recovery, or Challenge for 3 lives. Falling or hitting spikes costs one Challenge life; the third loss ends the run. Checkpoints do not refill lives. Rift misses only cost altitude. You can bank a run from Pause at any time.</p>
       <p>Clean releases build Flow and help you chain launches. Momentum carries between jumps; steer against your movement to brake.</p>
       <p>Gold beacons save your recovery point. Cyan bridges are one-way; gold chevrons mark springboards. Explore sideways to find richer shards and colored wind or lift lanes. Every 100 m and each contract earns bounty. Press C / L / Q or tap your skill to climb faster; unlock more in the Workshop. Purple rifts are optional: press E nearby to see their rules before entering. There is no roof. Pause and bank your run whenever you like. Records, bounty and unlocks stay on this browser.</p>
@@ -643,7 +694,7 @@
         <h1 class="title" style="font-size: clamp(46px, 10vw, 92px)">HOLD</h1>
         <p class="tag" id="pause-message">Time to read the next line.</p>
         <button class="btn" id="resume">Resume</button>
-        <button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost" id="bank-open">Bank run</button></div>
+        <button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost" id="bank-open">Bank run</button><button class="btn ghost" id="controls-pause" aria-haspopup="dialog">Controls</button></div>
       </div>
     </div>
 
@@ -728,7 +779,9 @@
         ZONE_PERFECT_HI: 0.92,
         SLIP_AT: 1.12, // charge beyond this => slip (lose grip)
         WALL_POP: 380, // sideways launch off a wall face
-        WALL_LIFT_BASE: 560, // base vertical launch
+        TOUCH_WALL_LIFT_BASE: 840, // stationary touch grips must clear the next rung on a good release
+        TOUCH_WALL_LIFT_GAIN: 420,
+        WALL_LIFT_BASE: 760, // trial: good keyboard releases must clear authored wide crossings
         WALL_LIFT_GAIN: 540, // extra vertical scaled by charge*quality
         RAIL_FWD: 470, // forward launch off a rail (top face)
         RAIL_LIFT_BASE: 480,
@@ -770,14 +823,25 @@
         touchResets: [],
         jumpBuf: 0,
         surgeQ: false,
+        oneId: null, oneHeld: false, oneAxis: 0, touchCarveHeld: false, blocked: false,
+        manualHeld() { return (this.oneHeld || this.touchCarveHeld) && !this.blocked; },
+        retire() { this.blocked = true; this.oneAxis = 0; this._tCarve = false; },
+        releaseManual() {
+          if (!Game.running || Game.paused) return;
+          if (Player.groundCharge !== null) Player.releaseGround();
+          else if (Player.carve?.manual) Player.releaseCarve();
+          else if (Player.pole?.manual) Player.releasePole();
+        },
         axis() {
           let x = 0;
           if (this.k("a") || this.k("arrowleft")) x -= 1;
           if (this.k("d") || this.k("arrowright")) x += 1;
-          return x;
+          return x || this.oneAxis;
         },
         carve() {
-          return this.k("z") || this.k("j") || this.k("shift") || this._tCarve;
+          const held = this.k('z') || this.k('j') || this.k('shift') || this._tCarve || this.oneHeld || this.touchCarveHeld;
+          if (!held) this.blocked = false;
+          return !this.blocked && held;
         },
         k(n) {
           return !!(this.keys[n] || this.touchKeys[n]);
@@ -785,6 +849,13 @@
         _tCarve: false,
         touchKeys: Object.create(null),
         clear() {
+          this.oneId = null; this.oneHeld = false; this.oneAxis = 0; this.touchCarveHeld = false; this.blocked = false;
+          Player.groundCharge = null;
+          if (Player.carve?.manual || Player.pole?.manual) {
+            if (Player.carve) Player.carve.charge = 0;
+            if (Player.pole) Player.pole.charge = 0;
+            Game.awaitingGrip = true;
+          }
           for (const reset of this.touchResets) reset();
           this.keys = Object.create(null);
           this.touchKeys = Object.create(null);
@@ -1011,7 +1082,23 @@
       // Deterministic six-column streams. Only the current 16-row neighborhood lives
       // in memory; returning to an old checkpoint reconstructs its geometry.
       const Level = {
-        blocks: [], poles: [], tokens: [], portals: [], zones: [],
+        course:4,
+        encounters:[
+          {name:'LAUNCH GARDEN',hint:'Find the gold beacon. Hold, steer and release through the first catches.',color:'#38f0e0'},
+          {name:'WIND GAP',hint:'The gap opens wide. Drag toward the opposite wall; neutral launches may fall short.',color:'#9bcaff'},
+          {name:'THE FORK',hint:'Gold walls keep your checkpoint. The violet outer spring offers a faster, richer line.',color:'#c79aff'},
+          {name:'SECOND CHANCE',hint:'Missed the upper wall? A fresh hold can catch the cyan rescue wall below.',color:'#8df7c8'},
+          {name:'OBSERVATORY',hint:'Use the marked spring or rest on a broad ledge. Look back at the route you climbed.',color:'#ffcf4d'},
+        ],
+        encounter(y) { return this.encounters[Math.min(4,Math.floor(Math.max(0,y-150)/1380))]; },
+        stage(y) { return Math.min(4,Math.floor(Math.max(0,y-150)/1380)); },
+        shape(row,column,spine) {
+          const stage=Math.floor(row/6);
+          const shift=spine && stage===1 ? (column===2?-120:120) : spine && row===16 ? 220 : spine && row===15 ? 160 : !spine && column>=4 && row>=11 && row<=17 ? 90 : 0;
+          return {x:this.columns[column]+shift,w:spine && stage===4?190:150,h:spine && stage===1?180:160};
+        },
+        fallFloor() { return Math.max(this.startY-200,Player.respawn.y-600,Journey.fallAnchor-1000); },
+        blocks: [], poles: [], tokens: [], portals: [], zones: [], landmarks: [],
         startY: 64, centerX: 405, row: null,
         columns: [-460, -160, 140, 520, 820, 1120],
         random(row, salt = 0) {
@@ -1024,7 +1111,7 @@
           if (row === this.row) return;
           this.row = row;
           const previous = new Map([...this.blocks, ...this.poles].map(b => [b.id, b]));
-          this.blocks = []; this.poles = []; this.tokens = []; this.portals = []; this.zones = [];
+          this.blocks = []; this.poles = []; this.tokens = []; this.portals = []; this.zones = []; this.landmarks = [];
           const add = (id, x, y, w, h, kind, extra = {}) => {
             const b = previous.get(id) || {id, x, y, w, h, kind, grip: ['rock','rail','check'].includes(kind), hazard:kind === 'spike', broken:false, t:0, ...extra};
             this.blocks.push(b); return b;
@@ -1043,12 +1130,23 @@
               // turn consecutive gaps into an accidental difficulty spike.
               const offset = spine || r < 4 ? 0 : Math.floor(this.random(Math.floor(r / 12),c < 2 ? 12 : 13) * 15) - 7;
               const kind = r % 5 === 4 ? 'check' : 'rock';
-              const b = add(`b:${r}:${c}`, this.columns[c], y + offset, 150, 160, kind, {row:r, column:c, spine, biome});
+              const shape=this.shape(r,c,spine);
+              const b = add(`b:${r}:${c}`, shape.x, y + offset, shape.w, shape.h, kind, {row:r, column:c, spine, biome});
               this.tokens.push({id:`t:${r}:${c}`, row:r, x:b.x + (c % 2 ? -30 : 180), y:b.y + 65, value:spine ? 2 : 4});
               if (!spine && r > 3 && r % 6 === 3) add(`s:${r}:${c}`, b.x + (c < 2 ? -24 : 150), b.y + 25, 24, 65, 'spike', {row:r});
             }
-            if (r % 2 === 0) add(`r:${r}`, 330, y + 190, 140, 16, 'rail', {row:r, feature:r % 6 === 2 ? 'spring' : '', biome});
-            if (r % 8 === 5) {
+            if ((r % 2 === 0 && !(r>=6 && r<12)) || r===9) add(`r:${r}`, 330, y + 190, r>=24&&r<30?190:140, 16, 'rail', {row:r, feature:r % 6 === 2 ? 'spring' : '', biome});
+            if (r===13) {
+              add('r:13:1',740,y+120,140,18,'rail',{row:r,feature:'spring',shortcut:true,grip:false,biome});
+              this.tokens.push({id:'t:13:9',row:r,x:810,y:y+220,value:8});
+            }
+            if (r===20) add('b:20:9',375,y-270,50,180,'rock',{row:r,rescue:true,biome});
+            if (r<30 && r%6===5) {
+              const stage=Math.floor(r/6), encounter=this.encounters[stage];
+              this.landmarks.push({id:'l:'+stage,row:r,x:405,y:y+210,name:encounter.name,color:encounter.color});
+              add(`r:${r}:2`,305,y+180,200,18,'rail',{row:r,rest:true,biome});
+            }
+            if (r % 8 === 5 && !(r>=6 && r<30)) {
               const id = `p:${r}`;
               this.poles.push(previous.get(id) || {id, row:r, x:405, y:y + 110, r:1});
             }
@@ -1078,7 +1176,9 @@
         stun: 0,
         trail: [],
         relatch: 0,
+        groundCharge: null,
         reset() {
+          this.groundCharge = null;
           this.x = 450;
           this.y = Level.startY;
           this.vx = 0;
@@ -1142,7 +1242,7 @@
             }
           }
           // void / fall reset
-          if (this.y < Math.max(Level.startY - 200, this.respawn.y - 600, Cam.y - 900)) this.hit(true);
+          if (this.y < Level.fallFloor()) this.hit(true);
         },
         saveCheckpoint(b) {
           if (b.kind !== "check" || (this.checkpoint && b.y <= this.checkpoint.y)) return;
@@ -1168,6 +1268,7 @@
             0.6,
             5,
           );
+          if (Input.oneHeld || Input.touchCarveHeld) Input.clear();
           if (Journey.onHit(fall)) return;
           this.x = this.respawn.x;
           this.y = this.respawn.y;
@@ -1179,7 +1280,7 @@
           this.vy = 0;
           this.state = "AIR";
           this.carve = null;
-          this.pole = null;
+          this.pole = null; this.groundCharge = null; Game.awaitingGrip = false; Journey.fallAnchor = this.y;
           if (Journey.mode === 'challenge') { RunSave.write(); Game.syncHUD(); }
         },
         breakCombo() {
@@ -1230,14 +1331,15 @@
         },
 
         startCarve(t) {
-          this.carve = { ...t, charge: 0 };
+          if (Input.manualHeld() && Journey.recovering()) Journey.onRescue(t.block);
+          this.carve = { ...t, charge: 0, manual: Input.manualHeld() };
           if (Game.lesson < 2) Game.lesson = 2;
           this.state = "CARVE";
           const b = t.block;
           this.saveCheckpoint(b);
           if (t.type === "rail" && b.kind !== "rail") {
             // A column-top catch should continue into the course unless steered.
-            this.face = Input.axis() || sign(Level.centerX - (b.x + b.w / 2)) || this.face;
+            this.face = sign(Input.axis()) || sign(Level.centerX - (b.x + b.w / 2)) || this.face;
           }
           if (t.type === "wallL") {
             this.x = b.x + b.w;
@@ -1266,7 +1368,7 @@
           const tx = -Math.sin(ang),
             ty = Math.cos(ang);
           const tang = this.vx * tx + this.vy * ty;
-          this.pole = { ref: p, ang, r, angVel: tang / r || 1.2, charge: 0 };
+          this.pole = { ref: p, ang, r, angVel: tang / r || 1.2, charge: 0, manual: Input.manualHeld() };
           this.state = "POLE";
           Sfx.latch();
         },
@@ -1291,12 +1393,23 @@
           };
         },
 
+        releaseGround() {
+          const charge = this.groundCharge; if (charge === null) return;
+          this.groundCharge = null;
+          if (!this.onGround || charge >= T.SLIP_AT) { Input.retire(); return; }
+          const axis = Input.axis(), dir = sign(axis) || this.face || 1, q = this.quality(charge);
+          this.vx = dir * T.WALL_POP * 0.4 + axis * T.STEER * 0.2;
+          this.vy = Math.max(320,T.JUMP_V * (0.45 + charge * q.mul * 0.9));
+          this.face = dir; this.onGround = false; this.state = 'AIR'; this.coyote = 0; this.relatch = 0.14;
+          Input.retire(); Sfx.jump(); if (Game.lesson < 1) Game.lesson = 1;
+        },
         releaseCarve(slip = false) {
           const c = this.carve;
           if (!c) return;
           this.carve = null;
           this.state = "AIR";
           this.relatch = 0.14;
+          if (c.manual && slip) Input.retire();
           if (slip) {
             this.vy = Math.min(this.vy, -40);
             this.vx = c.type === "wallL" ? 120 : c.type === "wallR" ? -120 : 0;
@@ -1319,7 +1432,7 @@
           if (c.type === "wallL" || c.type === "wallR") {
             const dir = c.type === "wallL" ? 1 : -1;
             this.vx = dir * T.WALL_POP + steer;
-            this.vy = T.WALL_LIFT_BASE + c.charge * q.mul * T.WALL_LIFT_GAIN;
+            this.vy = c.manual ? T.TOUCH_WALL_LIFT_BASE + c.charge * q.mul * T.TOUCH_WALL_LIFT_GAIN : T.WALL_LIFT_BASE + c.charge * q.mul * T.WALL_LIFT_GAIN;
             this.face = dir;
           } else {
             // rail
@@ -1328,6 +1441,7 @@
             this.vy = T.RAIL_LIFT_BASE + c.charge * q.mul * T.RAIL_LIFT_GAIN;
           }
           this.award(q, c.block);
+          if (c.manual) Input.retire();
         },
         releasePole(slip = false) {
           const p = this.pole;
@@ -1335,6 +1449,7 @@
           this.pole = null;
           this.state = "AIR";
           this.relatch = 0.14;
+          if (p.manual && slip) Input.retire();
           if (slip) {
             this.vx = 0;
             this.vy = -40;
@@ -1352,6 +1467,7 @@
           this.vx = tx * spd + Input.axis() * T.STEER;
           this.vy = Math.max(ty * spd, 260) + 120;
           this.award(q, p.ref);
+          if (p.manual) Input.retire();
         },
         award(q, surface) {
           // A run has a finite set of rewards. Recovery still launches normally.
@@ -1411,7 +1527,17 @@
           if (this.stun > 0) this.stun -= dt;
           if (this.relatch > 0) this.relatch -= dt;
           const inAxis = Input.axis();
-          if (inAxis) this.face = inAxis;
+          if (inAxis) this.face = sign(inAxis);
+          if (this.groundCharge !== null) {
+            if (!this.onGround || Input.jumpBuf > 0) this.groundCharge = null;
+            else {
+              this.groundCharge = Math.min(T.SLIP_AT,this.groundCharge + dt / T.CHARGE_TIME);
+              this.vx = 0;
+              if (this.groundCharge >= T.SLIP_AT) { this.groundCharge = null; Input.retire(); Journey.notify('CHARGE EXPIRED · lift, then press again'); }
+              return;
+            }
+          }
+          if (this.onGround && Input.manualHeld() && Input.jumpBuf <= 0 && !this.carve && !this.pole) { this.groundCharge = 0; this.vx = 0; return; }
 
           /* ---- POLE ---- */
           if (this.state === "POLE") {
@@ -1436,7 +1562,12 @@
             const c = this.carve,
               b = c.block;
             c.charge = clamp(c.charge + dt / T.CHARGE_TIME, 0, 1.3);
-            if (c.type === "rail") {
+            if (c.manual) {
+              // Touch charging never rides an edge into an automatic launch.
+              this.vx = 0; this.vy = 0;
+              if (c.type === 'rail') this.y = b.y + b.h;
+              else this.x = c.type === 'wallL' ? b.x + b.w : b.x - this.w;
+            } else if (c.type === "rail") {
               this.y = b.y + b.h;
               const dir = this.face || 1;
               this.vx = lerp(
@@ -1502,8 +1633,9 @@
           const maxRun = T.MAX_RUN * speed;
           // Steering may accelerate up to the cap, but must not erase a launch.
           if (inAxis) {
-            if (this.vx * inAxis < maxRun)
-              this.vx = inAxis * Math.min(maxRun, this.vx * inAxis + accel * dt);
+            const direction = sign(inAxis), strength = Math.abs(inAxis);
+            if (this.vx * direction < maxRun * strength)
+              this.vx = direction * Math.min(maxRun * strength, this.vx * direction + accel * dt * strength);
           } else if (this.onGround) {
             const f = T.GROUND_FRICTION * dt;
             this.vx -= clamp(this.vx, -f, f);
@@ -1614,7 +1746,7 @@
       };
 
       const Profile = {
-        key:'carve.expedition.profile.v1', name:'Climber', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], best:0, challengeBest:0, storageAvailable:true,
+        key:'carve.variety.profile.v1', name:'Climber', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], best:0, challengeBest:0, storageAvailable:true,
         load() {
           try {
             const d = JSON.parse(localStorage.getItem(this.key)); this.storageAvailable = true;
@@ -1644,15 +1776,71 @@
           this.load();
           const bestKey = Journey.mode === 'challenge' ? 'challengeBest' : 'best';
           this[bestKey] = Math.max(this[bestKey], Math.floor((Journey.peak - 64) / 10));
-          const record = {id:Journey.id, mode:Journey.mode, outcome, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
+          const record = {id:Journey.id, course:'variety-v2', rescues:Journey.rescues, mode:Journey.mode, rules:Journey.controlsUsed.some(c=>c==='one'||c==='two')?'manual-touch-v1':'web-v2', controls:[...Journey.controlsUsed], outcome, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
           this.records = this.records.filter(r => r.id !== record.id);
           if (record.height > 0) this.records.push(record);
           this.trimRecords(); this.save();
         },
       };
+      const PreviousProgress = {
+        pending:false, activeKept:false,
+        json(storage,key,limit) {
+          try { const raw=storage.getItem(key); return raw && raw.length<=limit ? JSON.parse(raw) : null; } catch { return null; }
+        },
+        current() { return this.json(localStorage,Profile.key,200000)?.version===1; },
+        read() {
+          const d=this.json(localStorage,'carve.expedition.profile.v1',200000);
+          const number=n=>Number.isFinite(n)&&n>=0&&n<=1e12;
+          const profile=d?.version===1 && typeof d.name==='string' && Number.isSafeInteger(d.coins) && d.coins>=0 ? {
+            name:d.name.slice(0,16), coins:Math.min(1000000,d.coins),
+            unlocked:['pulse',...['wing','hook'].filter(id=>Array.isArray(d.unlocked)&&d.unlocked.includes(id))],
+            equipped:d.equipped, best:number(d.best)?d.best:0, challengeBest:number(d.challengeBest)?d.challengeBest:0,
+            records:Array.isArray(d.records)?d.records.filter(r=>r&&typeof r.name==='string'&&[r.height,r.score,r.time,r.portals].every(number)).slice(0,20):[],
+          } : null;
+          const run=this.json(sessionStorage,'carve.expedition.run.v1',100000);
+          const active=run?.version===1 && run.course===2 && number(run.journey?.peak) && number(run.game?.score) ? {height:Math.max(0,Math.floor((run.journey.peak-64)/10)),score:run.game.score} : null;
+          return {profile,active};
+        },
+        init() {
+          const data=this.read();
+          this.activeKept=!!data.active;
+          show('previous-open',!!(data.profile||data.active));
+          this.pending=!!data.profile && !this.current() && !Game.running;
+          document.getElementById('previous-open').onclick=()=>this.open();
+          document.getElementById('previous-close').onclick=()=>document.getElementById('previous-dialog').close();
+          document.getElementById('previous-import').onclick=()=>this.choose(true);
+          document.getElementById('previous-separate').onclick=()=>this.choose(false);
+          Journey.menuStatus();
+          if (this.pending) this.open();
+        },
+        open() {
+          if(Game.running) return false;
+          const {profile:p,active}=this.read();
+          if(!p&&!active) return false;
+          this.pending=!!p&&!this.current();
+          document.getElementById('previous-summary').textContent=p?`${p.name} · ${p.coins} bounty · Previous Practice best ${p.best} m · Challenge best ${p.challengeBest} m`:'Previous active run found.';
+          document.getElementById('previous-run').textContent=active?`Previous run: ${active.height} m · ${active.score} points. Its original snapshot is kept. The changed route cannot resume it; choose Begin for a new climb.`:'Previous course records remain on this browser. They are not ranked against the new route.';
+          const rows=document.getElementById('previous-records');rows.textContent='';
+          for(const r of p?.records||[]) { const li=document.createElement('li');li.textContent=`${r.name.slice(0,16)} · ${r.mode==='challenge'?'Challenge':'Practice'} · ${r.height} m · ${r.score} points`;rows.appendChild(li); }
+          document.getElementById('previous-message').textContent=this.pending?'Choose whether to carry progress into this course.':'Your current progress is already set. The previous log is read-only; wallets are not combined.';
+          show('previous-import',this.pending);show('previous-separate',this.pending);
+          document.getElementById('previous-dialog').showModal();return true;
+        },
+        choose(carry) {
+          if(!this.pending||Game.running) return false;
+          if(this.current()) { Profile.load();document.getElementById('climber-name').value=Profile.name;this.pending=false;document.getElementById('previous-dialog').close();Journey.menuStatus();return false; }
+          const p=this.read().profile;if(!p)return false;
+          const before={name:Profile.name,coins:Profile.coins,unlocked:Profile.unlocked,equipped:Profile.equipped};
+          if(carry) { Profile.name=p.name;Profile.coins=p.coins;Profile.unlocked=[...p.unlocked];Profile.equipped=p.unlocked.includes(p.equipped)?p.equipped:'pulse'; }
+          if(!Profile.save() && carry) {
+            Object.assign(Profile,before);document.getElementById('previous-message').textContent='Saving is unavailable. Previous progress is untouched. Choose Start separate for a temporary run.';return false;
+          }
+          this.pending=false;document.getElementById('climber-name').value=Profile.name;Journey.menuStatus();document.getElementById('previous-dialog').close();return true;
+        },
+      };
       const Journey = {
-        selectedMode:'practice', mode:'practice', lives:null, result:null,
-        seed:1, id:'', name:'Climber', peak:64, shards:0, clean:0, wins:0, cooldown:0, wingTime:0,
+        selectedMode:'practice', mode:'practice', lives:null, result:null, controlsUsed:[],
+        seed:1, id:'', name:'Climber', peak:64, fallAnchor:64, rescues:0, shards:0, clean:0, wins:0, cooldown:0, wingTime:0,
         collected:new Set(), visited:new Set(), quests:[0,0,0], rift:null, nearest:null, lastUI:'',
         biomes:[['MOSS CATHEDRAL','#38f0e0'],['STORM ARCHIVE','#b8a4ff'],['GLASS ORCHARD','#8df7c8'],['EMBER FOUNDRY','#ffaf75']],
         skills:{pulse:{name:'Rocket Pulse',cost:0,cd:14,description:'A powerful upward burst. Ready every 14s.'},wing:{name:'Windwing',cost:25,cd:24,description:'Eight seconds of light gravity. Great for chaining.'},hook:{name:'Skyhook',cost:50,cd:18,description:'Zip to a safe ledge several floors above.'}},
@@ -1667,14 +1855,20 @@
         },
         begin() {
           if (this.result) this.dismissResult();
+          this.controlsUsed = [Game.controlLabel()];
           this.mode = this.selectedMode; this.lives = this.mode === 'challenge' ? 3 : null;
           Profile.load();
           Profile.name = (document.getElementById('climber-name').value || Profile.name || 'Climber').trim().slice(0,16) || 'Climber';
           this.name = Profile.name; Profile.save();
           this.seed = Math.floor(Math.random() * 2147483646) + 1;
           this.id = Date.now().toString(36) + '-' + this.seed.toString(36);
-          Object.assign(this,{peak:64,shards:0,clean:0,wins:0,cooldown:0,wingTime:0,quests:[0,0,0],rift:null,nearest:null,lastUI:''});
+          Object.assign(this,{peak:64,fallAnchor:64,rescues:0,shards:0,clean:0,wins:0,cooldown:0,wingTime:0,quests:[0,0,0],rift:null,nearest:null,lastUI:''});
           this.collected = new Set(); this.visited = new Set();
+        },
+        recovering() { return Player.vy < -120 && Player.y < this.fallAnchor-160; },
+        onRescue(block) {
+          // A catch is a rescue only during a genuine descending flight. No extra payout.
+          this.rescues++; this.notify(`${block?.rescue ? 'RESCUE WALL' : 'RESCUED'} · fresh catch · no life lost`);
         },
         notify(text, urgent = false) { if (!urgent && Game.noticeTime > 0 && /^(FALL|SPIKES) ·/.test(Game.notice)) return; Game.notice = text; Game.noticeTime = 4; },
         init() {
@@ -1713,8 +1907,9 @@
           addEventListener('blur',suspend); document.addEventListener('visibilitychange',() => { if (document.hidden) suspend(); });
           this.menuStatus();
         },
-        menuStatus() { document.getElementById('menu-progress').textContent = `${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}`; },
+        menuStatus() { document.getElementById('menu-progress').textContent = `Endless Expedition · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
         buy(id) {
+          if (PreviousProgress.pending) { document.getElementById('workshop-dialog').close(); PreviousProgress.open(); return false; }
           const skill = this.skills[id]; if (!skill) return false;
           Profile.load();
           if (!Profile.unlocked.includes(id)) {
@@ -1746,7 +1941,8 @@
           const rows = document.getElementById('record-rows'); rows.textContent = '';
           for (const [i,r] of records.entries()) {
             const row = document.createElement('li');
-            row.textContent = `${i + 1}. ${r.name} — ${r.height} m · ${r.score} pts · ${r.portals} rift${r.portals === 1 ? '' : 's'} cleared`;
+            const layout = Array.isArray(r.controls) ? r.controls.filter(c=>['one','two','keyboard'].includes(c)).map(c=>({one:'1 thumb',two:'2 thumbs',keyboard:'keyboard'})[c]).join(' / ') : '';
+            row.textContent = `${i + 1}. ${r.name} — ${r.height} m · ${r.score} pts · ${r.portals} rift${r.portals === 1 ? '' : 's'} cleared${r.course === 'variety-v1' ? ' · Route 1' : r.course === 'variety-v2' ? ' · Route 2' : ''}${layout ? ' · ' + layout : ''}`;
             rows.appendChild(row);
           }
           if (!records.length) rows.textContent = `No ${mode} records yet. Climb to set your first height.`;
@@ -1762,7 +1958,7 @@
         finish(outcome = 'banked') {
           if (!Game.running) return false;
           this.peak = Math.max(this.peak,Player.y);
-          const result = this.mode === 'challenge' ? {id:this.id,name:this.name,mode:this.mode,lives:this.lives,touch:document.body.classList.contains('istouch'),outcome,height:Math.floor((this.peak - 64) / 10),score:Game.score,time:Game.time,portals:this.wins} : null;
+          const result = this.mode === 'challenge' ? {id:this.id,course:Level.course,name:this.name,mode:this.mode,lives:this.lives,controls:{scheme:Game.controlScheme,hand:Game.controlHand},touch:document.body.classList.contains('istouch'),outcome,height:Math.floor((this.peak - 64) / 10),score:Game.score,time:Game.time,portals:this.wins} : null;
           Profile.record(outcome); Game.running = false; Game.paused = false; Game.acc = 0; Game.awaitingGrip = false; this.rift = null; RunSave.clear(); Input.clear();
           for (const id of ['paused','hud','flowwrap','coach','pausebtn','run-mode-status','expedition-status','contractline','ability','portal-enter']) show(id,false);
           show('menu',true); Game.needsRender = true; this.menuStatus();
@@ -1795,9 +1991,11 @@
         useSkill() {
           if (!Game.running || Game.paused || this.cooldown > 0) return false;
           const id = Profile.equipped, skill = this.skills[id];
+          if (Input.manualHeld()) return false;
+          Player.groundCharge = null;
           if (!Profile.unlocked.includes(id)) return false;
           if (id === 'hook') {
-            const targets = Level.blocks.filter(b => b.grip && !b.hazard && b.y > Player.y + 220 && b.y < Player.y + 850 && Math.abs(b.x - Player.x) < 600);
+            const targets = Level.blocks.filter(b => b.grip && !b.hazard && (b.spine || b.rest) && b.feature !== 'spring' && b.y > Player.y + 220 && b.y < Player.y + 850 && Math.abs(b.x - Player.x) < 600);
             if (!targets.length) { this.notify('SKYHOOK · climb closer to an upper ledge'); return false; }
             targets.sort((a,b) => b.y - a.y); this.landOn(targets[0]);
           } else {
@@ -1809,9 +2007,12 @@
           this.peak = Math.max(this.peak,Player.y); RunSave.write(); return true;
         },
         landOn(b) {
+          if (Input.manualHeld()) Input.clear();
+          Player.groundCharge = null;
           Player.x = b.x + b.w / 2 - Player.w / 2; Player.y = b.y + b.h + 1;
           Player.vx = 0; Player.vy = 0; Player.carve = null; Player.pole = null; Player.state = 'AIR'; Player.onGround = false;
           Player.stun = 0; Player.relatch = 0.25; Player.face = sign(Level.centerX - Player.x) || 1;
+          this.fallAnchor = Player.y;
           Game.awaitingGrip = false; Cam.x = Player.x + Player.w / 2; Cam.y = Player.y + 170;
           Player.saveCheckpoint(b);
         },
@@ -1821,13 +2022,13 @@
           const choices = Level.blocks.filter(b => b.spine && (delta < 0 ? b.y + b.h >= target && b.y + b.h <= Player.y : Math.abs(b.y + b.h - target) <= 150));
           choices.sort((a,b) => Math.abs(a.y + a.h - target) - Math.abs(b.y + b.h - target));
           if (choices[0]) this.landOn(choices[0]);
-          else if (delta < 0) { Player.x = Player.respawn.x; Player.y = Player.respawn.y; Player.vx = 0; Player.vy = 0; Player.carve = null; Player.pole = null; Player.state = 'AIR'; Game.awaitingGrip = false; Cam.x = Player.x + 17; Cam.y = Player.y + 170; }
+          else if (delta < 0) { Player.x = Player.respawn.x; Player.y = Player.respawn.y; Player.vx = 0; Player.vy = 0; Player.carve = null; Player.pole = null; Player.state = 'AIR'; this.fallAnchor = Player.y; Game.awaitingGrip = false; Cam.x = Player.x + 17; Cam.y = Player.y + 170; }
           this.peak = Math.max(this.peak,Player.y); Profile.record();
           Game.needsRender = true; Game.lastHUD = {}; Game.syncHUD();
         },
         update(dt) {
           this.cooldown = Math.max(0,this.cooldown - dt); this.wingTime = Math.max(0,this.wingTime - dt);
-          this.peak = Math.max(this.peak,Player.y);
+          this.peak = Math.max(this.peak,Player.y); this.fallAnchor = Math.max(this.fallAnchor,Player.y);
           for (const t of Level.tokens) {
             if (!this.eligible(t.row) || this.collected.has(t.id)) continue;
             if (Math.hypot(Player.x + 17 - t.x, Player.y + 23 - t.y) < 43) {
@@ -1841,7 +2042,7 @@
           }
           if (Player.onGround) {
             const spring = Level.blocks.find(b => b.feature === 'spring' && Player.x + Player.w > b.x && Player.x < b.x + b.w && Math.abs(Player.y - b.y - b.h) < 3);
-            if (spring) { Player.vy = 1350; Player.onGround = false; Player.state = 'AIR'; Player.relatch = 0.3; Sfx.jump(); this.notify('SPRINGBOARD · catch the next wall'); }
+            if (spring) { Input.retire(); Player.groundCharge = null; Player.vy = spring.shortcut ? 1450 : 1350; if (spring.shortcut) Player.vx = -520; Player.onGround = false; Player.state = 'AIR'; Player.relatch = 0.3; Sfx.jump(); this.notify(spring.shortcut ? 'SHORTCUT · steer left; fresh hold for an upper wall' : 'SPRINGBOARD · lift, then press to catch'); }
           }
           this.nearest = Level.portals.find(p => this.eligible(p.row) && !this.visited.has(p.id) && Math.hypot(Player.x + 17 - p.x,Player.y + 23 - p.y) < 240) || null;
           this.contracts();
@@ -1854,7 +2055,11 @@
           if (document.getElementById('expedition-status').textContent !== status) document.getElementById('expedition-status').textContent = status;
           const nearbyRift = Level.portals.find(p => this.eligible(p.row) && !this.visited.has(p.id) && Math.abs(p.y - Player.y) < 400);
           const compass = nearbyRift ? ` · Rift ${Math.abs(nearbyRift.x - Player.x) < 100 ? (nearbyRift.y > Player.y ? '↑' : '↓') : nearbyRift.x > Player.x ? '→' : '←'} ${Math.ceil(Math.hypot(nearbyRift.x - Player.x - 17,nearbyRift.y - Player.y - 23) / 10)} m` : '';
-          const contract = `Shards ${this.shards % 6}/6 · Gold ${this.clean % 3}/3 · Height ${100 - Math.floor((this.peak - 64) / 10) % 100} m${compass}`;
+          const stage=Level.stage(Player.y), encounter=Level.encounter(Player.y);
+          const falling=this.recovering();
+          const rescue = Level.blocks.find(b=>b.rescue && Player.y>b.y && Player.y<b.y+b.h+700);
+          const rescueCue = falling && rescue ? `Rescue ${rescue.x + rescue.w/2 > Player.x+17 ? '→' : '←'} ${Math.ceil(Math.abs(rescue.x+rescue.w/2-Player.x-17)/10)} m` : `${this.rescues} rescues`;
+          const contract = falling ? `RECOVERY · ${Math.max(0,Math.ceil((Player.y-Level.fallFloor())/10))} m to fall limit · ${rescueCue}` : Player.y<7050 && this.peak>=7050 ? `OPENING CLEARED · revisit ${encounter.name}` : Player.y<7050 ? `${stage+1}/5 · ${encounter.name} · ${Math.max(0,Math.ceil((150+(stage*6+5)*230+210-Player.y)/10))} m to landmark` : `ENDLESS FRONTIER · ${this.rescues} rescues${compass}`;
           if (document.getElementById('contractline').textContent !== contract) document.getElementById('contractline').textContent = contract;
           const modeBadge = document.getElementById('run-mode-status');
           const modeText = this.mode === 'challenge' ? 'Challenge · ' + '♥'.repeat(this.lives) + '♡'.repeat(3 - this.lives) : 'Practice · ∞ lives';
@@ -1865,6 +2070,9 @@
           if (button.textContent !== label) button.textContent = label;
           button.disabled = this.cooldown > 0 || Game.paused;
           button.setAttribute('aria-label',label);
+          const portalButton = document.getElementById('portal-enter');
+          const portalLabel = document.body.classList.contains('istouch') ? 'Enter rift' : 'Enter secret rift · E';
+          if (portalButton.textContent !== portalLabel) portalButton.textContent = portalLabel;
           show('portal-enter',Game.running && !Game.paused && !!this.nearest);
           show('ability',Game.running); show('expedition-status',Game.running); show('contractline',Game.running);
         },
@@ -1928,6 +2136,21 @@
         },
         draw(ctx) {
           const floor = this.floor();
+          if (Player.vy<0 && Player.y-Level.fallFloor()<400) {
+            const limit=Level.fallFloor();ctx.strokeStyle='#ff6a7b88';ctx.lineWidth=3;ctx.setLineDash([12,10]);ctx.beginPath();ctx.moveTo(Player.x-500,limit);ctx.lineTo(Player.x+500,limit);ctx.stroke();ctx.setLineDash([]);
+          }
+          for (const landmark of Level.landmarks) {
+            ctx.save();ctx.translate(landmark.x,landmark.y);ctx.scale(1,-1);ctx.textAlign='center';
+            ctx.fillStyle=landmark.color;ctx.font=`bold ${Math.min(34,18/(Game.worldScale||.6))}px monospace`;ctx.fillText(landmark.name,0,-18);
+            ctx.strokeStyle=landmark.color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-100,0);ctx.lineTo(100,0);ctx.stroke();ctx.restore();
+          }
+          for (const b of Level.blocks) if (b.rescue || b.shortcut || b.rest) {
+            const color=b.shortcut?'#c79aff':b.rescue?'#8df7c8':'#ffcf4d';
+            ctx.strokeStyle=color;ctx.lineWidth=3;ctx.strokeRect(b.x-6,b.y-6,b.w+12,b.h+12);
+            if (b.rest) continue;
+            ctx.save();ctx.translate(b.x+b.w/2,b.y+b.h+28);ctx.scale(1,-1);ctx.fillStyle=color;ctx.textAlign='center';ctx.font=`bold ${Math.min(32,16/(Game.worldScale||.6))}px monospace`;
+            ctx.fillText(b.shortcut?'↖ SHORTCUT · +8':b.rescue?'RESCUE WALL':'REST LEDGE',0,0);ctx.restore();
+          }
           for (const z of Level.zones) {
             ctx.fillStyle = z.type === 'lift' ? '#38f0e014' : '#ba9bff18'; ctx.fillRect(z.x,z.y,z.w,z.h);
             ctx.fillStyle = z.type === 'lift' ? '#8df7c8' : '#b8a4ff';
@@ -1951,19 +2174,20 @@
       };
 
       const RunSave = {
-        key:'carve.expedition.run.v1',
+        key:'carve.variety.run.v1', incompatibleCourse:false,
         gameFields:['flow','score','combo','bestChain','perfects','time','comboTimer','lesson','noticeTime'],
         playerFields:['x','y','vx','vy','face','coyote','wallDir','surgeCD','stun','relatch'],
-        journeyFields:['peak','shards','clean','wins','cooldown','wingTime'],
+        journeyFields:['peak','fallAnchor','rescues','shards','clean','wins','cooldown','wingTime'],
         write() {
           if (!Game.running) return true;
+          this.incompatibleCourse = false;
           const pick = (o,fields) => Object.fromEntries(fields.map(k=>[k,o[k]]));
-          const d = {version:1,course:2,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
+          const d = {version:1,course:Level.course,controlsUsed:Journey.controlsUsed,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
             state:Player.state,onGround:Player.onGround,respawn:{...Player.respawn},checkpoint:Player.checkpoint && {id:Player.checkpoint.id,x:Player.checkpoint.x,y:Player.checkpoint.y,kind:'check'},
             rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,
-            carve:Player.carve && {type:Player.carve.type,charge:Player.carve.charge,block:Player.carve.block.id},
-            pole:Player.pole && {...pick(Player.pole,['ang','r','angVel','charge']),ref:Player.pole.ref.id},
-            touch:document.body.classList.contains('istouch'),notice:Game.notice};
+            carve:Player.carve && {type:Player.carve.type,charge:Player.carve.charge,block:Player.carve.block.id,manual:!!Player.carve.manual},
+            pole:Player.pole && {...pick(Player.pole,['ang','r','angVel','charge']),ref:Player.pole.ref.id,manual:!!Player.pole.manual},
+            touch:document.body.classList.contains('istouch'),controls:{scheme:Game.controlScheme,hand:Game.controlHand},notice:Game.notice};
           Profile.record();
           try { sessionStorage.setItem(this.key,JSON.stringify(d)); return true; } catch { return false; }
         },
@@ -1973,22 +2197,26 @@
           try {
             const raw = sessionStorage.getItem(this.key); if (!raw || raw.length > 4096) return null;
             const d = JSON.parse(raw), r = d?.finished;
-            if (d.version !== 1 || !r || r.mode !== 'challenge' || typeof r.touch !== 'boolean' || !['banked','gameover'].includes(r.outcome) || typeof r.id !== 'string' || r.id.length > 80 || typeof r.name !== 'string' || r.name.length > 16 || ![r.height,r.score,r.time,r.portals].every(n=>Number.isFinite(n) && n >= 0 && n <= 1e12) || !Number.isInteger(r.lives) || r.lives < 0 || r.lives > 3 || (r.outcome === 'gameover' ? r.lives !== 0 : r.lives === 0)) return null;
+            if (d.version !== 1 || !r || r.course !== Level.course || r.mode !== 'challenge' || typeof r.touch !== 'boolean' || !['banked','gameover'].includes(r.outcome) || typeof r.id !== 'string' || r.id.length > 80 || typeof r.name !== 'string' || r.name.length > 16 || ![r.height,r.score,r.time,r.portals].every(n=>Number.isFinite(n) && n >= 0 && n <= 1e12) || !Number.isInteger(r.lives) || r.lives < 0 || r.lives > 3 || (r.outcome === 'gameover' ? r.lives !== 0 : r.lives === 0)) return null;
+            if (r.controls !== undefined && (!r.controls || !['one','two'].includes(r.controls.scheme) || !['left','right'].includes(r.controls.hand))) return null;
             return r;
           } catch { return null; }
         },
         read() {
           try {
             const raw = sessionStorage.getItem(this.key); if (!raw || raw.length > 100000) return null;
-            const d = JSON.parse(raw), numeric = (o,fields) => o && fields.every(k=>Number.isFinite(o[k]) && typeof o[k] === 'number' && Math.abs(o[k]) <= 1e12);
+            const d = JSON.parse(raw); this.incompatibleCourse = d?.version === 1 && d.course === 3;
+            const numeric = (o,fields) => o && fields.every(k=>Number.isFinite(o[k]) && typeof o[k] === 'number' && Math.abs(o[k]) <= 1e12);
             if (d && d.mode === undefined && d.lives === undefined) { d.mode = 'practice'; d.lives = null; }
             if (!d || !['practice','challenge'].includes(d.mode) || (d.mode === 'practice' ? d.lives !== null : !Number.isInteger(d.lives) || d.lives < 1 || d.lives > 3)) return null;
+            if (d.controls !== undefined && (!d.controls || !['one','two'].includes(d.controls.scheme) || !['left','right'].includes(d.controls.hand))) return null;
+            if ([d.carve,d.pole].some(grip=>grip && grip.manual !== undefined && typeof grip.manual !== 'boolean')) return null;
             const ids = a => Array.isArray(a) && a.length <= 800 && a.every(id=>typeof id === 'string' && /^[btrspv]:\d+:?\d*$/.test(id));
-            if (!d || d.version !== 1 || d.course !== 2 || !Number.isSafeInteger(d.seed) || d.seed < 1 || d.seed > 2147483647 || typeof d.id !== 'string' || d.id.length > 80 || typeof d.name !== 'string' || d.name.length > 16 ||
+            if (!d || d.version !== 1 || d.course !== Level.course || !Number.isSafeInteger(d.seed) || d.seed < 1 || d.seed > 2147483647 || typeof d.id !== 'string' || d.id.length > 80 || typeof d.name !== 'string' || d.name.length > 16 ||
                 !numeric(d.game,this.gameFields) || !numeric(d.player,this.playerFields) || !numeric(d.journey,this.journeyFields) || !numeric(d.respawn,['x','y']) ||
                 !['AIR','GROUND','CARVE','POLE'].includes(d.state) || typeof d.touch !== 'boolean' || typeof d.onGround !== 'boolean' ||
                 !ids(d.rewarded) || !ids(d.collected) || !ids(d.visited) || !Array.isArray(d.quests) || d.quests.length !== 3 || !d.quests.every(n=>Number.isSafeInteger(n) && n >= 0) ||
-                d.game.time < 0 || d.game.flow < 0 || d.game.flow > T.FLOW_MAX || d.game.lesson < 0 || d.game.lesson > 4 || d.journey.peak < 64 || d.journey.cooldown < 0 || d.journey.wingTime < 0) return null;
+                d.game.time < 0 || d.game.flow < 0 || d.game.flow > T.FLOW_MAX || d.game.lesson < 0 || d.game.lesson > 4 || d.journey.peak < 64 || d.journey.fallAnchor < -200 || d.journey.rescues < 0 || !Number.isInteger(d.journey.rescues) || d.journey.cooldown < 0 || d.journey.wingTime < 0) return null;
             if (d.checkpoint !== null && (!numeric(d.checkpoint,['x','y']) || typeof d.checkpoint.id !== 'string' || d.checkpoint.id.length > 50)) return null;
             if (d.state === 'CARVE' ? (!d.carve || !['wallL','wallR','rail'].includes(d.carve.type) || typeof d.carve.block !== 'string' || !numeric(d.carve,['charge']) || d.carve.charge < 0 || d.carve.charge > 1.3) : !!d.carve) return null;
             if (d.state === 'POLE' ? (!d.pole || typeof d.pole.ref !== 'string' || !numeric(d.pole,['ang','angVel','r','charge']) || d.pole.r < 48 || d.pole.r > T.POLE_GRAB || d.pole.charge < 0 || d.pole.charge > 1.3) : !!d.pole) return null;
@@ -2001,8 +2229,9 @@
         },
         restore() {
           const result = this.readResult();
-          if (result) { Journey.selectedMode = result.mode; Journey.mode = result.mode; Journey.lives = result.lives; Journey.result = result; Game.setTouch(result.touch); Journey.renderMode(); Journey.renderResult(); return true; }
+          if (result) { Journey.selectedMode = result.mode; Journey.mode = result.mode; Journey.lives = result.lives; Journey.result = result; if (result.controls) Game.configureControls(result.controls.scheme,result.controls.hand,false); Game.setTouch(result.touch); Journey.renderMode(); Journey.renderResult(); return true; }
           const d = this.read(); if (!d) return false;
+          Journey.controlsUsed = Array.isArray(d.controlsUsed) ? [...new Set(d.controlsUsed.filter(c=>['one','two','keyboard'].includes(c)))].slice(0,3) : [Game.controlLabel()];
           Journey.seed = d.seed; Journey.mode = d.mode; Journey.selectedMode = d.mode; Journey.lives = d.lives; Journey.renderMode();
           Game.start(false); Level.ensure(d.player.y);
           const carve = d.carve && Level.blocks.find(b=>b.id === d.carve.block && b.grip);
@@ -2017,7 +2246,10 @@
           Player.checkpoint = d.checkpoint && (Level.blocks.find(b=>b.id === d.checkpoint.id) || d.checkpoint);
           Player.carve = d.carve && {...d.carve,block:carve}; Player.pole = d.pole && {...d.pole,ref:pole};
           Game.rewarded = new Set(d.rewarded); Game.notice = typeof d.notice === 'string' ? d.notice.slice(0,180) : '';
-          Game.setTouch(d.touch); Game.awaitingGrip = !!(Player.carve || Player.pole);
+          if (d.controls) Game.configureControls(d.controls.scheme,d.controls.hand,false);
+          Game.setTouch(d.touch);
+          if (!Journey.controlsUsed.includes(Game.controlLabel())) Journey.controlsUsed.push(Game.controlLabel());
+          Game.awaitingGrip = !!(Player.carve || Player.pole);
           Cam.x = Player.x + 17; Cam.y = Player.y + 170; Game.togglePause();
           document.getElementById('pause-message').textContent = 'Expedition restored. Your altitude, bounty and discoveries are safe.';
           if (Journey.rift) { Journey.renderRift(); document.getElementById('rift-dialog').showModal(); }
@@ -2060,7 +2292,7 @@
           } catch {} // Storage may be unavailable in private/file browsing.
           this.cv = document.getElementById("cv");
           this.ctx = this.cv.getContext("2d");
-          addEventListener("resize", () => this.resize());
+          addEventListener("resize", () => { if (this.running && !this.paused) this.togglePause(); this.resize(); });
           this.resize();
           Level.build();
           Input.init();
@@ -2082,6 +2314,8 @@
             }
           });
           RunSave.restore();
+          if (!this.running) Journey.menuStatus();
+          PreviousProgress.init();
           requestAnimationFrame((t) => this.frame(t));
         },
         resize() {
@@ -2201,14 +2435,20 @@
               this.lastHUD[id] = value;
             }
           };
-          const charge = Player.carve?.charge || 0;
+          const charge = Player.groundCharge ?? Player.carve?.charge ?? Player.pole?.charge ?? 0;
           const touch = document.body.classList.contains("istouch");
+          const one = touch && this.controlScheme === "one";
           const hints = [
-            touch ? "1 · APPROACH: hold ▶ with your left thumb; tap JUMP with your right." : "1 · APPROACH: move right + jump toward the cyan wall (D / → + Space).",
-            touch ? "2 · GRIP: hold CARVE beside a cyan wall. Keep steering with your left thumb." : "2 · GRIP: hold Z (or J / Shift) beside a cyan wall.",
+            one ? "1 · HOLD the pad, DRAG to steer, RELEASE to jump. Press again to catch." : touch ? "1 · APPROACH: hold ▶ with your left thumb; tap JUMP with your right." : "1 · APPROACH: move right + jump toward the cyan wall (D / → + Space).",
+            one ? "2 · CATCH: hold the pad beside a wall; drag to aim, release on gold." : touch ? "2 · GRIP: hold CARVE beside a cyan wall. Keep steering with your left thumb." : "2 · GRIP: hold Z (or J / Shift) beside a cyan wall.",
             charge > T.ZONE_PERFECT_HI ? "LATE — release before you slip; try gold on the next wall." : charge >= T.ZONE_PERFECT_LO ? "RELEASE CARVE NOW — gold is the perfect window!" : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.",
             "4 · STEER: move toward the opposite wall and hold CARVE to catch it.",
           ];
+          const feedback = Player.groundCharge !== null || Player.carve || Player.pole ? `${Player.quality(charge).n.toUpperCase()} · ${Math.round(charge * 100)}% · release to launch` : Input.blocked ? 'Lift, then press again' : Input.oneHeld ? 'Catch ready · drag to steer' : 'Hold to charge or catch · drag to steer';
+          const padFeedback = document.getElementById('one-feedback');
+          const steering = Input.oneHeld && Math.abs(Input.oneAxis) > 0 ? `${Input.oneAxis < 0 ? '←' : '→'} ${Math.round(Math.abs(Input.oneAxis)*100)}% · ` : '';
+          const padText = steering + feedback; if (padFeedback.textContent !== padText) padFeedback.textContent = padText;
+          if (this.lesson >= 4) hints[4] = Journey.recovering() ? 'FALLING · fresh hold to catch a marked wall; lower cyan grips can rescue a miss.' : Player.y<7050 ? Level.encounter(Player.y).hint : 'Read the next line. Bank your run from Pause whenever you choose.';
           const coach = this.awaitingGrip ? (touch ? "Hold CARVE to continue your saved grip." : "Hold Z (or J / Shift) to continue your saved grip.") : this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
           if (this.lastHUD.coach !== coach) {
             document.getElementById("coach").textContent = coach;
@@ -2256,10 +2496,22 @@
           ctx.fillStyle = g;
           ctx.fillRect(0, 0, W, H);
           this.stars(ctx, W, H, warm);
+          // Distant silhouettes move more slowly than the climb, making height legible.
+          ctx.fillStyle='#15243b';
+          for(let i=0;i<7;i++){
+            const height=(110+i%3*55)*this.dpr, x=(i*137%Math.max(1,W));
+            const base=H + Math.min(H*0.45,Cam.y*this.dpr*0.025);
+            ctx.fillRect(x,base-height,52*this.dpr,height);
+          }
 
-          const z = Cam.zoom * this.dpr * Math.min(1, (W / this.dpr) / 620, (H / this.dpr) / 620);
+          const section = Level.stage(Player.y);
+          const wide = section >= 1 && Player.y < 7050;
+          const span = wide ? (section <= 2 ? 1000 : 850) : 620;
+          const z = Cam.zoom * this.dpr * Math.min(1, (W / this.dpr) / span, (H / this.dpr) / 620);
+          this.worldScale = z/this.dpr;
           // Keep both columns visible on phones, but follow an overshoot off-lane.
-          const viewX = Cam.x;
+          const laneHalf = W / (2 * z);
+          const viewX = wide && Math.abs(Player.x + Player.w/2 - Level.centerX) < laneHalf - 60 ? Level.centerX : Cam.x;
           const sx = (Math.random() - 0.5) * Cam.shake * 22 * this.dpr,
             sy = (Math.random() - 0.5) * Cam.shake * 22 * this.dpr;
           ctx.save();
@@ -2269,7 +2521,7 @@
             0,
             -z,
             W / 2 - z * viewX + sx,
-            H / 2 + z * Cam.y + sy,
+            H / 2 + z * Cam.y + sy - (document.body.classList.contains('one-thumb') ? Math.min(80 * this.dpr,H * 0.2) : 0),
           );
 
           // blocks
@@ -2435,9 +2687,17 @@
           ctx.fillRect(p.face > 0 ? 2 : -12, 2, 10, 8);
           ctx.restore();
 
+          // Preview the actual manual ground/wall launch direction.
+          if (p.groundCharge !== null || p.carve?.manual) {
+            const axis = Input.axis();
+            const dir = p.carve?.type === 'wallL' ? 1 : p.carve?.type === 'wallR' ? -1 : sign(axis) || p.face || 1;
+            const dx = dir * T.WALL_POP + axis * T.STEER, dy = T.JUMP_V;
+            const scale = 68 / Math.hypot(dx,dy), ax = dx * scale, ay = dy * scale;
+            ctx.strokeStyle = '#ffcf4d'; ctx.lineWidth = 4; ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+ax,cy+ay);ctx.lineTo(cx+ax-10,cy+ay-5);ctx.moveTo(cx+ax,cy+ay);ctx.lineTo(cx+ax+1,cy+ay-12);ctx.stroke();
+          }
           // carve charge ring
-          if (p.state === "CARVE" || p.state === "POLE") {
-            const ch = p.carve ? p.carve.charge : p.pole.charge;
+          if (p.groundCharge !== null || p.state === "CARVE" || p.state === "POLE") {
+            const ch = p.groundCharge ?? p.carve?.charge ?? p.pole?.charge;
             const q = p.quality(ch);
             const R = 34;
             ctx.save();
@@ -2497,6 +2757,7 @@
             if (!Sfx.muted) Sfx.resume();
           };
           document.getElementById("play").onclick = () => {
+            if (PreviousProgress.pending) { PreviousProgress.open(); return; }
             Sfx.resume();
             this.start();
           };
@@ -2508,69 +2769,67 @@
           document.getElementById("pausebtn").onclick = () =>
             this.togglePause();
         },
+        controlLabel() { return document.body.classList.contains('istouch') ? this.controlScheme : 'keyboard'; },
+        configureControls(scheme, hand = this.controlHand, persist = true) {
+          if (!['one','two'].includes(scheme) || !['left','right'].includes(hand)) return false;
+          if (persist && this.running && !this.paused) this.togglePause();
+          Input.clear(); this.controlScheme = scheme; this.controlHand = hand;
+          document.body.classList.toggle('one-thumb',document.body.classList.contains('istouch') && scheme === 'one');
+          document.body.classList.toggle('left-hand',hand === 'left');
+          if (persist) { try { localStorage.setItem('carve.controls.v1',JSON.stringify({scheme,hand,enabled:document.body.classList.contains('istouch')})); } catch {} }
+          if (persist && this.running && !Journey.controlsUsed.includes(this.controlLabel())) Journey.controlsUsed.push(this.controlLabel());
+          for (const mode of ['one','two','keyboard']) document.getElementById('controls-' + mode).setAttribute('aria-pressed',String(this.controlLabel() === mode));
+          for (const side of ['left','right']) document.getElementById('controls-' + side).setAttribute('aria-pressed',String(hand === side));
+          this.lastHUD = {}; this.needsRender = true;
+          return true;
+        },
         bindTouch() {
-          this.setTouch = (enabled) => {
-            Input.clear();
-            document.getElementById("touch").classList.toggle("hidden", !enabled);
-            document.body.classList.toggle("istouch", enabled);
-            const toggle = document.getElementById("touch-toggle");
-            toggle.setAttribute("aria-pressed", String(enabled));
-            toggle.textContent = "Touch: " + (enabled ? "on" : "off");
-            toggle.setAttribute("aria-label", "Touch controls: " + (enabled ? "on" : "off"));
+          this.controlScheme = matchMedia('(pointer:coarse)').matches ? 'one' : 'two'; this.controlHand = 'right';
+          let enabled = matchMedia('(pointer:coarse)').matches;
+          try { const saved = JSON.parse(localStorage.getItem('carve.controls.v1')); if (saved && ['one','two'].includes(saved.scheme) && ['left','right'].includes(saved.hand) && typeof saved.enabled === 'boolean') { this.controlScheme = saved.scheme; this.controlHand = saved.hand; enabled = saved.enabled; } } catch {}
+          this.setTouch = (on) => {
+            Input.clear(); document.getElementById('touch').classList.toggle('hidden',!on); document.body.classList.toggle('istouch',on);
+            this.configureControls(this.controlScheme,this.controlHand,false);
+            document.getElementById('touch-toggle').textContent = 'Controls';
           };
-          this.setTouch(matchMedia("(pointer:coarse)").matches);
-          document.getElementById("touch-toggle").onclick = () => this.setTouch(!document.body.classList.contains("istouch"));
-          const hold = (id, on, off) => {
-            const el = document.getElementById(id);
-            const pointers = new Set();
-            Input.touchResets.push(() => pointers.clear());
-            el.addEventListener("pointerdown", (e) => {
-              e.preventDefault();
-              if (!this.running || this.paused) return;
-              el.setPointerCapture(e.pointerId);
-              pointers.add(e.pointerId);
-              on();
-            });
-            const end = (e) => {
-              pointers.delete(e.pointerId);
-              if (!pointers.size) off?.();
-            };
-            el.addEventListener("pointerup", end);
-            el.addEventListener("pointercancel", end);
-            el.addEventListener("lostpointercapture", end);
+          this.setTouch(enabled);
+          const dialog = document.getElementById('controls-dialog');
+          const open = () => { if (this.running && !this.paused) this.togglePause(); Input.clear(); this.configureControls(this.controlScheme,this.controlHand,false); dialog.showModal(); };
+          document.getElementById('touch-toggle').onclick = open; document.getElementById('controls-pause').onclick = open;
+          document.getElementById('controls-close').onclick = () => dialog.close();
+          for (const mode of ['one','two','keyboard']) document.getElementById('controls-' + mode).onclick = () => { this.setTouch(mode !== 'keyboard'); this.configureControls(mode === 'keyboard' ? this.controlScheme : mode); RunSave.write(); };
+          for (const side of ['left','right']) document.getElementById('controls-' + side).onclick = () => { this.configureControls(this.controlScheme,side); RunSave.write(); };
+          const pad = document.getElementById('one-pad');
+          pad.addEventListener('pointerdown',e => {
+            e.preventDefault();
+            if (!this.running || this.paused || this.controlLabel() !== 'one' || Input.oneId !== null || (e.button !== undefined && e.button !== 0)) return;
+            Input.oneId = e.pointerId; Input.oneOrigin = e.clientX; Input.oneHeld = true; Input.oneAxis = 0; Input.blocked = false; pad.setPointerCapture(e.pointerId); Sfx.resume();
+            if (Player.onGround && !Player.carve && !Player.pole) Player.groundCharge = 0;
+          });
+          pad.addEventListener('pointermove',e => {
+            if (e.pointerId !== Input.oneId || !Input.oneHeld || Input.blocked) return;
+            e.preventDefault(); const delta = e.clientX - Input.oneOrigin;
+            Input.oneAxis = sign(delta) * clamp((Math.abs(delta) - 10) / 65,0,1);
+          });
+          pad.addEventListener('pointerup',e => {
+            if (e.pointerId !== Input.oneId) return;
+            Input.releaseManual(); Input.oneId = null; Input.oneHeld = false; Input.oneAxis = 0; Input.blocked = false;
+          });
+          const cancel = e => { if (e.pointerId !== Input.oneId) return; if (this.running && !this.paused) this.togglePause(); else Input.clear(); };
+          pad.addEventListener('pointercancel',cancel); pad.addEventListener('lostpointercapture',cancel);
+          const hold = (id,on,off) => {
+            const el = document.getElementById(id), pointers = new Set(); Input.touchResets.push(()=>pointers.clear());
+            el.addEventListener('pointerdown',e => { e.preventDefault(); if (!this.running || this.paused || this.controlLabel() === 'one' || pointers.size || (e.button !== undefined && e.button !== 0)) return; el.setPointerCapture(e.pointerId); pointers.add(e.pointerId); on(); });
+            el.addEventListener('pointerup',e => { if (!pointers.delete(e.pointerId)) return; if (!pointers.size) off?.(); });
+            const cancelled = e => { if (!pointers.delete(e.pointerId)) return; if (id === 't-carve') { if (this.running && !this.paused) this.togglePause(); else Input.clear(); } else if (!pointers.size) off?.(); };
+            el.addEventListener('pointercancel',cancelled); el.addEventListener('lostpointercapture',cancelled);
           };
-          hold(
-            "t-left",
-            () => (Input.touchKeys["arrowleft"] = true),
-            () => (Input.touchKeys["arrowleft"] = false),
-          );
-          hold(
-            "t-right",
-            () => (Input.touchKeys["arrowright"] = true),
-            () => (Input.touchKeys["arrowright"] = false),
-          );
-          hold(
-            "t-jump",
-            () => {
-              Input.jumpBuf = T.JUMP_BUFFER;
-            },
-            null,
-          );
-          hold(
-            "t-carve",
-            () => {
-              Sfx.resume();
-              Input._tCarve = true;
-            },
-            () => (Input._tCarve = false),
-          );
-          hold(
-            "t-surge",
-            () => {
-              Input.surgeQ = true;
-            },
-            null,
-          );
+          hold('t-left',()=>Input.touchKeys.arrowleft=true,()=>Input.touchKeys.arrowleft=false);
+          hold('t-right',()=>Input.touchKeys.arrowright=true,()=>Input.touchKeys.arrowright=false);
+          hold('t-jump',()=>Input.jumpBuf=T.JUMP_BUFFER);
+          hold('t-carve',()=>{Input.touchCarveHeld=true;Input.blocked=false;Input._tCarve=true;Sfx.resume();},()=>{Input.releaseManual();Input.touchCarveHeld=false;Input._tCarve=false;Input.blocked=false;});
+          const surge = document.getElementById('t-surge');
+          surge.addEventListener('pointerdown',e=>{e.preventDefault();if (this.running && !this.paused && !Input.manualHeld()) Input.surgeQ=true;});
         },
       };
 

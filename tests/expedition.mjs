@@ -55,7 +55,7 @@ test('six-column world has no goal, deterministic reconstruction and bounded str
  assert.equal(new Set(L.blocks.filter(b=>b.column!==undefined).map(b=>b.column)).size,6);
  assert(!L.blocks.some(b=>b.kind==='goal'));
  const first=L.blocks.filter(b=>b.row===4).map(b=>[b.id,b.x,b.y,b.kind]);
- for(const row of [100,10000,5,500000,20]){L.ensure(row*230+150);assert(L.blocks.length<85);assert(L.tokens.length<=48);assert(L.poles.length<=3);}
+ for(const row of [100,10000,5,500000,20]){L.ensure(row*230+150);assert(L.blocks.length<85);assert(L.tokens.length<=52);assert(L.poles.length<=3);}
  L.ensure(64);assert.deepEqual(L.blocks.filter(b=>b.row===4).map(b=>[b.id,b.x,b.y,b.kind]),first);
  assert(!L.blocks.some(b=>b.kind==='goal'));
 });
@@ -189,7 +189,7 @@ test('a restored wall grip waits for fresh input and keeps reward eligibility',(
 test('banking creates one local run record and does not contaminate classic saves',()=>{
  const local=new Map([['carve.best.v2','1234']]),session=new Map([['carve.run.v1','classic snapshot']]);let g=load({local,session});start(g);g.Journey.peak=4000;g.Game.score=500;g.Journey.wins=2;
  g.RunSave.write();g.RunSave.write();assert.equal(g.Profile.records.length,1);g.Journey.finish();assert(!g.Game.running);assert.equal(g.Profile.records[0].height,393);assert.equal(g.Profile.records[0].portals,2);
- assert.equal(local.get('carve.best.v2'),'1234');assert.equal(session.get('carve.run.v1'),'classic snapshot');assert.equal(session.get('carve.expedition.run.v1'),'null');
+ assert.equal(local.get('carve.best.v2'),'1234');assert.equal(session.get('carve.run.v1'),'classic snapshot');assert.equal(session.get('carve.variety.run.v1'),'null');
  g=load({local,session});assert.equal(g.Profile.best,393);assert.equal(g.Profile.records.length,1);assert(!g.Game.running);
 });
 
@@ -203,12 +203,12 @@ test('separate expedition tabs preserve each others wallet, unlocks and records 
 
 test('incompatible preview courses do not restore mismatched geometry or erase the profile',()=>{
  const session=new Map(),local=new Map();let g=load({session,local});start(g);g.Profile.credit(30);g.Journey.peak=3000;g.RunSave.write();
- const d=JSON.parse(session.get('carve.expedition.run.v1'));d.course=1;session.set('carve.expedition.run.v1',JSON.stringify(d));g=load({session,local});
+ const d=JSON.parse(session.get('carve.variety.run.v1'));d.course=1;session.set('carve.variety.run.v1',JSON.stringify(d));g=load({session,local});
  assert(!g.Game.running);assert.equal(g.Profile.coins,30);assert.equal(g.Profile.best,293);
 });
 
 test('malformed expedition storage and unavailable storage never crash boot or play',()=>{
- const g=load({session:new Map([['carve.expedition.run.v1','{"version":1}']]),local:new Map([['carve.expedition.profile.v1','bad']])});assert(!g.Game.running);
+ const g=load({session:new Map([['carve.variety.run.v1','{"version":1}']]),local:new Map([['carve.variety.profile.v1','bad']])});assert(!g.Game.running);
  globalThis.localStorage={getItem(){throw Error('blocked');},setItem(){throw Error('blocked');}};globalThis.sessionStorage={getItem(){throw Error('blocked');},setItem(){throw Error('blocked');}};
  assert.doesNotThrow(()=>g.Game.start());assert.doesNotThrow(()=>g.Journey.update(STEP));assert.equal(g.RunSave.write(),false);
 });
@@ -222,7 +222,7 @@ test('malformed expedition storage and unavailable storage never crash boot or p
   const target=P.carve?r.find(b=>b.y>P.carve.block.y+5):r.find(b=>b.y+b.h>P.y+20);
   const x=target?target.x+75:P.x+17;const ax=x>P.x+27?1:x<P.x+7?-1:0;
   I.keys=ax>0?{arrowright:true}:ax<0?{arrowleft:true}:{};
-  I._tCarve=!(P.carve?.charge>=T.ZONE_PERFECT_LO||P.pole?.charge>=T.ZONE_PERFECT_LO);
+  I._tCarve=!I.blocked && !(P.carve?.charge>=T.ZONE_PERFECT_LO||P.pole?.charge>=T.ZONE_PERFECT_LO);
   if(P.onGround)I.jumpBuf=T.JUMP_BUFFER;
   G.sim(STEP);peak=Math.max(peak,P.y);
  }
@@ -239,7 +239,7 @@ for (const side of ['left','right']) {
    const r=L.blocks.filter(b=>b.column!==undefined&&(side==='left'?b.column<2:b.column>3)).sort((a,b)=>a.y-b.y);
    const target=P.carve?r.find(b=>b.y>P.carve.block.y+5):r.find(b=>b.y+b.h>P.y+20);
    const x=target?target.x+75:P.x+17,ax=x>P.x+27?1:x<P.x+7?-1:0;
-   I.keys=ax>0?{arrowright:true}:ax<0?{arrowleft:true}:{};I._tCarve=!(P.carve?.charge>=T.ZONE_PERFECT_LO||P.pole?.charge>=T.ZONE_PERFECT_LO);
+   I.keys=ax>0?{arrowright:true}:ax<0?{arrowleft:true}:{};I._tCarve=!I.blocked && !(P.carve?.charge>=T.ZONE_PERFECT_LO||P.pole?.charge>=T.ZONE_PERFECT_LO);
    if(P.onGround)I.jumpBuf=T.JUMP_BUFFER;G.sim(STEP);peak=Math.max(peak,P.y);
   }
   assert(peak>=9000,`${side} branch seed ${seed} must remain climbable`);assert(L.blocks.length<85);

@@ -116,7 +116,7 @@ test('input-only Challenge climb crosses 1,990 m without consuming or refilling 
   const target=P.carve?route.find(b=>b.y>P.carve.block.y+5):route.find(b=>b.y+b.h>P.y+20);
   const x=target?target.x+75:P.x+17,axis=x>P.x+27?1:x<P.x+7?-1:0;
   I.keys=axis>0?{arrowright:true}:axis<0?{arrowleft:true}:{};
-  I._tCarve=!(P.carve?.charge>=T.ZONE_PERFECT_LO||P.pole?.charge>=T.ZONE_PERFECT_LO);
+  I._tCarve=!I.blocked && !(P.carve?.charge>=T.ZONE_PERFECT_LO||P.pole?.charge>=T.ZONE_PERFECT_LO);
   if(P.onGround)I.jumpBuf=T.JUMP_BUFFER;G.sim(STEP);peak=Math.max(peak,P.y);
  }
  assert(peak>=20000);assert(G.running);assert.equal(g.Journey.lives,3);assert(L.blocks.length<85);
