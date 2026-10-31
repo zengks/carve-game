@@ -901,9 +901,11 @@
             this.keys[e.key.toLowerCase()] = false;
           });
           addEventListener("blur", () => {
+            Game.windowFocused = false;
             this.clear();
             if (Game.running && !Game.paused) Game.togglePause();
           });
+          addEventListener("focus", () => { Game.windowFocused = true; });
         },
       };
 
@@ -2109,16 +2111,28 @@
         },
         resolve(win) {
           const r = this.rift; if (!r || r.phase !== 'playing') return;
+          if (win && !r.ready) return;
           r.phase = 'result'; r.ready = false; r.win = win;
-          if (win) { this.wins++; Profile.credit(20); this.warp(900); this.contracts(); this.notify('RIFT CLEARED · +20 bounty · upward shortcut'); }
-          else { this.warp(-460); this.notify('RIFT COLLAPSED · returned to a lower safe ledge'); }
-          this.renderRift(); Game.syncHUD(); RunSave.write();
+          if (win) { this.wins++; Profile.credit(20); this.warp(900); this.contracts(); this.notify('RIFT CLEARED · +20 bounty · upward shortcut',true); }
+          else { this.warp(-460); this.notify('RIFT COLLAPSED · returned to a lower safe ledge',true); }
+          this.returnToClimb();
+        },
+        returnToClimb(resume = true) {
+          if (!this.rift) return;
+          if (this.rift.phase !== 'brief') this.visited.add(this.rift.id);
+          this.rift = null; this.riftUIKey = ''; this.nearest = null;
+          document.getElementById('rift-dialog').close();
+          Input.clear(); Game.acc = 0; Game.awaitingGrip = !!(Player.carve || Player.pole);
+          // Normal completion is seamless. Reload/background recovery stays deliberate.
+          Game.paused = !(resume && Game.running && Game.windowFocused && !document.hidden);
+          show('paused',Game.paused); Game.needsRender = true;
+          if (!Game.paused) Sfx.resume();
+          Game.lastHUD = {}; Game.syncHUD(); RunSave.write();
         },
         leaveRift() {
           if (!this.rift) return;
           if (this.rift.phase === 'playing') { this.resolve(false); return; }
-          this.rift = null; document.getElementById('rift-dialog').close(); RunSave.write();
-          // Return paused so a teleport never starts moving before the player is ready.
+          this.returnToClimb();
         },
         renderRift() {
           const r = this.rift; if (!r) return;
@@ -2252,7 +2266,8 @@
           Game.awaitingGrip = !!(Player.carve || Player.pole);
           Cam.x = Player.x + 17; Cam.y = Player.y + 170; Game.togglePause();
           document.getElementById('pause-message').textContent = 'Expedition restored. Your altitude, bounty and discoveries are safe.';
-          if (Journey.rift) { Journey.renderRift(); document.getElementById('rift-dialog').showModal(); }
+          if (Journey.rift?.phase === 'result') Journey.returnToClimb(false);
+          else if (Journey.rift) { Journey.renderRift(); document.getElementById('rift-dialog').showModal(); }
           Game.lastHUD = {}; Game.syncHUD(); return true;
         },
       };
@@ -2267,6 +2282,7 @@
         running: false,
         needsRender: true,
         paused: false,
+        windowFocused: true,
         acc: 0,
         last: 0,
         flow: 0,

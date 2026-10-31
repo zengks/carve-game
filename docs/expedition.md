@@ -536,8 +536,10 @@ explicitly retreating sends the player to a safe ledge up to 46 m lower, capped
 by their checkpoint. At the bottom there is no negative height penalty. Permanent
 bounty and peak height remain safe. A gate resolves once; reloading its result
 cannot repeat the payout. Trials pause the climb clock. Focus loss and reload
-pause the trial too and require an explicit Continue. Return always leaves the
-climb paused, so a teleport never resumes motion before the player is ready.
+pause the trial too and require an explicit Continue. Normal completion, failure
+and retreat close the rift and immediately continue climbing at the resolved
+landing. The outcome is a short HUD notice, without result/Resume/Restart gates.
+Background interruptions and reload still leave the climb paused for safety.
 
 ## Records and saving
 
@@ -861,3 +863,29 @@ upgrade check generated genuine previous-course progress through ordinary play:
 carry retained the name and 2 bounty through reload, kept the previous 57 m log
 readable, and began new-route bests at zero. At 320×568 all migration actions and
 all menu buttons remained visible. This check did not inject browser game state.
+
+## Seamless rift return fix
+
+Secret-game completion previously left the main climb paused behind a result
+screen. Normal success/failure now applies the existing reward/warp once, closes
+the rift and resumes immediately at that landing. Declining or retreating also
+returns directly. A short nonblocking cleared/collapsed notice replaces the
+confirmation screen. Bounty, altitude penalties, Challenge lives and store-handoff
+settings are unchanged.
+
+Return clears the old contact/key queues and accumulated physics time. A declined
+briefing that retains a wall/pole grip waits for a fresh grip input without a
+pause-menu gate. Focus loss/hidden pages remain paused; an unattended or suspended
+trial cannot complete as a win. Older already-paid result snapshots restore their
+saved landing without replaying a reward or reopening the result UI; reload
+recovery itself still requires deliberate Resume.
+
+Full build passes with 35 expedition checks plus the existing suites. Added flow
+checks cover live physics continuation, stale contact releases, both forms of
+focus interruption, declined-grip safety, earlier completed-result compatibility,
+result feedback and unchanged lives. UI-driven browser checks completed Pendulum
+Gate and Echo Vault, returning directly to 93 m and 233 m respectively. The latter
+was checked at 390×844 with the modal closed, pause overlay hidden and the cleared
+notice visible. Timing input was selected from the rendered cursor position;
+no player state, rewards or trial outcomes were injected. Physical-device behavior
+remains unverified.
