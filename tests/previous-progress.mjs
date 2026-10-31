@@ -38,4 +38,7 @@ test('invalid legacy data is ignored and imported skill/coin fields are bounded'
 test('a current recoverable run resumes paused without a legacy dialog taking it over',()=>{
  let {g,local,session}=setup();el('previous-import').onclick();el('play').onclick();g.Game.score=91;g.RunSave.write();g=loadGame({local,session});assert(g.Game.running&&g.Game.paused);assert.equal(g.Game.score,91);assert(!el('previous-dialog').open);assert.equal(g.Profile.coins,73);
 });
+test('deferring the choice cannot silently create a new wallet through the Workshop',()=>{
+ const {g,local}=setup();el('previous-close').onclick();el('workshop-open').onclick();el('buy-pulse').onclick();assert.equal(local.get(key),undefined);assert.equal(g.Profile.coins,0);assert(el('previous-dialog').open);el('previous-import').onclick();assert.equal(g.Profile.coins,73);
+});
 console.log(`${passed} previous-progress checks passed`);

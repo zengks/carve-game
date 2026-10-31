@@ -851,9 +851,10 @@ and this limitation is explained before a new Begin action; no old run is starte
 or discarded automatically. This is browser-local continuity, not cloud sync or
 cross-platform identity.
 
-Nine added checks cover consent/start gating, one-time transfer, separate start,
+Ten added checks cover consent/start gating, one-time transfer, separate start,
 existing wallets, a stale cross-tab dialog, blocked saving, old active-only state,
-malformed/bounded input and priority of current reload recovery. Full release
+malformed/bounded input, priority of current reload recovery and a deferred
+choice visiting the Workshop. Full release
 build and all gameplay/caching/disabled-handoff tests pass locally. A local UI
 upgrade check generated genuine previous-course progress through ordinary play:
 57 m / 78 points / 2 bounty. Loading the new course offered a choice; selecting
