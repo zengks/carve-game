@@ -226,3 +226,40 @@ No physics changes were made to compensate for that tool limitation. The next
 route task is to finish the Observatory recovery and final landmark with the
 same no-skill restrictions; continuous charged steering still needs suitable
 input-delivery or physical-device evidence.
+
+## Observatory completion from the retained no-skill run
+
+The next UI session resumed the same saved run near 635 m, with zero relics and
+the same one-thumb-only/no-skill restrictions. Ordinary outer and main row-26
+tops led to a perfect row-27 left-wall release and the broad central row-28 rail.
+An initial rightward launch hit the next solid column's underside; an ordinary
+outer-wall recovery returned to row 28. No difficulty or physics adjustment was
+needed. From that rail, an approximately 350 ms ground charge followed by two
+short rightward pad drags caught and released the final rest rail `r:29:2`
+at world y=7018. The run crossed y=7050 and the UI showed Endless Frontier.
+A fresh row-30 wall catch continued beyond the opening. It was saved at 733 m /
+7,242 points / 143.5 s, then restored on clean source and preserved at about
+748 m / 7,242 points / 144.0 s with `5/5 CLEARED · ENDLESS FRONTIER` visible.
+The old 813 m profile best is still the earlier skill-assisted run.
+
+This closes traversal of the five-section opening in the retained no-skill
+one-thumb Practice run. It includes pauses, ordinary authored springs and
+checkpoint/fresh-catch recoveries from earlier play; it is not a no-fall,
+uninterrupted, new-profile Challenge or physical-device qualification. No skill,
+Surge, relic, rift or upgrade input was used. UI actions used the actual pad;
+temporary read-only surface logs were removed before delivery. The browser's
+continuous charged-drag delivery limitation remains open.
+
+Completion previously changed only the route-status text, making the achieved
+goal easy to miss. Crossing the existing y=7050 boundary now shows a four-second
+nonblocking Observatory-cleared notice and the Frontier status explicitly says
+`5/5 CLEARED`. Existing persisted peak height prevents replay on a lower revisit
+or reload; an unfinished notice restores only its saved remaining duration.
+Routine notices cannot replace it immediately, while hazard recovery and unique
+relic payout explanations retain priority. There is no modal, reward, movement,
+course, score, life or save-schema change. Already-cleared saves get the clearer
+status without replaying the celebration. Three new regressions cover physical
+simulation crossing/continuation, remaining-time persistence/revisit behavior and
+feedback priority. The persistent label and retained run were also checked in
+the 390×844 browser UI; the new first-crossing notice is covered by simulation,
+not retroactively claimed as visible in the previously completed UI crossing.

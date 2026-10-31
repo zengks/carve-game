@@ -2026,7 +2026,16 @@
           const bonus=block?.rescue && Relics.reward('rescue',block,6);
           this.notify(`${block?.rescue ? 'RESCUE WALL' : 'RESCUED'} · fresh catch · no life lost${bonus ? ' · RELIC +6 bounty' : ''}`);
         },
-        notify(text, urgent = false) { if (!urgent && Game.noticeTime > 0 && /^(FALL|SPIKES) ·/.test(Game.notice)) return; Game.notice = text; Game.noticeTime = 4; },
+        notify(text, urgent = false) {
+          if (!urgent && Game.noticeTime > 0 && (/^(FALL|SPIKES) ·/.test(Game.notice) ||
+              (Game.notice.startsWith('OBSERVATORY CLEARED ·') && !text.includes(' · RELIC +')))) return;
+          Game.notice = text; Game.noticeTime = 4;
+        },
+        recordPeak() {
+          const cleared = this.peak < 7050 && Player.y >= 7050;
+          this.peak = Math.max(this.peak,Player.y);
+          if (cleared) this.notify('OBSERVATORY CLEARED · five sections complete · keep climbing in Endless Frontier');
+        },
         init() {
           document.getElementById('climber-name').value = Profile.name;
           document.getElementById('mode-close').onclick = () => document.getElementById('mode-dialog').close();
@@ -2170,7 +2179,7 @@
             if (id === 'wing') this.wingTime = 8;
           }
           Game.awaitingGrip = false; this.cooldown = skill.cd * (Relics.has('resonance') ? 0.85 : 1); this.notify(skill.name.toUpperCase()); Sfx.jump();
-          this.peak = Math.max(this.peak,Player.y); RunSave.write(); return true;
+          this.recordPeak(); RunSave.write(); return true;
         },
         landOn(b) {
           if (Input.manualHeld()) Input.clear();
@@ -2189,12 +2198,12 @@
           choices.sort((a,b) => Math.abs(a.y + a.h - target) - Math.abs(b.y + b.h - target));
           if (choices[0]) this.landOn(choices[0]);
           else if (delta < 0) { Player.x = Player.respawn.x; Player.y = Player.respawn.y; Player.vx = 0; Player.vy = 0; Player.carve = null; Player.pole = null; Player.state = 'AIR'; this.fallAnchor = Player.y; Game.awaitingGrip = false; Cam.x = Player.x + 17; Cam.y = Player.y + 170; }
-          this.peak = Math.max(this.peak,Player.y); Profile.record();
+          this.recordPeak(); Profile.record();
           Game.needsRender = true; Game.lastHUD = {}; Game.syncHUD();
         },
         update(dt) {
           this.cooldown = Math.max(0,this.cooldown - dt); this.wingTime = Math.max(0,this.wingTime - dt);
-          this.peak = Math.max(this.peak,Player.y); this.fallAnchor = Math.max(this.fallAnchor,Player.y);
+          this.recordPeak(); this.fallAnchor = Math.max(this.fallAnchor,Player.y);
           for (const t of Level.tokens) {
             if (!this.eligible(t.row) || this.collected.has(t.id)) continue;
             if (Math.hypot(Player.x + 17 - t.x, Player.y + 23 - t.y) < (Relics.has('collector') ? 68 : 43)) {
@@ -2233,7 +2242,7 @@
           const falling=this.recovering();
           const rescue = Level.blocks.find(b=>b.rescue && Player.y>b.y && Player.y<b.y+b.h+700);
           const rescueCue = falling && rescue ? `Rescue ${rescue.x + rescue.w/2 > Player.x+17 ? '→' : '←'} ${Math.ceil(Math.abs(rescue.x+rescue.w/2-Player.x-17)/10)} m` : `${this.rescues} rescues`;
-          const contract = falling ? `RECOVERY · ${Math.max(0,Math.ceil((Player.y-Level.fallFloor())/10))} m to fall limit · ${rescueCue}` : Player.y<7050 && this.peak>=7050 ? `OPENING CLEARED · revisit ${encounter.name}` : Player.y<7050 ? `${stage+1}/5 · ${encounter.name} · ${Math.max(0,Math.ceil((150+(stage*6+5)*230+210-Player.y)/10))} m to landmark` : `ENDLESS FRONTIER · ${this.rescues} rescues${compass}`;
+          const contract = falling ? `RECOVERY · ${Math.max(0,Math.ceil((Player.y-Level.fallFloor())/10))} m to fall limit · ${rescueCue}` : Player.y<7050 && this.peak>=7050 ? `OPENING CLEARED · revisit ${encounter.name}` : Player.y<7050 ? `${stage+1}/5 · ${encounter.name} · ${Math.max(0,Math.ceil((150+(stage*6+5)*230+210-Player.y)/10))} m to landmark` : `5/5 CLEARED · ENDLESS FRONTIER · ${this.rescues} rescues${compass}`;
           if (document.getElementById('contractline').textContent !== contract) document.getElementById('contractline').textContent = contract;
           const modeBadge = document.getElementById('run-mode-status');
           const modeText = this.mode === 'challenge' ? 'Challenge · ' + '♥'.repeat(this.lives) + '♡'.repeat(3 - this.lives) : 'Practice · ∞ lives';

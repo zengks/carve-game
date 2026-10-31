@@ -73,13 +73,14 @@ advertising is included in this gameplay trial.
 
 ## Queued after this milestone
 
-1. Finish the no-skill one-thumb route through Observatory. UI play has now crossed
-   Wind Gap and The Fork, verified the cyan rescue wall reconnecting with the
-   main route, and reached 670 m without skills, Surge, relics or rifts. This used
-   pauses and Practice checkpoint recoveries; full completion remains open.
-   Fixed stale expiry feedback and silent Practice recovery; see
-   `docs/relic-trial.md` for the run and input-delivery limits. One-thumb skill access
-   to its cache was separately verified and the mixed-touch route visited all three caches.
+1. Review the completed no-skill one-thumb Practice opening: the retained UI run
+   caught Observatory's final rest rail, crossed into Endless Frontier and is
+   preserved near 748 m. This used pauses, ordinary springs and checkpoint/fresh
+   catches; uninterrupted/Challenge/physical-device qualification remains open.
+   Fixed stale expiry, silent Practice recovery and unclear opening-completion
+   feedback; see `docs/relic-trial.md` for the route and input-delivery limits.
+   One-thumb skill access to the cache was separately verified and the mixed-touch
+   route visited all three caches.
    The 1,000 m automated climbs establish reachability only. Review whether
    choices create interesting route decisions before adding bounty-only effects.
 2. Review trial findings and the mirrored native compatibility evidence; fix
