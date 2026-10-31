@@ -263,3 +263,20 @@ simulation crossing/continuation, remaining-time persistence/revisit behavior an
 feedback priority. The persistent label and retained run were also checked in
 the 390×844 browser UI; the new first-crossing notice is covered by simulation,
 not retroactively claimed as visible in the previously completed UI crossing.
+
+## Release verification
+
+PR #14 was merged as `2e96d5c6ecf11cbf3ac96f5835d1bc1071734a84` after the full
+build, Node 24/26 push/PR checks and preview checks passed. Production desktop
+keyboard play and mobile-size one-thumb launch/catch passed. Reload retained
+desktop 3 m / 0 points / 0.5 s and mobile 27 m / 46 points / 8.8 s, paused for
+deliberate Resume. Existing profiles and the completed local run were preserved.
+Relics remain opt-in at `?relics=1`; mobile download/deep-link code stays excluded.
+
+Live landscape verification found the long reload message pushed lower pause
+actions below the initial viewport. The compact pause layout now reduces logo,
+heading and spacing while retaining the full message and 44 px action targets.
+The reload menu with all seven actions, including Relics, fits without scrolling
+at 844×390, 568×320, 320×568, 390×844 and 1366×768 in browser UI checks. The CSS
+change does not alter gameplay, input, saves or the disabled mobile handoff.
+These are browser-size checks, not new physical iOS/Android qualification.

@@ -223,6 +223,7 @@
         border-radius: 18px;
       }
       #paused .brand-logo { width: 64px; margin-bottom: 16px; }
+      #paused .title { font-size: clamp(46px, 10vw, 92px); }
       @media (max-height: 600px) {
         #menu .brand-logo { width: 64px; margin-bottom: 12px; }
       }
@@ -597,6 +598,16 @@
         .one-thumb #portal-enter { bottom:172px; }
         .one-thumb #flowwrap,.one-thumb #combo { top:62px; bottom:auto; }
       }
+      @media(max-height:600px) {
+        #paused { padding: max(12px, env(safe-area-inset-top)) 0 max(12px, env(safe-area-inset-bottom)); }
+        #paused .card { width:min(640px,94vw); padding:4px 6px; }
+        #paused .brand-logo { width:40px; margin-bottom:6px; }
+        #paused .eyebrow { margin-bottom:6px; }
+        #paused .title { font-size:46px; }
+        #paused .tag { margin-top:10px; max-width:52ch; font-size:13px; line-height:1.4; }
+        #paused .btn { margin-top:14px; min-height:44px; padding:12px 20px; }
+        #paused .expedition-links .btn { margin:8px 0 0; padding:10px 14px; }
+      }
     </style>
   </head>
   <body>
@@ -724,7 +735,7 @@
       <div class="card">
         <img class="brand-logo" src="../assets/branding/carve-logo.webp" width="320" height="320" alt="" decoding="async" />
         <div class="eyebrow">paused</div>
-        <h1 class="title" style="font-size: clamp(46px, 10vw, 92px)">HOLD</h1>
+        <h1 class="title">HOLD</h1>
         <p class="tag" id="pause-message">Time to read the next line.</p>
         <button class="btn" id="resume">Resume</button>
         <button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost hidden" id="relic-loadout" aria-haspopup="dialog">Relics</button><button class="btn ghost" id="bank-open">Bank run</button><button class="btn ghost" id="controls-pause" aria-haspopup="dialog">Controls</button></div>
