@@ -1,9 +1,10 @@
 # Flow and encounter rework
 
-This is a branch-preview milestone after release `bfc7bff`. Open `/?flow=1`
-for the new course. The root course also receives the camera, reading and rift
-flow repairs when this branch is eventually released. Production has not been
-changed by this milestone. Use `?flow=1&relics=1` only to compare relic effects;
+This release follows `bfc7bff`. Public builds use Flow at `/`, with no query
+flag required. Testing previews use `/?flow=1`; the test-only root retains the
+earlier course for regression coverage. Public builds always select Flow and
+three-life Challenge; query parameters cannot select the old course or testing
+Practice. Use `?flow=1&relics=1` only to compare relic effects;
 the existing relic offer vectors remain version 1 and do not certify Flow rules.
 
 ## Camera contract
@@ -130,7 +131,7 @@ native First Ascent rules. The mobile download/deep-link prompt remains disabled
 
 ## Verification and remaining work
 
-`npm run build` includes all prior suites plus 49 focused Flow tests. Coverage
+`npm run build` includes all prior suites plus 54 focused Flow tests. Coverage
 includes continuous camera transforms, receipt persistence/transition/focus
 handling, both trial rules, public three-life enforcement, isolated data, directed
 collection, contract expiry and distinct goals, bounded repairs, recharge,
@@ -173,3 +174,13 @@ Next verification: physical-device charged aiming and frame times, broader
 contract/route balance with players, and whether the new choices improve fun and
 return intent. Native coordination shares this design and the limits; porting,
 movement reconciliation and shared user data remain separate.
+
+## Public release continuity
+
+Public returning players are offered an explicit carry-or-start-separate choice
+for the previous `carve.variety.profile.v1` name, bounty and skill unlocks. Old
+records and course-4 active snapshots stay in their original keys and are shown
+read-only. They are not resumed on the changed route or added to new rankings.
+An existing Flow profile always wins; wallets are never summed. Failed import
+saving leaves the original data and the choice intact. Testing previews keep
+their prior isolation behavior and existing saved runs.

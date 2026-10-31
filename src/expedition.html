@@ -808,7 +808,7 @@
     <script>
       "use strict";
       const TESTING = true; // Replaced with false by the production build; query strings cannot enable it.
-      const FLOW_TRIAL = typeof location !== 'undefined' && new URLSearchParams(location.search).get('flow') === '1';
+      const FLOW_TRIAL = !TESTING || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('flow') === '1');
       const MEMORY_PREVIEW = FLOW_TRIAL ? 3.2 : 2.5;
       const RELIC_TRIAL = typeof location !== 'undefined' && new URLSearchParams(location.search).get('relics') === '1';
       const CONTROL_KEY = FLOW_TRIAL ? 'carve.flow.controls.v1' : RELIC_TRIAL ? 'carve.relic-trial.controls.v1' : 'carve.controls.v1';
@@ -1977,7 +1977,7 @@
         },
         current() { return this.json(localStorage,Profile.key,200000)?.version===1; },
         read() {
-          const d=this.json(localStorage,'carve.expedition.profile.v1',200000);
+          const d=this.json(localStorage,FLOW_TRIAL?'carve.variety.profile.v1':'carve.expedition.profile.v1',200000);
           const number=n=>Number.isFinite(n)&&n>=0&&n<=1e12;
           const profile=d?.version===1 && typeof d.name==='string' && Number.isSafeInteger(d.coins) && d.coins>=0 ? {
             name:d.name.slice(0,16), coins:Math.min(1000000,d.coins),
@@ -1985,12 +1985,12 @@
             equipped:d.equipped, best:number(d.best)?d.best:0, challengeBest:number(d.challengeBest)?d.challengeBest:0,
             records:Array.isArray(d.records)?d.records.filter(r=>r&&typeof r.name==='string'&&[r.height,r.score,r.time,r.portals].every(number)).slice(0,20):[],
           } : null;
-          const run=this.json(sessionStorage,'carve.expedition.run.v1',100000);
-          const active=run?.version===1 && run.course===2 && number(run.journey?.peak) && number(run.game?.score) ? {height:Math.max(0,Math.floor((run.journey.peak-64)/10)),score:run.game.score} : null;
+          const run=FLOW_TRIAL?(this.json(sessionStorage,'carve.public.run.v1',100000)||this.json(sessionStorage,'carve.variety.run.v1',100000)):this.json(sessionStorage,'carve.expedition.run.v1',100000);
+          const active=run?.version===1 && run.course===(FLOW_TRIAL?4:2) && number(run.journey?.peak) && number(run.game?.score) ? {height:Math.max(0,Math.floor((run.journey.peak-64)/10)),score:run.game.score} : null;
           return {profile,active};
         },
         init() {
-          if (RELIC_TRIAL || FLOW_TRIAL) { show('previous-open',false); return; }
+          if (RELIC_TRIAL || (FLOW_TRIAL&&TESTING)) { show('previous-open',false); return; }
           const data=this.read();
           this.activeKept=!!data.active;
           show('previous-open',!!(data.profile||data.active));

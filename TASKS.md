@@ -25,7 +25,11 @@ Branch `codex/flow-and-encounters`, preview entry `/?flow=1`. See
   pickups, Overdrive touch activation and checkpoint camera travel.
 - [ ] Qualify device frame times and continuous charged aiming; evaluate route
   balance and return intent with players.
-- [ ] Review the new preview before production; keep download prompts disabled.
+- [x] Preview reviewed and production release authorized; public root selects
+  Flow, with explicit prior-progress import and download prompts disabled.
+- [ ] Next planning milestone: agree the shared desktop/mobile identity, results,
+  unlocks and currency contract before implementing hosted sync. Preserve local
+  guest play; keep active-run handoff and incompatible records separate.
 
 ## Released prior milestone: optional relic comparison
 

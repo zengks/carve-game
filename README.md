@@ -18,15 +18,15 @@ score. Miss the window and you slip.
 
 Single file, zero dependencies, plain Canvas 2D + Web Audio.
 
-## New course preview
+## Current Flow course
 
-`/?flow=1` runs the separate Flow course: steady camera, readable secret-trial
+Public builds serve the Flow course at `/`; testing previews use `/?flow=1`: steady camera, readable secret-trial
 results and return travel, first-use skill explanations, a Journal, movement
 recharge, directional rings and optional camp contracts/repairs. Production
 artifacts enforce three lives; unlimited Practice is test-build only. Earlier
 course data is retained separately. See [the design and verification](docs/flow-course.md).
 
-## Current course
+## Gameplay
 
 Five authored sections lead into an endless climb, with an optional reward
 spring, a marked manual rescue wall and resting landmarks. Public builds use
@@ -40,6 +40,10 @@ stages player validation, business-model trials, purchase/entitlement design and
 operating-cost checks. Monetization is planned; no paid products or live ads are
 enabled by this update.
 
+The released Flow course uses separate current-route records. Public returning
+players can explicitly carry their prior course name, bounty and unlocked skills;
+previous scores and active snapshots remain separate and untouched. The
+following earlier course migration also remains available in legacy test builds.
 Course revision 4 uses separate current-route records. Returning players can
 explicitly carry their previous name, bounty and skills through **Previous
 progress**. Old scores remain readable in that log and are not mixed into the
