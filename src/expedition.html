@@ -786,7 +786,7 @@
       <div class="rift-actions"><div id="memory-trial" class="hidden"><button class="btn glyph" id="glyph-0" aria-label="Triangle">△</button><button class="btn glyph" id="glyph-1" aria-label="Circle">○</button><button class="btn glyph" id="glyph-2" aria-label="Square">□</button></div>
       <button class="btn" id="rift-start">Accept the challenge</button><button class="btn hidden" id="rift-action">Seal the gate</button><button class="btn ghost" id="rift-exit">Leave without entering</button></div>
     </dialog>
-    <div id="return-layer" class="hidden" role="status" aria-live="polite"><div><div class="eyebrow">returning to the climb</div><h2 id="return-title"></h2><p id="return-copy"></p><div class="return-progress"></div></div></div>
+    <div id="return-layer" class="hidden" role="status" aria-live="polite"><div><div class="eyebrow" id="return-label">returning to the climb</div><h2 id="return-title"></h2><p id="return-copy"></p><div class="return-progress"></div></div></div>
     <dialog id="journal-dialog" aria-labelledby="journal-title"><div class="rift-body"><h2 id="journal-title">Field journal</h2><p>Gold shards earn bounty. Spend it on skill unlocks or camp services. Flow powers Surge. Perfect catches earn more Flow; neither currency is a life. Gold walls save the place you return to after losing a life.</p><p>Public runs have 3 lives. Your height record and bounty survive Game Over. Optional camp contracts risk only their stated deposit, and marked directional rings need you to cross in the arrow's direction.</p><p>In the new course, skills recharge by climbing: a PERFECT fresh catch restores 3 points, GOOD restores 2, other catches 1; a shard restores 1 and a directional ring 4. Waiting does not refill skills. Contracts can grant a ready skill, one Overdrive activation or a life.</p><ol id="journal-entries"></ol></div><div class="rift-actions"><button class="btn ghost" id="camp-guide">Plan the next camp</button><button class="btn" id="journal-close">Back</button></div></dialog>
     <dialog id="skill-dialog" aria-labelledby="skill-title"><div class="rift-body"><div class="eyebrow">understand your equipment</div><h2 id="skill-title"></h2><p id="skill-copy"></p><p>Use between catches, after lifting your thumb. Changing equipment never refills your skill. In the new course, fresh catches and shards recharge it; waiting does not. You can read all skills again in the Workshop.</p></div><div class="rift-actions"><button class="btn" id="skill-confirm">Use this skill</button><button class="btn ghost" id="skill-cancel">Keep climbing</button></div></dialog>
     <dialog id="camp-dialog" aria-labelledby="camp-title"><div class="rift-body"><div class="eyebrow">a moment to choose</div><h2 id="camp-title">Trail camp</h2><p id="camp-copy"></p><p id="camp-status" role="status"></p><div id="camp-options"></div></div><div class="rift-actions"><button class="btn" id="camp-repair">Restore one life · 18 bounty</button><button class="btn ghost" id="camp-close">Leave camp</button></div></dialog>
@@ -2243,6 +2243,7 @@
         useSkill() {
           if (!Game.running || Game.paused || (this.cooldown > 0 && !Routes.overdrive)) return false;
           const id = Profile.equipped, skill = this.skills[id];
+          const origin={x:Cam.x,y:Cam.y}, from=Math.max(0,Math.floor((Player.y-64)/10));
           if (Input.manualHeld()) return false;
           Player.groundCharge = null;
           if (!Profile.unlocked.includes(id)) return false;
@@ -2257,7 +2258,9 @@
           }
           if(this.cooldown>0&&Routes.overdrive)Routes.overdrive=0;
           Game.awaitingGrip = false; this.cooldown = skill.cd * (Relics.has('resonance') ? 0.85 : 1); this.notify(skill.name.toUpperCase()); Sfx.jump();
-          this.recordPeak(); RunSave.write(); return true;
+          this.recordPeak();
+          if(FLOW_TRIAL&&id==='hook')Game.startReturn({kind:'hook',duration:.6,origin,from,to:Math.max(0,Math.floor((Player.y-64)/10)),success:true});
+          RunSave.write(); return true;
         },
         landOn(b) {
           if (Input.manualHeld()) Input.clear();
@@ -2675,16 +2678,17 @@
         startReturn(receipt) {
           Input.clear();this.acc=0;this.paused=true;show('paused',false);
           if(!this.windowFocused||document.hidden){show('paused',true);return;}
-          this.returning={elapsed:0,origin:receipt.origin,target:{x:Cam.x,y:Cam.y}};
+          this.returning={elapsed:0,duration:receipt.duration||1,origin:receipt.origin,target:{x:Cam.x,y:Cam.y}};
           Cam.x=receipt.origin.x;Cam.y=receipt.origin.y;
+          document.getElementById('return-label').textContent=receipt.kind==='hook'?'SKYHOOK TRANSFER':'RETURNING TO THE CLIMB';
           document.getElementById('return-title').textContent=receipt.to+' m · safe ledge';
-          document.getElementById('return-copy').textContent=receipt.success?'Your rift shortcut carries you to this ledge. Fresh input will control the next jump.':'Returning to the checkpoint route after the rift setback. Your best height is kept. Fresh input controls the next jump.';
+          document.getElementById('return-copy').textContent=receipt.kind==='hook'?'Your hook carries you to a safe anchor. Fresh input controls the next catch.':receipt.success?'Your rift shortcut carries you to this ledge. Fresh input will control the next jump.':'Returning to the checkpoint route after the rift setback. Your best height is kept. Fresh input controls the next jump.';
           show('return-layer',true);this.needsRender=true;
         },
         tickReturn(dt) {
           const r=this.returning;if(!r)return;
           if(!this.windowFocused||document.hidden){this.returning=null;show('return-layer',false);show('paused',true);Input.clear();this.needsRender=true;return;}
-          r.elapsed=Math.min(1,r.elapsed+dt);const t=r.elapsed*r.elapsed*(3-2*r.elapsed);
+          r.elapsed=Math.min(1,r.elapsed+dt/r.duration);const t=r.elapsed*r.elapsed*(3-2*r.elapsed);
           Cam.x=lerp(r.origin.x,r.target.x,t);Cam.y=lerp(r.origin.y,r.target.y,t);
           document.getElementById('return-layer').style.setProperty('--progress',String(t));this.needsRender=true;
           if(r.elapsed>=1){this.returning=null;show('return-layer',false);this.paused=false;Input.clear();this.acc=0;Sfx.resume();RunSave.write();}

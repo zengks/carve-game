@@ -38,6 +38,8 @@ A checkpoint-clamped setback explicitly says no height was lost. The player
 chooses one Return action after reading. A one-second eased camera journey and
 landing explanation then return directly to play, without Resume/Start over.
 Controls are retired before travel and fresh input controls the next launch.
+Skyhook in the new course uses a 0.6-second explained, frozen anchor transfer
+through the same travel layer; its camera also eases instead of cutting.
 
 A result restores with its receipt after refresh. Reloading during travel keeps
 the saved destination paused, without another payout or warp. Background/focus
@@ -102,7 +104,7 @@ native First Ascent rules. The mobile download/deep-link prompt remains disabled
 
 ## Verification and remaining work
 
-`npm run build` includes all prior suites plus 33 focused Flow tests. Coverage
+`npm run build` includes all prior suites plus 34 focused Flow tests. Coverage
 includes continuous camera transforms, receipt persistence/transition/focus
 handling, both trial rules, public three-life enforcement, isolated data, directed
 collection, contract expiry and distinct goals, bounded repairs, recharge,

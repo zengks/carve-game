@@ -109,4 +109,7 @@ test('a checkpoint-clamped rift setback says no altitude was lost in the result 
 test('the return notice and receipt include the complete rift plus height-contract bounty once',()=>{
  const g=load();g.Player.y=1200;g.Journey.peak=1200;g.Journey.contracts();rift(g);g.Journey.resolve(true);const r=g.Journey.rift.receipt;assert.equal(r.prize,20);assert.equal(r.bonus,20);assert.match(g.Game.notice,/\+40 bounty/);assert.match(el('rift-copy').textContent,/includes 20 from height contracts/);assert.equal(g.Journal.entries.filter(t=>t.startsWith('RIFT CLEARED')).length,1);
 });
+test('Skyhook in the new course uses a frozen eased anchor transfer without a camera jump',()=>{
+ const g=load();g.Profile.credit(50);g.Journey.buy('hook');const before={x:g.Cam.x,y:g.Cam.y};assert(g.Journey.useSkill());assert(g.Game.returning);assert(g.Game.paused);assert.equal(g.Cam.x,before.x);assert.equal(g.Cam.y,before.y);const landing=[g.Player.x,g.Player.y];assert.match(el('return-label').textContent,/SKYHOOK/);g.Game.tickReturn(.3);assert(g.Game.returning);assert.notEqual(g.Cam.y,before.y);g.Game.tickReturn(.3);assert(!g.Game.returning);assert(!g.Game.paused);assert.deepEqual([g.Player.x,g.Player.y],landing);assert.equal(g.Journey.cooldown,18);
+});
 console.log(`${passed} flow checks passed`);
