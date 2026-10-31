@@ -866,6 +866,12 @@
         surgeQ: false,
         oneId: null, oneHeld: false, oneAxis: 0, touchCarveHeld: false, blocked: false,
         manualHeld() { return (this.oneHeld || this.touchCarveHeld) && !this.blocked; },
+        beginManual() {
+          this.blocked = false;
+          if (Game.notice.startsWith('CHARGE EXPIRED ·')) {
+            Game.notice = ''; Game.noticeTime = 0;
+          }
+        },
         retire() { this.blocked = true; this.oneAxis = 0; this._tCarve = false; },
         releaseManual() {
           if (!Game.running || Game.paused) return;
@@ -2098,7 +2104,10 @@
           if (!records.length) rows.textContent = `No ${mode} records yet. Climb to set your first height.`;
         },
         onHit(fall) {
-          if (this.mode !== 'challenge') return false;
+          if (this.mode !== 'challenge') {
+            this.notify(`${fall ? 'FALL' : 'SPIKES'} · returned to checkpoint · Practice: unlimited lives`,true);
+            return false;
+          }
           this.peak = Math.max(this.peak,Player.y);
           this.lives = Math.max(0,this.lives - 1); Input.clear();
           if (this.lives === 0) { this.finish('gameover'); return true; }
@@ -3007,7 +3016,7 @@
           pad.addEventListener('pointerdown',e => {
             e.preventDefault();
             if (!this.running || this.paused || this.controlLabel() !== 'one' || Input.oneId !== null || (e.button !== undefined && e.button !== 0)) return;
-            Input.oneId = e.pointerId; Input.oneOrigin = e.clientX; Input.oneHeld = true; Input.oneAxis = 0; Input.blocked = false; pad.setPointerCapture(e.pointerId); Sfx.resume();
+            Input.oneId = e.pointerId; Input.oneOrigin = e.clientX; Input.oneHeld = true; Input.oneAxis = 0; Input.beginManual(); pad.setPointerCapture(e.pointerId); Sfx.resume();
             if (Player.onGround && !Player.carve && !Player.pole) Player.groundCharge = 0;
           });
           pad.addEventListener('pointermove',e => {
@@ -3031,7 +3040,7 @@
           hold('t-left',()=>Input.touchKeys.arrowleft=true,()=>Input.touchKeys.arrowleft=false);
           hold('t-right',()=>Input.touchKeys.arrowright=true,()=>Input.touchKeys.arrowright=false);
           hold('t-jump',()=>Input.jumpBuf=T.JUMP_BUFFER);
-          hold('t-carve',()=>{Input.touchCarveHeld=true;Input.blocked=false;Input._tCarve=true;Sfx.resume();},()=>{Input.releaseManual();Input.touchCarveHeld=false;Input._tCarve=false;Input.blocked=false;});
+          hold('t-carve',()=>{Input.touchCarveHeld=true;Input.beginManual();Input._tCarve=true;Sfx.resume();},()=>{Input.releaseManual();Input.touchCarveHeld=false;Input._tCarve=false;Input.blocked=false;});
           const surge = document.getElementById('t-surge');
           surge.addEventListener('pointerdown',e=>{e.preventDefault();if (this.running && !this.paused && !Input.manualHeld()) Input.surgeQ=true;});
         },

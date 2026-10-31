@@ -188,3 +188,41 @@ completion or physical-device comfort. No movement or difficulty changes were
 needed for this successful attempt. The future comparison should still address
 the safe cooldown-wait loop rather than treat this access result as retention
 evidence.
+
+## No-skill one-thumb route follow-up
+
+A separate Practice run started at zero altitude in a 390×844 browser viewport,
+preserving the earlier profile and 813 m skill-assisted record. All movement used
+the one-thumb pad. No active skill, Surge, relic choice, rift or Workshop upgrade
+was used. Ordinary authored springs and saved checkpoints remained available.
+This is UI-delivered input with pauses for inspection and actual fall recoveries,
+not an uninterrupted run or physical-device ergonomics evidence.
+
+The run reached the 143 m rest, crossed Wind Gap via its first shifted walls,
+saved the 233 m gold checkpoint, traversed The Fork and entered Second Chance
+at 439 m. A fresh descending catch on cyan wall `b:20:9` showed
+`RESCUE WALL · fresh catch · no life lost`; its release reconnected with the
+main row-20 wall and reached 477 m. Ordinary walls and rails then reached
+Observatory. The highest directly observed altitude was 670 m; a source reload
+retained 670 m / 3,689 points / 135.3 s and the empty relic loadout. The inherited
+813 m profile best is a different, earlier run. The present run remains saved
+and paused after a further recovery near 635 m. Full five-section completion,
+an uninterrupted no-skill climb and physical comfort remain open.
+
+Two concrete feedback defects were fixed without changing movement, timing,
+geometry, scoring or lives. Accepted fresh touch input now dismisses the resolved
+`CHARGE EXPIRED` instruction; rejected/extra contacts cannot dismiss it and fall
+or reward notices are preserved. Practice falls and spike hits now explain the
+checkpoint return and unlimited lives, instead of silently changing height.
+Actual UI falls restored the 233 m and 346 m checkpoints with the new message.
+Five new regressions cover these cases, including real simulated hazards and
+saved-run recovery; their scripted evidence is separate from the UI route.
+
+A temporary read-only console probe identified contacted surfaces; it was removed
+before delivery. A separate pointer-event probe showed that this browser tool
+serializes long presses and subsequent drags into separate contacts. A requested
+hold-plus-drag therefore does not establish a continuous charged aim gesture.
+No physics changes were made to compensate for that tool limitation. The next
+route task is to finish the Observatory recovery and final landmark with the
+same no-skill restrictions; continuous charged steering still needs suitable
+input-delivery or physical-device evidence.
