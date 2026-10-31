@@ -48,7 +48,7 @@ test('pause, grip slips, rift misses, checkpoints and skills neither charge nor 
  const b=g.Level.blocks.find(b=>b.spine);g.Player.y=b.y+20;g.Player.startCarve({type:'wallR',block:b});g.Player.releaseCarve(true);assert.equal(g.Journey.lives,2);
  g.Game.togglePause();g.Player.stun=0;g.Player.hit();assert.equal(g.Journey.lives,2);
  g.Journey.rift={id:'v:7',row:7,type:'pulse',phase:'playing',elapsed:0,ready:true,progress:0,sequence:[0,1,2]};g.Journey.resolve(false);
- assert.equal(g.Journey.lives,2);assert(g.Game.paused);dispatchWindow('blur');assert.equal(g.Journey.lives,2);
+ assert.equal(g.Journey.lives,2);assert(!g.Game.paused);dispatchWindow('blur');assert(g.Game.paused);assert.equal(g.Journey.lives,2);
 });
 
 test('remaining lives and mode survive repeated reloads, and mode cannot change during a run',()=>{
