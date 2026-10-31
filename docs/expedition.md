@@ -474,9 +474,13 @@ this task. Borrow the design lessons with original CARVE content and presentatio
 
 ### Priority 2: reuse mobile's data foundation on the web
 
-- Carry over local play without an account; optional email-code sign-in selects
-  the same authenticated player across platforms. A nickname alone must not
-  grant access to another player's saves. Keep guest/account scopes isolated.
+- The user selected Apple, Google and email sign-in with guest play on
+  2026-10-31, and included shared bounty and purchase ownership in the storage
+  plan. See the current [shared storage contract and delivery plan](shared-storage.md).
+  Payments remain unimplemented; unfinished climbs stay on their device.
+- Carry over local play without an account; authenticated identities link to
+  one stable CARVE player ID. A nickname or matching email string alone must
+  not grant access or merge saves. Keep guest/account scopes isolated.
 - Review and adapt the existing mobile Supabase API/schema rather than building
   an independent web database. Extend it for endless modes, bounty and skills
   only after the common contract is agreed. Never expose server credentials.
@@ -491,6 +495,10 @@ this task. Borrow the design lessons with original CARVE content and presentatio
   to prevent duplicate credits or double spending across devices. Define how
   provisional offline earnings and purchases reconcile before exposing a shared
   wallet. Existing browser totals must not simply be added on each sign-in.
+- Plan validated purchase ownership separately from earned bounty/unlocks, with
+  canonical product mappings, restore, duplicate prevention and revocations.
+  Shared login does not make every product portable. No payment provider,
+  product, SDK or real checkout is enabled by this plan.
 - Offer an explicit review before importing legacy browser or mobile guest data;
   retain source copies and active runs. Preserve provenance: unverified client
   records do not become trusted competitive results because they were uploaded.

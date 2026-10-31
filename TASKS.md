@@ -27,9 +27,25 @@ Branch `codex/flow-and-encounters`, preview entry `/?flow=1`. See
   balance and return intent with players.
 - [x] Preview reviewed and production release authorized; public root selects
   Flow, with explicit prior-progress import and download prompts disabled.
-- [ ] Next planning milestone: agree the shared desktop/mobile identity, results,
-  unlocks and currency contract before implementing hosted sync. Preserve local
-  guest play; keep active-run handoff and incompatible records separate.
+
+## Current planning milestone: shared storage
+
+Branch `codex/shared-storage-plan`. See the
+[shared storage contract and delivery plan](docs/shared-storage.md).
+
+- [x] Record selected Apple, Google and email sign-in with immediate guest play.
+- [x] Include completed results, progress, eligible unlocks, shared bounty and
+  purchase ownership; keep unfinished climbs local to their device.
+- [x] Specify identity linking, ledger and entitlement boundaries, delivery
+  sequence and acceptance checks. This is a plan, not implemented sync/payments.
+- [x] Align the updated scope with carve-mobile's decisions, milestone and tasks;
+  incorporate its identity-linking, email-code and schema compatibility findings.
+- [ ] Agree email delivery, legacy imports, offline bounty spending, current
+  reward/cost classification and compatible catalog/rules mappings before code.
+- [ ] Resolve the explicit-linking contract against Auth's automatic email-based
+  OAuth linking; verify collision cases before enabling Apple/Google.
+- [ ] Review hosting, privacy/region/budget and recovery/deletion before any
+  provisioning. Real payments remain a separate unimplemented milestone.
 
 ## Released prior milestone: optional relic comparison
 
