@@ -21,6 +21,10 @@
 - Keep the mobile download/deep-link prompt disabled until native store releases
   and their verified links are ready. Shared gameplay/data convergence remains
   a coordinated milestone; do not mix incompatible course records or wallets.
+- Product goal added by the user (2026-10-30): both web and native CARVE should
+  support earning sustainable income after public launch. Keep the shared revenue
+  roadmap in `docs/expedition.md` and the mobile plan aligned. This is a planning
+  requirement, not approval to activate payments/ads or a claim of proven demand.
 
 ## Verification
 

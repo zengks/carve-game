@@ -1,5 +1,52 @@
 # Endless Expedition
 
+## Post-launch revenue capability — 2026-10-30
+
+The user explicitly requires both browser and native CARVE to have the ability
+to earn income after real-world publication. This is a shared product goal,
+mirrored with `carve-mobile`; revenue should not be an accidental afterthought.
+It is not a guarantee of earnings or evidence of demand, retention or willingness
+to pay. This addition is planning only: no payment/ad SDK, paid product, hosted
+service or store submission is being implemented or activated.
+
+### Candidate models, not final selections
+
+- Optional cosmetics, themes or supporter/full-game unlocks.
+- Paid additional authored content if players want more of the core game.
+- Optional, clearly explained rewarded advertising if a platform-appropriate
+  implementation benefits players. Evaluate browser and native viability
+  separately; do not interrupt an active climb with forced ads.
+
+Keep the base game enjoyable and competitive scores comparable. The initial
+commercial design should avoid selling leaderboard power or making frustrating
+deaths a purchase prompt. Do not add subscriptions, paid randomness or multiple
+currencies by default. Compare candidates against player evidence before choosing
+products, pricing, vendors or an advertising model.
+
+### Shared work and acceptance gates
+
+| Stage | Planned deliverable | Evidence needed before proceeding |
+| --- | --- | --- |
+| Core experience | Understandable one-thumb/keyboard play, varied route choices, safe recovery and reliable saves | Clear failure feedback, voluntary retries and repeat play; technical bots alone do not establish fun |
+| Commercial validation | A small comparison of candidate offers, value and pricing hypotheses | Observed interest and willingness to pay; do not invent conversion or revenue figures |
+| Revenue design | Versioned product IDs and entitlements, optional guest-to-account linking, accessible purchase/restore/support flows | Agreed cross-platform ownership rules, current platform-policy/privacy review and a transparent player offer |
+| Safe implementation | Platform-appropriate purchase validation, duplicate prevention, restore, refunds/revocation and resilient offline entitlement handling | Sandbox checks for cancellation, retries, reinstall and cross-device restore without lost progress or duplicate charges; never trust browser-local flags as purchase proof |
+| Public launch | One small monetization model with defined operating limits | Release-ready builds, approved store/merchant/ad setup where applicable, support process and lawful privacy/consent handling |
+| Post-launch iteration | Track retention, conversion, net revenue, refunds, ad engagement where relevant, and service/support costs | Predeclared success and stop criteria; compare income after fees/costs and check whether monetization harms retention or fairness |
+
+Use the eventual shared account/data contract for entitlements; do not create
+incompatible web/native ownership stores or relabel existing course records.
+Paid entitlement portability is a design decision to verify, not an assumed
+platform capability. Display names and local scores are not authenticated purchase
+identities. Keep the existing no-deletion rules and preserve all guest/account
+saves during future migrations.
+
+Exact next commercial planning action: choose the first candidate to validate,
+define its player value and the retention/revenue/cost success criteria, then
+check the current distribution requirements before any billing or advertising
+integration. Actual demand and income remain unverified until real publication
+and observation. Both chats should update this roadmap together as evidence changes.
+
 ## Combined gameplay roadmap — 2026-10-30
 
 This consolidates the latest mobile-chat planning turn (mobile documentation

@@ -26,6 +26,12 @@ Challenge, one-thumb controls, optional two-thumb input and desktop keyboard are
 available. Crossing and rescue cameras keep the main targets visible on phones.
 Relics and a shared backend remain later work.
 
+Both browser and native CARVE also have an explicit post-launch income goal.
+The [shared revenue-capability plan](docs/expedition.md#post-launch-revenue-capability--2026-10-30)
+stages player validation, business-model trials, purchase/entitlement design and
+operating-cost checks. Monetization is planned; no paid products or live ads are
+enabled by this update.
+
 Course revision 4 uses separate current-route records. Returning players can
 explicitly carry their previous name, bounty and skills through **Previous
 progress**. Old scores remain readable in that log and are not mixed into the
