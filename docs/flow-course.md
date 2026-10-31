@@ -102,7 +102,7 @@ native First Ascent rules. The mobile download/deep-link prompt remains disabled
 
 ## Verification and remaining work
 
-`npm run build` includes all prior suites plus 31 focused Flow tests. Coverage
+`npm run build` includes all prior suites plus 33 focused Flow tests. Coverage
 includes continuous camera transforms, receipt persistence/transition/focus
 handling, both trial rules, public three-life enforcement, isolated data, directed
 collection, contract expiry and distinct goals, bounded repairs, recharge,

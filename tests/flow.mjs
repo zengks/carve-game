@@ -103,4 +103,10 @@ test('every skill has a first-use reading step and cancel never spends its recha
 test('failed camp storage writes leave bounty, lives, contract and accepted-camp state unchanged',()=>{
  const g=load();camp(g);g.Profile.credit(60);g.Journey.lives=2;g.Routes.open();const coins=g.Profile.coins;localStorage.setItem=()=>{throw new Error('full storage');};assert(!g.Routes.accept('courier'));assert(!g.Routes.repair());assert.equal(g.Profile.coins,coins);assert.equal(g.Journey.lives,2);assert.equal(g.Routes.contract,null);assert.equal(g.Routes.used.length,0);
 });
+test('a checkpoint-clamped rift setback says no altitude was lost in the result and return notice',()=>{
+ const g=load();rift(g);g.Journey.resolve(false);assert.equal(g.Journey.rift.receipt.from,g.Journey.rift.receipt.to);assert.match(el('rift-copy').textContent,/no altitude is lost/);assert.match(g.Game.notice,/checkpoint protected/);assert(!g.Game.notice.includes('lower'));
+});
+test('the return notice and receipt include the complete rift plus height-contract bounty once',()=>{
+ const g=load();g.Player.y=1200;g.Journey.peak=1200;g.Journey.contracts();rift(g);g.Journey.resolve(true);const r=g.Journey.rift.receipt;assert.equal(r.prize,20);assert.equal(r.bonus,20);assert.match(g.Game.notice,/\+40 bounty/);assert.match(el('rift-copy').textContent,/includes 20 from height contracts/);assert.equal(g.Journal.entries.filter(t=>t.startsWith('RIFT CLEARED')).length,1);
+});
 console.log(`${passed} flow checks passed`);
