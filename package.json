@@ -8,7 +8,7 @@
     "start": "node scripts/serve.mjs",
     "dev": "node --watch scripts/serve.mjs",
     "check": "node tests/check-syntax.mjs",
-    "test": "node tests/regression.mjs && node tests/recovery.mjs && node tests/build.mjs && node tests/smoke.mjs && node tests/expedition.mjs && node tests/challenge.mjs && node tests/one-thumb.mjs && node tests/variety.mjs && node tests/mobile-handoff.mjs",
+    "test": "node tests/regression.mjs && node tests/recovery.mjs && node tests/build.mjs && node tests/smoke.mjs && node tests/expedition.mjs && node tests/challenge.mjs && node tests/one-thumb.mjs && node tests/variety.mjs && node tests/previous-progress.mjs && node tests/mobile-handoff.mjs",
     "build": "npm run check && npm test && node scripts/build.mjs"
   },
   "keywords": [

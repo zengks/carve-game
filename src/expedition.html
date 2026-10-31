@@ -551,7 +551,9 @@
       .one-thumb.left-hand #one-pad,.one-thumb.left-hand #ability,.one-thumb.left-hand #portal-enter { right:auto; left:calc(16px + env(safe-area-inset-left)); }
       .one-thumb.left-hand #t-surge { right:auto; left:calc(156px + env(safe-area-inset-left)); }
       .one-thumb.left-hand #run-mode-status { left:auto; right:calc(12px + env(safe-area-inset-right)); }
-      #controls-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
+      #controls-dialog[open], #previous-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
+      #previous-records { padding-left:20px; font-size:13px; line-height:1.6; }
+      #previous-records li { margin:8px 0; }
       #controls-dialog .control-options { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
       #controls-dialog .control-options .btn { flex:1; min-width:110px; margin:0; padding:12px; font-size:12px; }
       #controls-dialog [aria-pressed="true"] { border-color:var(--gold); color:var(--gold); }
@@ -621,7 +623,7 @@
         </div>
         </div>
         <p class="tag">
-          Variety trial · read the route, choose a shortcut and rescue a miss. Five landmarks lead into an endless ascent.
+          Read the route, choose a shortcut and rescue a miss. Five landmarks lead into an endless ascent.
         </p>
         </div>
         <div class="menu-controls">
@@ -644,10 +646,17 @@
             <span>Surge (spend Flow)</span><b><kbd>X / K</kbd></b>
           </div>
         </div>
-        <div class="expedition-links"><button class="btn ghost" id="workshop-open">Workshop</button><button class="btn ghost" id="records-open">Records</button><button class="btn ghost" id="help-open" aria-haspopup="dialog">Field guide</button></div><p id="menu-progress"></p>
+        <div class="expedition-links"><button class="btn ghost" id="workshop-open">Workshop</button><button class="btn ghost" id="records-open">Records</button><button class="btn ghost" id="help-open" aria-haspopup="dialog">Field guide</button><button class="btn ghost hidden" id="previous-open" aria-haspopup="dialog">Previous progress</button></div><p id="menu-progress"></p>
         </div>
       </div>
     </div>
+    <dialog id="previous-dialog" aria-labelledby="previous-title">
+      <div class="rift-body"><h2 id="previous-title" tabindex="-1" autofocus>Your previous progress</h2>
+      <p id="previous-summary"></p>
+      <p>The climbing route has changed. Bring your name, bounty and unlocked skills if you choose. New course records start at zero; previous scores stay in this log. Nothing is added to an existing wallet.</p>
+      <p id="previous-run"></p><ol id="previous-records"></ol><p id="previous-message" role="status"></p></div>
+      <div class="rift-actions"><button class="btn" id="previous-import">Use previous progress</button><button class="btn ghost" id="previous-separate">Start separate</button><button class="btn ghost" id="previous-close">Back</button></div>
+    </dialog>
     <dialog id="controls-dialog" aria-labelledby="controls-title">
       <div class="rift-body"><h2 id="controls-title">Choose your controls</h2>
       <div class="control-options"><button class="btn ghost" id="controls-one" aria-pressed="false">One thumb</button><button class="btn ghost" id="controls-two" aria-pressed="false">Two thumbs</button><button class="btn ghost" id="controls-keyboard" aria-pressed="true">Keyboard</button></div>
@@ -665,9 +674,9 @@
       <div class="rift-actions"><button class="btn" id="mode-practice" aria-pressed="true">Practice · ∞ lives</button><button class="btn" id="mode-challenge" aria-pressed="false">Challenge · 3 lives</button><button class="btn ghost" id="mode-close">Keep current mode</button></div>
     </dialog>
     <dialog id="help-dialog" aria-labelledby="help-title">
-      <h2 id="help-title" tabindex="-1" autofocus>Ascent variety trial</h2>
+      <h2 id="help-title" tabindex="-1" autofocus>Expedition field guide</h2>
       <p>Five landmarks: Launch Garden, Wind Gap, The Fork, Second Chance and Observatory. Wide crossings need deliberate steering. The violet outer spring at The Fork is an optional shortcut with an 8-bounty shard. A lower cyan wall in Second Chance can rescue a missed catch. Broad ledges let you rest; there is no timer or final roof.</p>
-      <p>A fresh catch during a fall can save a life before the world-space fall boundary. Practice remains unlimited; Challenge still has three lives. This trial keeps its own local records and wallet, leaving the current game's saves untouched. Relics are not included in this baseline.</p>
+      <p>A fresh catch during a fall can save a life before the world-space fall boundary. Practice remains unlimited; Challenge still has three lives. Previous progress lets returning players bring their name, bounty and skills into this course. Old course records stay separate and readable; old saves are kept. Relics are not included.</p>
       <p>Move and jump toward a glowing edge. Hold CARVE to grip it, then release when the charge ring turns gold to launch higher. On a keyboard, use A/D or the arrows to steer, Space/W to jump, Z to carve, X for Flow Surge, and C for your equipped skill. This keeps your left hand together while your right hand uses the arrows. Prefer A/D? J (carve), K (surge) and L (skill) also work; Shift and Q remain available.</p>
       <p>Choose One thumb to hold/catch/charge, drag to steer and release to launch. Choose Two thumbs for independent steering and CARVE, plus optional JUMP. Touch wall grips stay still until release. Ground charging launches only on release. A cancelled gesture pauses safely. Press again after each launch or slip.</p>
       <p>Choose Practice for unlimited recovery, or Challenge for 3 lives. Falling or hitting spikes costs one Challenge life; the third loss ends the run. Checkpoints do not refill lives. Rift misses only cost altitude. You can bank a run from Pause at any time.</p>
@@ -1773,6 +1782,62 @@
           this.trimRecords(); this.save();
         },
       };
+      const PreviousProgress = {
+        pending:false, activeKept:false,
+        json(storage,key,limit) {
+          try { const raw=storage.getItem(key); return raw && raw.length<=limit ? JSON.parse(raw) : null; } catch { return null; }
+        },
+        current() { return this.json(localStorage,Profile.key,200000)?.version===1; },
+        read() {
+          const d=this.json(localStorage,'carve.expedition.profile.v1',200000);
+          const number=n=>Number.isFinite(n)&&n>=0&&n<=1e12;
+          const profile=d?.version===1 && typeof d.name==='string' && Number.isSafeInteger(d.coins) && d.coins>=0 ? {
+            name:d.name.slice(0,16), coins:Math.min(1000000,d.coins),
+            unlocked:['pulse',...['wing','hook'].filter(id=>Array.isArray(d.unlocked)&&d.unlocked.includes(id))],
+            equipped:d.equipped, best:number(d.best)?d.best:0, challengeBest:number(d.challengeBest)?d.challengeBest:0,
+            records:Array.isArray(d.records)?d.records.filter(r=>r&&typeof r.name==='string'&&[r.height,r.score,r.time,r.portals].every(number)).slice(0,20):[],
+          } : null;
+          const run=this.json(sessionStorage,'carve.expedition.run.v1',100000);
+          const active=run?.version===1 && run.course===2 && number(run.journey?.peak) && number(run.game?.score) ? {height:Math.max(0,Math.floor((run.journey.peak-64)/10)),score:run.game.score} : null;
+          return {profile,active};
+        },
+        init() {
+          const data=this.read();
+          this.activeKept=!!data.active;
+          show('previous-open',!!(data.profile||data.active));
+          this.pending=!!data.profile && !this.current() && !Game.running;
+          document.getElementById('previous-open').onclick=()=>this.open();
+          document.getElementById('previous-close').onclick=()=>document.getElementById('previous-dialog').close();
+          document.getElementById('previous-import').onclick=()=>this.choose(true);
+          document.getElementById('previous-separate').onclick=()=>this.choose(false);
+          Journey.menuStatus();
+          if (this.pending) this.open();
+        },
+        open() {
+          if(Game.running) return false;
+          const {profile:p,active}=this.read();
+          if(!p&&!active) return false;
+          this.pending=!!p&&!this.current();
+          document.getElementById('previous-summary').textContent=p?`${p.name} · ${p.coins} bounty · Previous Practice best ${p.best} m · Challenge best ${p.challengeBest} m`:'Previous active run found.';
+          document.getElementById('previous-run').textContent=active?`Previous run: ${active.height} m · ${active.score} points. Its original snapshot is kept. The changed route cannot resume it; choose Begin for a new climb.`:'Previous course records remain on this browser. They are not ranked against the new route.';
+          const rows=document.getElementById('previous-records');rows.textContent='';
+          for(const r of p?.records||[]) { const li=document.createElement('li');li.textContent=`${r.name.slice(0,16)} · ${r.mode==='challenge'?'Challenge':'Practice'} · ${r.height} m · ${r.score} points`;rows.appendChild(li); }
+          document.getElementById('previous-message').textContent=this.pending?'Choose whether to carry progress into this course.':'Your current progress is already set. The previous log is read-only; wallets are not combined.';
+          show('previous-import',this.pending);show('previous-separate',this.pending);
+          document.getElementById('previous-dialog').showModal();return true;
+        },
+        choose(carry) {
+          if(!this.pending||Game.running) return false;
+          if(this.current()) { Profile.load();document.getElementById('climber-name').value=Profile.name;this.pending=false;document.getElementById('previous-dialog').close();Journey.menuStatus();return false; }
+          const p=this.read().profile;if(!p)return false;
+          const before={name:Profile.name,coins:Profile.coins,unlocked:Profile.unlocked,equipped:Profile.equipped};
+          if(carry) { Profile.name=p.name;Profile.coins=p.coins;Profile.unlocked=[...p.unlocked];Profile.equipped=p.unlocked.includes(p.equipped)?p.equipped:'pulse'; }
+          if(!Profile.save() && carry) {
+            Object.assign(Profile,before);document.getElementById('previous-message').textContent='Saving is unavailable. Previous progress is untouched. Choose Start separate for a temporary run.';return false;
+          }
+          this.pending=false;document.getElementById('climber-name').value=Profile.name;Journey.menuStatus();document.getElementById('previous-dialog').close();return true;
+        },
+      };
       const Journey = {
         selectedMode:'practice', mode:'practice', lives:null, result:null, controlsUsed:[],
         seed:1, id:'', name:'Climber', peak:64, fallAnchor:64, rescues:0, shards:0, clean:0, wins:0, cooldown:0, wingTime:0,
@@ -1842,7 +1907,7 @@
           addEventListener('blur',suspend); document.addEventListener('visibilitychange',() => { if (document.hidden) suspend(); });
           this.menuStatus();
         },
-        menuStatus() { document.getElementById('menu-progress').textContent = `Variety trial · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}`; },
+        menuStatus() { document.getElementById('menu-progress').textContent = `Endless Expedition · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
         buy(id) {
           const skill = this.skills[id]; if (!skill) return false;
           Profile.load();
@@ -1876,7 +1941,7 @@
           for (const [i,r] of records.entries()) {
             const row = document.createElement('li');
             const layout = Array.isArray(r.controls) ? r.controls.filter(c=>['one','two','keyboard'].includes(c)).map(c=>({one:'1 thumb',two:'2 thumbs',keyboard:'keyboard'})[c]).join(' / ') : '';
-            row.textContent = `${i + 1}. ${r.name} — ${r.height} m · ${r.score} pts · ${r.portals} rift${r.portals === 1 ? '' : 's'} cleared${r.course === 'variety-v1' ? ' · Trial 1' : r.course === 'variety-v2' ? ' · Trial 2' : ''}${layout ? ' · ' + layout : ''}`;
+            row.textContent = `${i + 1}. ${r.name} — ${r.height} m · ${r.score} pts · ${r.portals} rift${r.portals === 1 ? '' : 's'} cleared${r.course === 'variety-v1' ? ' · Route 1' : r.course === 'variety-v2' ? ' · Route 2' : ''}${layout ? ' · ' + layout : ''}`;
             rows.appendChild(row);
           }
           if (!records.length) rows.textContent = `No ${mode} records yet. Climb to set your first height.`;
@@ -2249,6 +2314,7 @@
           });
           RunSave.restore();
           if (!this.running) Journey.menuStatus();
+          PreviousProgress.init();
           requestAnimationFrame((t) => this.frame(t));
         },
         resize() {
@@ -2690,6 +2756,7 @@
             if (!Sfx.muted) Sfx.resume();
           };
           document.getElementById("play").onclick = () => {
+            if (PreviousProgress.pending) { PreviousProgress.open(); return; }
             Sfx.resume();
             this.start();
           };

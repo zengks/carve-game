@@ -18,19 +18,20 @@ score. Miss the window and you slip.
 
 Single file, zero dependencies, plain Canvas 2D + Web Audio.
 
-## Current branch experiment
+## Current course
 
-`codex/ascent-variety-trial` adds a five-section authored opening, an optional
-reward spring, a visible manual rescue wall, resting landmarks and a camera
-that shows wide crossing targets on phones. It inherits the one-thumb preview;
-Practice, three-life Challenge, optional two-thumb input and keyboard remain.
-Relics and a shared backend are later work. This is a review preview; main and
-the live game are unchanged. See the [trial scope and next steps](docs/expedition.md#ascent-variety-implementation-trial--2026-10-30).
+Five authored sections lead into an endless climb, with an optional reward
+spring, a marked manual rescue wall and resting landmarks. Practice, three-life
+Challenge, one-thumb controls, optional two-thumb input and desktop keyboard are
+available. Crossing and rescue cameras keep the main targets visible on phones.
+Relics and a shared backend remain later work.
 
-The trial uses separate local profile/run keys and course revision 3, preserving
-the existing game's data. Its keyboard launch strength is tuned for the wider
-route. The fall boundary uses world coordinates rather than the camera. There
-is no timed deadline or claim that newcomers finish the opening in three minutes.
+Course revision 4 uses separate current-route records. Returning players can
+explicitly carry their previous name, bounty and skills through **Previous
+progress**. Old scores remain readable in that log and are not mixed into the
+new course's rankings. Existing current wallets are never added to or replaced
+by that import. Previous active snapshots are retained; changed geometry needs
+an explicit new Begin action. The mobile app download prompt remains disabled.
 
 ## Run
 
@@ -59,13 +60,13 @@ secret rift, and **P / Esc** to pause.
 | Surge (spend Flow)| `X` or `K`                     |
 | Pause             | `P` / `Esc`             |
 
-Touch controls appear automatically on coarse-pointer devices. On the
-`codex/one-thumb-controls` preview branch, **Controls** offers One thumb, Two
+Touch controls appear automatically on coarse-pointer devices. In the
+current course, **Controls** offers One thumb, Two
 thumbs or Keyboard, plus a left/right-hand layout. One thumb combines hold to
 catch/charge, drag to steer and release to launch; ground holds charge a jump.
 Both touch layouts use stationary wall charging and require a fresh press after
 launch/slip. Keyboard wall riding remains available. Controls can be changed
-from Pause without restarting the run. The live game is unchanged pending review.
+from Pause without restarting the run.
 
 ### Practice and Challenge
 

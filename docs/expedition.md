@@ -823,3 +823,40 @@ from the anchor. The physical fall boundary and life rules are unchanged. There
 are now **24 variety checks**, including a deliberate wall-slide catch. These
 remain browser pointer/local-simulation observations; physical iOS/Android
 multi-touch ergonomics, audio, lifecycle and performance are still unverified.
+
+## Release authorization and returning-player transition — 2026-10-30
+
+The user subsequently authorized merging this reviewed work into main and
+production deployment, followed by desktop/mobile live checks. This supersedes
+the earlier preview-only restriction for the current web course; it does not
+activate the mobile store prompt or authorize native/backend/relic work.
+
+PR #10 is retargeted to main so the reviewed one-thumb parent (PR #9) and varied
+course ship together, without an intermediate production deployment. The
+published interface uses Endless Expedition/field-guide wording instead of trial
+copy; technical geometry/record versioning remains course 4 / variety-v2.
+
+Returning players with a valid `carve.expedition.profile.v1` and no current-route
+profile are offered **Use previous progress** or **Start separate**. The explicit
+carry action copies their name, bounty and unlocked/equipped skills into the
+current-route profile once; it does not sum wallets or import old bests into new
+rankings. Previous scores and active-run summary remain readable through the
+menu's Previous progress log. Original local/session entries remain unchanged.
+Existing current profiles and restored current runs take priority; a stale dialog
+cannot replace another tab's completed choice. Failed writes do not report a
+successful import, and an explicit separate temporary run remains possible.
+
+Changed geometry cannot resume an old course-2 active run. Its snapshot is kept
+and this limitation is explained before a new Begin action; no old run is started
+or discarded automatically. This is browser-local continuity, not cloud sync or
+cross-platform identity.
+
+Nine added checks cover consent/start gating, one-time transfer, separate start,
+existing wallets, a stale cross-tab dialog, blocked saving, old active-only state,
+malformed/bounded input and priority of current reload recovery. Full release
+build and all gameplay/caching/disabled-handoff tests pass locally. A local UI
+upgrade check generated genuine previous-course progress through ordinary play:
+57 m / 78 points / 2 bounty. Loading the new course offered a choice; selecting
+carry retained the name and 2 bounty through reload, kept the previous 57 m log
+readable, and began new-route bests at zero. At 320×568 all migration actions and
+all menu buttons remained visible. This check did not inject browser game state.
