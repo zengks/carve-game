@@ -84,6 +84,7 @@ export function installDomStubs(options = {}) {
   globalThis.sessionStorage = { getItem: key => session.get(key) ?? null, setItem: (key, value) => session.set(key, value) };
   globalThis.requestAnimationFrame = noop;
   globalThis.matchMedia = () => ({ matches: !!options.coarse });
+  globalThis.location = {search:options.search || ''};
   globalThis.innerWidth = 800;
   globalThis.innerHeight = 600;
   globalThis.devicePixelRatio = 1;
@@ -95,11 +96,11 @@ export function loadGame(options = {}) {
   installDomStubs(options);
   let src = extractScript(options.path);
   src += '\nglobalThis.__T=T;globalThis.__Level=Level;globalThis.__Player=Player;'
-       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;globalThis.__RunSave=RunSave;globalThis.__Journey=typeof Journey === "undefined" ? null : Journey;globalThis.__Profile=typeof Profile === "undefined" ? null : Profile;';
+       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;globalThis.__RunSave=RunSave;globalThis.__Journey=typeof Journey === "undefined" ? null : Journey;globalThis.__Relics=typeof Relics === "undefined" ? null : Relics;globalThis.__Profile=typeof Profile === "undefined" ? null : Profile;';
   // eslint-disable-next-line no-eval
   (0, eval)(src);
-  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam, __RunSave: RunSave, __Journey: Journey, __Profile: Profile } = globalThis;
-  return { T, Level, Player, Game, Input, Cam, RunSave, Journey, Profile };
+  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam, __RunSave: RunSave, __Journey: Journey, __Profile: Profile, __Relics: Relics } = globalThis;
+  return { T, Level, Player, Game, Input, Cam, RunSave, Journey, Profile, Relics };
 }
 
 /** Begin a fresh playthrough (build level, reset player, clear scores). */

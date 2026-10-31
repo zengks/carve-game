@@ -516,7 +516,30 @@
       dialog { max-height:84dvh; }
       #record-rows { margin-top:18px; list-style:none; }
       #record-rows li { padding:12px 0; border-bottom:1px solid var(--line); font-size:13px; line-height:1.6; }
-      #rift-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
+      #rift-dialog[open],#relic-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
+      #relic-dialog .eyebrow { margin:0 0 6px; }
+      #relic-dialog h2 { margin:6px 0; font-size:22px; }
+      #relic-dialog p { margin-top:10px; font-size:13px; line-height:1.45; }
+      #relic-choices { display:grid; gap:8px; margin:12px 0; }
+      #relic-choices .btn { width:100%; margin:0; padding:10px; text-align:left; font-size:13px; white-space:pre-line; line-height:1.4; }
+      #relic-inventory { white-space:pre-line; font-size:13px; }
+      @media(max-width:480px) {
+        #relic-dialog { max-height:94dvh; }
+        #relic-dialog .eyebrow { font-size:10px; letter-spacing:2px; }
+        #relic-dialog h2 { font-size:20px; }
+        #relic-dialog p { font-size:12px; margin-top:8px; }
+        #relic-choices .btn { font-size:12px; line-height:1.35; padding:9px; min-height:48px; }
+      }
+      @media(max-height:480px) and (min-width:560px) {
+        #relic-dialog { width:min(760px,94vw); max-height:94dvh; }
+        #relic-dialog .rift-body { padding:14px 18px 0; }
+        #relic-dialog .rift-actions { padding:10px 18px; }
+        #relic-dialog h2 { font-size:20px; }
+        #relic-dialog p { margin-top:6px; font-size:12px; }
+        #relic-dialog .eyebrow { font-size:10px; letter-spacing:2px; }
+        #relic-choices { grid-template-columns:repeat(3,minmax(0,1fr)); margin:8px 0; }
+        #relic-choices .btn { font-size:12px; padding:9px; }
+      }
       .rift-body { overflow-y:auto; min-height:0; padding:26px 26px 0; overscroll-behavior:contain; }
       .rift-actions { display:flex; flex-wrap:wrap; gap:10px; flex-shrink:0; padding:18px 26px 22px; background:#101829; border-top:1px solid var(--line); }
       .rift-actions > .btn { flex:1 1 180px; min-width:0; margin:0; padding:12px; font-size:14px; }
@@ -704,7 +727,7 @@
         <h1 class="title" style="font-size: clamp(46px, 10vw, 92px)">HOLD</h1>
         <p class="tag" id="pause-message">Time to read the next line.</p>
         <button class="btn" id="resume">Resume</button>
-        <button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost" id="bank-open">Bank run</button><button class="btn ghost" id="controls-pause" aria-haspopup="dialog">Controls</button></div>
+        <button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost hidden" id="relic-loadout" aria-haspopup="dialog">Relics</button><button class="btn ghost" id="bank-open">Bank run</button><button class="btn ghost" id="controls-pause" aria-haspopup="dialog">Controls</button></div>
       </div>
     </div>
 
@@ -751,8 +774,16 @@
       <p id="challenge-result-wallet"></p></div>
       <div class="rift-actions"><button class="btn" id="challenge-retry">Try challenge again</button><button class="btn ghost" id="challenge-menu" autofocus>Back to menu</button></div>
     </dialog>
+    <dialog id="relic-dialog" aria-labelledby="relic-title">
+      <div class="rift-body"><div class="eyebrow">optional relic experiment</div><h2 id="relic-title">Relic cache</h2>
+      <p id="relic-copy"></p><div id="relic-choices"><button class="btn" id="relic-choice-0"></button><button class="btn" id="relic-choice-1"></button><button class="btn" id="relic-choice-2"></button></div>
+      <p id="relic-inventory"></p></div><div class="rift-actions"><button class="btn ghost" id="relic-skip">Skip &amp; continue</button><button class="btn ghost" id="relic-back">Back to pause</button></div>
+    </dialog>
     <script>
       "use strict";
+      const RELIC_TRIAL = typeof location !== 'undefined' && new URLSearchParams(location.search).get('relics') === '1';
+      const CONTROL_KEY = RELIC_TRIAL ? 'carve.relic-trial.controls.v1' : 'carve.controls.v1';
+      const AUDIO_KEY = RELIC_TRIAL ? 'carve.relic-trial.muted' : 'carve.expedition.muted';
       /* ============================================================================
    CARVE — a momentum / "drift-as-grip" vertical climber.
    Single-file, dependency-free. Fixed-timestep simulation, y-up world space.
@@ -1094,7 +1125,7 @@
       // Deterministic six-column streams. Only the current 16-row neighborhood lives
       // in memory; returning to an old checkpoint reconstructs its geometry.
       const Level = {
-        course:4,
+        course:RELIC_TRIAL ? 5 : 4,
         encounters:[
           {name:'LAUNCH GARDEN',hint:'Find the gold beacon. Hold, steer and release through the first catches.',color:'#38f0e0'},
           {name:'WIND GAP',hint:'The gap opens wide. Drag toward the opposite wall; neutral launches may fall short.',color:'#9bcaff'},
@@ -1757,14 +1788,101 @@
         },
       };
 
+      const Relics = {
+        enabled:RELIC_TRIAL, rows:[5,11,17], owned:[], consumed:[], offer:null, claims:new Set(),
+        catalog:{
+          collector:{name:'Collector',copy:'Shard pickup reach: 43 → 68 units.'},
+          prospector:{name:'Prospector',copy:'Each unique shard: +1 trial bounty.'},
+          resonance:{name:'Resonance',copy:'New skill cooldowns: −15%. Current timer unchanged.'},
+          gatekeeper:{name:'Gatekeeper',copy:'Each cleared secret game: +8 trial bounty.'},
+          spring:{name:'Springfinder',copy:'Each new spring used: +5 trial bounty.'},
+          rescue:{name:'Rescue Seal',copy:'Each new marked-wall rescue: +6 trial bounty.'},
+        },
+        reset() { this.owned=[]; this.consumed=[]; this.offer=null; this.claims=new Set(); },
+        has(id) { return this.enabled && this.owned.includes(id); },
+        choices(seed,row,owned=this.owned) {
+          const rank = id => {
+            let n = Math.imul(seed ^ (row+1),1597334677) ^ Math.imul(Object.keys(this.catalog).indexOf(id)+81,3812015801);
+            n ^= n>>>16; return n>>>0;
+          };
+          return Object.keys(this.catalog).filter(id=>!owned.includes(id)).sort((a,b)=>rank(a)-rank(b)||a.localeCompare(b)).slice(0,3);
+        },
+        availableRow() {
+          if (!this.enabled || !Game.running || !Player.onGround || Math.abs(Player.vx)>30 || this.owned.length>=3 || Input.manualHeld()) return null;
+          const ledge=Level.blocks.find(b=>b.rest && this.rows.includes(b.row) && !this.consumed.includes(b.row) && Player.x+Player.w>b.x && Player.x<b.x+b.w && Math.abs(Player.y-b.y-b.h)<3);
+          return ledge?.row ?? null;
+        },
+        snapshot() { return this.enabled ? {version:1,owned:[...this.owned],consumed:[...this.consumed],offer:this.offer && {...this.offer,choices:[...this.offer.choices]},claims:[...this.claims]} : null; },
+        valid(d,seed) {
+          if (!this.enabled) return d===null || d===undefined;
+          if (!d || d.version!==1 || !Array.isArray(d.owned) || d.owned.length>3 || new Set(d.owned).size!==d.owned.length || !d.owned.every(id=>Object.hasOwn(this.catalog,id)) || !Array.isArray(d.consumed) || d.consumed.length>3 || new Set(d.consumed).size!==d.consumed.length || !d.consumed.every(row=>this.rows.includes(row)) || d.owned.length>d.consumed.length || !Array.isArray(d.claims) || d.claims.length>800 || new Set(d.claims).size!==d.claims.length || !d.claims.every(id=>typeof id==='string' && /^(spring:r:\d+(?::\d+)?|rescue:b:\d+:\d+)$/.test(id))) return false;
+          if (d.offer!==null) {
+            if (!d.offer || !this.rows.includes(d.offer.row) || d.consumed.includes(d.offer.row) || d.owned.length>=3 || JSON.stringify(d.offer.choices)!==JSON.stringify(this.choices(seed,d.offer.row,d.owned))) return false;
+          }
+          return true;
+        },
+        restore(d) { this.owned=[...d.owned]; this.consumed=[...d.consumed]; this.offer=d.offer && {...d.offer,choices:[...d.offer.choices]}; this.claims=new Set(d.claims); },
+        reward(id,block,value) {
+          if (!this.has(id) || !Journey.eligible(block.row) || (id==='rescue' && !block.rescue) || (id==='spring' && block.feature!=='spring')) return false;
+          const claim=id+':'+block.id; if (this.claims.has(claim)) return false;
+          this.claims.add(claim);
+          const granted=Profile.creditOnce(claim,value);
+          if(granted)Game.popup('RELIC +'+value,Player.x,Player.y+60,'#c79aff');
+          RunSave.write(); return granted;
+        },
+        init() {
+          show('relic-loadout',this.enabled);
+          if (!this.enabled) return;
+          document.getElementById('play').textContent='Begin relic expedition ▸';
+          document.getElementById('relic-loadout').onclick=()=>this.open(false);
+          document.getElementById('relic-back').onclick=()=>document.getElementById('relic-dialog').close();
+          document.getElementById('relic-skip').onclick=()=>this.choose(null);
+          for(let i=0;i<3;i++) document.getElementById('relic-choice-'+i).onclick=()=>this.choose(i);
+          document.getElementById('relic-dialog').addEventListener('cancel',e=>{ if(this.offer)e.preventDefault(); });
+        },
+        open(requestOffer) {
+          if (!this.enabled || !Game.running || Journey.rift || Input.manualHeld()) return false;
+          if (requestOffer) {
+            const row=this.availableRow(); if(row===null || Game.paused) return false;
+            this.offer={row,choices:this.choices(Journey.seed,row)};
+          }
+          if (!Game.paused) Game.togglePause();
+          Input.clear(); this.render(); document.getElementById('relic-dialog').showModal(); RunSave.write(); return true;
+        },
+        render() {
+          document.getElementById('relic-title').textContent=this.offer ? 'Choose one relic' : 'Your relics';
+          document.getElementById('relic-copy').textContent=this.offer ? 'Clock paused. Choose one for this run. Equip or skip to continue.' : 'Optional caches wait on the first three landmark rests. Effects last for this trial run; movement, charge windows and lives are unchanged.';
+          document.getElementById('relic-inventory').textContent=`Equipped ${this.owned.length}/3\n`+(this.offer ? (this.owned.map(id=>this.catalog[id].name).join(', ')||'None · optional for ordinary progress') : this.owned.map(id=>this.catalog[id].name+' · '+this.catalog[id].copy).join('\n')||'No relics equipped. The ordinary route needs none.');
+          for(let i=0;i<3;i++) {
+            const id=this.offer?.choices[i],button=document.getElementById('relic-choice-'+i);
+            button.textContent=id ? `${this.catalog[id].name} · equip & continue\n${this.catalog[id].copy}` : ''; button.disabled=!id; show('relic-choice-'+i,!!id);
+          }
+          show('relic-choices',!!this.offer); show('relic-skip',!!this.offer); show('relic-back',!this.offer);
+        },
+        choose(index) {
+          if (!this.enabled || !Game.running || !Game.paused || !this.offer || !document.getElementById('relic-dialog').open || (index!==null && (!Number.isInteger(index) || index<0 || index>2))) return false;
+          const id=index===null ? null : this.offer.choices[index];
+          if (id && (this.owned.includes(id) || this.owned.length>=3)) return false;
+          this.consumed.push(this.offer.row); if(id)this.owned.push(id); this.offer=null;
+          document.getElementById('relic-dialog').close(); Input.clear(); Game.acc=0;
+          Game.awaitingGrip=!!(Player.carve||Player.pole);
+          Game.paused=!(Game.windowFocused && !document.hidden); show('paused',Game.paused);
+          Game.lastHUD={}; Game.needsRender=true; if(!Game.paused)Sfx.resume();
+          Journey.notify(id ? 'RELIC · '+this.catalog[id].name : 'CACHE SKIPPED · ordinary climb continues',true);
+          Game.syncHUD(); RunSave.write(); return true;
+        },
+      };
+
       const Profile = {
-        key:'carve.variety.profile.v1', name:'Climber', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], best:0, challengeBest:0, storageAvailable:true,
+        key:RELIC_TRIAL ? 'carve.relic-trial.profile.v1' : 'carve.variety.profile.v1', name:'Climber', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], trialCredits:[], trialQuests:[], best:0, challengeBest:0, storageAvailable:true,
         load() {
           try {
             const d = JSON.parse(localStorage.getItem(this.key)); this.storageAvailable = true;
             if (!d || d.version !== 1) return;
             this.name = typeof d.name === 'string' ? d.name.slice(0,16) : 'Climber';
             this.coins = Number.isSafeInteger(d.coins) && d.coins >= 0 ? Math.min(1000000,d.coins) : 0;
+            if(RELIC_TRIAL)this.trialCredits=Array.isArray(d.trialCredits)?[...new Set(d.trialCredits.filter(id=>typeof id==='string'&&id.length<=160&&id.startsWith('relic-v1:')))].slice(-4096):[];
+            if(RELIC_TRIAL)this.trialQuests=Array.isArray(d.trialQuests)?d.trialQuests.filter(r=>r&&typeof r.run==='string'&&r.run.length<=80&&Array.isArray(r.totals)&&r.totals.length===3&&r.totals.every(n=>Number.isSafeInteger(n)&&n>=0)).slice(-64):[];
             this.unlocked = ['pulse', ...['wing','hook'].filter(id => d.unlocked?.includes(id))];
             this.equipped = this.unlocked.includes(d.equipped) ? d.equipped : 'pulse';
             this.best = Number.isFinite(d.best) && d.best >= 0 ? d.best : 0;
@@ -1774,10 +1892,26 @@
           } catch { this.storageAvailable = false; }
         },
         save() {
-          try { localStorage.setItem(this.key, JSON.stringify({version:1,name:this.name,coins:this.coins,unlocked:this.unlocked,equipped:this.equipped,best:this.best,challengeBest:this.challengeBest,records:this.records})); this.storageAvailable = true; return true; }
+          try { localStorage.setItem(this.key, JSON.stringify({version:1,name:this.name,coins:this.coins,unlocked:this.unlocked,equipped:this.equipped,best:this.best,challengeBest:this.challengeBest,records:this.records,...(RELIC_TRIAL?{trialCredits:this.trialCredits,trialQuests:this.trialQuests}:{})})); this.storageAvailable = true; return true; }
           catch { this.storageAvailable = false; return false; }
         },
         credit(n) { this.load(); this.coins = Math.min(1000000,this.coins + n); this.save(); },
+        creditOnce(kind,n) {
+          if(!RELIC_TRIAL){this.credit(n);return true;}
+          this.load(); const id='relic-v1:c'+Level.course+':'+Journey.id+':'+kind;
+          if(this.trialCredits.includes(id))return false;
+          this.coins=Math.min(1000000,this.coins+n);this.trialCredits.push(id);this.trialCredits=this.trialCredits.slice(-4096);
+          // The claim and wallet mutate in one localStorage record. An older
+          // per-tab run snapshot cannot replay a committed relic payout.
+          this.save(); return true;
+        },
+        creditContract(index,earned,previous,prize) {
+          if(!RELIC_TRIAL){this.credit((earned-previous)*prize);return;}
+          this.load();let row=this.trialQuests.find(r=>r.run===Journey.id);
+          if(!row){row={run:Journey.id,totals:[0,0,0]};this.trialQuests.push(row);this.trialQuests=this.trialQuests.slice(-64);}
+          const delta=Math.max(0,earned-row.totals[index]);
+          if(delta){this.coins=Math.min(1000000,this.coins+delta*prize);row.totals[index]=earned;this.save();}
+        },
         bestFor(mode) { return mode === 'challenge' ? this.challengeBest : this.best; },
         trimRecords() {
           this.records.sort((a,b) => b.height - a.height || b.score - a.score || a.time - b.time);
@@ -1788,7 +1922,7 @@
           this.load();
           const bestKey = Journey.mode === 'challenge' ? 'challengeBest' : 'best';
           this[bestKey] = Math.max(this[bestKey], Math.floor((Journey.peak - 64) / 10));
-          const record = {id:Journey.id, course:'variety-v2', rescues:Journey.rescues, mode:Journey.mode, rules:Journey.controlsUsed.some(c=>c==='one'||c==='two')?'manual-touch-v1':'web-v2', controls:[...Journey.controlsUsed], outcome, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
+          const record = {id:Journey.id, course:RELIC_TRIAL ? 'relic-trial-v1' : 'variety-v2', ...(RELIC_TRIAL?{relics:{version:1,owned:[...Relics.owned]},assisted:true}:{}), rescues:Journey.rescues, mode:Journey.mode, rules:RELIC_TRIAL?'relic-v1':Journey.controlsUsed.some(c=>c==='one'||c==='two')?'manual-touch-v1':'web-v2', controls:[...Journey.controlsUsed], outcome, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
           this.records = this.records.filter(r => r.id !== record.id);
           if (record.height > 0) this.records.push(record);
           this.trimRecords(); this.save();
@@ -1814,6 +1948,7 @@
           return {profile,active};
         },
         init() {
+          if (RELIC_TRIAL) { show('previous-open',false); return; }
           const data=this.read();
           this.activeKept=!!data.active;
           show('previous-open',!!(data.profile||data.active));
@@ -1875,12 +2010,13 @@
           this.seed = Math.floor(Math.random() * 2147483646) + 1;
           this.id = Date.now().toString(36) + '-' + this.seed.toString(36);
           Object.assign(this,{peak:64,fallAnchor:64,rescues:0,shards:0,clean:0,wins:0,cooldown:0,wingTime:0,quests:[0,0,0],rift:null,nearest:null,lastUI:''});
-          this.collected = new Set(); this.visited = new Set();
+          this.collected = new Set(); this.visited = new Set(); Relics.reset();
         },
         recovering() { return Player.vy < -120 && Player.y < this.fallAnchor-160; },
         onRescue(block) {
-          // A catch is a rescue only during a genuine descending flight. No extra payout.
-          this.rescues++; this.notify(`${block?.rescue ? 'RESCUE WALL' : 'RESCUED'} · fresh catch · no life lost`);
+          // Rescue classification requires a genuine descending flight. The
+          // optional trial seal pays only on each marked wall's first rescue.
+          this.rescues++; if (block?.rescue) Relics.reward('rescue',block,6); this.notify(`${block?.rescue ? 'RESCUE WALL' : 'RESCUED'} · fresh catch · no life lost`);
         },
         notify(text, urgent = false) { if (!urgent && Game.noticeTime > 0 && /^(FALL|SPIKES) ·/.test(Game.notice)) return; Game.notice = text; Game.noticeTime = 4; },
         init() {
@@ -1901,7 +2037,7 @@
           for (const id of ['workshop-close','records-close']) document.getElementById(id).onclick = () => document.getElementById(id.split('-')[0] + '-dialog').close();
           for (const id of ['pulse','wing','hook']) document.getElementById('buy-' + id).onclick = () => { this.buy(id); this.renderShop(); };
           document.getElementById('ability').onclick = () => this.useSkill();
-          document.getElementById('portal-enter').onclick = () => this.enterPortal();
+          document.getElementById('portal-enter').onclick = () => Relics.availableRow() !== null ? Relics.open(true) : this.enterPortal();
           document.getElementById('rift-start').onclick = () => this.startTrial();
           document.getElementById('rift-action').onclick = () => this.pulse();
           document.getElementById('rift-exit').onclick = () => this.leaveRift();
@@ -1913,13 +2049,13 @@
           addEventListener('keydown', e => {
             if (e.repeat || e.ctrlKey || e.metaKey || e.altKey || Input.editing(e) || !Game.running || Game.paused || document.querySelector('dialog[open]')) return;
             if (['c','l','q'].includes(e.key.toLowerCase())) { e.preventDefault(); this.useSkill(); }
-            if (e.key.toLowerCase() === 'e') { e.preventDefault(); this.enterPortal(); }
+            if (e.key.toLowerCase() === 'e') { e.preventDefault(); if (Relics.availableRow() !== null) Relics.open(true); else this.enterPortal(); }
           });
           const suspend = () => { if (this.rift?.phase === 'playing') { this.rift.ready = false; this.renderRift(); RunSave.write(); } };
           addEventListener('blur',suspend); document.addEventListener('visibilitychange',() => { if (document.hidden) suspend(); });
           this.menuStatus();
         },
-        menuStatus() { document.getElementById('menu-progress').textContent = `Endless Expedition · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
+        menuStatus() { document.getElementById('menu-progress').textContent = `${RELIC_TRIAL ? 'RELIC TRIAL · separate progress' : 'Endless Expedition'} · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
         buy(id) {
           if (PreviousProgress.pending) { document.getElementById('workshop-dialog').close(); PreviousProgress.open(); return false; }
           const skill = this.skills[id]; if (!skill) return false;
@@ -1947,14 +2083,14 @@
         renderRecords(mode) {
           if (!['practice','challenge'].includes(mode)) return;
           document.getElementById('records-title').textContent = mode === 'challenge' ? 'Challenge expeditions' : 'Practice expeditions';
-          document.getElementById('records-description').textContent = `Top 10 ${mode} runs on this browser. Includes skills and portal shortcuts. Local, unverified records; not a global leaderboard.`;
+          document.getElementById('records-description').textContent = `${RELIC_TRIAL ? 'Relic experiment only. ' : ''}Top 10 ${mode} runs on this browser. Includes skills and portal shortcuts. Local, unverified records; not a global leaderboard.`;
           for (const id of ['practice','challenge']) document.getElementById('records-' + id).setAttribute('aria-pressed',String(id === mode));
           const records = Profile.records.filter(r=>(r.mode || 'practice') === mode);
           const rows = document.getElementById('record-rows'); rows.textContent = '';
           for (const [i,r] of records.entries()) {
             const row = document.createElement('li');
             const layout = Array.isArray(r.controls) ? r.controls.filter(c=>['one','two','keyboard'].includes(c)).map(c=>({one:'1 thumb',two:'2 thumbs',keyboard:'keyboard'})[c]).join(' / ') : '';
-            row.textContent = `${i + 1}. ${r.name} — ${r.height} m · ${r.score} pts · ${r.portals} rift${r.portals === 1 ? '' : 's'} cleared${r.course === 'variety-v1' ? ' · Route 1' : r.course === 'variety-v2' ? ' · Route 2' : ''}${layout ? ' · ' + layout : ''}`;
+            row.textContent = `${i + 1}. ${r.name} — ${r.height} m · ${r.score} pts · ${r.portals} rift${r.portals === 1 ? '' : 's'} cleared${r.course === 'variety-v1' ? ' · Route 1' : r.course === 'variety-v2' ? ' · Route 2' : ''}${layout ? ' · ' + layout : ''}${r.relics?.version===1 ? ' · Relics: '+(r.relics.owned.filter(id=>Object.hasOwn(Relics.catalog,id)).map(id=>Relics.catalog[id].name).join(', ')||'none') : ''}`;
             rows.appendChild(row);
           }
           if (!records.length) rows.textContent = `No ${mode} records yet. Climb to set your first height.`;
@@ -1970,8 +2106,8 @@
         finish(outcome = 'banked') {
           if (!Game.running) return false;
           this.peak = Math.max(this.peak,Player.y);
-          const result = this.mode === 'challenge' ? {id:this.id,course:Level.course,name:this.name,mode:this.mode,lives:this.lives,controls:{scheme:Game.controlScheme,hand:Game.controlHand},touch:document.body.classList.contains('istouch'),outcome,height:Math.floor((this.peak - 64) / 10),score:Game.score,time:Game.time,portals:this.wins} : null;
-          Profile.record(outcome); Game.running = false; Game.paused = false; Game.acc = 0; Game.awaitingGrip = false; this.rift = null; RunSave.clear(); Input.clear();
+          const result = this.mode === 'challenge' ? {id:this.id,course:Level.course,name:this.name,mode:this.mode,lives:this.lives,controls:{scheme:Game.controlScheme,hand:Game.controlHand},touch:document.body.classList.contains('istouch'),outcome,height:Math.floor((this.peak - 64) / 10),score:Game.score,time:Game.time,portals:this.wins,relics:RELIC_TRIAL ? {version:1,owned:[...Relics.owned]} : null} : null;
+          Profile.record(outcome); Game.running = false; Game.paused = false; Game.acc = 0; Game.awaitingGrip = false; this.rift = null; Relics.offer=null; document.getElementById('relic-dialog').close(); RunSave.clear(); Input.clear();
           for (const id of ['paused','hud','flowwrap','coach','pausebtn','run-mode-status','expedition-status','contractline','ability','portal-enter']) show(id,false);
           show('menu',true); Game.needsRender = true; this.menuStatus();
           if (result) { this.result = result; RunSave.writeResult(result); this.renderResult(); }
@@ -1983,6 +2119,7 @@
           document.getElementById('challenge-result-copy').textContent = r.outcome === 'gameover' ? 'All 3 lives used. Your highest climb has been recorded.' : `Run banked with ${r.lives} ${r.lives === 1 ? 'life' : 'lives'} left. Your highest climb has been recorded.`;
           for (const [id,value] of Object.entries({height:r.height + ' m',score:r.score,time:r.time.toFixed(1) + ' s',rifts:r.portals})) document.getElementById('challenge-result-' + id).textContent = String(value);
           document.getElementById('challenge-result-wallet').textContent = Profile.storageAvailable ? `${Profile.coins} bounty · Bounty and unlocks are kept. Practice and Challenge records are separate.` : 'Storage is unavailable; progress may be temporary.';
+          if(RELIC_TRIAL)document.getElementById('challenge-result-wallet').textContent+=' Trial relics: '+(r.relics.owned.map(id=>Relics.catalog[id].name).join(', ')||'none')+'.';
           document.getElementById('challenge-result').showModal();
         },
         dismissResult() {
@@ -1997,7 +2134,7 @@
           const goals = [6,3,1], prizes = [12,15,20], names = ['SHARD HUNTER','GOLDEN TOUCH','HIGHER GROUND'];
           for (let i = 0; i < 3; i++) {
             const earned = Math.floor(totals[i] / goals[i]);
-            if (earned > this.quests[i]) { Profile.credit((earned - this.quests[i]) * prizes[i]); this.quests[i] = earned; this.notify(`${names[i]} · +${prizes[i]} bounty`); }
+            if (earned > this.quests[i]) { Profile.creditContract(i,earned,this.quests[i],prizes[i]); this.quests[i] = earned; this.notify(`${names[i]} · +${prizes[i]} bounty`); }
           }
         },
         useSkill() {
@@ -2015,7 +2152,7 @@
             Player.vy = id === 'pulse' ? 1450 : Math.max(Player.vy,950);
             if (id === 'wing') this.wingTime = 8;
           }
-          Game.awaitingGrip = false; this.cooldown = skill.cd; this.notify(skill.name.toUpperCase()); Sfx.jump();
+          Game.awaitingGrip = false; this.cooldown = skill.cd * (Relics.has('resonance') ? 0.85 : 1); this.notify(skill.name.toUpperCase()); Sfx.jump();
           this.peak = Math.max(this.peak,Player.y); RunSave.write(); return true;
         },
         landOn(b) {
@@ -2043,8 +2180,8 @@
           this.peak = Math.max(this.peak,Player.y); this.fallAnchor = Math.max(this.fallAnchor,Player.y);
           for (const t of Level.tokens) {
             if (!this.eligible(t.row) || this.collected.has(t.id)) continue;
-            if (Math.hypot(Player.x + 17 - t.x, Player.y + 23 - t.y) < 43) {
-              this.collected.add(t.id); this.shards++; Profile.credit(t.value); Game.popup(`+${t.value}`,t.x,t.y,'#ffcf4d');
+            if (Math.hypot(Player.x + 17 - t.x, Player.y + 23 - t.y) < (Relics.has('collector') ? 68 : 43)) {
+              this.collected.add(t.id); this.shards++; const value = t.value + (Relics.has('prospector') ? 1 : 0); if(Profile.creditOnce('shard:'+t.id,value))Game.popup(`+${value}`,t.x,t.y,'#ffcf4d');
             }
           }
           for (const z of Level.zones) {
@@ -2054,11 +2191,12 @@
           }
           if (Player.onGround) {
             const spring = Level.blocks.find(b => b.feature === 'spring' && Player.x + Player.w > b.x && Player.x < b.x + b.w && Math.abs(Player.y - b.y - b.h) < 3);
-            if (spring) { Input.retire(); Player.groundCharge = null; Player.vy = spring.shortcut ? 1450 : 1350; if (spring.shortcut) Player.vx = -520; Player.onGround = false; Player.state = 'AIR'; Player.relatch = 0.3; Sfx.jump(); this.notify(spring.shortcut ? 'SHORTCUT · steer left; fresh hold for an upper wall' : 'SPRINGBOARD · lift, then press to catch'); }
+            if (spring) { Relics.reward('spring',spring,5); Input.retire(); Player.groundCharge = null; Player.vy = spring.shortcut ? 1450 : 1350; if (spring.shortcut) Player.vx = -520; Player.onGround = false; Player.state = 'AIR'; Player.relatch = 0.3; Sfx.jump(); this.notify(spring.shortcut ? 'SHORTCUT · steer left; fresh hold for an upper wall' : 'SPRINGBOARD · lift, then press to catch'); }
           }
           this.nearest = Level.portals.find(p => this.eligible(p.row) && !this.visited.has(p.id) && Math.hypot(Player.x + 17 - p.x,Player.y + 23 - p.y) < 240) || null;
           this.contracts();
           const floor = this.floor();
+          if(RELIC_TRIAL)for(const id of Relics.claims)if(Number(id.split(':')[2])<floor)Relics.claims.delete(id);
           for (const set of [this.collected,this.visited,Game.rewarded]) for (const id of set) { const row = Number(id.split(':')[1]); if (Number.isFinite(row) && row < floor) set.delete(id); }
         },
         syncHUD() {
@@ -2083,9 +2221,11 @@
           button.disabled = this.cooldown > 0 || Game.paused;
           button.setAttribute('aria-label',label);
           const portalButton = document.getElementById('portal-enter');
-          const portalLabel = document.body.classList.contains('istouch') ? 'Enter rift' : 'Enter secret rift · E';
+          const cache=Relics.availableRow()!==null;
+          const portalLabel = cache ? (document.body.classList.contains('istouch') ? 'Relic cache' : 'Inspect relic cache · E') : document.body.classList.contains('istouch') ? 'Enter rift' : 'Enter secret rift · E';
           if (portalButton.textContent !== portalLabel) portalButton.textContent = portalLabel;
-          show('portal-enter',Game.running && !Game.paused && !!this.nearest);
+          show('portal-enter',Game.running && !Game.paused && (cache || !!this.nearest));
+          if(RELIC_TRIAL)document.getElementById('relic-loadout').textContent=`Relics · ${Relics.owned.length}/3`;
           show('ability',Game.running); show('expedition-status',Game.running); show('contractline',Game.running);
         },
         enterPortal() {
@@ -2123,7 +2263,7 @@
           const r = this.rift; if (!r || r.phase !== 'playing') return;
           if (win && !r.ready) return;
           r.phase = 'result'; r.ready = false; r.win = win;
-          if (win) { this.wins++; Profile.credit(20); this.warp(900); this.contracts(); this.notify('RIFT CLEARED · +20 bounty · upward shortcut',true); }
+          if (win) { this.wins++; const prize = 20 + (Relics.has('gatekeeper') ? 8 : 0); Profile.creditOnce('rift:'+r.id,prize); this.warp(900); this.contracts(); this.notify(`RIFT CLEARED · +${prize} bounty · upward shortcut`,true); }
           else { this.warp(-460); this.notify('RIFT COLLAPSED · returned to a lower safe ledge',true); }
           this.returnToClimb();
         },
@@ -2171,7 +2311,13 @@
           for (const b of Level.blocks) if (b.rescue || b.shortcut || b.rest) {
             const color=b.shortcut?'#c79aff':b.rescue?'#8df7c8':'#ffcf4d';
             ctx.strokeStyle=color;ctx.lineWidth=3;ctx.strokeRect(b.x-6,b.y-6,b.w+12,b.h+12);
-            if (b.rest) continue;
+            if (b.rest) {
+              if(Relics.enabled && Relics.rows.includes(b.row)) {
+                ctx.save();ctx.translate(b.x+b.w/2,b.y-28);ctx.scale(1,-1);ctx.textAlign='center';ctx.font='bold 18px monospace';ctx.fillStyle=Relics.consumed.includes(b.row)?'#8a829c':'#d2bcff';
+                ctx.fillText(Relics.consumed.includes(b.row)?'CACHE USED':'RELIC CACHE',0,0);ctx.restore();
+              }
+              continue;
+            }
             ctx.save();ctx.translate(b.x+b.w/2,b.y+b.h+28);ctx.scale(1,-1);ctx.fillStyle=color;ctx.textAlign='center';ctx.font=`bold ${Math.min(32,16/(Game.worldScale||.6))}px monospace`;
             ctx.fillText(b.shortcut?'↖ SHORTCUT · +8':b.rescue?'RESCUE WALL':'REST LEDGE',0,0);ctx.restore();
           }
@@ -2198,7 +2344,7 @@
       };
 
       const RunSave = {
-        key:'carve.variety.run.v1', incompatibleCourse:false,
+        key:RELIC_TRIAL ? 'carve.relic-trial.run.v1' : 'carve.variety.run.v1', incompatibleCourse:false,
         gameFields:['flow','score','combo','bestChain','perfects','time','comboTimer','lesson','noticeTime'],
         playerFields:['x','y','vx','vy','face','coyote','wallDir','surgeCD','stun','relatch'],
         journeyFields:['peak','fallAnchor','rescues','shards','clean','wins','cooldown','wingTime'],
@@ -2208,7 +2354,7 @@
           const pick = (o,fields) => Object.fromEntries(fields.map(k=>[k,o[k]]));
           const d = {version:1,course:Level.course,controlsUsed:Journey.controlsUsed,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
             state:Player.state,onGround:Player.onGround,respawn:{...Player.respawn},checkpoint:Player.checkpoint && {id:Player.checkpoint.id,x:Player.checkpoint.x,y:Player.checkpoint.y,kind:'check'},
-            rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,
+            rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,relics:Relics.snapshot(),
             carve:Player.carve && {type:Player.carve.type,charge:Player.carve.charge,block:Player.carve.block.id,manual:!!Player.carve.manual},
             pole:Player.pole && {...pick(Player.pole,['ang','r','angVel','charge']),ref:Player.pole.ref.id,manual:!!Player.pole.manual},
             touch:document.body.classList.contains('istouch'),controls:{scheme:Game.controlScheme,hand:Game.controlHand},notice:Game.notice};
@@ -2222,6 +2368,7 @@
             const raw = sessionStorage.getItem(this.key); if (!raw || raw.length > 4096) return null;
             const d = JSON.parse(raw), r = d?.finished;
             if (d.version !== 1 || !r || r.course !== Level.course || r.mode !== 'challenge' || typeof r.touch !== 'boolean' || !['banked','gameover'].includes(r.outcome) || typeof r.id !== 'string' || r.id.length > 80 || typeof r.name !== 'string' || r.name.length > 16 || ![r.height,r.score,r.time,r.portals].every(n=>Number.isFinite(n) && n >= 0 && n <= 1e12) || !Number.isInteger(r.lives) || r.lives < 0 || r.lives > 3 || (r.outcome === 'gameover' ? r.lives !== 0 : r.lives === 0)) return null;
+            if(RELIC_TRIAL && (!r.relics || r.relics.version!==1 || !Array.isArray(r.relics.owned) || r.relics.owned.length>3 || new Set(r.relics.owned).size!==r.relics.owned.length || !r.relics.owned.every(id=>Object.hasOwn(Relics.catalog,id))))return null;
             if (r.controls !== undefined && (!r.controls || !['one','two'].includes(r.controls.scheme) || !['left','right'].includes(r.controls.hand))) return null;
             return r;
           } catch { return null; }
@@ -2244,6 +2391,7 @@
             if (d.checkpoint !== null && (!numeric(d.checkpoint,['x','y']) || typeof d.checkpoint.id !== 'string' || d.checkpoint.id.length > 50)) return null;
             if (d.state === 'CARVE' ? (!d.carve || !['wallL','wallR','rail'].includes(d.carve.type) || typeof d.carve.block !== 'string' || !numeric(d.carve,['charge']) || d.carve.charge < 0 || d.carve.charge > 1.3) : !!d.carve) return null;
             if (d.state === 'POLE' ? (!d.pole || typeof d.pole.ref !== 'string' || !numeric(d.pole,['ang','angVel','r','charge']) || d.pole.r < 48 || d.pole.r > T.POLE_GRAB || d.pole.charge < 0 || d.pole.charge > 1.3) : !!d.pole) return null;
+            if (!Relics.valid(d.relics,d.seed) || (d.rift && d.relics?.offer) || (d.relics?.offer && (!d.onGround || d.state!=='GROUND' || Math.abs(d.player.vx)>30))) return null;
             if (d.rift) {
               const r = d.rift;
               if (!['brief','playing','result'].includes(r.phase) || !['pulse','memory'].includes(r.type) || !numeric(r,['row','elapsed','progress']) || r.row < 0 || r.elapsed < 0 || !Number.isInteger(r.progress) || r.progress < 0 || r.progress > 3 || typeof r.ready !== 'boolean' || typeof r.id !== 'string' || r.id !== `v:${r.row}` || !Array.isArray(r.sequence) || r.sequence.length !== 3 || !r.sequence.every(i=>Number.isInteger(i) && i >= 0 && i < 3)) return null;
@@ -2266,6 +2414,7 @@
           for (const k of this.journeyFields) Journey[k] = d.journey[k];
           Journey.id = d.id; Journey.name = d.name; Journey.collected = new Set(d.collected); Journey.visited = new Set(d.visited); Journey.quests = d.quests; Journey.nearest = null;
           Journey.rift = d.rift; if (Journey.rift) Journey.rift.ready = false;
+          if(RELIC_TRIAL)Relics.restore(d.relics);
           Player.state = d.state; Player.onGround = d.onGround; Player.respawn = d.respawn;
           Player.checkpoint = d.checkpoint && (Level.blocks.find(b=>b.id === d.checkpoint.id) || d.checkpoint);
           Player.carve = d.carve && {...d.carve,block:carve}; Player.pole = d.pole && {...d.pole,ref:pole};
@@ -2278,6 +2427,7 @@
           document.getElementById('pause-message').textContent = 'Expedition restored. Your altitude, bounty and discoveries are safe.';
           if (Journey.rift?.phase === 'result') Journey.returnToClimb(false);
           else if (Journey.rift) { Journey.renderRift(); document.getElementById('rift-dialog').showModal(); }
+          else if(Relics.offer) { Relics.render(); document.getElementById('relic-dialog').showModal(); }
           Game.lastHUD = {}; Game.syncHUD(); return true;
         },
       };
@@ -2314,7 +2464,7 @@
           try {
             this.best = Math.max(0, Number(localStorage.getItem("carve.expedition.best.v1")) || 0);
             if (!Number.isFinite(this.best)) this.best = 0;
-            Sfx.muted = localStorage.getItem("carve.expedition.muted") === "true";
+            Sfx.muted = localStorage.getItem(AUDIO_KEY) === "true";
           } catch {} // Storage may be unavailable in private/file browsing.
           this.cv = document.getElementById("cv");
           this.ctx = this.cv.getContext("2d");
@@ -2324,7 +2474,7 @@
           Input.init();
           this.bindUI();
           this.bindTouch();
-          Journey.init();
+          Journey.init(); Relics.init();
           this.syncMute();
           document.addEventListener("visibilitychange", () => {
             if (document.hidden && this.running && !this.paused) this.togglePause();
@@ -2787,7 +2937,7 @@
           };
           document.getElementById("mutebtn").onclick = () => {
             Sfx.muted = !Sfx.muted;
-            try { localStorage.setItem("carve.expedition.muted", String(Sfx.muted)); } catch {}
+            try { localStorage.setItem(AUDIO_KEY, String(Sfx.muted)); } catch {}
             this.syncMute();
             if (!Sfx.muted) Sfx.resume();
           };
@@ -2811,7 +2961,7 @@
           Input.clear(); this.controlScheme = scheme; this.controlHand = hand;
           document.body.classList.toggle('one-thumb',document.body.classList.contains('istouch') && scheme === 'one');
           document.body.classList.toggle('left-hand',hand === 'left');
-          if (persist) { try { localStorage.setItem('carve.controls.v1',JSON.stringify({scheme,hand,enabled:document.body.classList.contains('istouch')})); } catch {} }
+          if (persist) { try { localStorage.setItem(CONTROL_KEY,JSON.stringify({scheme,hand,enabled:document.body.classList.contains('istouch')})); } catch {} }
           if (persist && this.running && !Journey.controlsUsed.includes(this.controlLabel())) Journey.controlsUsed.push(this.controlLabel());
           for (const mode of ['one','two','keyboard']) document.getElementById('controls-' + mode).setAttribute('aria-pressed',String(this.controlLabel() === mode));
           for (const side of ['left','right']) document.getElementById('controls-' + side).setAttribute('aria-pressed',String(hand === side));
@@ -2825,7 +2975,7 @@
           }
           this.controlScheme = matchMedia('(pointer:coarse)').matches ? 'one' : 'two'; this.controlHand = 'right';
           let enabled = matchMedia('(pointer:coarse)').matches;
-          try { const saved = JSON.parse(localStorage.getItem('carve.controls.v1')); if (saved && ['one','two'].includes(saved.scheme) && ['left','right'].includes(saved.hand) && typeof saved.enabled === 'boolean') { this.controlScheme = saved.scheme; this.controlHand = saved.hand; enabled = saved.enabled; } } catch {}
+          try { const saved = JSON.parse(localStorage.getItem(CONTROL_KEY)); if (saved && ['one','two'].includes(saved.scheme) && ['left','right'].includes(saved.hand) && typeof saved.enabled === 'boolean') { this.controlScheme = saved.scheme; this.controlHand = saved.hand; enabled = saved.enabled; } } catch {}
           this.setTouch = (on) => {
             Input.clear(); document.getElementById('touch').classList.toggle('hidden',!on); document.body.classList.toggle('istouch',on);
             this.configureControls(this.controlScheme,this.controlHand,false);
