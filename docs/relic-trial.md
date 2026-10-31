@@ -87,3 +87,26 @@ input timed from the rendered cursor. Pulse plus a leftward pad drag reached the
 returned directly with no equipped relic or repeated cache. Desktop inventory
 was checked at 1366×768; no browser console errors occurred during these checks.
 Production remains Ready on main `37bd5f0` with no trial deployment promoted.
+
+The deployed real-input touch attempt continued using normally earned bounty:
+50 bounty unlocked Skyhook, which reached 233, 323 and 415 m. A 700 ms hold expired
+with the expected lift/retry hint; a subsequent 470 ms one-thumb charged jump
+landed on the third cache at 419 m (peak 434 m). It offered Rescue Seal,
+Springfinder and Prospector; choosing Rescue Seal resumed immediately. Further
+charged jumps, an ordinary spring and Skyhook traversed Second Chance and
+Observatory, reaching **714 m / Endless Frontier / 120 bounty / 225.1 active
+seconds**. Refresh restored that exact paused state, one equipped relic and the
+remaining cooldown. There was no keyboard movement or injected game state.
+
+This is a **skill-assisted UI touch traversal of all five sections**, not a
+no-skill manual CARVE completion, all-cache completion, or proof of the seal's
+marked-wall payout in UI play (the payout has a simulation regression check).
+The second cache was bypassed by the assisted route. The timing-gate input used
+the rendered cursor position rather than an injected outcome.
+
+The route exposed a design concern rather than a correctness failure: after
+unlocking Skyhook, waiting on a safe checkpoint for its cooldown can become the
+dominant low-risk route. More bounty-only passives would not resolve that
+repetition. The next comparison should reward active route choices and clean
+play, and compare skill-assisted versus ordinary routes before changing shared
+skill/economy rules. No unreviewed balance change is included here.

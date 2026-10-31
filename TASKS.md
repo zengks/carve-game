@@ -26,6 +26,11 @@ checks pass, and its Vercel preview is Ready. Deployed touch play reached the
 143 m cache, preserved choices through refresh and returned directly on Skip.
 Local UI testing separately verified equipping Resonance and both control schemes.
 See `docs/relic-trial.md` for limits and the result contract.
+The later deployed touch run reached the third cache at 419 m, equipped Rescue
+Seal, traversed all five sections with normally unlocked skills and reached
+714 m. Refresh retained 714 m / 120 bounty / 225.1 s and the relic. The second
+cache and a no-skill manual route remain open; the Skyhook cooldown-wait route
+is a concrete repetition concern for the next comparison.
 
 The mobile chat independently owns current First Ascent tablet/window/local-save
 compatibility. Shared native endless/relic implementation remains a later task.
