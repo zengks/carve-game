@@ -145,7 +145,7 @@ Choosing Springfinder produced a three-item loadout. Refresh retained 419 m,
 53 bounty, the three effects and the remaining cooldown. All three caches are
 therefore UI-verified in the same run using a mixture of the two supported touch
 layouts and normal skills. An exclusively one-thumb Wind Gap crossing remains
-open; the input-driven simulations do not close that manual test gap.
+open at that checkpoint; the input-driven simulations do not close a manual gap.
 
 Further real UI play exposed unclear spring-relic feedback: the ordinary spring
 hint did not name the bonus, and a simultaneous shard contract could overwrite
@@ -165,3 +165,26 @@ menu with that best and wallet, rather than resurrecting the ended Practice run.
 No browser console errors occurred. The record's control list denotes layouts
 configured during the run (including its initial keyboard configuration), not
 an OS input trace; movement in this UI follow-up used the touch controls.
+
+## Focused one-thumb Wind Gap access
+
+A subsequent local UI run kept one-thumb mode from Begin through the Wind Gap
+cache. The previous 813 m banked record, wallet and earned skill unlocks were
+preserved. The new run started with zero equipped relics. Three ordinary Skyhook
+activations reached 93, 187 and the left 279 m ledge, observing normal cooldowns.
+The Workshop changed the equipped skill to Rocket Pulse without resetting its
+remaining cooldown.
+
+At that ledge, a roughly 470 ms pad hold/release followed by a delayed Pulse
+activation (approximately 800 ms later) cleared the lip and landed on the central
+281 m rest. The UI showed the one-thumb pad and enabled Relic cache action; the
+cache opened with three choices and Equipped 0/3. It remains paused there for
+follow-up, with no keyboard movement, two-thumb mode or game-state injection used.
+
+This verifies a skill-assisted one-thumb access route to the Wind Gap cache. The
+setup used previously earned Skyhook unlocks and bypassed the first cache. It does
+not establish a new-player/no-skill CARVE route, a full one-thumb-only course
+completion or physical-device comfort. No movement or difficulty changes were
+needed for this successful attempt. The future comparison should still address
+the safe cooldown-wait loop rather than treat this access result as retention
+evidence.
