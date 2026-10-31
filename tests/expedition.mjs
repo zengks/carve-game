@@ -7,9 +7,10 @@ import {build} from '../scripts/build.mjs';
 import {createGameServer} from '../scripts/serve.mjs';
 const path = new URL('../src/expedition.html',import.meta.url);
 const load = options => loadGame({path,...options});
+function returnAfterReceipt(g){if(g.Journey.rift?.phase==='result'){g.Journey.leaveRift();if(g.Game.returning)g.Game.tickReturn(2);}}
 let passed = 0;
 function test(name,fn) { fn(); passed++; console.log('PASS expedition: ' + name); }
-function start(g) { g.Game.start(); }
+function start(g) { g.Game.start(); g.Profile.lessons=['pulse','wing','hook'];g.Profile.save(); }
 
 test('arrow layout and WASD aliases support independent holds, surge and skills',()=>{
  const g=load();start(g);
@@ -116,21 +117,21 @@ test('springboards and environmental lanes affect movement without forcing porta
 
 test('portal is opt-in; declining does not change position, wallet or consume discovery',()=>{
  const g=load();start(g);g.Journey.update(STEP);assert(g.Journey.nearest);const p=g.Journey.nearest;const before=[g.Player.x,g.Player.y,g.Profile.coins];
- assert(g.Journey.enterPortal());assert(g.Game.paused);assert.equal(g.Journey.rift.phase,'brief');g.Journey.leaveRift();
+ assert(g.Journey.enterPortal());assert(g.Game.paused);assert.equal(g.Journey.rift.phase,'brief');g.Journey.leaveRift();returnAfterReceipt(g);
  assert.deepEqual([g.Player.x,g.Player.y,g.Profile.coins],before);assert(!g.Journey.visited.has(p.id));
 });
 
-test('timing success returns directly to the climb, rewards once and reloads without a result modal',()=>{
+test('timing success rewards once and resumes after acknowledging its result',()=>{
  const session=new Map(),local=new Map();let g=load({session,local});start(g);g.Journey.update(STEP);g.Journey.enterPortal();g.Journey.startTrial();
  const y=g.Player.y,time=g.Game.time,coins=g.Profile.coins;g.Game.frame(50);assert.equal(g.Game.time,time);
- g.Journey.rift.elapsed=Math.PI/4.4;g.Journey.pulse();assert.equal(g.Journey.wins,1);assert.equal(g.Journey.rift,null);assert(!g.Game.paused);assert(!document.getElementById('rift-dialog').open);assert(document.getElementById('paused').classList.contains('hidden'));assert(g.Player.y>y+600);assert.equal(g.Profile.coins,coins+20);
- const paid=g.Profile.coins,after=g.Player.y;g.Journey.resolve(true);assert.equal(g.Profile.coins,paid);
+ g.Journey.rift.elapsed=Math.PI/4.4;g.Journey.pulse();returnAfterReceipt(g);assert.equal(g.Journey.wins,1);assert.equal(g.Journey.rift,null);assert(!g.Game.paused);assert(!document.getElementById('rift-dialog').open);assert(document.getElementById('paused').classList.contains('hidden'));assert(g.Player.y>y+600);assert.equal(g.Profile.coins,coins+20);
+ const paid=g.Profile.coins,after=g.Player.y;g.Journey.resolve(true);returnAfterReceipt(g);assert.equal(g.Profile.coins,paid);
  g=load({session,local});assert(g.Game.paused);assert.equal(g.Player.y,after);assert.equal(g.Journey.rift,null);assert.equal(g.Profile.coins,paid);assert(!document.getElementById('rift-dialog').open);
 });
 
 test('a stale portal prompt cannot re-enter a consumed rift between simulation frames',()=>{
  const g=load();start(g);g.Journey.update(STEP);const p=g.Journey.nearest;
- g.Journey.enterPortal();g.Journey.startTrial();g.Journey.rift.elapsed=Math.PI/4.4;g.Journey.pulse();g.Journey.leaveRift();
+ g.Journey.enterPortal();g.Journey.startTrial();g.Journey.rift.elapsed=Math.PI/4.4;g.Journey.pulse();returnAfterReceipt(g);g.Journey.leaveRift();returnAfterReceipt(g);
  assert(!g.Game.paused);g.Journey.nearest=p;const coins=g.Profile.coins;
  assert.equal(g.Journey.enterPortal(),false);assert.equal(g.Profile.coins,coins);assert(!g.Journey.rift);
 });
@@ -138,22 +139,22 @@ test('a stale portal prompt cannot re-enter a consumed rift between simulation f
 test('failed rifts descend no farther than advertised and keep height record, bounty and checkpoint',()=>{
  const g=load();start(g);g.Level.ensure(2100);const cp=g.Level.blocks.find(b=>b.kind==='check'&&b.spine);g.Player.saveCheckpoint(cp);
  g.Player.y=cp.y+cp.h+600;g.Journey.peak=g.Player.y;g.Profile.credit(30);const before=g.Player.y,peak=g.Journey.peak,coins=g.Profile.coins;
- g.Journey.rift={id:'v:7',row:7,type:'pulse',phase:'playing',elapsed:0,ready:true,progress:0,sequence:[0,1,2]};g.Journey.pulse();
+ g.Journey.rift={id:'v:7',row:7,type:'pulse',phase:'playing',elapsed:0,ready:true,progress:0,sequence:[0,1,2]};g.Journey.pulse();returnAfterReceipt(g);
  assert(g.Player.y<before);assert(g.Player.y>=before-460);assert(g.Player.y>=g.Player.respawn.y);assert.equal(g.Journey.peak,peak);assert.equal(g.Profile.coins,coins);
 });
 
 test('memory trial ignores early taps, resumes explicitly after reload, and resolves actual sequence',()=>{
  const session=new Map(),local=new Map();let g=load({session,local});start(g);g.Game.togglePause();
- g.Journey.rift={id:'v:7',row:7,type:'memory',phase:'playing',elapsed:1,ready:true,progress:0,sequence:[2,0,1]};g.Journey.chooseGlyph(2);assert.equal(g.Journey.rift.progress,0);
- g.Journey.rift.elapsed=3;g.Journey.chooseGlyph(2);g.RunSave.write();g=load({session,local});assert.equal(g.Journey.rift.progress,1);assert(!g.Journey.rift.ready);
- g.Journey.chooseGlyph(0);assert.equal(g.Journey.rift.progress,1);g.Journey.startTrial();g.Journey.chooseGlyph(0);g.Journey.chooseGlyph(1);assert.equal(g.Journey.wins,1);assert.equal(g.Journey.rift,null);assert(!g.Game.paused);assert(!document.getElementById('rift-dialog').open);
+ g.Journey.rift={id:'v:7',row:7,type:'memory',phase:'playing',elapsed:1,ready:true,progress:0,sequence:[2,0,1]};g.Journey.chooseGlyph(2);returnAfterReceipt(g);assert.equal(g.Journey.rift.progress,0);
+ g.Journey.rift.elapsed=3;g.Journey.chooseGlyph(2);returnAfterReceipt(g);g.RunSave.write();g=load({session,local});assert.equal(g.Journey.rift.progress,1);assert(!g.Journey.rift.ready);
+ g.Journey.chooseGlyph(0);returnAfterReceipt(g);assert.equal(g.Journey.rift.progress,1);g.Journey.startTrial();g.Journey.chooseGlyph(0);returnAfterReceipt(g);g.Journey.chooseGlyph(1);returnAfterReceipt(g);assert.equal(g.Journey.wins,1);assert.equal(g.Journey.rift,null);assert(!g.Game.paused);assert(!document.getElementById('rift-dialog').open);
 });
 
 test('a wrong memory glyph resolves failure once and stays failed after reload',()=>{
  const session=new Map(),local=new Map();let g=load({session,local});start(g);g.Game.togglePause();
  g.Journey.rift={id:'v:7',row:7,type:'memory',phase:'playing',elapsed:3,ready:true,progress:0,sequence:[0,1,2]};
- const coins=g.Profile.coins;g.Journey.chooseGlyph(2);assert.equal(g.Journey.rift,null);assert(!g.Game.paused);assert.equal(g.Profile.coins,coins);assert.match(g.Game.notice,/RIFT COLLAPSED/);const after=g.Player.y;
- g.Journey.chooseGlyph(0);assert.equal(g.Journey.rift,null);assert.equal(g.Profile.coins,coins);assert.equal(g.Player.y,after);
+ const coins=g.Profile.coins;g.Journey.chooseGlyph(2);returnAfterReceipt(g);assert.equal(g.Journey.rift,null);assert(!g.Game.paused);assert.equal(g.Profile.coins,coins);assert.match(g.Game.notice,/RIFT COLLAPSED/);const after=g.Player.y;
+ g.Journey.chooseGlyph(0);returnAfterReceipt(g);assert.equal(g.Journey.rift,null);assert.equal(g.Profile.coins,coins);assert.equal(g.Player.y,after);
  g=load({session,local});assert.equal(g.Journey.rift,null);assert(g.Game.paused);assert.equal(g.Player.y,after);assert.equal(g.Profile.coins,coins);
 });
 
@@ -163,7 +164,7 @@ test('fixed rift actions expose only controls for the current trial phase',()=>{
  assert(!hidden('rift-start'));assert(hidden('rift-action'));assert(hidden('memory-trial'));
  g.Journey.startTrial();assert(hidden('rift-start'));assert(!hidden('rift-action'));assert(!hidden('pulse-trial'));
  dispatchWindow('blur');assert(!hidden('rift-start'));assert(hidden('rift-action'));
- dispatchWindow('focus');g.Journey.startTrial();g.Journey.resolve(false);assert(!document.getElementById('rift-dialog').open);assert(!g.Game.paused);
+ dispatchWindow('focus');g.Journey.startTrial();g.Journey.resolve(false);returnAfterReceipt(g);assert(!document.getElementById('rift-dialog').open);assert(!g.Game.paused);
  g.Journey.rift={id:'v:7',row:7,type:'memory',phase:'playing',elapsed:3,ready:true,progress:0,sequence:[0,1,2]};g.Journey.renderRift();
  assert(!hidden('memory-trial'));assert(hidden('rift-action'));assert(hidden('pulse-trial'));
 });
@@ -173,10 +174,10 @@ test('active trial freezes on focus loss without consuming game time or silently
  dispatchWindow('blur');g.Journey.tickTrial(10);assert.equal(g.Journey.rift.elapsed,elapsed);assert(!g.Journey.rift.ready);assert(g.Game.paused);
 });
 
-test('automatic return consumes queued controls and resumes physics without spending or refilling lives',()=>{
+test('confirmed return consumes queued controls and resumes physics without spending or refilling lives',()=>{
  const g=load();g.Game.setTouch(true);g.Game.configureControls('one');start(g);g.Journey.mode='challenge';g.Journey.lives=2;g.Journey.update(STEP);g.Journey.enterPortal();g.Journey.startTrial();
  g.Input.oneId=91;g.Input.oneHeld=true;g.Input.oneAxis=-1;g.Input.keys.arrowleft=true;g.Input.jumpBuf=.1;g.Input.surgeQ=true;g.Game.acc=3;
- g.Journey.rift.elapsed=Math.PI/4.4;g.Journey.pulse();assert(!g.Game.paused);assert.equal(g.Journey.rift,null);assert.equal(g.Input.oneId,null);assert(!g.Input.carve());assert.equal(g.Input.axis(),0);assert.equal(g.Input.jumpBuf,0);assert(!g.Input.surgeQ);assert.equal(g.Game.acc,0);assert(!g.Game.awaitingGrip);
+ g.Journey.rift.elapsed=Math.PI/4.4;g.Journey.pulse();returnAfterReceipt(g);assert(!g.Game.paused);assert.equal(g.Journey.rift,null);assert.equal(g.Input.oneId,null);assert(!g.Input.carve());assert.equal(g.Input.axis(),0);assert.equal(g.Input.jumpBuf,0);assert(!g.Input.surgeQ);assert.equal(g.Game.acc,0);assert(!g.Game.awaitingGrip);
  const y=g.Player.y,score=g.Game.score,coins=g.Profile.coins;document.getElementById('one-pad').dispatch('pointerup',{pointerId:91});assert.equal(g.Player.y,y);assert.equal(g.Game.score,score);
  g.Game.frame(50);assert(g.Game.time>0);assert(Math.abs(g.Player.y-y)<2);assert.equal(g.Journey.lives,2);assert.equal(g.Profile.coins,coins);assert.equal(g.RunSave.read().rift,null);
 });
@@ -184,26 +185,26 @@ test('automatic return consumes queued controls and resumes physics without spen
 for(const interruption of ['blur','hidden'])test(`completion/retreat while ${interruption} never resumes an unattended climb`,()=>{
  const g=load();start(g);g.Journey.update(STEP);g.Journey.enterPortal();g.Journey.startTrial();const coins=g.Profile.coins;
  if(interruption==='blur')dispatchWindow('blur');else{document.hidden=true;document.dispatch('visibilitychange');}
- g.Journey.resolve(true);assert.equal(g.Profile.coins,coins);assert.equal(g.Journey.rift.phase,'playing');
- g.Journey.leaveRift();assert.equal(g.Journey.rift,null);assert(!document.getElementById('rift-dialog').open);assert(g.Game.paused);assert.equal(g.Profile.coins,coins);
+ g.Journey.resolve(true);returnAfterReceipt(g);assert.equal(g.Profile.coins,coins);assert.equal(g.Journey.rift.phase,'playing');
+ g.Journey.leaveRift();returnAfterReceipt(g);assert.equal(g.Journey.rift,null);assert(!document.getElementById('rift-dialog').open);assert(g.Game.paused);assert.equal(g.Profile.coins,coins);
  if(interruption==='blur')dispatchWindow('focus');else{document.hidden=false;document.dispatch('visibilitychange');}assert(g.Game.paused);
 });
 
 test('declining a rift from a manual grip returns without a pause menu or accidental launch',()=>{
  const g=load();g.Game.setTouch(true);g.Game.configureControls('one');start(g);const b=g.Level.blocks.find(b=>b.spine);
  g.Player.x=b.x-g.Player.w;g.Player.y=b.y+20;document.getElementById('one-pad').dispatch('pointerdown',{pointerId:1,clientX:200});g.Player.startCarve({type:'wallR',block:b});g.Player.carve.charge=.5;
- g.Journey.update(STEP);assert(g.Journey.enterPortal());const id=g.Journey.rift.id,position=[g.Player.x,g.Player.y];g.Journey.leaveRift();assert(!g.Game.paused);assert(g.Game.awaitingGrip);assert(!g.Journey.visited.has(id));assert.deepEqual([g.Player.x,g.Player.y],position);assert.equal(g.Player.carve.charge,0);
+ g.Journey.update(STEP);assert(g.Journey.enterPortal());const id=g.Journey.rift.id,position=[g.Player.x,g.Player.y];g.Journey.leaveRift();returnAfterReceipt(g);assert(!g.Game.paused);assert(g.Game.awaitingGrip);assert(!g.Journey.visited.has(id));assert.deepEqual([g.Player.x,g.Player.y],position);assert.equal(g.Player.carve.charge,0);
  g.Game.frame(50);assert.equal(g.Game.time,0);assert(g.Player.carve);document.getElementById('one-pad').dispatch('pointerdown',{pointerId:2,clientX:200});g.Game.frame(66);assert(!g.Game.awaitingGrip);assert(g.Player.carve.charge>0);
 });
 
 test('an older completed-rift snapshot restores its paid landing once, without reopening the result screen',()=>{
- const session=new Map(),local=new Map();let g=load({session,local});start(g);g.Journey.update(STEP);g.Journey.enterPortal();g.Journey.startTrial();const r={...g.Journey.rift};g.Journey.resolve(true);const y=g.Player.y,coins=g.Profile.coins;
+ const session=new Map(),local=new Map();let g=load({session,local});start(g);g.Journey.update(STEP);g.Journey.enterPortal();g.Journey.startTrial();const r={...g.Journey.rift};g.Journey.resolve(true);returnAfterReceipt(g);const y=g.Player.y,coins=g.Profile.coins;
  const d=g.RunSave.read();d.rift={...r,phase:'result',ready:false,win:true};session.set(g.RunSave.key,JSON.stringify(d));g=load({session,local});assert(g.Game.paused);assert.equal(g.Journey.rift,null);assert.equal(g.Player.y,y);assert.equal(g.Profile.coins,coins);assert.equal(g.Journey.wins,1);assert(!document.getElementById('rift-dialog').open);assert.equal(g.RunSave.read().rift,null);
  g=load({session,local});assert.equal(g.Player.y,y);assert.equal(g.Profile.coins,coins);assert.equal(g.Journey.rift,null);
 });
 
 test('rift completion feedback replaces an earlier fall notice without charging another life',()=>{
- const g=load();start(g);g.Journey.mode='challenge';g.Journey.lives=2;g.Game.notice='FALL · 2 lives left · checkpoint recovery';g.Game.noticeTime=4;g.Journey.update(STEP);g.Journey.enterPortal();g.Journey.startTrial();g.Journey.resolve(false);
+ const g=load();start(g);g.Journey.mode='challenge';g.Journey.lives=2;g.Game.notice='FALL · 2 lives left · checkpoint recovery';g.Game.noticeTime=4;g.Journey.update(STEP);g.Journey.enterPortal();g.Journey.startTrial();g.Journey.resolve(false);returnAfterReceipt(g);
  assert.match(g.Game.notice,/RIFT COLLAPSED/);assert.equal(g.Journey.lives,2);assert(!g.Game.paused);assert.equal(g.Journey.rift,null);
 });
 

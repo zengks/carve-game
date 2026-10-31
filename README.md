@@ -18,13 +18,21 @@ score. Miss the window and you slip.
 
 Single file, zero dependencies, plain Canvas 2D + Web Audio.
 
+## New course preview
+
+`/?flow=1` runs the separate Flow course: steady camera, readable secret-trial
+results and return travel, first-use skill explanations, a Journal, movement
+recharge, directional rings and optional camp contracts/repairs. Production
+artifacts enforce three lives; unlimited Practice is test-build only. Earlier
+course data is retained separately. See [the design and verification](docs/flow-course.md).
+
 ## Current course
 
 Five authored sections lead into an endless climb, with an optional reward
-spring, a marked manual rescue wall and resting landmarks. Practice, three-life
-Challenge, one-thumb controls, optional two-thumb input and desktop keyboard are
-available. Crossing and rescue cameras keep the main targets visible on phones.
-Relics and a shared backend remain later work.
+spring, a marked manual rescue wall and resting landmarks. Public builds use
+three-life Challenge; source and preview builds also allow Practice for testing.
+One-thumb controls, optional two-thumb input and desktop keyboard are available. Crossing and rescue cameras keep the main targets visible on phones.
+Relics are an opt-in comparison at `?relics=1`; a shared backend remains planned.
 
 Both browser and native CARVE also have an explicit post-launch income goal.
 The [shared revenue-capability plan](docs/expedition.md#post-launch-revenue-capability--2026-10-30)

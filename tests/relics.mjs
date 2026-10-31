@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {loadGame,STEP} from './harness.mjs';
+function returnAfterReceipt(g){if(g.Journey.rift?.phase==='result'){g.Journey.leaveRift();if(g.Game.returning)g.Game.tickReturn(2);}}
 let passed=0;
 const el=id=>document.getElementById(id);
 function test(name,fn){fn();passed++;console.log('PASS relics: '+name);}
@@ -59,7 +60,7 @@ test('Resonance changes only future activations; choosing/restoring it does not 
  g=loadGame({search:'?relics=1',session,local});assert.equal(g.Journey.cooldown,14);g.Game.togglePause();g.Journey.cooldown=0;assert(g.Journey.useSkill());assert.equal(g.Journey.cooldown,11.9);g.RunSave.write();g=loadGame({search:'?relics=1',session,local});assert.equal(g.Journey.cooldown,11.9);
 });
 for(const row of [0,7])test(`Gatekeeper rewards ${row===0?'timing':'memory'} success once without changing Challenge lives`,()=>{
- const g=load();equipped(g,['gatekeeper']);g.Journey.mode='challenge';g.Journey.lives=2;g.Level.ensure(150+row*230);const p=g.Level.portals.find(p=>p.row===row);assert(p);Object.assign(g.Player,{x:p.x-17,y:p.y-23,vx:0,vy:0,onGround:false,state:'AIR'});g.Journey.update(STEP);const before=g.Profile.coins,quests=[...g.Journey.quests];assert(g.Journey.enterPortal());g.Journey.startTrial();g.Journey.resolve(true);const questDelta=g.Journey.quests.reduce((sum,n,i)=>sum+(n-quests[i])*[12,15,20][i],0);assert.equal(g.Profile.coins-before,28+questDelta);assert.equal(g.Journey.lives,2);assert(!g.Game.paused);const coins=g.Profile.coins;g.Journey.resolve(true);assert.equal(g.Profile.coins,coins);
+ const g=load();equipped(g,['gatekeeper']);g.Journey.mode='challenge';g.Journey.lives=2;g.Level.ensure(150+row*230);const p=g.Level.portals.find(p=>p.row===row);assert(p);Object.assign(g.Player,{x:p.x-17,y:p.y-23,vx:0,vy:0,onGround:false,state:'AIR'});g.Journey.update(STEP);const before=g.Profile.coins,quests=[...g.Journey.quests];assert(g.Journey.enterPortal());g.Journey.startTrial();g.Journey.resolve(true);returnAfterReceipt(g);const questDelta=g.Journey.quests.reduce((sum,n,i)=>sum+(n-quests[i])*[12,15,20][i],0);assert.equal(g.Profile.coins-before,28+questDelta);assert.equal(g.Journey.lives,2);assert(!g.Game.paused);const coins=g.Profile.coins;g.Journey.resolve(true);returnAfterReceipt(g);assert.equal(g.Profile.coins,coins);
 });
 test('Springfinder is paid once by real spring contact and keeps the original launch',()=>{
  const g=load();equipped(g,['spring']);g.Level.ensure(800);const b=g.Level.blocks.find(b=>b.feature==='spring');assert(b);Object.assign(g.Player,{x:b.x+20,y:b.y+b.h,onGround:true,vx:0,vy:0});g.Journey.update(STEP);assert.equal(g.Player.vy,1350);assert.equal(g.Profile.coins,5);assert(!g.Player.onGround);assert.match(g.Game.notice,/RELIC \+5 bounty/);

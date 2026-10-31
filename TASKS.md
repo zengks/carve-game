@@ -6,7 +6,24 @@ the next evidence-based task rather than treating a checkpoint as a new decision
 for the user. Preserve all existing data and virtual devices. Device testing is
 Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
 
-## Active web milestone: optional relic comparison
+## Active web milestone: camera, reading flow and route decisions
+
+Branch `codex/flow-and-encounters`, preview entry `/?flow=1`. See
+[Flow course design and verification](docs/flow-course.md).
+
+- [x] Remove camera center switching, speed/section zoom and impact shake.
+- [x] Add readable settled rift receipts and guarded eased return travel.
+- [x] Add skill consent, Journal and read-only camp planning.
+- [x] Enforce public three-life play; keep unlimited lives in test builds only.
+- [x] Add movement recharge, directional rings, camp contracts/repairs and
+  repeating encounter families; preserve released course records and saves.
+- [x] Cover invariants and 1,000 m reachability in simulation; complete both
+  mini-games through browser UI and inspect the compiled public life gate.
+- [ ] Finish extended three-life UI testing with actual camp transactions and
+  all contract types; qualify device frame times and continuous charged aiming.
+- [ ] Review the new preview before production; keep download prompts disabled.
+
+## Released prior milestone: optional relic comparison
 
 - [x] Keep the released varied route as the comparison baseline.
 - [x] Define a small preview-only trial with separate browser profile/run records.

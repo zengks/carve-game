@@ -911,7 +911,14 @@ carry retained the name and 2 bounty through reload, kept the previous 57 m log
 readable, and began new-route bests at zero. At 320×568 all migration actions and
 all menu buttons remained visible. This check did not inject browser game state.
 
-## Seamless rift return fix
+## Rift return policy update
+
+The current preview supersedes immediate secret-trial returns with a readable
+reward/setback receipt, one explicit Return action and eased travel back to the
+stated ledge. See [Flow course](flow-course.md). The section below records the
+previous implementation; its automatic-return behavior is no longer the target.
+
+## Previous seamless rift return fix
 
 Secret-game completion previously left the main climb paused behind a result
 screen. Normal success/failure now applies the existing reward/warp once, closes
