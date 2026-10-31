@@ -795,3 +795,31 @@ positions spanning the pad and three incoming horizontal speeds (120 cases),
 requiring a fresh upper main-wall catch without losing a Challenge life. Added
 checks cover safe Skyhook landings/refusal, late-section camera/overshoot/rescue
 cues, completion after reload and the explicit older-course restart boundary.
+
+### Repaired-route manual confirmation
+
+A follow-up **course-4 Challenge** run used the previously earned local test
+wallet to unlock Skyhook; it was not given coins or a position through code.
+Safe main-platform Skyhook arrivals were observed. From the upper fork platform,
+touch ground charging and separate arrows made a physical descent onto the
+revised pad. Bounty rose from **66 to 74**, its spring launched, and a fresh upper
+main-wall catch/release scored. Repeating the spring kept bounty at 74 and all
+three lives intact. No portal or Skyhook placed the player on that pad.
+
+The same run then tested the marked rescue wall. An initial approach landed on
+the rail underneath it, so that observation alone was not treated as proof of a
+manual rescue. After an intentional slip and fresh CARVE contact, the game
+explicitly showed **RESCUE WALL · fresh catch · no life lost**, retaining **3/3
+lives**. Reload restored the paused run at **470 m / 358 points / 111.3 active
+seconds**, with best height 530 m, 118 bounty, the rescue notice and all three
+lives. The original full five-section Practice run remains separately recorded
+at 784 m; this second run is focused verification, not another complete no-skill
+opening.
+
+This review also exposed a rescue-label edge case: wall sliding caps descent at
+220 units/s, below the old 250 units/s classification threshold. A shared recovery
+predicate now recognizes a descent faster than 120 units/s after a 160-unit drop
+from the anchor. The physical fall boundary and life rules are unchanged. There
+are now **24 variety checks**, including a deliberate wall-slide catch. These
+remain browser pointer/local-simulation observations; physical iOS/Android
+multi-touch ergonomics, audio, lifecycle and performance are still unverified.

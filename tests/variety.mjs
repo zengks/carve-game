@@ -131,4 +131,8 @@ test('an older trial run is kept with an explanation until the player explicitly
  g=loadGame({session,local});assert(!g.Game.running);assert.equal(session.get(g.RunSave.key),raw);assert.equal(g.Profile.coins,30);assert.match(document.getElementById('menu-progress').textContent,/Course revised.*Choose Begin/);
  document.getElementById('play').onclick();assert(g.Game.running);assert.equal(g.RunSave.read().course,4);assert(!g.RunSave.incompatibleCourse);assert.equal(g.Profile.coins,30);
 });
+test('a deliberate rescue catch still counts after wall-slide slows the descent',()=>{
+ const g=load();g.Level.ensure(4750);const b=g.Level.blocks.find(b=>b.rescue);Object.assign(g.Player,{x:b.x+b.w,y:b.y+50,vx:0,vy:-220,onGround:false});g.Journey.fallAnchor=b.y+500;g.Journey.peak=b.y+500;g.Journey.contracts();
+ down();step(g);assert.equal(g.Player.carve?.block.id,b.id);assert.equal(g.Journey.rescues,1);assert.match(g.Game.notice,/RESCUE WALL/);assert.equal(g.Journey.lives,3);
+});
 console.log(`${passed} variety checks passed`);

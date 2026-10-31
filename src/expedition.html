@@ -1322,7 +1322,7 @@
         },
 
         startCarve(t) {
-          if (Input.manualHeld() && this.vy < -250 && this.y < Journey.fallAnchor-160) Journey.onRescue(t.block);
+          if (Input.manualHeld() && Journey.recovering()) Journey.onRescue(t.block);
           this.carve = { ...t, charge: 0, manual: Input.manualHeld() };
           if (Game.lesson < 2) Game.lesson = 2;
           this.state = "CARVE";
@@ -1800,6 +1800,7 @@
           Object.assign(this,{peak:64,fallAnchor:64,rescues:0,shards:0,clean:0,wins:0,cooldown:0,wingTime:0,quests:[0,0,0],rift:null,nearest:null,lastUI:''});
           this.collected = new Set(); this.visited = new Set();
         },
+        recovering() { return Player.vy < -120 && Player.y < this.fallAnchor-160; },
         onRescue(block) {
           // A catch is a rescue only during a genuine descending flight. No extra payout.
           this.rescues++; this.notify(`${block?.rescue ? 'RESCUE WALL' : 'RESCUED'} · fresh catch · no life lost`);
@@ -1989,7 +1990,7 @@
           const nearbyRift = Level.portals.find(p => this.eligible(p.row) && !this.visited.has(p.id) && Math.abs(p.y - Player.y) < 400);
           const compass = nearbyRift ? ` · Rift ${Math.abs(nearbyRift.x - Player.x) < 100 ? (nearbyRift.y > Player.y ? '↑' : '↓') : nearbyRift.x > Player.x ? '→' : '←'} ${Math.ceil(Math.hypot(nearbyRift.x - Player.x - 17,nearbyRift.y - Player.y - 23) / 10)} m` : '';
           const stage=Level.stage(Player.y), encounter=Level.encounter(Player.y);
-          const falling=Player.vy < -250 && Player.y < this.fallAnchor-160;
+          const falling=this.recovering();
           const rescue = Level.blocks.find(b=>b.rescue && Player.y>b.y && Player.y<b.y+b.h+700);
           const rescueCue = falling && rescue ? `Rescue ${rescue.x + rescue.w/2 > Player.x+17 ? '→' : '←'} ${Math.ceil(Math.abs(rescue.x+rescue.w/2-Player.x-17)/10)} m` : `${this.rescues} rescues`;
           const contract = falling ? `RECOVERY · ${Math.max(0,Math.ceil((Player.y-Level.fallFloor())/10))} m to fall limit · ${rescueCue}` : Player.y<7050 && this.peak>=7050 ? `OPENING CLEARED · revisit ${encounter.name}` : Player.y<7050 ? `${stage+1}/5 · ${encounter.name} · ${Math.max(0,Math.ceil((150+(stage*6+5)*230+210-Player.y)/10))} m to landmark` : `ENDLESS FRONTIER · ${this.rescues} rescues${compass}`;
@@ -2380,7 +2381,7 @@
           const padFeedback = document.getElementById('one-feedback');
           const steering = Input.oneHeld && Math.abs(Input.oneAxis) > 0 ? `${Input.oneAxis < 0 ? '←' : '→'} ${Math.round(Math.abs(Input.oneAxis)*100)}% · ` : '';
           const padText = steering + feedback; if (padFeedback.textContent !== padText) padFeedback.textContent = padText;
-          if (this.lesson >= 4) hints[4] = Player.vy < -250 && Player.y < Journey.fallAnchor-160 ? 'FALLING · fresh hold to catch a marked wall; lower cyan grips can rescue a miss.' : Player.y<7050 ? Level.encounter(Player.y).hint : 'Read the next line. Bank your run from Pause whenever you choose.';
+          if (this.lesson >= 4) hints[4] = Journey.recovering() ? 'FALLING · fresh hold to catch a marked wall; lower cyan grips can rescue a miss.' : Player.y<7050 ? Level.encounter(Player.y).hint : 'Read the next line. Bank your run from Pause whenever you choose.';
           const coach = this.awaitingGrip ? (touch ? "Hold CARVE to continue your saved grip." : "Hold Z (or J / Shift) to continue your saved grip.") : this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
           if (this.lastHUD.coach !== coach) {
             document.getElementById("coach").textContent = coach;
