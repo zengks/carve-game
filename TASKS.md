@@ -27,9 +27,73 @@ Branch `codex/flow-and-encounters`, preview entry `/?flow=1`. See
   balance and return intent with players.
 - [x] Preview reviewed and production release authorized; public root selects
   Flow, with explicit prior-progress import and download prompts disabled.
-- [ ] Next planning milestone: agree the shared desktop/mobile identity, results,
-  unlocks and currency contract before implementing hosted sync. Preserve local
-  guest play; keep active-run handoff and incompatible records separate.
+
+## Current planning milestone: shared storage
+
+Branch `codex/shared-storage-plan`. See the
+[shared storage contract and delivery plan](docs/shared-storage.md).
+
+- [x] Record selected Apple, Google and email sign-in with immediate guest play.
+- [x] Include completed results, progress, eligible unlocks, shared bounty and
+  purchase ownership; keep unfinished climbs local to their device.
+- [x] Specify identity linking, ledger and entitlement boundaries, delivery
+  sequence and acceptance checks. This is a plan, not implemented sync/payments.
+- [x] Align the updated scope with carve-mobile's decisions, milestone and tasks;
+  incorporate its identity-linking, email-code and schema compatibility findings.
+- [ ] Agree email delivery, legacy imports, offline bounty spending, current
+  reward/cost classification and compatible catalog/rules mappings before code.
+- [ ] Resolve the explicit-linking contract against Auth's automatic email-based
+  OAuth linking; verify collision cases before enabling Apple/Google.
+- [ ] Review hosting, privacy/region/budget and recovery/deletion before any
+  provisioning. Real payments remain a separate unimplemented milestone.
+
+## Preview implementation: shared storage foundation — 2026-11-01
+
+Branch `codex/shared-storage-foundation`; see
+[implementation, setup and verification limits](docs/shared-storage-foundation.md).
+
+- [x] Add optional account UI, retain guest play and all existing local saves.
+- [x] Add initial server-only email OTP/session adapters and gated provider
+  groundwork; superseded by the direct identity-broker continuation below.
+- [x] Add account-bound IndexedDB completed-event queue, explicit guest import,
+  server-authenticated owner checks and immutable versioned result/progress data.
+- [x] Test real email OTP and persistence against separate synthetic local Auth,
+  mail and PostgreSQL services; never mutate the retained native backend.
+- [x] Coordinate contract fixtures with native preview PR46; keep native course
+  payload unsupported instead of inventing equivalent height/score metrics.
+- [x] Verify Node 24/26 CI and deployed branch-preview account/guest UI, including
+  guest reload recovery. Draft web PR17 and native PR46 remain unmerged.
+- [ ] Review broker/auth strategy, provider setup, hosted test backend and account
+  recovery/deletion before enabling shared cloud sign-in beyond local testing.
+- [ ] Classify bounty events/spending and catalog mappings before wallet sync;
+  purchase ownership integration/payments remain deferred.
+- [ ] Payment/payout setup is explicitly deferred until personal/sole-proprietor
+  versus company ownership, publisher/merchant/tax identity and suitable bank
+  account are settled. No bank or company structure has been selected.
+
+## Preview continuation: explicit identity broker — 2026-11-01
+
+Same branch and draft PR17; [broker protocol](docs/identity-broker.md) and
+[platform storage / owner setup](docs/platform-storage-setup.md).
+
+- [x] Replace Supabase social OAuth with direct verified Apple/Google OIDC and
+  stable issuer/subject mapping; equal emails never grant a common player.
+- [x] Add fresh-session explicit provider/email connection offers, confirm/cancel,
+  immutable ownership collisions and stable account scopes after linking.
+- [x] Use revocable app sessions; handle Apple form_post staging without relying
+  on cross-site Lax session cookies; bind both sign-in and linking generations.
+- [x] Test real signed synthetic providers, callback/nonce/audience/replay/expiry,
+  simultaneous claims and session-revocation races in isolated Postgres.
+- [x] Coordinate native review and local handoff guards on unmerged PR46;
+  native payload/transport and installed-game sync remain separate work.
+- [x] Document paid-platform recommendation, multiple-product isolation, costs
+  and owner-only actions. Existing hosted projects inspected read-only.
+- [x] Verify browser UI and Node 24/26 push/PR CI / Vercel preview for broker
+  checkpoint `ebc029f`; keep CI/deployment checks as gates for race follow-ups.
+- [ ] Owner approves concrete organization/project budget, region and stable
+  domains; completes billing/provider verification and secure credentials.
+- [ ] Configure an approved hosted staging backend and real provider callbacks;
+  test actual Apple/Google login before enabling for player review.
 
 ## Released prior milestone: optional relic comparison
 
@@ -118,3 +182,35 @@ advertising is included in this gameplay trial.
    keeping the initial launch facing right. Do not silently copy tuning numbers
    or mix records until this product-rule difference is deliberately reconciled.
 4. Develop the next local gameplay comparison based on what the trial reveals.
+
+## Preview music auditions — 2026-11-01
+
+- [x] Compose three distinct AI-assisted scores and synthesize sample-free demos:
+  Skyward, Ancient Gardens and Neon Momentum. Retain JSON/MIDI sources,
+  reproducible renderer, hashes and separate asset rights notice.
+- [x] Add a standalone `/music-demos/` audition page with manual audio controls,
+  one-at-a-time playback and no autoplay. Exclude page/audio from production.
+- [x] Run full `npm run build`; verify decoded loudness/headroom, asset integrity
+  and production exclusion. Check all three browser playback states and phone-size
+  layout (390 × 844, no horizontal overflow). This is technical playback evidence,
+  not an assertion of audible quality or legal clearance.
+- [ ] Owner listens and selects a direction before any gameplay/native integration.
+  No live BGM, store/download prompt, payments or storage behavior changed.
+
+## Native handoff integration — 2026-11-01
+
+- [x] Agree native/web v1 contract with separate browser and native session purposes.
+- [x] Implement preview-gated native API, system-browser launch/callback, explicit
+  link confirmation and private persistent generation/session state.
+- [x] Verify 104 actual Fetch-handler/database assertions using real signed
+  synthetic provider proofs in newly created retained QA databases. Keep every
+  existing native service, app/profile/save and database schema untouched.
+- [x] Native independently passes 79 raw HTTP policy and 71 headless Godot
+  integration checks against frozen actual-handler sources. Receipt hashes and
+  owned listener/pool cleanup verified; web QA database restored stopped.
+- [x] Verify Node 24/26 and the deployed preview gates; guest account UI remains
+  disabled/unconfigured and fits a 390px viewport. Keep both PRs draft/unmerged.
+- [ ] Real hosted/provider/App-Link qualification and session/retention/rate policy
+  remain release gates. Both PRs stay draft/unmerged; payments remain deferred.
+
+See [native implementation and evidence limits](docs/native-broker.md).

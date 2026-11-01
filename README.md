@@ -16,7 +16,15 @@ ride/charge them, and release at a timed sweet-spot to fling yourself higher.
 Clean releases build **Flow**, which speeds up and warms the world and multiplies
 score. Miss the window and you slip.
 
-Single file, zero dependencies, plain Canvas 2D + Web Audio.
+Plain Canvas 2D + Web Audio gameplay, with optional account modules and a Node
+backend in the shared-storage preview branch. The game remains playable as a
+local guest without a cloud service. Server libraries are pinned in the lockfile.
+
+The [shared-storage foundation](docs/shared-storage-foundation.md) implements
+isolated email OTP and completed-result/progress syncing. A [direct identity broker](docs/identity-broker.md)
+implements explicit Apple/Google/email linking; signed synthetic tests pass, but
+real provider credentials and hosted sync are not configured. Payments remain
+deferred. See the [storage platform and setup guide](docs/platform-storage-setup.md).
 
 ## Current Flow course
 
@@ -53,7 +61,7 @@ an explicit new Begin action. The mobile app download prompt remains disabled.
 
 ## Run
 
-Open the game directly — no build step:
+Open the guest game directly (account features require the local server):
 
 ```bash
 open src/expedition.html   # endless game, opens in default browser
@@ -62,7 +70,8 @@ open src/expedition.html   # endless game, opens in default browser
 Or serve the game at `http://127.0.0.1:5173` using Node.js 24 or 26:
 
 ```bash
-npm start                  # built-in Node HTTP server; no install/download needed
+npm ci --ignore-scripts    # install pinned server/test dependencies
+npm start                  # local game; guest play works without cloud configuration
 ```
 
 ## Controls
@@ -126,7 +135,7 @@ verification. The mobile download prompt remains disabled.
 carve-game/
 ├── src/
 │   └── expedition.html  # the current game (single self-contained file)
-├── scripts/            # dependency-free local server + static build
+├── scripts/            # local server + content-addressed static build
 ├── tests/
 │   ├── regression.mjs   # momentum, Flow, slips, input, checkpoints, UI lifecycle
 │   ├── harness.mjs      # extracts the script + headless browser stubs
@@ -230,4 +239,7 @@ turn on touch controls on hybrid devices; narrow screens fit the climbing lane.
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+Source code: MIT — see [`LICENSE`](LICENSE). New music audition recordings and
+scores have a separate [rights notice](assets/music/demos/RIGHTS.md), with no public
+reuse license granted. Listen at `/music-demos/` on development/branch previews;
+these demos are excluded from production and are not connected to game audio.

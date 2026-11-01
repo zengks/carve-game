@@ -1,0 +1,21 @@
+{
+  "contract_version": 1,
+  "event_id": "web.flow-v1:fixture-run",
+  "kind": "completed_run",
+  "course_id": "web.flow-v1",
+  "rules_version": "flow-v1",
+  "mode": "challenge",
+  "source_platform": "web",
+  "payload": {
+    "run_id": "fixture-run",
+    "height_m": 123,
+    "score": 432,
+    "active_ms": 12000,
+    "portals": 1,
+    "controls": ["one"],
+    "outcome": "banked",
+    "testing": true,
+    "unlocks": ["pulse"],
+    "lessons": ["pulse"]
+  }
+}

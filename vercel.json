@@ -3,6 +3,7 @@
   "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "rewrites": [{"source":"/native/authorize","destination":"/api/native-broker/authorize"}],
   "redirects": [
     {
       "source": "/src/carve.html",

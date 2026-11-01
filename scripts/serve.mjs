@@ -1,20 +1,33 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import {createAccountHandler} from '../server/account.mjs';
+import {createNativeBrokerHandler} from '../server/native-broker.mjs';
 
 export function createGameServer() {
+  const account=createAccountHandler();
+  const native=createNativeBrokerHandler();
   return createServer(async (req, res) => {
     const path = new URL(req.url, 'http://localhost').pathname;
+    if(path.startsWith('/api/native-broker/')||path==='/native/authorize'){await native(req,res);return;}
+    if(['/api/account','/api/shared-progress'].includes(path)){await account(req,res);return;}
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
     if (['/classic', '/classic/', '/classic/index.html', '/src/carve.html'].includes(path)) { res.writeHead(308, {Location:'/'}).end(); return; }
     const files = {
       '/': ['src/expedition.html', 'text/html; charset=utf-8'],
+      '/music-demos/': ['src/music-demos/index.html', 'text/html; charset=utf-8'],
       '/expedition/': ['src/expedition.html', 'text/html; charset=utf-8'],
       '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8'],
       '/sitemap.xml': ['sitemap.xml', 'application/xml; charset=utf-8'],
       '/site.webmanifest': ['site.webmanifest', 'application/manifest+json'],
       '/favicon.ico': ['assets/branding/favicon.ico', 'image/x-icon'],
+      '/storage/contract.mjs':['shared/contract.mjs','text/javascript; charset=utf-8'],
+      '/storage/outbox.mjs':['src/storage/outbox.mjs','text/javascript; charset=utf-8'],
+      '/storage/account.mjs':['src/storage/account.mjs','text/javascript; charset=utf-8'],
     };
+    for (const name of ['skyward', 'ancient-gardens', 'neon-momentum']) {
+      files[`/assets/music/demos/${name}.mp3`] = [`assets/music/demos/${name}.mp3`, 'audio/mpeg'];
+    }
     for (const name of ['carve-logo.webp', 'favicon-96.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'social-card.png']) {
       files[`/assets/branding/${name}`] = [`assets/branding/${name}`, name.endsWith('.webp') ? 'image/webp' : 'image/png'];
     }
