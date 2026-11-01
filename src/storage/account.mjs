@@ -51,6 +51,11 @@ async function synchronize() {
   try {
     // Refresh first: another tab could have changed the cookie owner.
     await refresh();if(scope()!==owner){message('The account changed. Pending results stayed with their original account.');return;}
+    // Recover retained completed account records after a transient IndexedDB
+    // failure. Guest records still require explicit import; live runs are ignored.
+    for(const {record,profile,testing} of window.CarveGameStorage.accountRecords(owner)) {
+      const event=completedEvent(record,profile,testing);if(event)await outbox.put(owner,event);
+    }
     const send=async event=>{
       const reply=await request('/api/shared-progress',{...event},owner);
       if(reply.account_scope!==owner)throw new Error('sign_in_required');return reply;

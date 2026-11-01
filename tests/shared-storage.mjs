@@ -49,6 +49,9 @@ game.RunSave.write();game=loadGame({local,session,search:'?flow=1'});assert.equa
 globalThis.CarveAccount={scope:()=>accountB,completed:(...args)=>completed.push(args)};
 game.Journey.finish();assert.equal(completed.length,1);assert.equal(completed[0][2],accountA,'resumed climb retains original owner');
 const [record,profile,,testing]=completed[0];const e=completedEvent(record,profile,testing);
+assert.equal(globalThis.CarveGameStorage.accountRecords(accountA).length,1,'retained account completion available to recover a failed queue write');
+assert.equal(globalThis.CarveGameStorage.accountRecords(accountB).length,0);
+assert.equal(globalThis.CarveGameStorage.guestRecords().length,0,'account recovery never imports guest data implicitly');
 profile.unlocked.push('hook');assert.equal(canonical(completedEvent(record,profile,testing)),canonical(e),'completion progress frozen');
 assert(local.has('carve.flow.profile.v1'),'guest gameplay profile preserved');
 delete globalThis.CarveAccount;

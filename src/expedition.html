@@ -3295,6 +3295,8 @@
       // or unfinished climb. Account controls are available from the menu only.
       window.CarveGameStorage = {
         running: () => Game.running,
+        accountRecords: owner => Profile.records.filter(r => r.ownerScope === owner)
+          .map(record => ({record,profile:{unlocked:['pulse'],lessons:[]},testing:true})),
         guestRecords: () => Profile.records.filter(r => !r.ownerScope || r.ownerScope === 'guest')
           .map(record => ({record,profile:{unlocked:['pulse'],lessons:[]},testing:true})),
       };

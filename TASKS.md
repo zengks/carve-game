@@ -62,7 +62,8 @@ Branch `codex/shared-storage-foundation`; see
   mail and PostgreSQL services; never mutate the retained native backend.
 - [x] Coordinate contract fixtures with native preview PR46; keep native course
   payload unsupported instead of inventing equivalent height/score metrics.
-- [ ] Verify Node 24/26 CI and deployed branch-preview account/guest UI.
+- [x] Verify Node 24/26 CI and deployed branch-preview account/guest UI, including
+  guest reload recovery. Draft web PR17 and native PR46 remain unmerged.
 - [ ] Review broker/auth strategy, provider setup, hosted test backend and account
   recovery/deletion before enabling shared cloud sign-in beyond local testing.
 - [ ] Classify bounty events/spending and catalog mappings before wallet sync;

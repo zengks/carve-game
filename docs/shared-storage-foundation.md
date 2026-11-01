@@ -16,6 +16,8 @@ This starts the [agreed plan](shared-storage.md), without changing production.
   Retries survive restart; accepted receipts prevent local requeue. Account
   changes stop pending callbacks. Server verifies identity and the expected
   account scope on each read/write, including another tab's cookie changes.
+  Sync can reconstruct retained completed account records after a transient queue
+  failure; it never recovers guest records implicitly or uploads an active climb.
 - A climb's account scope is pinned at its start and preserved through local
   reload recovery. Older unscoped runs remain guest. Guest imports require
   review/confirmation and retain the source; no wallet/current-run import.
@@ -99,6 +101,13 @@ and expiry in an isolated environment before exposing email sign-in publicly.
 - Mobile matched 86 synthetic contract cases to the web validator and passed
   20 request-scope checks. These checks do not establish native/browser cloud sync,
   physical-device ergonomics or live Apple/Google readiness.
+
+Web draft [PR17](https://github.com/zengks/carve-game/pull/17) remains unmerged.
+The first pushed checkpoint `8d524a5` passed both Node 24/26 push and PR CI checks
+(including PostgreSQL), and its Vercel preview was Ready. Browser checks verified
+the hosted unconfigured-account message, enabled guest play and paused run
+recovery after reload; no console errors were observed in that check. Final
+queue-recovery and documentation updates are kept on the same preview branch.
 
 New synthetic local services use names `carve-shared-*-20261101`, separate Docker
 network/volume, database port 55532, Auth 55521, mail capture 55524 and temporary
