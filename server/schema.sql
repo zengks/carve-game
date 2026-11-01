@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS carve_shared_v1.auth_flows (
   id text PRIMARY KEY, browser_hash text NOT NULL, data jsonb NOT NULL,
   expires_at timestamptz NOT NULL DEFAULT now()+interval '10 minutes', consumed boolean NOT NULL DEFAULT false
 );
+ALTER TABLE carve_shared_v1.auth_flows ADD COLUMN IF NOT EXISTS cancelled boolean NOT NULL DEFAULT false;
+ALTER TABLE carve_shared_v1.auth_flows ADD COLUMN IF NOT EXISTS result_session_id uuid;
 CREATE TABLE IF NOT EXISTS carve_shared_v1.link_offers (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), target_issuer text NOT NULL, target_subject text NOT NULL,
   binding_hash text NOT NULL, proof jsonb NOT NULL,

@@ -15,8 +15,8 @@ Matching emails, including Apple relay addresses, confer no ownership relationsh
 The private CARVE identity map selects one internal player and persistent scope.
 New email/Google/Apple sign-ins create revocable, expiring app sessions. Browser
 cookies contain only an encrypted app-session reference, not provider tokens.
-The original preview's email cookies remain readable for continuity but are not
-fresh enough for linking. Player scopes created before linking remain stable,
+The original provider-token preview cookies require a new sign-in; the saved
+climb, queued results and player scopes remain intact. Player scopes before linking remain stable,
 so previously queued account results keep their original owner. Linking does
 not pool wallets, import guest data or merge two existing players.
 
@@ -54,6 +54,13 @@ by the same offer/confirmation. Supabase's verified user email and confirmation
 timestamp are required. Temporary Auth tokens are not the CARVE app session.
 Session refresh or a new login never invents freshness for an older link intent.
 Guest→account and A→B→A changes invalidate a pending sign-in as well as a link.
+Provider completion rechecks its consumed intent and expected initiating session
+inside the session-grant transaction, after the external exchange. New logins
+and logout invalidate pending flows, revoke a result already issued by that flow
+and revoke the replaced same-browser session. Held-exchange tests cover guest
+login, A→B→A and logout while a provider response is in flight. Competing browser
+cookie responses may require reauthentication; a cancelled result grants no
+account access and never merges data.
 
 ## Setup and evidence boundary
 

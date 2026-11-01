@@ -88,7 +88,8 @@ Same branch and draft PR17; [broker protocol](docs/identity-broker.md) and
   native payload/transport and installed-game sync remain separate work.
 - [x] Document paid-platform recommendation, multiple-product isolation, costs
   and owner-only actions. Existing hosted projects inspected read-only.
-- [ ] Verify latest browser UI and Node 24/26 CI / branch deployment.
+- [x] Verify browser UI and Node 24/26 push/PR CI / Vercel preview for broker
+  checkpoint `ebc029f`; keep CI/deployment checks as gates for race follow-ups.
 - [ ] Owner approves concrete organization/project budget, region and stable
   domains; completes billing/provider verification and secure credentials.
 - [ ] Configure an approved hosted staging backend and real provider callbacks;

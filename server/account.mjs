@@ -62,30 +62,18 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
     return {issuer:config.backend,subject:user.id,provider:'email',label:at>0?email.slice(0,Math.min(2,at))+'…'+email.slice(at):'CARVE player '+user.id.slice(0,8)};
   };
   async function identity(req,res) {
-    let session=codec.read(req,'session');if(!session)return null;
-    if(session.kind==='broker'){
-      if(session.issuer!==config.origin)return null;
-      const user=await databaseFor().session(session.id);
-      if(!user)codec.write(res,'session',null);return user;
-    }
-    // Read the previous preview's email cookie without changing its owner/scope.
-    // New sign-ins use revocable app sessions, not provider tokens in the cookie.
-    if(session.issuer!==config.backend)return null;
-    const client=auth();
-    if(!Number.isFinite(session.expires_at)||session.expires_at*1000<Date.now()+60000){
-      const reply=await client.refreshSession({refresh_token:session.refresh_token});
-      if(reply.error&&![400,401,403].includes(reply.error.status))throw error('service_unavailable',503);
-      if(reply.error||!reply.data.session){codec.write(res,'session',null);return null;}
-      session={...session,access_token:reply.data.session.access_token,refresh_token:reply.data.session.refresh_token,expires_at:reply.data.session.expires_at};codec.write(res,'session',session);
-    }
-    const reply=await client.getUser(session.access_token);
-    if(reply.error&&![400,401,403].includes(reply.error.status))throw error('service_unavailable',503);
-    if(reply.error){codec.write(res,'session',null);return null;}
-    const proof=emailProof(reply.data.user);
-    return {...proof,...await databaseFor().resolve(proof),fresh_at:0,binding:'legacy:'+digest(session.refresh_token)};
+    const session=codec.read(req,'session');
+    // Old provider-token preview cookies require a fresh sign-in; saved data and
+    // account scopes are retained. Read-only replies never overwrite cookies
+    // from a newer sign-in in another tab.
+    if(!session||session.kind!=='broker'||session.issuer!==config.origin)return null;
+    return databaseFor().session(session.id);
   }
-  async function signIn(res,proof){
-    const id=await databaseFor().createSession(proof);
+  async function invalidatePending(req){const pending=codec.read(req,'oauth');if(pending)await databaseFor().invalidateFlow(pending.id,pending.browser);}
+  async function signIn(req,res,proof,completion){
+    const prior=codec.read(req,'session');
+    const expected=prior?.kind==='broker'&&prior.issuer===config.origin?prior.id:null;
+    const id=await databaseFor().createSession(proof,{expected,...completion});
     codec.write(res,'session',{kind:'broker',id,issuer:config.origin});
     for(const purpose of ['oauth','callback','link'])codec.write(res,purpose,null);
   }
@@ -94,8 +82,10 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
     if(!emailValid(value.email))throw error('invalid_email');
     if(typeof value.code!=='string'||!/^\d{6,10}$/.test(value.code))throw error('invalid_code');
     const client=auth(),reply=await client.verifyOtp({email:value.email,token:value.code,type:'email'});
+    if(reply.error&&![400,401,403,422].includes(reply.error.status))throw error('service_unavailable',503);
     if(reply.error||!reply.data.session?.access_token)throw error('invalid_code',401);
     const verified=await client.getUser(reply.data.session.access_token);
+    if(verified.error&&![400,401,403,422].includes(verified.error.status))throw error('service_unavailable',503);
     if(verified.error)throw error('invalid_code',401);const proof=emailProof(verified.data.user);
     // The temporary Auth proof is no longer our application session.
     await client.admin.signOut(reply.data.session.access_token,'local').catch(()=>{});return proof;
@@ -117,7 +107,7 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
       const proof=await oidc.exchange(flow,value.code);
       if(flow.intent==='link'){
         const id=await databaseFor().createOffer(user,proof);codec.write(res,'link',{id},300000);
-      }else await signIn(res,proof);
+      }else await signIn(req,res,proof,{flow_id:flow.id,browser:pending.browser});
       redirect(res,flow.intent==='link'?'confirm-link':'return');
     }catch{redirect(res,'provider-error');}
   }
@@ -155,6 +145,7 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
       if(progress){const user=await identity(req,res);if(!user)throw error('sign_in_required',401);checkScope(req,user);validateEvent(value);return json(res,200,{...await databaseFor().write(user,value),account_scope:user.scope});}
       if(!value||typeof value!=='object'||Array.isArray(value))throw error('invalid_request');
       if(value.action==='signout'){
+        await invalidatePending(req);
         const session=codec.read(req,'session');
         if(session?.kind==='broker'&&session.issuer===config.origin)await databaseFor().revokeSession(session.id);
         else if(session?.issuer===config.backend)await auth().admin.signOut(session.access_token,'local').catch(()=>{});
@@ -167,17 +158,20 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
           const reply=await auth().signInWithOtp({email:value.email,options:{shouldCreateUser:true}});
           if(reply.error)throw error('code_unavailable',reply.error.status===429?429:503);return json(res,200,{ok:true});
         }
+        await invalidatePending(req);
         const proof=await verifyEmail(value);
         if(linking){const id=await databaseFor().createOffer(user,proof);codec.write(res,'link',{id},300000);}
-        else await signIn(res,proof);
+        else await signIn(req,res,proof);
         return json(res,200,{ok:true});
       }
       if(value.action==='oauth'||value.action==='link-provider'){
         if(!['apple','google'].includes(value.provider)||!oidc.ready(value.provider))throw error('provider_not_ready',503);
         const user=value.action==='link-provider'?await actor(req,res):await identity(req,res);
+        if(user&&!subjectValid(user.binding))throw error('reauth_required',401);
+        await invalidatePending(req);
         const started=oidc.begin(value.provider,config.origin),browser=randomSecret();
         const linking=value.action==='link-provider';
-        const flow={...started.flow,intent:linking?'link':'signin',initiator_scope:user?.scope??'guest',initiator_binding:digest(user?.binding??'guest'),
+        const flow={...started.flow,intent:linking?'link':'signin',initiator_scope:user?.scope??'guest',initiator_session:user?.binding??null,initiator_binding:digest(user?.binding??'guest'),
           ...(linking?{target:{scope:user.scope,binding_hash:digest(user.binding)}}:{})};
         await databaseFor().startFlow(flow,browser);
         codec.write(res,'oauth',{id:flow.id,provider:flow.provider,browser},600000);return json(res,200,{url:started.url});
@@ -194,7 +188,7 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
       throw error('invalid_request');
     }catch(e){
       const known={invalid_event:400,unsupported_course:400,event_conflict:409,identity_already_owned:409,
-        flow_rejected:401,link_offer_expired:409,provider_proof_rejected:401};
+        flow_rejected:401,link_offer_expired:409,provider_proof_rejected:401,account_changed:409};
       const code=e.status?e.message:Object.hasOwn(known,e.message)?e.message:'service_unavailable';
       return json(res,e.status??known[code]??503,{error:code});
     }

@@ -6,6 +6,7 @@ import {generateKeyPair,exportJWK,exportPKCS8,createLocalJWKSet,SignJWT} from 'j
 import {createAccountHandler} from '../server/account.mjs';
 import {createOidc} from '../server/oidc.mjs';
 import {createDatabase} from '../server/database.mjs';
+import {cookieCodec} from '../server/session.mjs';
 
 const connectionString=process.env.CARVE_TEST_DATABASE_URL;
 if(!connectionString||new URL(connectionString).hostname!=='127.0.0.1'||!new URL(connectionString).pathname.startsWith('/carve_shared_test_'))throw Error('New isolated loopback database required');
@@ -21,6 +22,7 @@ const env={CARVE_SUPABASE_URL:'https://isolated-auth.test',CARVE_SUPABASE_PUBLIS
 const codes=new Map();let exchanged=0;
 const oidc=createOidc(env,{keyResolvers:{google:createLocalJWKSet({keys:[publicKey]}),apple:createLocalJWKSet({keys:[publicKey]})},transport:async(url,options)=>{
   const entry=codes.get(options.body.get('code'));assert(entry,'unknown synthetic code');exchanged++;
+  if(entry.gate){entry.gate.enter();await entry.gate.wait;}
   if(entry.provider==='google')assert.equal(options.body.get('code_verifier'),entry.verifier);
   return Response.json({id_token:entry.token});
 }});
@@ -59,6 +61,11 @@ async function code(flow,subject,extra={}){
     aud:flow.client_id,sub:subject,nonce:flow.nonce,iat:time,exp:time+300,email:'a@example.test',email_verified:true,...extra})
     .setProtectedHeader({alg:'RS256',kid:'synthetic'}).sign(pair.privateKey);
   codes.set(value,{token,verifier:flow.verifier,provider:flow.provider});return value;
+}
+function hold(value){
+  let enter,release;const entered=new Promise(r=>{enter=r;}),wait=new Promise(r=>{release=r;});
+  codes.get(value).gate={enter,wait,release};
+  return {entered:()=>Promise.race([entered,new Promise((_,reject)=>{const timer=setTimeout(()=>reject(Error('exchange did not reach barrier')),3000);timer.unref();})]),release};
 }
 async function callback(cookies,flow,subject,extra={}){
   const params=new URLSearchParams({state:flow.id,code:await code(flow,subject,extra)});
@@ -122,6 +129,51 @@ try{
   assert.equal((await call(a,'/api/account?provider_finalize=apple')).headers.get('location'),'/?flow=1&account=provider-error');assert.equal(exchanged,cancelCount);
   const expired=await start(a);await pool.query("update carve_shared_v1.auth_flows set expires_at=now()-interval '1 second' where id=$1",[expired.id]);
   assert.equal((await callback(a,expired,'expired-'+run)).headers.get('location'),'/?flow=1&account=provider-error');
+  // Provider exchange is intentionally held while other tab actions complete.
+  // A pre-exchange binding check alone cannot protect these interleavings.
+  for(const action of ['guest-login','A-B-A','logout']){
+    const tab=jar();if(action!=='guest-login')await emailLogin(tab,'a@example.test');
+    const flow=await start(tab),subject='late-'+action+'-'+run,value=await code(flow,subject),gate=hold(value);
+    const pending=call(tab,'/api/account?provider_return=google&'+new URLSearchParams({state:flow.id,code:value}));
+    await gate.entered();
+    if(action==='guest-login')await emailLogin(tab,'a@example.test');
+    else if(action==='A-B-A'){await emailLogin(tab,'b@example.test');await emailLogin(tab,'a@example.test');}
+    else await call(tab,'/api/account',{action:'signout'});
+    gate.release();assert.equal((await pending).headers.get('location'),'/?flow=1&account=provider-error');
+    assert.equal((await info(tab)).account?.scope??null,action==='logout'?null:aInfo.scope);
+    assert.equal(Number((await pool.query('select count(*) from carve_shared_v1.identities where issuer=$1 and subject=$2',['https://accounts.google.com',subject])).rows[0].count),0,'late proof cannot create an identity after intent cancellation');
+    assert.equal((await pool.query('select result_session_id from carve_shared_v1.auth_flows where id=$1',[flow.id])).rows[0].result_session_id,null);
+  }
+  const completedFlowJar=jar(),completedFlow=await start(completedFlowJar);
+  const browser=cookieCodec(env.CARVE_SESSION_SECRET,{secure:false}).read({headers:{cookie:[...completedFlowJar].map(([k,v])=>k+'='+v).join('; ')}},'oauth');
+  signedIn(await callback(completedFlowJar,completedFlow,'completed-then-cancelled-'+run));
+  const committedScope=(await info(completedFlowJar)).account.scope;
+  await db.invalidateFlow(completedFlow.id,browser.browser);
+  assert.equal((await info(completedFlowJar)).account,null,'cancelling a flow with a committed result revokes the issued session');
+  assert.equal((await call(completedFlowJar,'/api/shared-progress',undefined,committedScope)).status,401,'replayed issued cookie cannot read progress');
+  const baseProof={issuer:'https://accounts.google.com',subject:'two-returns-'+run,label:'Google',provider:'google'};
+  const sharedInitiator=await db.createSession(baseProof),otherDevice=await db.createSession(baseProof);
+  const finalFlows=[0,1].map(()=>({...oidc.begin('google',origin).flow,intent:'signin',initiator_session:sharedInitiator}));
+  for(const flow of finalFlows){await db.startFlow(flow,'test-browser');await db.consumeFlow(flow.id,'test-browser');}
+  const completions=await Promise.allSettled(finalFlows.map((flow,i)=>db.createSession({...baseProof,subject:baseProof.subject+'-'+i},{flow_id:flow.id,browser:'test-browser'})));
+  assert.equal(completions.filter(c=>c.status==='fulfilled').length,1,'one initiator session permits at most one final grant');
+  assert(completions.some(c=>c.status==='rejected'&&c.reason.message==='account_changed'));
+  assert(await db.session(otherDevice),'another device session survives replacement');
+  const lockedFlow={...oidc.begin('google',origin).flow,intent:'signin',initiator_session:null};
+  await db.startFlow(lockedFlow,'locked-browser');await db.consumeFlow(lockedFlow.id,'locked-browser');
+  const flowLock=await pool.connect();await flowLock.query('begin');await flowLock.query('select id from carve_shared_v1.auth_flows where id=$1 for update',[lockedFlow.id]);
+  const finalGrant=db.createSession({...baseProof,subject:'locked-result-'+run},{flow_id:lockedFlow.id,browser:'locked-browser'}).then(id=>({id}),e=>({error:e.message}));
+  const cancelGrant=db.invalidateFlow(lockedFlow.id,'locked-browser');
+  let flowWaiters=false;
+  for(let i=0;i<100;i++){
+    const q=await pool.query("select count(*) from pg_stat_activity where datname=current_database() and wait_event_type='Lock' and query like '%carve_shared_v1.auth_flows%'");
+    if(Number(q.rows[0].count)>=2){flowWaiters=true;break;}await new Promise(r=>setTimeout(r,5));
+  }
+  await flowLock.query('commit');flowLock.release();assert(flowWaiters,'grant and cancellation both reached the held flow lock');
+  const finalState=await finalGrant;await cancelGrant;
+  if(finalState.id)assert.equal(await db.session(finalState.id),null);else assert.equal(finalState.error,'flow_rejected');
+  assert.equal((await pool.query('select cancelled from carve_shared_v1.auth_flows where id=$1',[lockedFlow.id])).rows[0].cancelled,true);
+  assert(await db.session(otherDevice),'other device remains valid after flow cancellation');
   // Atomic collision: concurrent explicit links cannot move an identity.
   const proof={issuer:'https://accounts.google.com',subject:'concurrent-'+run,label:'Google',provider:'google'};
   const pa=await db.session((await pool.query('select id from carve_shared_v1.broker_sessions where issuer=$1 and subject=$2 and not revoked order by authenticated_at desc limit 1',[env.CARVE_SUPABASE_URL,subjects.a])).rows[0].id);
@@ -151,4 +203,4 @@ try{
   assert.equal((await waiting).error,'link_offer_expired');
   assert.equal(Number((await pool.query('select count(*) from carve_shared_v1.identities where issuer=$1 and subject=$2',[revokedProof.issuer,revokedProof.subject])).rows[0].count),0);
   console.log('PASS broker/database: signed Google/Apple flows, email linking, no email joins, explicit consent, stable data ownership, collision/replay/nonce/Apple staging and revoked-session races');
-}finally{await new Promise(resolve=>server.close(resolve));await db.close();await pool.end();}
+}finally{for(const e of codes.values())e.gate?.release();await new Promise(resolve=>server.close(resolve));await db.close();await pool.end();}

@@ -10,7 +10,8 @@ This starts the [agreed plan](shared-storage.md), without changing production.
 - Email code adapter using pinned Supabase JS on the server. New logins create
   revocable app sessions; encrypted HttpOnly, SameSite=Lax cookies reference
   those sessions, Secure with __Host- names on HTTPS. Provider tokens are not
-  persisted in new cookies. Earlier email-token cookies remain readable for continuity.
+  persisted in new cookies. Earlier provider-token preview cookies require signing
+  in again; saved climbs, queued results and account scopes remain intact.
 - Same-origin POST checks, body limits, generic auth errors, session expiry and
   refresh, local-session sign-out and outage recovery without discarding cookies.
 - Immutable completed Flow result envelopes, stored in IndexedDB before upload.

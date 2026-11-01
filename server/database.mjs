@@ -42,12 +42,26 @@ export function createDatabase(connectionString) {
       await c.query('insert into carve_shared_v1.auth_flows(id,browser_hash,data) values($1,$2,$3)',[flow.id,digest(browser),JSON.stringify(flow)]);
     }),
     consumeFlow:(id,browser)=>transaction(async c=>{
-      const row=await c.query('update carve_shared_v1.auth_flows set consumed=true where id=$1 and browser_hash=$2 and not consumed and expires_at>clock_timestamp() returning data',[id,digest(browser)]);
+      const row=await c.query('update carve_shared_v1.auth_flows set consumed=true where id=$1 and browser_hash=$2 and not consumed and not cancelled and expires_at>clock_timestamp() returning data',[id,digest(browser)]);
       if(!row.rows.length)throw Error('flow_rejected');return row.rows[0].data;
     }),
-    createSession:proof=>transaction(async c=>{
+    invalidateFlow:(id,browser)=>transaction(async c=>{
+      const row=await c.query('update carve_shared_v1.auth_flows set cancelled=true where id=$1 and browser_hash=$2 returning result_session_id',[id,digest(browser)]);
+      if(row.rows[0]?.result_session_id)await c.query('update carve_shared_v1.broker_sessions set revoked=true where id=$1',[row.rows[0].result_session_id]);
+    }),
+    createSession:(proof,{expected=null,flow_id,browser}={})=>transaction(async c=>{
+      if(flow_id){
+        const flow=await c.query('select data from carve_shared_v1.auth_flows where id=$1 and browser_hash=$2 and consumed and not cancelled and result_session_id is null and expires_at>clock_timestamp() for update',[flow_id,digest(browser)]);
+        if(!flow.rows.length)throw Error('flow_rejected');
+        expected=flow.rows[0].data.initiator_session??null;
+      }
+      if(expected){
+        const prior=await c.query('update carve_shared_v1.broker_sessions set revoked=true where id=$1 and not revoked and expires_at>clock_timestamp() returning id',[expected]);
+        if(!prior.rows.length)throw Error('account_changed');
+      }
       await principal(c,proof);
       const row=await c.query('insert into carve_shared_v1.broker_sessions(issuer,subject,label) values($1,$2,$3) returning id',[proof.issuer,proof.subject,proof.label]);
+      if(flow_id)await c.query('update carve_shared_v1.auth_flows set result_session_id=$2 where id=$1',[flow_id,row.rows[0].id]);
       return row.rows[0].id;
     }),
     session:id=>transaction(async c=>{

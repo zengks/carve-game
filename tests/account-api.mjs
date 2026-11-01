@@ -12,12 +12,12 @@ now=101;assert.equal(codec.open(sealed,'session'),null);
 console.log('PASS account: encrypted, purpose-bound, expiring and tamper-resistant cookie');
 
 const calls=[];
-let authOutage=false,confirmed=true;
+let authOutage=false,confirmed=true,dbOutage=false;
 const userA='11111111-1111-4111-8111-111111111111',userB='22222222-2222-4222-8222-222222222222';
 const session={access_token:'token-a',refresh_token:'refresh-a',expires_at:Math.floor(Date.now()/1000)+3600};
 const sdk=()=>({auth:{
   signInWithOtp:async value=>{calls.push(['email',value]);return {data:{},error:null};},
-  verifyOtp:async value=>{calls.push(['verify',value]);return value.token==='123456'?{data:{session},error:null}:{data:{},error:{}};},
+  verifyOtp:async value=>{calls.push(['verify',value]);return value.token==='123456'?{data:{session},error:null}:{data:{},error:{status:400}};},
   getUser:async token=>authOutage?{data:{user:null},error:{status:503}}:{data:{user:{id:token==='token-a'?userA:userB,email:'player@example.test',email_confirmed_at:confirmed?new Date().toISOString():null}},error:null},
   refreshSession:async()=>({data:{session},error:null}),
   admin:{signOut:async(...args)=>{calls.push(['signout',...args]);}},
@@ -27,7 +27,7 @@ const sessions=new Map();
 const principal=p=>({...p,player_id:p.subject,scope:digest(p.issuer+':'+p.subject)});
 const database={resolve:async p=>principal(p),providers:async()=>['email'],offer:async()=>null,
   createSession:async proof=>{const id=crypto.randomUUID();sessions.set(id,{...principal(proof),fresh_at:Date.now(),binding:id});return id;},
-  session:async id=>sessions.get(id)??null,revokeSession:async id=>sessions.delete(id),
+  session:async id=>{if(dbOutage)throw Error('database unavailable');return sessions.get(id)??null;},revokeSession:async id=>sessions.delete(id),
   read:async id=>({contract_version:1,player_id:id.subject,results:[]}),write:async(id,event)=>{writes++;return {contract_version:1,accepted:event.event_id,player_id:id.subject,results:[event]};}};
 let origin;
 const server=createServer((req,res)=>handler(req,res));
@@ -46,13 +46,15 @@ try{
   response=await call('/api/account',{action:'email',email:'player@example.test'});assert.equal(response.status,200);assert.equal(calls[0][0],'email');
   response=await call('/api/account',{action:'verify',email:'player@example.test',code:'000000'});assert.equal(response.status,401);assert.equal(response.headers.get('set-cookie'),null);
   confirmed=false;response=await call('/api/account',{action:'verify',email:'player@example.test',code:'123456'});assert.equal(response.status,401);assert.equal(response.headers.get('set-cookie'),null);confirmed=true;
+  authOutage=true;response=await call('/api/account',{action:'verify',email:'player@example.test',code:'123456'});assert.equal(response.status,503);assert.equal(response.headers.get('set-cookie'),null);authOutage=false;
   response=await call('/api/account',{action:'verify',email:'player@example.test',code:'123456'});assert.equal(response.status,200);
   const raw=response.headers.get('set-cookie');assert(raw.includes('HttpOnly'));assert(raw.includes('SameSite=Lax'));assert(!raw.includes('token-a'));
   const cookie=raw.split(';')[0];value=await(await call('/api/account',undefined,{Cookie:cookie})).json();const scope=value.account.scope;
   assert(!JSON.stringify(value).includes('token-a'));assert.equal(scope.length,64);
   const old=cookieCodec(secret,{secure:false});let oldHeaders;
   old.write({getHeader(){},setHeader:(_,v)=>{oldHeaders=v;}},'session',{...session,issuer:env.CARVE_SUPABASE_URL});
-  authOutage=true;response=await call('/api/account',undefined,{Cookie:oldHeaders[0].split(';')[0]});assert.equal(response.status,503);assert.equal(response.headers.get('set-cookie'),null,'legacy outage must preserve session for retry');authOutage=false;
+  response=await call('/api/account',undefined,{Cookie:oldHeaders[0].split(';')[0]});assert.equal((await response.json()).account,null,'old preview token requires reauthentication, never reactivates after account change');
+  dbOutage=true;response=await call('/api/account',undefined,{Cookie:cookie});assert.equal(response.status,503);assert.equal(response.headers.get('set-cookie'),null,'outage must preserve cookies for retry');dbOutage=false;
   response=await call('/api/shared-progress',undefined,{Cookie:cookie,'X-Carve-Account':scope});assert.equal(response.status,200);
   response=await call('/api/shared-progress',undefined,{Cookie:cookie,'X-Carve-Account':'b'.repeat(64)});assert.equal(response.status,409);
   response=await call('/api/shared-progress',{player_id:userB},{Cookie:cookie,'X-Carve-Account':scope});assert.equal(response.status,400);assert.equal(writes,0);
