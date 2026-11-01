@@ -25,6 +25,11 @@ products, pricing, vendors or an advertising model.
 
 ### Shared work and acceptance gates
 
+Payment setup is deferred by the user (2026-11-01) until personal/sole-proprietor
+versus incorporated-company ownership is decided. Keep both projects free of real
+payment, merchant, paid-store-agreement and bank/payout configuration meanwhile.
+See the [ownership and payout gate](shared-storage.md#purchase-ownership-without-payment-implementation).
+
 | Stage | Planned deliverable | Evidence needed before proceeding |
 | --- | --- | --- |
 | Core experience | Understandable one-thumb/keyboard play, varied route choices, safe recovery and reliable saves | Clear failure feedback, voluntary retries and repeat play; technical bots alone do not establish fun |

@@ -68,6 +68,9 @@ Branch `codex/shared-storage-foundation`; see
   recovery/deletion before enabling shared cloud sign-in beyond local testing.
 - [ ] Classify bounty events/spending and catalog mappings before wallet sync;
   purchase ownership integration/payments remain deferred.
+- [ ] Payment/payout setup is explicitly deferred until personal/sole-proprietor
+  versus company ownership, publisher/merchant/tax identity and suitable bank
+  account are settled. No bank or company structure has been selected.
 
 ## Released prior milestone: optional relic comparison
 

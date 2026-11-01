@@ -99,6 +99,14 @@ old wallets while that migration is unapproved; never pool them automatically.
 
 ## Purchase ownership, without payment implementation
 
+User decision — 2026-11-01: defer receiving-payment setup until the owner decides
+whether to publish/operate personally (including a sole proprietorship) or through
+an incorporated company. Do not open/configure merchant or payout accounts, accept
+paid store agreements, connect a bank or activate payments in either project.
+First settle the app/IP owner, publisher/merchant identity, tax setup and suitable
+payout beneficiary/account. No company structure or bank (including TD) is selected.
+This gate does not block authorized account/progress development without payments.
+
 Use one canonical catalog with separate Apple, Google Play and possible web
 product mappings. Keep earned unlocks, durable purchases, consumables and any
 future time-limited benefits distinct. No product, price, subscription or paid
