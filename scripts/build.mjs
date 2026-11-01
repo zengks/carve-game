@@ -17,6 +17,9 @@ export async function build(outputDir = join(root, 'dist'), { production = false
     return path;
   };
   const entries = [['src/expedition.html', 'index.html', 'expedition']];
+  const contractPath=await hashedAsset('storage-contract.mjs',await readFile(join(root,'shared/contract.mjs'),'utf8'));
+  const outboxPath=await hashedAsset('storage-outbox.mjs',(await readFile(join(root,'src/storage/outbox.mjs'),'utf8')).replaceAll('./contract.mjs',contractPath));
+  const accountPath=await hashedAsset('storage-account.mjs',(await readFile(join(root,'src/storage/account.mjs'),'utf8')).replaceAll('./contract.mjs',contractPath).replaceAll('./outbox.mjs',outboxPath));
   const branding = new Map();
   let manifest = await readFile(join(root, 'site.webmanifest'), 'utf8');
   for (const name of ['carve-logo.webp', 'favicon-96.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'social-card.png', 'favicon.ico']) {
@@ -40,6 +43,7 @@ export async function build(outputDir = join(root, 'dist'), { production = false
 `;
   for (const [entry, destination, assetPrefix] of entries) {
     let source = await readFile(join(root, entry), 'utf8');
+    source=source.replace('/storage/account.mjs',accountPath);
     if (production) {
       // Preview pages stay unindexed; only the explicit production build is public.
       source = source.replace('const TESTING = true;', 'const TESTING = false;').replace('Practice · ∞</button>', 'Challenge · 3 lives</button>').replace('Endless Expedition preview</title>', 'Endless Expedition</title>')

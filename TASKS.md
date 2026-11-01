@@ -47,6 +47,27 @@ Branch `codex/shared-storage-plan`. See the
 - [ ] Review hosting, privacy/region/budget and recovery/deletion before any
   provisioning. Real payments remain a separate unimplemented milestone.
 
+## Preview implementation: shared storage foundation — 2026-11-01
+
+Branch `codex/shared-storage-foundation`; see
+[implementation, setup and verification limits](docs/shared-storage-foundation.md).
+
+- [x] Add optional account UI, retain guest play and all existing local saves.
+- [x] Add server-only email OTP/session adapters and Apple/Google PKCE adapter
+  groundwork. Hard-disable OAuth until an enforceable explicit-link strategy
+  and real provider configuration are verified; an env flag cannot bypass it.
+- [x] Add account-bound IndexedDB completed-event queue, explicit guest import,
+  server-authenticated owner checks and immutable versioned result/progress data.
+- [x] Test real email OTP and persistence against separate synthetic local Auth,
+  mail and PostgreSQL services; never mutate the retained native backend.
+- [x] Coordinate contract fixtures with native preview PR46; keep native course
+  payload unsupported instead of inventing equivalent height/score metrics.
+- [ ] Verify Node 24/26 CI and deployed branch-preview account/guest UI.
+- [ ] Review broker/auth strategy, provider setup, hosted test backend and account
+  recovery/deletion before enabling shared cloud sign-in beyond local testing.
+- [ ] Classify bounty events/spending and catalog mappings before wallet sync;
+  purchase ownership integration/payments remain deferred.
+
 ## Released prior milestone: optional relic comparison
 
 - [x] Keep the released varied route as the comparison baseline.

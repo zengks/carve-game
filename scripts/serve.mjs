@@ -1,10 +1,13 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import {createAccountHandler} from '../server/account.mjs';
 
 export function createGameServer() {
+  const account=createAccountHandler();
   return createServer(async (req, res) => {
     const path = new URL(req.url, 'http://localhost').pathname;
+    if(['/api/account','/api/shared-progress'].includes(path)){await account(req,res);return;}
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
     if (['/classic', '/classic/', '/classic/index.html', '/src/carve.html'].includes(path)) { res.writeHead(308, {Location:'/'}).end(); return; }
     const files = {
@@ -14,6 +17,9 @@ export function createGameServer() {
       '/sitemap.xml': ['sitemap.xml', 'application/xml; charset=utf-8'],
       '/site.webmanifest': ['site.webmanifest', 'application/manifest+json'],
       '/favicon.ico': ['assets/branding/favicon.ico', 'image/x-icon'],
+      '/storage/contract.mjs':['shared/contract.mjs','text/javascript; charset=utf-8'],
+      '/storage/outbox.mjs':['src/storage/outbox.mjs','text/javascript; charset=utf-8'],
+      '/storage/account.mjs':['src/storage/account.mjs','text/javascript; charset=utf-8'],
     };
     for (const name of ['carve-logo.webp', 'favicon-96.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'social-card.png']) {
       files[`/assets/branding/${name}`] = [`assets/branding/${name}`, name.endsWith('.webp') ? 'image/webp' : 'image/png'];

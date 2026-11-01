@@ -4,6 +4,12 @@ Updated 2026-10-31. This is a planning document, not an implemented service.
 It supersedes older email-only recommendations and the earlier undecided scope
 for shared bounty and purchase ownership in the web/mobile roadmaps.
 
+Implementation began on 2026-11-01 in a separate preview branch. See the
+[foundation checkpoint and remaining gates](shared-storage-foundation.md): email
+OTP/result syncing is tested only against isolated local services; Apple/Google,
+hosted sync, bounty and purchases are not enabled. The scope below remains the
+target, not a description of complete cross-platform functionality.
+
 ## Agreed scope
 
 - Offer **Sign in with Apple, Google and email**, while retaining immediate

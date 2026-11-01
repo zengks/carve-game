@@ -9,6 +9,19 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: carve-ci-only
+          POSTGRES_DB: carve_shared_test_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     strategy:
       matrix:
         node: [24, 26]
@@ -22,3 +35,6 @@ jobs:
           package-manager-cache: false
       - run: npm ci --ignore-scripts
       - run: npm run build
+      - run: npm run test:database
+        env:
+          CARVE_TEST_DATABASE_URL: postgres://postgres:carve-ci-only@127.0.0.1:5432/carve_shared_test_ci

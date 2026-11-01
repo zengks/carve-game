@@ -16,7 +16,14 @@ ride/charge them, and release at a timed sweet-spot to fling yourself higher.
 Clean releases build **Flow**, which speeds up and warms the world and multiplies
 score. Miss the window and you slip.
 
-Single file, zero dependencies, plain Canvas 2D + Web Audio.
+Plain Canvas 2D + Web Audio gameplay, with optional account modules and a Node
+backend in the shared-storage preview branch. The game remains playable as a
+local guest without a cloud service. Server libraries are pinned in the lockfile.
+
+The [shared-storage foundation](docs/shared-storage-foundation.md) implements
+isolated email OTP and completed-result/progress syncing. Apple/Google are not
+enabled until explicit identity linking is resolved; no hosted sync or payments
+are active. This preview does not change the live release.
 
 ## Current Flow course
 
@@ -53,7 +60,7 @@ an explicit new Begin action. The mobile app download prompt remains disabled.
 
 ## Run
 
-Open the game directly — no build step:
+Open the guest game directly (account features require the local server):
 
 ```bash
 open src/expedition.html   # endless game, opens in default browser
@@ -62,7 +69,8 @@ open src/expedition.html   # endless game, opens in default browser
 Or serve the game at `http://127.0.0.1:5173` using Node.js 24 or 26:
 
 ```bash
-npm start                  # built-in Node HTTP server; no install/download needed
+npm ci --ignore-scripts    # install pinned server/test dependencies
+npm start                  # local game; guest play works without cloud configuration
 ```
 
 ## Controls
@@ -126,7 +134,7 @@ verification. The mobile download prompt remains disabled.
 carve-game/
 ├── src/
 │   └── expedition.html  # the current game (single self-contained file)
-├── scripts/            # dependency-free local server + static build
+├── scripts/            # local server + content-addressed static build
 ├── tests/
 │   ├── regression.mjs   # momentum, Flow, slips, input, checkpoints, UI lifecycle
 │   ├── harness.mjs      # extracts the script + headless browser stubs

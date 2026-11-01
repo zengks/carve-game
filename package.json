@@ -1,14 +1,15 @@
 {
   "name": "carve",
   "version": "1.1.0",
-  "description": "A momentum-based vertical climber where the drift mechanic becomes grip-and-release. Single-file, zero-dependency Canvas 2D + Web Audio game.",
+  "description": "A momentum-based Canvas 2D climber with optional shared-account storage.",
   "type": "module",
   "main": "src/expedition.html",
   "scripts": {
     "start": "node scripts/serve.mjs",
     "dev": "node --watch scripts/serve.mjs",
     "check": "node tests/check-syntax.mjs",
-    "test": "node tests/regression.mjs && node tests/recovery.mjs && node tests/build.mjs && node tests/smoke.mjs && node tests/expedition.mjs && node tests/challenge.mjs && node tests/one-thumb.mjs && node tests/variety.mjs && node tests/previous-progress.mjs && node tests/relics.mjs && node tests/flow.mjs && node tests/mobile-handoff.mjs",
+    "test": "node tests/regression.mjs && node tests/recovery.mjs && node tests/build.mjs && node tests/smoke.mjs && node tests/expedition.mjs && node tests/challenge.mjs && node tests/one-thumb.mjs && node tests/variety.mjs && node tests/previous-progress.mjs && node tests/relics.mjs && node tests/flow.mjs && node tests/mobile-handoff.mjs && node tests/shared-storage.mjs && node tests/account-api.mjs",
+    "test:database": "node tests/shared-database.mjs",
     "build": "npm run check && npm test && node scripts/build.mjs"
   },
   "keywords": [
@@ -17,8 +18,7 @@
     "canvas",
     "platformer",
     "climber",
-    "vanilla-js",
-    "no-dependencies"
+    "vanilla-js"
   ],
   "author": "Steven Zeng",
   "license": "MIT",
@@ -28,5 +28,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/zengks/carve-game.git"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.118.0",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.2.7"
   }
 }

@@ -23,6 +23,11 @@ try {
   assert.notEqual(assetName('expedition.js', 'old'), assetName('expedition.js', 'new'), 'a release invalidates changed content');
   assert.equal(assetName('expedition.js', 'old'), assetName('expedition.js', 'old'), 'unchanged assets reuse the cache');
   assert(!html.includes('<style>'));
+  const storageModule=html.match(/type="module" src="([^\"]+)"/)[1];
+  assert(storageModule.startsWith('/assets/cache/storage-account.'));
+  const storageCode=await readFile(join(output,storageModule),'utf8');
+  for(const imported of storageCode.matchAll(/from '([^']+)'/g))await readFile(join(output,imported[1]));
+  assert(!storageCode.includes('SUPABASE_PUBLISHABLE_KEY')&&!storageCode.includes('SESSION_SECRET'));
   assert(html.includes('/_vercel/insights/script.js'));
   assert(!assets.includes('carve-grip-selected.png'));
   const config = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
@@ -47,6 +52,7 @@ try {
   assert(previewCode.includes('const TESTING = true;'));assert(productionCode.includes('const TESTING = false;'));
   assert.equal(previewCode.replace('const TESTING = true;','const TESTING = false;'),productionCode,'only the compile-time testing gate differs');
   const files = await readdir(join(output,'production'),{recursive:true});
+  assert(!files.some(f=>f.startsWith('server/')||f.startsWith('shared/')||f.endsWith('.sql')),'private backend/schema never published as static assets');
   assert(!files.some(f=>f.startsWith('classic/') || /^assets\/cache\/carve\.[a-f\d]{16}\.(js|css)$/.test(f)), 'retired course and its bundles are not published');
   assert(!production.includes('/classic/') && !production.includes('original summit'));
   for (const path of ['/classic','/classic/','/classic/index.html','/src/carve.html']) assert(config.redirects.some(r=>r.source===path && r.destination==='/' && r.permanent));
