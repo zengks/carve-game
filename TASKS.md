@@ -53,9 +53,8 @@ Branch `codex/shared-storage-foundation`; see
 [implementation, setup and verification limits](docs/shared-storage-foundation.md).
 
 - [x] Add optional account UI, retain guest play and all existing local saves.
-- [x] Add server-only email OTP/session adapters and Apple/Google PKCE adapter
-  groundwork. Hard-disable OAuth until an enforceable explicit-link strategy
-  and real provider configuration are verified; an env flag cannot bypass it.
+- [x] Add initial server-only email OTP/session adapters and gated provider
+  groundwork; superseded by the direct identity-broker continuation below.
 - [x] Add account-bound IndexedDB completed-event queue, explicit guest import,
   server-authenticated owner checks and immutable versioned result/progress data.
 - [x] Test real email OTP and persistence against separate synthetic local Auth,
@@ -71,6 +70,29 @@ Branch `codex/shared-storage-foundation`; see
 - [ ] Payment/payout setup is explicitly deferred until personal/sole-proprietor
   versus company ownership, publisher/merchant/tax identity and suitable bank
   account are settled. No bank or company structure has been selected.
+
+## Preview continuation: explicit identity broker — 2026-11-01
+
+Same branch and draft PR17; [broker protocol](docs/identity-broker.md) and
+[platform storage / owner setup](docs/platform-storage-setup.md).
+
+- [x] Replace Supabase social OAuth with direct verified Apple/Google OIDC and
+  stable issuer/subject mapping; equal emails never grant a common player.
+- [x] Add fresh-session explicit provider/email connection offers, confirm/cancel,
+  immutable ownership collisions and stable account scopes after linking.
+- [x] Use revocable app sessions; handle Apple form_post staging without relying
+  on cross-site Lax session cookies; bind both sign-in and linking generations.
+- [x] Test real signed synthetic providers, callback/nonce/audience/replay/expiry,
+  simultaneous claims and session-revocation races in isolated Postgres.
+- [x] Coordinate native review and local handoff guards on unmerged PR46;
+  native payload/transport and installed-game sync remain separate work.
+- [x] Document paid-platform recommendation, multiple-product isolation, costs
+  and owner-only actions. Existing hosted projects inspected read-only.
+- [ ] Verify latest browser UI and Node 24/26 CI / branch deployment.
+- [ ] Owner approves concrete organization/project budget, region and stable
+  domains; completes billing/provider verification and secure credentials.
+- [ ] Configure an approved hosted staging backend and real provider callbacks;
+  test actual Apple/Google login before enabling for player review.
 
 ## Released prior milestone: optional relic comparison
 

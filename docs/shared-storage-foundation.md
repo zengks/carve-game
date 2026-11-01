@@ -7,9 +7,10 @@ This starts the [agreed plan](shared-storage.md), without changing production.
 
 - Optional menu account dialog with Apple, Google and email entry points. Guest
   play remains immediate; no registration prompt interrupts an active climb.
-- Email code adapter using pinned Supabase JS on the server. Access/refresh
-  tokens stay in encrypted, HttpOnly, SameSite=Lax cookies, Secure with __Host-
-  names on HTTPS. Browser storage contains no provider/session tokens.
+- Email code adapter using pinned Supabase JS on the server. New logins create
+  revocable app sessions; encrypted HttpOnly, SameSite=Lax cookies reference
+  those sessions, Secure with __Host- names on HTTPS. Provider tokens are not
+  persisted in new cookies. Earlier email-token cookies remain readable for continuity.
 - Same-origin POST checks, body limits, generic auth errors, session expiry and
   refresh, local-session sign-out and outage recovery without discarding cookies.
 - Immutable completed Flow result envelopes, stored in IndexedDB before upload.
@@ -30,12 +31,12 @@ This starts the [agreed plan](shared-storage.md), without changing production.
 
 ## Deliberately not enabled
 
-Apple/Google adapters have PKCE groundwork but **OAuth is hard code-gated off**.
-Supabase's automatic same-email identity joining still conflicts with our consent
-contract; neither an env flag nor manual-link enablement solves it. Mobile's
-pinned source review also found provider-linking domains still allow same-provider
-email matching. A separately reviewed direct OIDC broker or Auth strategy is
-required before real provider activation. No live provider login is claimed.
+The initial hard gate has been replaced by the [direct OIDC broker](identity-broker.md).
+Supabase social OAuth remains unused; direct provider issuer/subject proofs and
+explicit confirmed links avoid automatic email joining. Signed synthetic tests
+pass, including same-email separation and callback/link/revocation races. Apple
+and Google remain unavailable in the hosted preview because their credentials
+and a hosted backend are not configured. No live provider login is claimed.
 
 The hosted preview has no configured shared backend and says so. It supports
 guest play and UI review, not real cloud sign-in. Production is independently
@@ -52,7 +53,7 @@ they must not be converted into equivalent heights or mixed with web records.
 Cloud results/progress are shown in the account log. They do not overwrite the
 local gameplay profile, bounty, equipped skills or unfinished run. Existing local
 wallets remain device-local while offline-spending/import policies are open.
-Account recovery/deletion, provider linking/unlinking and hosted privacy/retention
+Account recovery/deletion, provider unlinking and hosted privacy/retention
 are release gates, not completed features. Bounty and purchase fields report
 `not_connected`/`not_implemented`; **no payments or purchase grants exist**.
 
@@ -119,8 +120,12 @@ left untouched. Private local QA credentials stay outside the repository.
 
 ## Next slice
 
-Resolve the explicit-link broker/auth design, define the native event payload and
-identity mapping together, review hosted configuration/recovery/deletion, then
+Configure and verify the explicit-link broker with real providers, define the
+native event payload and handoff together, review hosted recovery/deletion, then
 connect isolated web/native test builds to the same approved backend. Classify
 earned bounty and offline spending before introducing a common ledger. Payments
 remain a separate later milestone.
+
+The browser broker design is now implemented and synthetically tested; the next
+gates are real provider configuration, native handoff/payload and an approved
+hosted staging backend. See [platform storage and owner setup](platform-storage-setup.md).

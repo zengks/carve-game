@@ -4,14 +4,35 @@ BEGIN;
 CREATE SCHEMA IF NOT EXISTS carve_shared_v1;
 REVOKE ALL ON SCHEMA carve_shared_v1 FROM PUBLIC;
 CREATE TABLE IF NOT EXISTS carve_shared_v1.players (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid()
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  scope_key text UNIQUE CHECK(length(scope_key)=64)
 );
+ALTER TABLE carve_shared_v1.players ADD COLUMN IF NOT EXISTS scope_key text;
+CREATE UNIQUE INDEX IF NOT EXISTS player_scope_unique ON carve_shared_v1.players(scope_key);
 CREATE TABLE IF NOT EXISTS carve_shared_v1.identities (
   issuer text NOT NULL,
-  subject uuid NOT NULL,
+  subject text NOT NULL CHECK(length(subject) BETWEEN 1 AND 255),
   player_id uuid NOT NULL REFERENCES carve_shared_v1.players(id),
   PRIMARY KEY (issuer, subject)
 );
+ALTER TABLE carve_shared_v1.identities ALTER COLUMN subject TYPE text USING subject::text;
+CREATE TABLE IF NOT EXISTS carve_shared_v1.broker_sessions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), issuer text NOT NULL, subject text NOT NULL,
+  label text NOT NULL, authenticated_at timestamptz NOT NULL DEFAULT now(),
+  expires_at timestamptz NOT NULL DEFAULT now()+interval '1 day', revoked boolean NOT NULL DEFAULT false,
+  FOREIGN KEY(issuer,subject) REFERENCES carve_shared_v1.identities(issuer,subject)
+);
+CREATE TABLE IF NOT EXISTS carve_shared_v1.auth_flows (
+  id text PRIMARY KEY, browser_hash text NOT NULL, data jsonb NOT NULL,
+  expires_at timestamptz NOT NULL DEFAULT now()+interval '10 minutes', consumed boolean NOT NULL DEFAULT false
+);
+CREATE TABLE IF NOT EXISTS carve_shared_v1.link_offers (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), target_issuer text NOT NULL, target_subject text NOT NULL,
+  binding_hash text NOT NULL, proof jsonb NOT NULL,
+  expires_at timestamptz NOT NULL DEFAULT now()+interval '5 minutes', consumed boolean NOT NULL DEFAULT false,
+  confirmed boolean NOT NULL DEFAULT false
+);
+ALTER TABLE carve_shared_v1.link_offers ADD COLUMN IF NOT EXISTS confirmed boolean NOT NULL DEFAULT false;
 CREATE TABLE IF NOT EXISTS carve_shared_v1.completed_results (
   player_id uuid NOT NULL REFERENCES carve_shared_v1.players(id),
   event_id text NOT NULL CHECK(length(event_id) BETWEEN 1 AND 160),
@@ -34,5 +55,8 @@ ALTER TABLE carve_shared_v1.players ENABLE ROW LEVEL SECURITY;
 ALTER TABLE carve_shared_v1.identities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE carve_shared_v1.completed_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE carve_shared_v1.course_progress ENABLE ROW LEVEL SECURITY;
+ALTER TABLE carve_shared_v1.broker_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE carve_shared_v1.auth_flows ENABLE ROW LEVEL SECURITY;
+ALTER TABLE carve_shared_v1.link_offers ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON ALL TABLES IN SCHEMA carve_shared_v1 FROM PUBLIC;
 COMMIT;

@@ -18,6 +18,9 @@ const explanation=e=>({invalid_email:'Enter a valid email address.',invalid_code
   account_changed:'The account changed in another tab. Results stayed with their original account.',
   storage_unavailable:'Local sync storage is blocked. Your existing game save is kept; cloud uploads are unavailable.',
   not_configured:'Cloud sign-in is not configured in this preview.',provider_not_ready:'This provider is awaiting secure account-linking setup.',
+  reauth_required:'Sign out and sign in again before connecting another sign-in method. Your saved results are kept.',
+  identity_already_owned:'That sign-in method belongs to another CARVE account. Neither account was merged or changed.',
+  link_offer_expired:'This connection request expired or was cancelled. Start a new connection.',
 }[e.message]??'Cloud storage is temporarily unavailable. Your climb stays on this device; try Sync again later.');
 function renderSnapshot() {
   const rows=$('account-results');rows.textContent='';
@@ -31,12 +34,20 @@ function render() {
   $('account-open').textContent=signed?'Account & sync':'Guest · Sign in';
   $('account-identity').textContent=signed?'Signed in as '+session.account.label+'.':'Playing as a guest on this device.';
   $('account-signin').hidden=signed;$('account-signed').hidden=!signed;
-  $('account-email').disabled=busy||!session.providers.email;
-  for(const provider of ['apple','google'])$('account-'+provider).disabled=busy||!session.providers[provider];
+  $('account-email').disabled=busy||!session.providers.email;$('account-code').disabled=busy||!session.providers.email;
+  for(const provider of ['apple','google']){
+    $('account-'+provider).disabled=busy||!session.providers[provider];
+    $('account-link-'+provider).disabled=busy||!signed||!session.providers[provider]||session.account.linked?.includes(provider);
+  }
+  for(const id of ['account-link-email','account-link-code','account-link-send','account-link-verify'])$(id).disabled=busy||!signed||!session.providers.email||session.account.linked?.includes('email');
+  $('account-linked').textContent=signed?'Connected methods: '+(session.account.linked??[]).join(', ')+'.':'';
+  $('account-link-offer').hidden=!signed||!session.link_offer;
+  $('account-link-copy').textContent=signed&&session.link_offer?'Connect '+session.link_offer.label+' to '+session.account.label+'? This will not merge another account’s progress.':'';
+  for(const id of ['account-link-confirm','account-link-cancel'])$(id).disabled=busy;
   for(const id of ['account-send','account-verify'])$(id).disabled=busy||!session.providers.email;
   for(const id of ['account-sync','account-import','account-signout'])$(id).disabled=busy;
   $('account-config').textContent=!session.configured?'Cloud sign-in is not configured in this preview. You can keep playing as a guest.':
-    !session.providers.apple||!session.providers.google?'Email code is available. Apple and Google await secure linking and provider setup.':'';
+    !session.providers.apple||!session.providers.google?'Email code is available. Apple and Google need their provider credentials configured.':'';
   renderSnapshot();
 }
 async function refresh() {
@@ -96,8 +107,24 @@ $('account-verify').onclick=()=>act(async()=>{
 for(const provider of ['apple','google'])$('account-'+provider).onclick=()=>act(async()=>{
   const result=await request('/api/account',{action:'oauth',provider});location.assign(result.url);
 });
+for(const provider of ['apple','google'])$('account-link-'+provider).onclick=()=>act(async()=>{
+  const result=await request('/api/account',{action:'link-provider',provider},scope());location.assign(result.url);
+});
+$('account-link-send').onclick=()=>act(async()=>{
+  await request('/api/account',{action:'link-email-send',email:$('account-link-email').value.trim()},scope());message('Enter the code sent to the email you want to connect.');
+});
+$('account-link-verify').onclick=()=>act(async()=>{
+  await request('/api/account',{action:'link-email-verify',email:$('account-link-email').value.trim(),code:$('account-link-code').value.trim()},scope());
+  $('account-link-code').value='';await refresh();message('Review the connection and confirm only if both sign-in methods are yours.');
+});
+$('account-link-confirm').onclick=()=>act(async()=>{
+  await request('/api/account',{action:'confirm-link'},scope());await refresh();message('Sign-in method connected. Your CARVE account and progress stayed the same.');
+});
+$('account-link-cancel').onclick=()=>act(async()=>{
+  await request('/api/account',{action:'cancel-link'},scope());await refresh();message('Connection cancelled. No sign-in method was added.');
+});
 $('account-signout').onclick=()=>act(async()=>{
-  await request('/api/account',{action:'signout'});++epoch;session={...session,account:null};snapshot=null;render();
+  await request('/api/account',{action:'signout'});++epoch;session={...session,account:null,link_offer:null};snapshot=null;render();
   message('Signed out. Pending account results are kept separately; guest play is ready.');
 });
 $('account-sync').onclick=()=>act(synchronize);
@@ -117,4 +144,10 @@ $('account-import').onclick=()=>act(async()=>{
 window.addEventListener('online',()=>{synchronize();});
 // A cookie can change in another tab; never keep another user's log visible.
 window.addEventListener('focus',()=>{act(async()=>{await refresh();});});
-refresh().catch(e=>{render();message(explanation(e));});
+refresh().then(()=>{
+  const returned=new URLSearchParams(location.search).get('account');
+  if(returned&&!window.CarveGameStorage.running()){
+    $('account-dialog').showModal();message(returned==='provider-error'?'Sign-in was cancelled or could not be verified. Your previous account and saves are kept.':
+      session.link_offer?'Review and confirm this new sign-in method.':'Signed in. Guest records remain local unless explicitly imported.');
+  }
+}).catch(e=>{render();message(explanation(e));});

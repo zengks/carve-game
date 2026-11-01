@@ -28,7 +28,7 @@ try{
   const categories=await db.read(identity);assert.equal(categories.progress.length,2);assert.equal(Number(categories.progress.find(p=>p.mode==='challenge').best_height),123);
   const sameSubjectNewIssuer=await db.read({...identity,issuer:'http://other-isolated-auth.test'});assert.equal(sameSubjectNewIssuer.results.length,0);
   const scope=await pool.query("select relrowsecurity from pg_class join pg_namespace n on n.oid=relnamespace where n.nspname='carve_shared_v1' and relkind='r'");
-  assert(scope.rows.length===4&&scope.rows.every(r=>r.relrowsecurity));
+  assert(scope.rows.length===7&&scope.rows.every(r=>r.relrowsecurity));
   const role='carve_probe_'+crypto.randomUUID().replaceAll('-','');
   await pool.query('create role '+role+' nologin');
   const probe=await pool.connect();try{await probe.query('set role '+role);await assert.rejects(probe.query('select * from carve_shared_v1.completed_results'),/permission denied/);}finally{await probe.query('reset role');probe.release();}

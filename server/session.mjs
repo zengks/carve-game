@@ -19,7 +19,8 @@ export function cookieCodec(secret, {secure=true, now=()=>Date.now()}={}) {
       return body.expires>now()?body.value:null;
     } catch { return null; }
   }
-  const names={session:name,oauth:secure?'__Host-carve-oauth':'carve-local-oauth'};
+  const names={session:name,oauth:secure?'__Host-carve-oauth':'carve-local-oauth',
+    callback:secure?'__Host-carve-callback':'carve-local-callback',link:secure?'__Host-carve-link':'carve-local-link'};
   return {seal,open,read(req,purpose) {
     const raw=(req.headers.cookie??'').split(';').map(s=>s.trim()).find(s=>s.startsWith(names[purpose]+'='))?.slice(names[purpose].length+1);
     return open(raw,purpose);

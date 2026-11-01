@@ -732,6 +732,15 @@
         <button class="btn" id="account-verify" disabled>Verify &amp; sign in</button>
       </div>
       <div id="account-signed" hidden>
+        <p id="account-linked"></p>
+        <details><summary>Add another sign-in method</summary><p>Connect a new method to this account only after proving it is yours. Accounts that already have separate progress cannot be merged here. A recent sign-in is required.</p>
+          <div class="account-actions"><button class="btn ghost" id="account-link-apple" disabled>Connect Apple</button><button class="btn ghost" id="account-link-google" disabled>Connect Google</button></div>
+          <label class="account-field">Email to connect <input id="account-link-email" type="email" autocomplete="email" maxlength="254" /></label>
+          <button class="btn ghost" id="account-link-send">Send connection code</button>
+          <label class="account-field">Connection code <input id="account-link-code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" /></label>
+          <button class="btn ghost" id="account-link-verify">Review email connection</button>
+        </details>
+        <div id="account-link-offer" hidden><p id="account-link-copy"></p><button class="btn" id="account-link-confirm">Confirm connection</button><button class="btn ghost" id="account-link-cancel">Cancel connection</button></div>
         <div class="account-actions"><button class="btn" id="account-sync">Sync now</button><button class="btn ghost" id="account-import">Review guest import</button><button class="btn ghost" id="account-signout">Sign out</button></div>
         <p id="account-import-copy">Guest records are never imported automatically.</p><button class="btn ghost" id="account-import-confirm" hidden>Confirm import</button>
         <h3>Shared completed results</h3><ol id="account-results"></ol>

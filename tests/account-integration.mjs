@@ -60,5 +60,5 @@ try{
   const againData=await(await call('/api/shared-progress',undefined,again.cookie,again.scope)).json();assert.equal(againData.player_id,data.player_id);assert.equal(againData.results.length,1);
   reply=await call('/api/account',{action:'signout'},again.cookie);assert.equal(reply.status,200);assert(reply.headers.get('set-cookie').includes('Max-Age=0'));
   console.log('PASS isolated end-to-end: real Supabase email OTP, captured email, encrypted browser session, Postgres result/progress, duplicate retry, account switch and re-login persistence');
-  console.log('Apple/Google remain code-gated; no real provider, hosted service or payment used. Synthetic test users/data retained.');
+  console.log('Apple/Google credentials are not configured; no real provider, hosted service or payment used. Synthetic test users/data retained.');
 }finally{await new Promise(resolve=>server.close(resolve));await db.close();}

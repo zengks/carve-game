@@ -6,7 +6,7 @@ for shared bounty and purchase ownership in the web/mobile roadmaps.
 
 Implementation began on 2026-11-01 in a separate preview branch. See the
 [foundation checkpoint and remaining gates](shared-storage-foundation.md): email
-OTP/result syncing is tested only against isolated local services; Apple/Google,
+OTP/result syncing is tested only against isolated local services; Apple/Google activation,
 hosted sync, bounty and purchases are not enabled. The scope below remains the
 target, not a description of complete cross-platform functionality.
 
@@ -44,10 +44,11 @@ use an explicit recovery/support flow instead of silently moving ownership.
 
 Implementation gate: [Supabase's documented identity linking](https://supabase.com/docs/guides/auth/auth-identity-linking)
 automatically joins OAuth identities with matching emails. Our explicit-linking
-requirement therefore needs a verified Auth/provider strategy and collision tests
-before OAuth is enabled. Enabling manual linking or introducing a separate player
-ID must not be assumed to disable automatic linking. This is a design mismatch to
-resolve, not evidence that the existing local email-only build has been compromised.
+requirement is now implemented through a [direct OIDC broker](identity-broker.md)
+with provider issuer/subject identities and explicit confirmation, without enabling
+Supabase social OAuth. Signed synthetic collision/race tests pass; real provider
+configuration and hosted acceptance remain gates. A manual-link flag or separate
+player ID alone must never be assumed to disable Supabase automatic linking.
 
 On first sign-in, show which local guest results, progress and eligible rewards
 could be imported. Require an explicit choice; retain the source and current

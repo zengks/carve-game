@@ -21,9 +21,10 @@ backend in the shared-storage preview branch. The game remains playable as a
 local guest without a cloud service. Server libraries are pinned in the lockfile.
 
 The [shared-storage foundation](docs/shared-storage-foundation.md) implements
-isolated email OTP and completed-result/progress syncing. Apple/Google are not
-enabled until explicit identity linking is resolved; no hosted sync or payments
-are active. This preview does not change the live release.
+isolated email OTP and completed-result/progress syncing. A [direct identity broker](docs/identity-broker.md)
+implements explicit Apple/Google/email linking; signed synthetic tests pass, but
+real provider credentials and hosted sync are not configured. Payments remain
+deferred. See the [storage platform and setup guide](docs/platform-storage-setup.md).
 
 ## Current Flow course
 
