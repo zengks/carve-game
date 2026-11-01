@@ -2,11 +2,14 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import {createAccountHandler} from '../server/account.mjs';
+import {createNativeBrokerHandler} from '../server/native-broker.mjs';
 
 export function createGameServer() {
   const account=createAccountHandler();
+  const native=createNativeBrokerHandler();
   return createServer(async (req, res) => {
     const path = new URL(req.url, 'http://localhost').pathname;
+    if(path.startsWith('/api/native-broker/')||path==='/native/authorize'){await native(req,res);return;}
     if(['/api/account','/api/shared-progress'].includes(path)){await account(req,res);return;}
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
     if (['/classic', '/classic/', '/classic/index.html', '/src/carve.html'].includes(path)) { res.writeHead(308, {Location:'/'}).end(); return; }

@@ -196,3 +196,18 @@ advertising is included in this gameplay trial.
   not an assertion of audible quality or legal clearance.
 - [ ] Owner listens and selects a direction before any gameplay/native integration.
   No live BGM, store/download prompt, payments or storage behavior changed.
+
+## Native handoff integration — 2026-11-01
+
+- [x] Agree native/web v1 contract with separate browser and native session purposes.
+- [x] Implement preview-gated native API, system-browser launch/callback, explicit
+  link confirmation and private persistent generation/session state.
+- [x] Verify 104 actual Fetch-handler/database assertions using real signed
+  synthetic provider proofs in newly created retained QA databases. Keep every
+  existing native service, app/profile/save and database schema untouched.
+- [ ] Native independently runs Godot-to-actual-handler integration on frozen
+  sources; verify Node 24/26 and latest Vercel preview before review handoff.
+- [ ] Real hosted/provider/App-Link qualification and session/retention/rate policy
+  remain release gates. Both PRs stay draft/unmerged; payments remain deferred.
+
+See [native implementation and evidence limits](docs/native-broker.md).

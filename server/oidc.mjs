@@ -38,13 +38,13 @@ export function createOidc(env,{keyResolvers={},transport=fetch,now=()=>Date.now
     // Email is a display hint only, never an identity key or linking criterion.
     const verifiedEmail=(p.email_verified===true||p.email_verified==='true')&&typeof p.email==='string'&&p.email.length<255&&p.email.includes('@');
     const label=verifiedEmail?providerName+' · '+p.email.slice(0,2)+'…'+p.email.slice(p.email.lastIndexOf('@')):providerName+' account';
-    return {issuer:c.issuer,subject:p.sub,label,provider};
+    return {issuer:c.issuer,subject:p.sub,label,provider,authenticated_at:p.iat*1000};
   }
   return {ready,verify,
-    begin(provider,origin) {
+    begin(provider,origin,{redirect:customRedirect}={}) {
       const c=config(provider),nonce=randomSecret(),verifier=randomSecret();
       const url=new URL(c.authorize),state=randomSecret();
-      const redirect=origin+'/api/account?provider_return='+provider;
+      const redirect=customRedirect??origin+'/api/account?provider_return='+provider;
       url.search=new URLSearchParams({client_id:c.client,redirect_uri:redirect,response_type:'code',
         scope:provider==='google'?'openid email':'email',state,nonce,
         ...(provider==='apple'?{response_mode:'form_post'}:{code_challenge:createHash('sha256').update(verifier).digest('base64url'),code_challenge_method:'S256'})}).toString();

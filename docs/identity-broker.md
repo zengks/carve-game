@@ -123,3 +123,12 @@ Primary references checked 2026-11-01:
 - [Google discovery](https://accounts.google.com/.well-known/openid-configuration)
 - [Apple discovery](https://appleid.apple.com/.well-known/openid-configuration)
 - [Apple web configuration](https://developer.apple.com/help/account/capabilities/configure-sign-in-with-apple-for-the-web/)
+
+### Native actual-handler continuation — 2026-11-01
+
+A separate preview-gated native route and persistent native-purpose state now
+implement the agreed browser-mediated handoff. See [native checkpoint](native-broker.md)
+for the exact scope, independent integration fixture, configuration and remaining
+release gates. This supersedes the earlier "endpoint not implemented" status
+for local actual-handler testing only; hosted provider readiness and native SDK
+proof submission remain unimplemented. Browser account behavior is unchanged.

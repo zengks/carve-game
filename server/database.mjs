@@ -3,16 +3,7 @@ import {createHash} from 'node:crypto';
 import {canonical,validateEvent} from '../shared/contract.mjs';
 import {digest} from './oidc.mjs';
 
-// Separate private schema; never call the older native game's fixed-course RPCs.
-export function createDatabase(connectionString) {
-  const pool=new pg.Pool({connectionString,max:3,connectionTimeoutMillis:5000,
-    idleTimeoutMillis:10000,statement_timeout:5000});
-  const transaction=async fn=>{
-    const c=await pool.connect();
-    try {await c.query('BEGIN');const result=await fn(c);await c.query('COMMIT');return result;}
-    catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}
-  };
-  const principal=async(c,identity)=>{
+export const resolvePrincipal=async(c,identity)=>{
     // Lock same identity across concurrent first requests, without locking others.
     await c.query('select pg_advisory_xact_lock(hashtextextended($1,0))',[identity.issuer+':'+identity.subject]);
     const found=await c.query('select p.id,p.scope_key from carve_shared_v1.identities i join carve_shared_v1.players p on p.id=i.player_id where i.issuer=$1 and i.subject=$2 for update of p',[identity.issuer,identity.subject]);
@@ -26,6 +17,17 @@ export function createDatabase(connectionString) {
     await c.query('insert into carve_shared_v1.identities(issuer,subject,player_id) values($1,$2,$3)',[identity.issuer,identity.subject,row.rows[0].id]);
     return {player_id:row.rows[0].id,scope:rootScope};
   };
+
+// Separate private schema; never call the older native game's fixed-course RPCs.
+export function createDatabase(connectionString) {
+  const pool=new pg.Pool({connectionString,max:3,connectionTimeoutMillis:5000,
+    idleTimeoutMillis:10000,statement_timeout:5000});
+  const transaction=async fn=>{
+    const c=await pool.connect();
+    try {await c.query('BEGIN');const result=await fn(c);await c.query('COMMIT');return result;}
+    catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}
+  };
+  const principal=resolvePrincipal;
   const player=async(c,identity)=>(await principal(c,identity)).player_id;
   const snapshot=async(c,id)=>{
     const results=await c.query('select event from carve_shared_v1.completed_results where player_id=$1 order by received_at desc,event_id limit 100',[id]);
