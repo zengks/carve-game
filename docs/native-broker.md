@@ -78,8 +78,19 @@ isolation, consent and collision, retry/replay, independent clocks, held exchang
 versus signout/cancel/new intent, persistence through a new database pool, and
 RLS/unprivileged denial. Separate readiness tests cover production/unconfigured
 routes. Existing browser/game/account/OIDC checks remain required. Native owns
-an independent headless Godot integration runner against this exact fixture;
-its receipt and frozen source hashes are a separate acceptance gate.
+an independent integration runner against this exact fixture. Its 79 raw HTTP
+policy assertions and 71 actual headless Godot HTTP assertions passed against
+web checkpoint debd580fc1023c38070396adfff24a045fdef4e9. The private native
+receipt at .local/shared-storage-foundation/native-integration-1793569846376/receipt.json
+matched all 21 frozen source hashes, recorded no redirect trap hit, and confirmed
+API/QA listeners plus pools were closed. The existing web QA PostgreSQL was
+then restored to its original stopped state with every database/volume retained.
+
+Node 24/26 push/PR CI and Vercel preview passed for that checkpoint. Browser
+inspection of the deployed API and rewritten launch returned not_configured.
+The game account panel kept Apple/Google/email disabled with guest play available;
+390 × 844 browser layout had no horizontal overflow. No native-store prompt was
+enabled. Real provider/installed-app/physical-device qualification is still open.
 
 ## Open release work
 

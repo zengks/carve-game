@@ -205,8 +205,11 @@ advertising is included in this gameplay trial.
 - [x] Verify 104 actual Fetch-handler/database assertions using real signed
   synthetic provider proofs in newly created retained QA databases. Keep every
   existing native service, app/profile/save and database schema untouched.
-- [ ] Native independently runs Godot-to-actual-handler integration on frozen
-  sources; verify Node 24/26 and latest Vercel preview before review handoff.
+- [x] Native independently passes 79 raw HTTP policy and 71 headless Godot
+  integration checks against frozen actual-handler sources. Receipt hashes and
+  owned listener/pool cleanup verified; web QA database restored stopped.
+- [x] Verify Node 24/26 and the deployed preview gates; guest account UI remains
+  disabled/unconfigured and fits a 390px viewport. Keep both PRs draft/unmerged.
 - [ ] Real hosted/provider/App-Link qualification and session/retention/rate policy
   remain release gates. Both PRs stay draft/unmerged; payments remain deferred.
 
