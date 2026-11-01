@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "created": "2026-11-01",
+  "purpose": "Audition only, not wired into gameplay",
+  "tracks": [
+    {
+      "slug": "skyward",
+      "title": "Skyward",
+      "bpm": 96,
+      "key": "D major",
+      "description": "Warm electronic adventure: floating pads, soft mallets and an unhurried upward pulse.",
+      "seconds": 43.0,
+      "file": "skyward.mp3",
+      "score": "source/skyward.score.json",
+      "midi": "source/skyward.mid",
+      "sha256": "e39fb2b4090685276f1c753fb56b65348cbf89c37b9424c95f093ac65b2857b0",
+      "bytes": 861745,
+      "integrated_lufs": -18.45,
+      "true_peak_dbtp": -6.39,
+      "loudness_range_lu": 3.2
+    },
+    {
+      "slug": "ancient-gardens",
+      "title": "Ancient Gardens",
+      "bpm": 88,
+      "key": "A Dorian",
+      "description": "Organic mystery: wooden tones, breathy atmosphere, resonant bells and a gentle hand-drum pattern.",
+      "seconds": 35.727,
+      "file": "ancient-gardens.mp3",
+      "score": "source/ancient-gardens.score.json",
+      "midi": "source/ancient-gardens.mid",
+      "sha256": "75109893eb2fb84bcc054c5b8f8801a0b91eb5bd5c2d7d64eccfc0d5e27609a5",
+      "bytes": 715990,
+      "integrated_lufs": -18.45,
+      "true_peak_dbtp": -4.34,
+      "loudness_range_lu": 3.0
+    },
+    {
+      "slug": "neon-momentum",
+      "title": "Neon Momentum",
+      "bpm": 118,
+      "key": "F# minor",
+      "description": "Bright arcade momentum: a melodic synth hook, syncopated bass and a crisp but restrained electronic beat.",
+      "seconds": 43.678,
+      "file": "neon-momentum.mp3",
+      "score": "source/neon-momentum.score.json",
+      "midi": "source/neon-momentum.mid",
+      "sha256": "cd1b6b5e3373a435035677c89629bd9309005059433745ed8b9b1a2f2064415c",
+      "bytes": 875335,
+      "integrated_lufs": -18.44,
+      "true_peak_dbtp": -6.87,
+      "loudness_range_lu": 2.4
+    }
+  ]
+}

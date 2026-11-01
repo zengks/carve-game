@@ -182,3 +182,17 @@ advertising is included in this gameplay trial.
    keeping the initial launch facing right. Do not silently copy tuning numbers
    or mix records until this product-rule difference is deliberately reconciled.
 4. Develop the next local gameplay comparison based on what the trial reveals.
+
+## Preview music auditions — 2026-11-01
+
+- [x] Compose three distinct AI-assisted scores and synthesize sample-free demos:
+  Skyward, Ancient Gardens and Neon Momentum. Retain JSON/MIDI sources,
+  reproducible renderer, hashes and separate asset rights notice.
+- [x] Add a standalone `/music-demos/` audition page with manual audio controls,
+  one-at-a-time playback and no autoplay. Exclude page/audio from production.
+- [x] Run full `npm run build`; verify decoded loudness/headroom, asset integrity
+  and production exclusion. Check all three browser playback states and phone-size
+  layout (390 × 844, no horizontal overflow). This is technical playback evidence,
+  not an assertion of audible quality or legal clearance.
+- [ ] Owner listens and selects a direction before any gameplay/native integration.
+  No live BGM, store/download prompt, payments or storage behavior changed.

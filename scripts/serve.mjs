@@ -12,6 +12,7 @@ export function createGameServer() {
     if (['/classic', '/classic/', '/classic/index.html', '/src/carve.html'].includes(path)) { res.writeHead(308, {Location:'/'}).end(); return; }
     const files = {
       '/': ['src/expedition.html', 'text/html; charset=utf-8'],
+      '/music-demos/': ['src/music-demos/index.html', 'text/html; charset=utf-8'],
       '/expedition/': ['src/expedition.html', 'text/html; charset=utf-8'],
       '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8'],
       '/sitemap.xml': ['sitemap.xml', 'application/xml; charset=utf-8'],
@@ -21,6 +22,9 @@ export function createGameServer() {
       '/storage/outbox.mjs':['src/storage/outbox.mjs','text/javascript; charset=utf-8'],
       '/storage/account.mjs':['src/storage/account.mjs','text/javascript; charset=utf-8'],
     };
+    for (const name of ['skyward', 'ancient-gardens', 'neon-momentum']) {
+      files[`/assets/music/demos/${name}.mp3`] = [`assets/music/demos/${name}.mp3`, 'audio/mpeg'];
+    }
     for (const name of ['carve-logo.webp', 'favicon-96.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'social-card.png']) {
       files[`/assets/branding/${name}`] = [`assets/branding/${name}`, name.endsWith('.webp') ? 'image/webp' : 'image/png'];
     }

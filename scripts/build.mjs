@@ -61,6 +61,15 @@ export async function build(outputDir = join(root, 'dist'), { production = false
     await writeFile(join(outputDir, destination), source.replace('</head>', `${telemetry}</head>`));
   }
   await writeFile(join(outputDir, 'site.webmanifest'), manifest);
+  // Auditions are deliberately absent from every production build.
+  if (!production) {
+    await mkdir(join(outputDir, 'music-demos'), {recursive:true});
+    await mkdir(join(outputDir, 'assets/music/demos'), {recursive:true});
+    await copyFile(join(root, 'src/music-demos/index.html'), join(outputDir, 'music-demos/index.html'));
+    for (const name of ['skyward', 'ancient-gardens', 'neon-momentum']) {
+      await copyFile(join(root, `assets/music/demos/${name}.mp3`), join(outputDir, `assets/music/demos/${name}.mp3`));
+    }
+  }
   for (const file of ['robots.txt', 'sitemap.xml', 'googlefd0692e33131ffd2.html']) {
     await copyFile(join(root, file), join(outputDir, file));
   }

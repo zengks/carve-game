@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "composition": "AI-assisted original note arrangements composed for this request; no human-composer claim",
+  "rendering": "Local oscillators, harmonic sums, synthesized envelopes and seeded noise only",
+  "external_audio_inputs": [],
+  "external_music_services": [],
+  "reference_tracks": [],
+  "tools": {
+    "python": "3.14",
+    "numpy": "2.5.4",
+    "ffmpeg": "ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "renderer": "scripts/render-music-demos.py",
+  "renderer_sha256": "b86c0b44e7470db51b8fa23a0834d29f49070ddf38d09959214f3c0eb387e132",
+  "masters": "Local ignored build/music-demos/*-master.wav, 44.1 kHz stereo 24-bit PCM",
+  "limitations": [
+    "No global similarity search or legal clearance performed",
+    "AI authorship/copyright protection depends on law and human contribution",
+    "Demo excerpts fade out; not final seamless game loops"
+  ],
+  "rights_notice": "RIGHTS.md"
+}

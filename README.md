@@ -239,4 +239,7 @@ turn on touch controls on hybrid devices; narrow screens fit the climbing lane.
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+Source code: MIT — see [`LICENSE`](LICENSE). New music audition recordings and
+scores have a separate [rights notice](assets/music/demos/RIGHTS.md), with no public
+reuse license granted. Listen at `/music-demos/` on development/branch previews;
+these demos are excluded from production and are not connected to game audio.
