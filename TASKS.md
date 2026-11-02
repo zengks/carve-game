@@ -237,3 +237,22 @@ See [native implementation and evidence limits](docs/native-broker.md).
   Keep both PRs draft/unmerged, public download prompt and payments disabled.
 
 See [agreed native progress contract](docs/native-progress.md).
+
+## Hosted production/staging setup — 2026-11-02
+
+- [x] Verify existing Vercel and Supabase accounts already report Pro; no upgrade.
+- [x] Create a separate protected Vercel staging project and verify its staging
+  deployment/preview page; preserve the existing live project and production guard.
+- [x] Push/test verified remote DB TLS settings and restricted new-server-role
+  creation, including 92 actual PostgreSQL privilege/save assertions.
+- [x] Coordinate dormant native environment descriptors and public-only metadata.
+- [x] Provision the approved new Micro projects in the existing Pro organization;
+  retain unrelated projects and record the additional compute estimate.
+- [x] Create isolated CARVE staging/production databases and install reviewed
+  schema/role migrations; keep production dormant and unrelated projects untouched.
+- [x] Install explicitly approved staging-only Preview secrets; verify actual hosted
+  restricted-login TLS/schema/role readiness locally and in the deployed browser.
+- [ ] Configure provider/SMTP/domain prerequisites and qualify actual hosted sign-in,
+  save recovery and backup restore. Real provider/store/payments stay gated.
+
+See [current resource/billing/setup record](docs/hosted-environments.md).

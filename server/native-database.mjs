@@ -1,11 +1,12 @@
 import pg from 'pg';
 import {resolvePrincipal} from './database.mjs';
 import {nativeProgressTransaction} from './native-progress-database.mjs';
+import {postgresOptions} from './postgres.mjs';
 
 // Private persistent state; the per-instance row lock serializes grant/cancel/link.
 // Only token/binding/code hashes are persisted, never their wire secrets.
 export function createNativeDatabase(connectionString) {
- const pool=new pg.Pool({connectionString,max:4,connectionTimeoutMillis:5000,idleTimeoutMillis:10000,statement_timeout:5000});
+ const pool=new pg.Pool(postgresOptions(connectionString,{max:4}));
  return {
   close:()=>pool.end(),
   async locate(id){return (await pool.query('select client_id,binding_hash from carve_shared_v1.native_flow_index where id=$1',[id])).rows[0]??null;},

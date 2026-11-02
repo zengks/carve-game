@@ -1,8 +1,13 @@
 # Shared backend platform and owner setup
 
-Recommendation, 2026-11-01; not a purchase or provisioning record. Paid storage is
-acceptable to the owner, but no subscription, company, bank or payout setup has
-been selected/created. Payment-receiving work remains explicitly deferred.
+Selected by the owner, 2026-11-02: Vercel Pro and Supabase Pro, with isolated
+production/staging setup and no change to the live game. Read-only inventory now
+confirms both existing provider accounts report Pro. A separate protected Vercel
+staging project and two approved new CARVE Supabase Micro projects now exist.
+Staging has verified restricted-login TLS/schema readiness; production remains
+dormant with login disabled. No plan upgrade was performed. See the
+[current setup record](hosted-environments.md). Company/bank/payout setup and
+receiving payments remain deferred.
 
 ## One provider, isolated products
 
@@ -51,10 +56,11 @@ and staging on two Micro instances is therefore approximately **US$35/month**
 before tax, overages and other services. Included quotas are not unlimited, and
 compute/branching, egress, log retention and backup add-ons can change the bill.
 
-The connected organization currently reports Free; no CARVE hosted project was
-present in the read-only inventory. Upgrading an existing organization can make
-its other projects billable too. Review the **whole organization** estimate before
-an upgrade; US$35 is the two-project example, not a quote for all existing projects.
+The connected `ponydude` organization now reports Pro; no CARVE hosted project is
+present. Its three existing non-CARVE projects are preserved. Two new Micro
+projects in that paid organization would add approximately
+US$20/month before tax/usage, subject to the provider's project quotes. US$35 is
+the new-organization two-project example, not a quote for all existing projects.
 Separate organizations can be appropriate for different owners, budgets or teams;
 do not mix another legal entity's projects to save a small monthly amount.
 
@@ -66,10 +72,15 @@ provider after reviewing needs and its current offer. No email vendor is chosen.
 
 ## Owner actions and what can be automated
 
-1. **Approve the backend scope and budget**: one organization, isolated CARVE
+1. **Select the owning organization**: the owner approved Vercel/Supabase Pro,
+   isolated CARVE staging/production and keeping the live game unchanged. The
+   provider requires an explicit organization choice before project creation.
+   Choose the existing Pro organization or a new separately billed organization.
+   No upgrade is needed for the current Pro accounts. The intended setup is one
+   organization, isolated CARVE
    staging/production projects, intended owner/team and primary region. Confirm
-   whether to upgrade the existing Free organization or use a separate one after
-   reviewing the effect on existing projects. Complete billing/terms yourself
+   billing ownership and review the effect on existing projects. Complete any new
+   billing/terms yourself
    when a concrete purchase is approved; willingness to pay is not a signed order.
 2. **Pick a stable CARVE domain/staging address and sender domain**. Approve any
    domain purchase separately. The owner must authorize DNS and email-domain
