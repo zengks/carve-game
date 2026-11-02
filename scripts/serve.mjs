@@ -3,12 +3,15 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import {createAccountHandler} from '../server/account.mjs';
 import {createNativeBrokerHandler} from '../server/native-broker.mjs';
+import {createNativeProgressHandler} from '../server/native-progress.mjs';
 
 export function createGameServer() {
   const account=createAccountHandler();
   const native=createNativeBrokerHandler();
+  const nativeProgress=createNativeProgressHandler();
   return createServer(async (req, res) => {
     const path = new URL(req.url, 'http://localhost').pathname;
+    if(path==='/api/native-progress/v1'){await nativeProgress(req,res);return;}
     if(path.startsWith('/api/native-broker/')||path==='/native/authorize'){await native(req,res);return;}
     if(['/api/account','/api/shared-progress'].includes(path)){await account(req,res);return;}
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }

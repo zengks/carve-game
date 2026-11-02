@@ -66,6 +66,8 @@ function currentFlow(state,f,now,phase){
 }
 function hint(proof){const s=proof.label;return typeof s==='string'&&s.trim()===s&&[...s].length>0&&[...s].length<=96&&Buffer.byteLength(s)<=192&&!/[\x00-\x1f\x7f-\x9f\u202a-\u202e\u2066-\u2069]/.test(s)?s:null;}
 const account=s=>({player_id:s.player_id,account_scope:s.scope});
+// Reuse the exact native-purpose authorization policy for shared progress.
+export {configFor as nativeConfiguration,actor as nativeActor,acknowledge as acknowledgeNativeActor,rawBody as readNativeBody};
 
 export function createNativeBrokerHandler({env=process.env,database,oidc=createOidc(env),now=()=>Date.now(),beforeGrant=async()=>{}}={}){
  const config=configFor(env);let db=database;

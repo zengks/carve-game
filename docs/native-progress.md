@@ -1,8 +1,9 @@
 # First Ascent shared saves — agreed native/web v1
 
 2026-11-02. Preview only: PR17 and mobile PR46 stay draft/unmerged. This contract
-is agreed with carve-mobile. The endpoint/database implementation is a separate
-checkpoint. No hosted/provider setup, old-data migration, payment or live change.
+is agreed with carve-mobile. The preview endpoint/database code now implements
+this contract; real PostgreSQL and independent native integration are separate
+acceptance checkpoints. No hosted/provider setup, old-data migration, payment or live change.
 
 ## Identity and transport
 
@@ -124,3 +125,7 @@ operations, hosted migration and monetary systems remain separate release gates.
 
 Reviewed vectors: shared/fixtures/native-first-ascent-v1.json and
 native-first-ascent-cases-v1.json. Native mirrors independently before integration.
+
+Implementation checkpoint:52 synthetic-transaction API assertions pass, alongside
+75 contract vectors and unchanged broker readiness checks. No database/service
+was started for that checkpoint; it is not real PostgreSQL acceptance.

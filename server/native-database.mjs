@@ -1,5 +1,6 @@
 import pg from 'pg';
 import {resolvePrincipal} from './database.mjs';
+import {nativeProgressTransaction} from './native-progress-database.mjs';
 
 // Private persistent state; the per-instance row lock serializes grant/cancel/link.
 // Only token/binding/code hashes are persisted, never their wire secrets.
@@ -17,6 +18,7 @@ export function createNativeDatabase(connectionString) {
     if(!row)throw Object.assign(Error('handoff_rejected'),{status:401});
     const state=row.data;
     const result=await fn(state,{
+     nativeProgress:nativeProgressTransaction(c),
      index:id=>c.query('insert into carve_shared_v1.native_flow_index(id,client_id,binding_hash) values($1,$2,$3)',[id,client,binding]),
      principal:proof=>resolvePrincipal(c,proof),
      async link(actor,proof){
