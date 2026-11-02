@@ -5,6 +5,9 @@ build/
 .DS_Store
 .env
 .env.local
+.env.*
+!.env.example
+.vercel/
 *.swp
 *.swo
 *~
