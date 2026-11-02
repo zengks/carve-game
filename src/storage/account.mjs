@@ -17,7 +17,8 @@ const explanation=e=>({invalid_email:'Enter a valid email address.',invalid_code
   sign_in_required:'Your session has ended. Sign in again; pending results are kept.',event_conflict:'A conflicting result was kept locally for review.',
   account_changed:'The account changed in another tab. Results stayed with their original account.',
   storage_unavailable:'Local sync storage is blocked. Your existing game save is kept; cloud uploads are unavailable.',
-  not_configured:'Cloud sign-in is not configured in this preview.',provider_not_ready:'This provider is awaiting secure account-linking setup.',
+  not_configured:'Cloud sign-in is not configured in this preview.',provider_not_ready:'This sign-in method is being prepared.',
+  email_not_ready:'Email sign-in is being prepared. You can keep playing as a guest.',
   reauth_required:'Sign out and sign in again before connecting another sign-in method. Your saved results are kept.',
   identity_already_owned:'That sign-in method belongs to another CARVE account. Neither account was merged or changed.',
   link_offer_expired:'This connection request expired or was cancelled. Start a new connection.',
@@ -46,8 +47,10 @@ function render() {
   for(const id of ['account-link-confirm','account-link-cancel'])$(id).disabled=busy;
   for(const id of ['account-send','account-verify'])$(id).disabled=busy||!session.providers.email;
   for(const id of ['account-sync','account-import','account-signout'])$(id).disabled=busy;
+  const available=[['apple','Apple'],['google','Google'],['email','email code']].filter(([key])=>session.providers[key]).map(([,label])=>label);
   $('account-config').textContent=!session.configured?'Cloud sign-in is not configured in this preview. You can keep playing as a guest.':
-    !session.providers.apple||!session.providers.google?'Email code is available. Apple and Google need their provider credentials configured.':'';
+    !available.length?'Sign-in is being prepared. You can keep playing as a guest.':
+    available.length<3?'Available sign-in methods: '+available.join(', ')+'. Other methods are being prepared.':'';
   renderSnapshot();
 }
 async function refresh() {

@@ -68,8 +68,10 @@ Server-only Google variables: `CARVE_GOOGLE_CLIENT_ID` (web/server client) and
 `CARVE_GOOGLE_CLIENT_SECRET`. Apple variables: `CARVE_APPLE_SERVICE_ID`,
 `CARVE_APPLE_TEAM_ID`, `CARVE_APPLE_KEY_ID`, `CARVE_APPLE_PRIVATE_KEY`. Readiness
 requires those credentials; no legacy override flag can enable Supabase linking.
-No credentials or real provider settings were created or configured in this work.
-The hosted preview still has no shared test backend and keeps sign-in disabled.
+No provider credentials were created in that initial checkpoint. Hosted staging
+now has its isolated database; follow-up public Auth configuration and disabled
+email readiness are recorded in [staging setup](staging-signin-setup.md).
+Real provider sign-in remains unqualified and disabled.
 Production remains independently disabled by `VERCEL_ENV=production`.
 
 Apple needs the intended primary App ID/team, related Services ID, verified domain

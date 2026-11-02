@@ -33,12 +33,25 @@ let origin;
 const server=createServer((req,res)=>handler(req,res));
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 origin='http://127.0.0.1:'+server.address().port;
-const env={CARVE_APP_ORIGIN:origin,CARVE_SUPABASE_URL:'http://127.0.0.1:55521',CARVE_SUPABASE_PUBLISHABLE_KEY:'test-key',
+const env={CARVE_EMAIL_SIGN_IN_ENABLED:'true',CARVE_APP_ORIGIN:origin,CARVE_SUPABASE_URL:'http://127.0.0.1:55521',CARVE_SUPABASE_PUBLISHABLE_KEY:'test-key',
   CARVE_SESSION_SECRET:secret,CARVE_SHARED_DATABASE_URL:'postgres://unused',CARVE_OAUTH_LINKING_REVIEWED:'true'};
 let handler=createAccountHandler({env,authFactory:sdk,database});
 const call=(path='/api/account',body,extra={})=>fetch(origin+path,{method:body?'POST':'GET',
   headers:{...(body?{'Content-Type':'application/json',Origin:origin}:{}),...extra},body:body?JSON.stringify(body):undefined});
 try{
+  for(const enabled of [undefined,false,'false','TRUE','1']){
+    let authOpened=0;
+    handler=createAccountHandler({env:{...env,CARVE_EMAIL_SIGN_IN_ENABLED:enabled},database,authFactory:()=>{authOpened++;throw Error('must not create email client');},oidc:{ready:p=>p==='google'}});
+    const ready=await(await call()).json();
+    assert.equal(ready.configured,true);assert.deepEqual(ready.providers,{email:false,apple:false,google:true},'email readiness is independent of configured Google');
+    for(const action of ['email','verify','link-email-send','link-email-verify']){
+      const blocked=await call('/api/account',{action,email:'player@example.test',code:'123456'});
+      assert.equal(blocked.status,503);assert.deepEqual(await blocked.json(),{error:'email_not_ready'});
+      assert.equal(blocked.headers.get('set-cookie'),null);
+    }
+    assert.equal(authOpened,0);assert.equal(sessions.size,0);assert.equal(writes,0);
+  }
+  handler=createAccountHandler({env,authFactory:sdk,database});
   let response=await call();assert.equal(response.headers.get('cache-control'),'private, no-store');
   let value=await response.json();assert.equal(value.account,null);assert.equal(value.providers.email,true);assert.equal(value.providers.apple,false);assert.equal(value.providers.google,false);
   response=await call('/api/account',{action:'oauth',provider:'google'});assert.equal(response.status,503,'legacy environment flag cannot replace provider credentials');
