@@ -18,6 +18,10 @@ for(const suffix of ['?sslmode=disable','?sslmode=require','?sslmode=verify-ca',
 const named=postgresOptions(hosted+'?application_name=carve-staging&sslmode=verify-full');
 assert.equal(new pg.Client(named).connectionParameters.host,'pooler.example.test');
 assert.equal(new pg.Client(named).connectionParameters.application_name,'carve-staging');
+const projectRef='a'.repeat(20),bound=`postgres://carve_runtime.${projectRef}:test-only@aws-1-ca-central-1.pooler.supabase.com:6543/postgres`;
+assert.throws(()=>postgresOptions(local,{projectRef}),/invalid_database_configuration/);
+assert.equal(postgresOptions(bound,{projectRef}).ssl.rejectUnauthorized,true);
+for(const url of [bound.replace(projectRef,'b'.repeat(20)),bound.replace('/postgres','/other'),bound.replace('carve_runtime.','postgres.'),bound.replace('pooler.supabase.com','other.example.test')])assert.throws(()=>postgresOptions(url,{projectRef}),/invalid_database_configuration/);
 for(const url of ['not-a-url','https://example.test/db','postgres://pooler.example.test/db',hosted+'#fragment'])assert.throws(()=>postgresOptions(url),/invalid_database_configuration/);
 for(const ca of ['',false,'PRIVATE KEY','-----BEGIN CERTIFICATE-----\nPRIVATE KEY'])assert.throws(()=>postgresOptions(hosted,{ca}),/invalid_database_configuration/);
 const pem='-----BEGIN CERTIFICATE-----\nTEST ONLY\n-----END CERTIFICATE-----';

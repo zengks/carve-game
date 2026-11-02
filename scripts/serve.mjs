@@ -4,13 +4,16 @@ import { fileURLToPath } from 'node:url';
 import {createAccountHandler} from '../server/account.mjs';
 import {createNativeBrokerHandler} from '../server/native-broker.mjs';
 import {createNativeProgressHandler} from '../server/native-progress.mjs';
+import {createStorageHealthHandler} from '../server/storage-health.mjs';
 
 export function createGameServer() {
   const account=createAccountHandler();
   const native=createNativeBrokerHandler();
   const nativeProgress=createNativeProgressHandler();
+  const storageHealth=createStorageHealthHandler();
   return createServer(async (req, res) => {
     const path = new URL(req.url, 'http://localhost').pathname;
+    if(path==='/api/storage-health'){await storageHealth(req,res);return;}
     if(path==='/api/native-progress/v1'){await nativeProgress(req,res);return;}
     if(path.startsWith('/api/native-broker/')||path==='/native/authorize'){await native(req,res);return;}
     if(['/api/account','/api/shared-progress'].includes(path)){await account(req,res);return;}
