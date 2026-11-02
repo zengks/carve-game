@@ -5,6 +5,7 @@ import {runtimeRoleSQL,runtimePrivileges} from '../server/runtime-role.mjs';
 const local='postgres://test:local@127.0.0.1:5432/carve_shared_test_options';
 assert.equal(postgresOptions(local,{max:3}).connectionString,local);
 assert.equal(postgresOptions(local,{max:3}).ssl,undefined);
+for(const suffix of ['?host=remote.example.test&sslmode=disable','?hostaddr=203.0.113.1','?user=postgres','?port=6543','?sslmode=disable&sslmode=disable'])assert.throws(()=>postgresOptions(local+suffix),/invalid_database_configuration/);
 const hosted='postgres://carve_runtime.ref:test-only@pooler.example.test:6543/postgres';
 for(const suffix of ['', '?sslmode=verify-full']){
  const options=postgresOptions(hosted+suffix,{max:4});const pool=new pg.Pool(options);
@@ -14,6 +15,9 @@ for(const suffix of ['', '?sslmode=verify-full']){
  assert.equal(options.max,4);
 }
 for(const suffix of ['?sslmode=disable','?sslmode=require','?sslmode=verify-ca','?sslmode=verify-full&sslmode=verify-full','?ssl=false','?sslrootcert=arbitrary-path','?sslkey=key','?sslcert=cert','?uselibpqcompat=true'])assert.throws(()=>postgresOptions(hosted+suffix),/invalid_database_configuration/);
+const named=postgresOptions(hosted+'?application_name=carve-staging&sslmode=verify-full');
+assert.equal(new pg.Client(named).connectionParameters.host,'pooler.example.test');
+assert.equal(new pg.Client(named).connectionParameters.application_name,'carve-staging');
 for(const url of ['not-a-url','https://example.test/db','postgres://pooler.example.test/db',hosted+'#fragment'])assert.throws(()=>postgresOptions(url),/invalid_database_configuration/);
 for(const ca of ['',false,'PRIVATE KEY','-----BEGIN CERTIFICATE-----\nPRIVATE KEY'])assert.throws(()=>postgresOptions(hosted,{ca}),/invalid_database_configuration/);
 const pem='-----BEGIN CERTIFICATE-----\nTEST ONLY\n-----END CERTIFICATE-----';

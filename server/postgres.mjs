@@ -6,14 +6,16 @@ export function postgresOptions(connectionString,{max,ca=process.env.CARVE_DATAB
  if(!['postgres:','postgresql:'].includes(url.protocol)||!url.hostname||url.hash)fail();
  const local=['127.0.0.1','localhost','[::1]'].includes(url.hostname);
  const base={max,connectionTimeoutMillis:5000,idleTimeoutMillis:10000,statement_timeout:5000};
+ // pg also accepts host/user/etc query overrides. In particular, a loopback URL
+ // must never become a remote plaintext connection after pg parses its query.
+ for(const [key]of url.searchParams)if(!['sslmode','application_name'].includes(key))fail();
+ for(const key of ['sslmode','application_name'])if(url.searchParams.getAll(key).length>1)fail();
  if(local)return {...base,connectionString};
  if(!url.username||!url.password)fail();
  // Only verify-full can be specified. Other TLS URL options can override ssl.
  for(const [key,value]of url.searchParams){
   if(key==='sslmode'){if(value!=='verify-full')fail();}
-  else if(key.startsWith('ssl')||key==='uselibpqcompat')fail();
  }
- if(url.searchParams.getAll('sslmode').length>1)fail();
  url.searchParams.delete('sslmode');
  if(ca!==undefined&&(typeof ca!=='string'||!ca.includes('-----BEGIN CERTIFICATE-----')||ca.includes('PRIVATE KEY')))fail();
  return {...base,connectionString:url.href,ssl:{rejectUnauthorized:true,...(ca?{ca}:{})}};
