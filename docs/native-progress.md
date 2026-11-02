@@ -204,5 +204,10 @@ volume mounts and loopback bindings matched the pre-test baseline; it was restor
 to its original stopped state and port 55532 refuses connections. No database,
 volume, target, app or save was deleted. The private peer verification record is
 /private/tmp/carve-peer-game-q1793649543476.json and contains no credentials.
+Native's final preservation audit reports all 143 prior simulator identities/states
+and 59 retained app/vault/AVD scope digests unchanged. The original 140-device,
+52-scope baseline is an exact subset of that baseline. One protected Apple Maps
+cache was checked through metadata only; its contents are unverified. Do not
+describe this as a content hash of every prior file.
 Both PR17 and PR46 stay draft/unmerged; live gameplay, payments and the mobile
 download prompt are unchanged/disabled as applicable.
