@@ -2,6 +2,10 @@ import assert from 'node:assert/strict';
 import pg from 'pg';
 import {postgresOptions} from '../server/postgres.mjs';
 import {runtimeRoleSQL,runtimePrivileges} from '../server/runtime-role.mjs';
+// Build checks also run inside configured Preview environments. Keep their
+// synthetic endpoints independent of hosted secrets; never open a connection.
+const inherited=Object.fromEntries(['CARVE_EXPECTED_PROJECT_REF','CARVE_DATABASE_CA_CERT'].map(key=>[key,process.env[key]]));
+for(const key of Object.keys(inherited))delete process.env[key];
 const local='postgres://test:local@127.0.0.1:5432/carve_shared_test_options';
 assert.equal(postgresOptions(local,{max:3}).connectionString,local);
 assert.equal(postgresOptions(local,{max:3}).ssl,undefined);
@@ -26,6 +30,15 @@ for(const url of ['not-a-url','https://example.test/db','postgres://pooler.examp
 for(const ca of ['',false,'PRIVATE KEY','-----BEGIN CERTIFICATE-----\nPRIVATE KEY'])assert.throws(()=>postgresOptions(hosted,{ca}),/invalid_database_configuration/);
 const pem='-----BEGIN CERTIFICATE-----\nTEST ONLY\n-----END CERTIFICATE-----';
 assert.equal(postgresOptions(hosted,{ca:pem}).ssl.ca,pem);
+try{
+ process.env.CARVE_EXPECTED_PROJECT_REF=projectRef;
+ process.env.CARVE_DATABASE_CA_CERT=pem;
+ assert.equal(postgresOptions(bound).ssl.ca,pem);
+ assert.throws(()=>postgresOptions(local),/invalid_database_configuration/);
+ assert.throws(()=>postgresOptions(hosted),/invalid_database_configuration/);
+}finally{
+ for(const [key,value]of Object.entries(inherited))if(value===undefined)delete process.env[key];else process.env[key]=value;
+}
 assert.equal(Object.keys(runtimePrivileges).length,11);
 for(const role of ['postgres','anon','carve_runtime;DROP ROLE postgres','carve_runtime_ABC','carve_runtime_1234567'])assert.throws(()=>runtimeRoleSQL(role),/invalid_runtime_role/);
 const sql=runtimeRoleSQL('carve_runtime');assert(sql.includes('NOLOGIN')&&sql.includes('NOBYPASSRLS'));
