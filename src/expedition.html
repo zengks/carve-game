@@ -619,6 +619,19 @@
       #camp-options { display:grid; gap:12px; margin-top:18px; }
       #camp-options button:disabled { opacity:1; color:var(--ink); border-style:dashed; cursor:default; }
       #camp-options button { font-weight:400; margin:0; min-height:52px; padding:14px; text-align:left; white-space:normal; font-size:13px; line-height:1.5; }
+      #account-dialog { width:min(600px,94vw); }
+      #account-dialog .rift-body { max-height:65dvh; overflow:auto; }
+      #account-dialog p { line-height:1.5; }
+      .account-actions { display:flex; flex-wrap:wrap; gap:8px; }
+      #account-dialog .btn { min-height:44px; margin-top:10px; font-size:12px; }
+      .account-field { display:grid; gap:6px; margin-top:14px; font-size:13px; }
+      .account-field input { box-sizing:border-box; width:100%; min-height:44px; padding:10px; background:#111b26; color:white; border:1px solid #617080; border-radius:8px; font-size:16px; }
+      #account-status { color:var(--gold); }
+      #account-results { padding-left:20px; font-size:12px; }
+      #account-dialog [hidden] { display:none; }
+      #menu #account-open { margin-top:8px; min-height:44px; padding:8px 12px; font-size:11px; }
+      #menu #account-open[hidden] { display:none; }
+      @media(max-height:480px) { #menu .keys { display:none; } #menu #menu-progress { margin-top:6px; } }
     </style>
   </head>
   <body>
@@ -702,9 +715,40 @@
           </div>
         </div>
         <div class="expedition-links"><button class="btn ghost" id="workshop-open">Workshop</button><button class="btn ghost" id="records-open">Records</button><button class="btn ghost" id="help-open" aria-haspopup="dialog">Field guide</button><button class="btn ghost hidden" id="previous-open" aria-haspopup="dialog">Previous progress</button></div><p id="menu-progress"></p>
+        <button class="btn ghost" id="account-open" aria-haspopup="dialog" hidden>Guest · Sign in</button>
         </div>
       </div>
     </div>
+    <dialog id="account-dialog" aria-labelledby="account-title">
+      <div class="rift-body"><h2 id="account-title">Your CARVE account</h2>
+      <p id="account-identity">Playing as a guest on this device.</p>
+      <p id="account-config">Checking cloud availability…</p>
+      <p>This first preview saves completed Flow results and their progress to your account when configured. Your current climb, bounty and skill equipment stay on this device. Payments are not available.</p>
+      <div id="account-signin">
+        <div class="account-actions"><button class="btn ghost" id="account-apple" disabled>Continue with Apple</button><button class="btn ghost" id="account-google" disabled>Continue with Google</button></div>
+        <label class="account-field">Email <input id="account-email" type="email" autocomplete="email" maxlength="254" disabled /></label>
+        <button class="btn ghost" id="account-send" disabled>Send sign-in code</button>
+        <label class="account-field">Email code <input id="account-code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" /></label>
+        <button class="btn" id="account-verify" disabled>Verify &amp; sign in</button>
+      </div>
+      <div id="account-signed" hidden>
+        <p id="account-linked"></p>
+        <details><summary>Add another sign-in method</summary><p>Connect a new method to this account only after proving it is yours. Accounts that already have separate progress cannot be merged here. A recent sign-in is required.</p>
+          <div class="account-actions"><button class="btn ghost" id="account-link-apple" disabled>Connect Apple</button><button class="btn ghost" id="account-link-google" disabled>Connect Google</button></div>
+          <label class="account-field">Email to connect <input id="account-link-email" type="email" autocomplete="email" maxlength="254" /></label>
+          <button class="btn ghost" id="account-link-send">Send connection code</button>
+          <label class="account-field">Connection code <input id="account-link-code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" /></label>
+          <button class="btn ghost" id="account-link-verify">Review email connection</button>
+        </details>
+        <div id="account-link-offer" hidden><p id="account-link-copy"></p><button class="btn" id="account-link-confirm">Confirm connection</button><button class="btn ghost" id="account-link-cancel">Cancel connection</button></div>
+        <div class="account-actions"><button class="btn" id="account-sync">Sync now</button><button class="btn ghost" id="account-import">Review guest import</button><button class="btn ghost" id="account-signout">Sign out</button></div>
+        <p id="account-import-copy">Guest records are never imported automatically.</p><button class="btn ghost" id="account-import-confirm" hidden>Confirm import</button>
+        <h3>Shared completed results</h3><ol id="account-results"></ol>
+      </div>
+      <p id="account-status" role="status" aria-live="polite"></p>
+      <p>Guest saves depend on this device's browser storage. Shared records are client-reported personal results, not a verified competitive leaderboard.</p></div>
+      <div class="rift-actions"><button class="btn ghost" id="account-close" autofocus>Back · keep playing</button></div>
+    </dialog>
     <dialog id="previous-dialog" aria-labelledby="previous-title">
       <div class="rift-body"><h2 id="previous-title" tabindex="-1" autofocus>Your previous progress</h2>
       <p id="previous-summary"></p>
@@ -1967,7 +2011,10 @@
           const record = {id:Journey.id, course:FLOW_TRIAL ? (RELIC_TRIAL ? 'flow-relic-v1' : 'flow-v1') : RELIC_TRIAL ? 'relic-trial-v1' : 'variety-v2', ...(RELIC_TRIAL?{relics:{version:1,owned:[...Relics.owned]},assisted:true}:{}), rescues:Journey.rescues, mode:Journey.mode, rules:FLOW_TRIAL?'flow-v1':RELIC_TRIAL?'relic-v1':Journey.controlsUsed.some(c=>c==='one'||c==='two')?'manual-touch-v1':'web-v2', controls:[...Journey.controlsUsed], outcome, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
           this.records = this.records.filter(r => r.id !== record.id);
           if (record.height > 0) this.records.push(record);
+          record.ownerScope=Journey.cloudOwner || 'guest';record.testing=TESTING;
+          record.sharedProgress={unlocked:[...this.unlocked],lessons:[...this.lessons]};
           this.trimRecords(); this.save();
+          if (['banked','gameover'].includes(outcome)) window.CarveAccount?.completed(record,{unlocked:[...this.unlocked],lessons:[...this.lessons]},record.ownerScope,TESTING);
         },
       };
       const PreviousProgress = {
@@ -2100,6 +2147,7 @@
         },
         begin() {
           if (this.result) this.dismissResult();
+          this.cloudOwner = window.CarveAccount?.scope() || 'guest';
           this.controlsUsed = [Game.controlLabel()];
           this.mode = TESTING ? this.selectedMode : 'challenge'; this.selectedMode = this.mode; this.lives = this.mode === 'challenge' ? 3 : null;
           Profile.load();
@@ -2524,7 +2572,7 @@
           if (!Game.running) return true;
           this.incompatibleCourse = false;
           const pick = (o,fields) => Object.fromEntries(fields.map(k=>[k,o[k]]));
-          const d = {version:1,course:Level.course,controlsUsed:Journey.controlsUsed,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
+          const d = {version:1,course:Level.course,cloudOwner:Journey.cloudOwner||'guest',controlsUsed:Journey.controlsUsed,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
             state:Player.state,onGround:Player.onGround,respawn:{...Player.respawn},checkpoint:Player.checkpoint && {id:Player.checkpoint.id,x:Player.checkpoint.x,y:Player.checkpoint.y,kind:'check'},
             rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,relics:Relics.snapshot(),camera:{x:Cam.x,y:Cam.y},journal:Journal.entries,route:Routes.snapshot(),
             carve:Player.carve && {type:Player.carve.type,charge:Player.carve.charge,block:Player.carve.block.id,manual:!!Player.carve.manual},
@@ -2551,6 +2599,7 @@
             const d = JSON.parse(raw); this.incompatibleCourse = d?.version === 1 && d.course === 3;
             const numeric = (o,fields) => o && fields.every(k=>Number.isFinite(o[k]) && typeof o[k] === 'number' && Math.abs(o[k]) <= 1e12);
             if (d && d.mode === undefined && d.lives === undefined) { d.mode = 'practice'; d.lives = null; }
+            if(d?.cloudOwner!==undefined && (typeof d.cloudOwner!=='string'||!/^(guest|[a-f\d]{64})$/.test(d.cloudOwner)))return null;
             if (!d || (!TESTING && d.mode !== 'challenge') || !['practice','challenge'].includes(d.mode) || (d.mode === 'practice' ? d.lives !== null : !Number.isInteger(d.lives) || d.lives < 1 || d.lives > 3)) return null;
             if (d.controls !== undefined && (!d.controls || !['one','two'].includes(d.controls.scheme) || !['left','right'].includes(d.controls.hand))) return null;
             if ([d.carve,d.pole].some(grip=>grip && grip.manual !== undefined && typeof grip.manual !== 'boolean')) return null;
@@ -2588,6 +2637,7 @@
           for (const k of this.playerFields) Player[k] = d.player[k];
           for (const k of this.journeyFields) Journey[k] = d.journey[k];
           Journey.id = d.id; Journey.name = d.name; Journey.collected = new Set(d.collected); Journey.visited = new Set(d.visited); Journey.quests = d.quests; Journey.nearest = null;
+          Journey.cloudOwner=d.cloudOwner||'guest';
           Journal.entries=Array.isArray(d.journal)?d.journal.filter(t=>typeof t==='string').slice(0,12):[]; Routes.restore(d.route);
           Journey.rift = d.rift; if (Journey.rift) Journey.rift.ready = false;
           if(RELIC_TRIAL)Relics.restore(d.relics);
@@ -3250,8 +3300,19 @@
         return `rgb(${Math.round(lerp(A[0], B[0], t))},${Math.round(lerp(A[1], B[1], t))},${Math.round(lerp(A[2], B[2], t))})`;
       }
 
+      // Read-only account bridge: no cloud response can replace a local wallet
+      // or unfinished climb. Account controls are available from the menu only.
+      window.CarveGameStorage = {
+        running: () => Game.running,
+        accountRecords: owner => Profile.records.filter(r => r.ownerScope === owner)
+          .map(record => ({record,profile:{unlocked:['pulse'],lessons:[]},testing:true})),
+        guestRecords: () => Profile.records.filter(r => !r.ownerScope || r.ownerScope === 'guest')
+          .map(record => ({record,profile:{unlocked:['pulse'],lessons:[]},testing:true})),
+      };
+
       /* ----------------------------- boot -------------------------------------- */
       Game.init();
     </script>
+    <script type="module" src="/storage/account.mjs"></script>
   </body>
 </html>

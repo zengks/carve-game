@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+import {validateNativeEvent} from '../shared/native-progress.mjs';
+import {validateEvent} from '../shared/contract.mjs';
+const fixture=JSON.parse(await readFile(new URL('../shared/fixtures/native-first-ascent-v1.json',import.meta.url),'utf8'));
+const cases=[];
+function add(name,change,error){const event=structuredClone(fixture);change(event);cases.push({name,event,error});}
+add('guided ios completed',()=>{},null);
+add('android replay resumed',e=>{e.source_platform='android';e.mode='replay';e.payload.resumed=true;},null);
+add('completion-only teaching',e=>e.payload.tutorial_mask=16,null);
+add('non-testing bucket',e=>e.payload.testing=false,null);
+add('lower metric bounds',e=>{e.payload.active_ms=1;e.payload.best_chain=0;e.payload.falls=0;},null);
+add('upper metric bounds',e=>{e.payload.active_ms=86400000;e.payload.best_chain=10;e.payload.falls=10000;},null);
+for(const [name,value]of [['missing completion',15],['negative mask',-1],['future mask',32],['bool mask',true],['fraction mask',16.5]])add(name,e=>e.payload.tutorial_mask=value,'invalid_event');
+for(const [field,values]of Object.entries({active_ms:[0,86400001,1.5,'42',true],best_chain:[-1,11,1.5,'7',true],falls:[-1,10001,1.5,'2',false],resumed:[0,'false',null],testing:[0,'true',null]}))for(const value of values)add(`${field} rejects ${JSON.stringify(value)}`,e=>e.payload[field]=value,'invalid_event');
+for(const key of ['player_id','account_scope','bounty','entitlements','verified','controls'])add('reject extra root '+key,e=>e[key]='forged','invalid_event');
+for(const key of ['owner','height_m','score','controls','outcome','unlocks','lessons'])add('reject extra payload '+key,e=>e.payload[key]='forged','invalid_event');
+add('event run mismatch',e=>e.payload.run_id='50a6a33a-789d-4861-997d-013c53266f82','invalid_event');
+add('uppercase UUID',e=>{e.payload.run_id=e.payload.run_id.toUpperCase();e.event_id=e.course_id+':'+e.payload.run_id;},'invalid_event');
+add('non UUID run',e=>{e.payload.run_id='not-a-uuid';e.event_id=e.course_id+':'+e.payload.run_id;},'invalid_event');
+for(const [field,value]of [['course_id','web.flow-v1'],['rules_version','future-rules']])add('future root '+field,e=>{e[field]=value;e.event_id=e.course_id+':'+e.payload.run_id;},'unsupported_course');
+for(const [field,value]of [['course_version','future'],['rules_version',2],['tutorial_version',2]])add('future payload '+field,e=>e.payload[field]=value,'unsupported_course');
+for(const [field,value]of [['mode','practice'],['source_platform','web'],['kind','active_run'],['contract_version',2]])add('invalid root '+field,e=>e[field]=value,'invalid_event');
+for(const field of Object.keys(fixture))add('missing root '+field,e=>delete e[field],'invalid_event');
+for(const field of Object.keys(fixture.payload))add('missing payload '+field,e=>delete e.payload[field],'invalid_event');
+const path=new URL('../shared/fixtures/native-first-ascent-cases-v1.json',import.meta.url);
+if(process.argv.includes('--write-vectors'))await writeFile(path,JSON.stringify({version:1,cases},null,2)+'\n');
+else assert.deepEqual(JSON.parse(await readFile(path,'utf8')),{version:1,cases},'reviewed native vectors remain synchronized');
+for(const c of cases){let actual=null;try{validateNativeEvent(c.event);}catch(e){actual=e.message;}assert.equal(actual,c.error,c.name);}
+assert.throws(()=>validateEvent(fixture),/invalid_event|unsupported_course/,'Flow validator still refuses native metrics');
+const web=JSON.parse(await readFile(new URL('../shared/fixtures/web-flow-v1.json',import.meta.url),'utf8'));assert.throws(()=>validateNativeEvent(web),/invalid_event|unsupported_course/);
+console.log(`PASS native First Ascent: ${cases.length} strict mapping/provenance vectors; Flow and native remain separate`);

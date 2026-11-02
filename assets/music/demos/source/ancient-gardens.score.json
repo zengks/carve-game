@@ -1,0 +1,1534 @@
+{
+  "version": 1,
+  "slug": "ancient-gardens",
+  "title": "Ancient Gardens",
+  "bpm": 88,
+  "bars": 12,
+  "key": "A Dorian",
+  "seed": 2026110102,
+  "description": "Organic mystery: wooden tones, breathy atmosphere, resonant bells and a gentle hand-drum pattern.",
+  "authorship": "AI-assisted composition for CARVE; no claim of human authorship",
+  "sources": "Explicit note arrangement; mathematical synthesis only. No recordings/samples/reference tracks.",
+  "notes": [
+    {
+      "beat": 0,
+      "duration": 2.5,
+      "pitch": 33,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 0,
+      "duration": 8,
+      "pitch": 45,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.6000000000000001
+    },
+    {
+      "beat": 0,
+      "duration": 8,
+      "pitch": 52,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.2
+    },
+    {
+      "beat": 0,
+      "duration": 8,
+      "pitch": 55,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.2
+    },
+    {
+      "beat": 0,
+      "duration": 8,
+      "pitch": 59,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.6000000000000001
+    },
+    {
+      "beat": 0,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 0.25,
+      "duration": 2,
+      "pitch": 81,
+      "voice": "mallet",
+      "velocity": 0.22,
+      "pan": -0.5
+    },
+    {
+      "beat": 0.75,
+      "duration": 0.5,
+      "pitch": 64,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 1.5,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 2.25,
+      "duration": 0.5,
+      "pitch": 67,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 2.75,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 3.5,
+      "duration": 0.5,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 4,
+      "duration": 2.5,
+      "pitch": 33,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 4,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 4.75,
+      "duration": 0.5,
+      "pitch": 64,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 5.5,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 6.25,
+      "duration": 0.5,
+      "pitch": 67,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 6.75,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 7.5,
+      "duration": 0.5,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 8,
+      "duration": 2.5,
+      "pitch": 38,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 8,
+      "duration": 8,
+      "pitch": 50,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.6000000000000001
+    },
+    {
+      "beat": 8,
+      "duration": 8,
+      "pitch": 57,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.2
+    },
+    {
+      "beat": 8,
+      "duration": 8,
+      "pitch": 59,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.2
+    },
+    {
+      "beat": 8,
+      "duration": 8,
+      "pitch": 66,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.6000000000000001
+    },
+    {
+      "beat": 8,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 8,
+      "duration": 0.9,
+      "pitch": 76,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 8.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 8.75,
+      "duration": 0.5,
+      "pitch": 69,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 9.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 9.5,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 9.5,
+      "duration": 0.75,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 10.25,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 10.25,
+      "duration": 0.5,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 10.75,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 10.75,
+      "duration": 1,
+      "pitch": 74,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 11,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 11.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 11.5,
+      "duration": 0.5,
+      "pitch": 78,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 12,
+      "duration": 2.5,
+      "pitch": 38,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 12,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 12.25,
+      "duration": 0.8,
+      "pitch": 78,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 12.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 12.75,
+      "duration": 0.5,
+      "pitch": 69,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 13.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 13.5,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 13.5,
+      "duration": 0.65,
+      "pitch": 76,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 14.25,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 14.25,
+      "duration": 0.5,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 14.5,
+      "duration": 1.2,
+      "pitch": 72,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 14.75,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 15,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 15.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 15.5,
+      "duration": 0.5,
+      "pitch": 78,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 16,
+      "duration": 2.5,
+      "pitch": 40,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 16,
+      "duration": 8,
+      "pitch": 52,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.6000000000000001
+    },
+    {
+      "beat": 16,
+      "duration": 8,
+      "pitch": 55,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.2
+    },
+    {
+      "beat": 16,
+      "duration": 8,
+      "pitch": 59,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.2
+    },
+    {
+      "beat": 16,
+      "duration": 8,
+      "pitch": 62,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.6000000000000001
+    },
+    {
+      "beat": 16,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 16,
+      "duration": 0.7,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 16.25,
+      "duration": 2,
+      "pitch": 83,
+      "voice": "mallet",
+      "velocity": 0.22,
+      "pan": -0.5
+    },
+    {
+      "beat": 16.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 16.75,
+      "duration": 0.5,
+      "pitch": 67,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 17.25,
+      "duration": 0.65,
+      "pitch": 74,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 17.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 17.5,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 18.25,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 18.25,
+      "duration": 0.5,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 18.25,
+      "duration": 1.25,
+      "pitch": 81,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 18.75,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 19,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 19.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 19.5,
+      "duration": 0.5,
+      "pitch": 74,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 20,
+      "duration": 2.5,
+      "pitch": 40,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 20,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 20.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 20.75,
+      "duration": 0.5,
+      "pitch": 67,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 20.75,
+      "duration": 0.7,
+      "pitch": 79,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 21.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 21.5,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 21.75,
+      "duration": 0.7,
+      "pitch": 76,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 22.25,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 22.25,
+      "duration": 0.5,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 22.75,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 23,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 23,
+      "duration": 0.7,
+      "pitch": 74,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 23.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 23.5,
+      "duration": 0.5,
+      "pitch": 74,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 24,
+      "duration": 2.5,
+      "pitch": 31,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 24,
+      "duration": 8,
+      "pitch": 43,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.6000000000000001
+    },
+    {
+      "beat": 24,
+      "duration": 8,
+      "pitch": 50,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.2
+    },
+    {
+      "beat": 24,
+      "duration": 8,
+      "pitch": 64,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.2
+    },
+    {
+      "beat": 24,
+      "duration": 8,
+      "pitch": 69,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.6000000000000001
+    },
+    {
+      "beat": 24,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 24,
+      "duration": 0.9,
+      "pitch": 72,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 24.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 24.75,
+      "duration": 0.5,
+      "pitch": 62,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 25.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 25.5,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 25.5,
+      "duration": 0.8,
+      "pitch": 76,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 26.25,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 26.25,
+      "duration": 0.5,
+      "pitch": 76,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 26.75,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 26.75,
+      "duration": 0.9,
+      "pitch": 78,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 27,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 27.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 27.5,
+      "duration": 0.5,
+      "pitch": 81,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 28,
+      "duration": 2.5,
+      "pitch": 31,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 28,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 28.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 28.5,
+      "duration": 0.6,
+      "pitch": 83,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 28.75,
+      "duration": 0.5,
+      "pitch": 62,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 29.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 29.5,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 29.5,
+      "duration": 0.8,
+      "pitch": 81,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 30.25,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 30.25,
+      "duration": 0.5,
+      "pitch": 76,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 30.75,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 30.75,
+      "duration": 0.9,
+      "pitch": 76,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 31,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 31.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 31.5,
+      "duration": 0.5,
+      "pitch": 81,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 32,
+      "duration": 2.5,
+      "pitch": 33,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 32,
+      "duration": 8,
+      "pitch": 45,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.6000000000000001
+    },
+    {
+      "beat": 32,
+      "duration": 8,
+      "pitch": 52,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.2
+    },
+    {
+      "beat": 32,
+      "duration": 8,
+      "pitch": 55,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.2
+    },
+    {
+      "beat": 32,
+      "duration": 8,
+      "pitch": 59,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.6000000000000001
+    },
+    {
+      "beat": 32,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 32,
+      "duration": 0.6,
+      "pitch": 74,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 32.25,
+      "duration": 2,
+      "pitch": 88,
+      "voice": "mallet",
+      "velocity": 0.22,
+      "pan": -0.5
+    },
+    {
+      "beat": 32.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 32.75,
+      "duration": 0.5,
+      "pitch": 64,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 33,
+      "duration": 0.9,
+      "pitch": 72,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 33.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 33.5,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 34.25,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 34.25,
+      "duration": 0.5,
+      "pitch": 67,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 34.5,
+      "duration": 1,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 34.75,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 35,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 35.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 35.5,
+      "duration": 0.5,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 36,
+      "duration": 2.5,
+      "pitch": 33,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 36,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 36.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 36.5,
+      "duration": 0.9,
+      "pitch": 76,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 36.75,
+      "duration": 0.5,
+      "pitch": 64,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 37.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 37.5,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 38,
+      "duration": 1.75,
+      "pitch": 69,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 38.25,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 38.25,
+      "duration": 0.5,
+      "pitch": 67,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 38.75,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 39,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 39.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 39.5,
+      "duration": 0.5,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 40,
+      "duration": 2.5,
+      "pitch": 38,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 40,
+      "duration": 8,
+      "pitch": 50,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.6000000000000001
+    },
+    {
+      "beat": 40,
+      "duration": 8,
+      "pitch": 57,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": -0.2
+    },
+    {
+      "beat": 40,
+      "duration": 8,
+      "pitch": 59,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.2
+    },
+    {
+      "beat": 40,
+      "duration": 8,
+      "pitch": 66,
+      "voice": "pad",
+      "velocity": 0.2,
+      "pan": 0.6000000000000001
+    },
+    {
+      "beat": 40,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 40,
+      "duration": 0.9,
+      "pitch": 76,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 40.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 40.75,
+      "duration": 0.5,
+      "pitch": 69,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 41.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 41.5,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 41.5,
+      "duration": 0.75,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 42.25,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 42.25,
+      "duration": 0.5,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 42.75,
+      "duration": 0.27,
+      "pitch": 45,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 42.75,
+      "duration": 1,
+      "pitch": 74,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 43,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 43.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 43.5,
+      "duration": 0.5,
+      "pitch": 78,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    },
+    {
+      "beat": 44,
+      "duration": 2.5,
+      "pitch": 38,
+      "voice": "bass",
+      "velocity": 0.27,
+      "pan": -0.1
+    },
+    {
+      "beat": 44,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.35,
+      "pan": -0.2
+    },
+    {
+      "beat": 44.25,
+      "duration": 0.8,
+      "pitch": 78,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 44.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 44.75,
+      "duration": 0.5,
+      "pitch": 69,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.55
+    },
+    {
+      "beat": 45.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 45.5,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.22,
+      "pan": -0.2
+    },
+    {
+      "beat": 45.5,
+      "duration": 0.65,
+      "pitch": 76,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 46.25,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 46.25,
+      "duration": 0.5,
+      "pitch": 71,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": 0.4
+    },
+    {
+      "beat": 46.5,
+      "duration": 1.2,
+      "pitch": 72,
+      "voice": "wood",
+      "velocity": 0.6,
+      "pan": 0.1
+    },
+    {
+      "beat": 46.75,
+      "duration": 0.27,
+      "pitch": 50,
+      "voice": "tom",
+      "velocity": 0.29,
+      "pan": -0.2
+    },
+    {
+      "beat": 47,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.15,
+      "pan": 0.35
+    },
+    {
+      "beat": 47.5,
+      "duration": 0.11,
+      "pitch": 42,
+      "voice": "shaker",
+      "velocity": 0.11,
+      "pan": 0.35
+    },
+    {
+      "beat": 47.5,
+      "duration": 0.5,
+      "pitch": 78,
+      "voice": "wood",
+      "velocity": 0.25,
+      "pan": -0.3
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101b2b">
+<title>CARVE · Music auditions</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#101b2b;color:#f2f7fc}*{box-sizing:border-box}body{margin:0;padding:clamp(20px,5vw,60px)}main{max-width:880px;margin:auto}a{color:#83e0cf}header{margin-bottom:30px}h1{font-size:clamp(30px,6vw,48px);margin:12px 0}p{line-height:1.6;color:#bfcedf}.eyebrow{color:#83e0cf;letter-spacing:.14em;font-size:12px}article{border:1px solid #35465b;border-radius:18px;background:#17263a;padding:24px;margin:18px 0}h2{margin:0 0 8px;font-size:24px}small{color:#9db2ca}audio{display:block;width:100%;margin-top:22px}footer{font-size:14px;margin-top:28px}a:focus-visible{outline:3px solid #83e0cf;outline-offset:5px}
+</style>
+</head>
+<body><main>
+<header><a href="/">← CARVE</a><p class="eyebrow">MUSIC AUDITIONS · PREVIEW ONLY</p><h1>Find CARVE’s sound.</h1><p>Three different moods, matched in listening volume. Press play to compare them. These excerpts are separate from the game; nothing starts automatically.</p></header>
+<article><h2>01 · Skyward</h2><small>96 BPM · D major · 43 seconds</small><p>Warm pads, soft mallets and a gentle climbing pulse. An open, optimistic adventure.</p><audio controls preload="metadata" aria-label="Play Skyward demo"><source src="/assets/music/demos/skyward.mp3" type="audio/mpeg">Your browser does not support audio playback.</audio></article>
+<article><h2>02 · Ancient Gardens</h2><small>88 BPM · A Dorian · 36 seconds</small><p>Wooden tones, distant bells and hand-drum rhythms. A curious, mysterious expedition.</p><audio controls preload="metadata" aria-label="Play Ancient Gardens demo"><source src="/assets/music/demos/ancient-gardens.mp3" type="audio/mpeg">Your browser does not support audio playback.</audio></article>
+<article><h2>03 · Neon Momentum</h2><small>118 BPM · F♯ minor · 44 seconds</small><p>A melodic synth hook, syncopated bass and electronic drums. A stronger arcade groove.</p><audio controls preload="metadata" aria-label="Play Neon Momentum demo"><source src="/assets/music/demos/neon-momentum.mp3" type="audio/mpeg">Your browser does not support audio playback.</audio></article>
+<footer><p>AI-assisted compositions, synthesized locally without sampled recordings or reference songs. These are audition excerpts with endings, not finished gameplay loops. Copyright protection and legal clearance have not been established.</p></footer>
+</main><script>
+const players=[...document.querySelectorAll('audio')];
+for(const player of players)player.addEventListener('play',()=>{for(const other of players)if(other!==player)other.pause();});
+</script></body></html>

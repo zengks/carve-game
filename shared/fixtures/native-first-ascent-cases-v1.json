@@ -1,0 +1,1864 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "guided ios completed",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "android replay resumed",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "replay",
+        "source_platform": "android",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": true,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "completion-only teaching",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 16,
+          "testing": true
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "non-testing bucket",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": false
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "lower metric bounds",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 1,
+          "best_chain": 0,
+          "falls": 0,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "upper metric bounds",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 86400000,
+          "best_chain": 10,
+          "falls": 10000,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "missing completion",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 15,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "negative mask",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": -1,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "future mask",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 32,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "bool mask",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": true,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "fraction mask",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 16.5,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "active_ms rejects 0",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 0,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "active_ms rejects 86400001",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 86400001,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "active_ms rejects 1.5",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 1.5,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "active_ms rejects \"42\"",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": "42",
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "active_ms rejects true",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": true,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "best_chain rejects -1",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": -1,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "best_chain rejects 11",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 11,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "best_chain rejects 1.5",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 1.5,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "best_chain rejects \"7\"",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": "7",
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "best_chain rejects true",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": true,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "falls rejects -1",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": -1,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "falls rejects 10001",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 10001,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "falls rejects 1.5",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 1.5,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "falls rejects \"2\"",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": "2",
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "falls rejects false",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": false,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "resumed rejects 0",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": 0,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "resumed rejects \"false\"",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": "false",
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "resumed rejects null",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": null,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "testing rejects 0",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": 0
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "testing rejects \"true\"",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": "true"
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "testing rejects null",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": null
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra root player_id",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        },
+        "player_id": "forged"
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra root account_scope",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        },
+        "account_scope": "forged"
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra root bounty",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        },
+        "bounty": "forged"
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra root entitlements",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        },
+        "entitlements": "forged"
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra root verified",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        },
+        "verified": "forged"
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra root controls",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        },
+        "controls": "forged"
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra payload owner",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true,
+          "owner": "forged"
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra payload height_m",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true,
+          "height_m": "forged"
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra payload score",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true,
+          "score": "forged"
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra payload controls",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true,
+          "controls": "forged"
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra payload outcome",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true,
+          "outcome": "forged"
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra payload unlocks",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true,
+          "unlocks": "forged"
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "reject extra payload lessons",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true,
+          "lessons": "forged"
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "event run mismatch",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "50a6a33a-789d-4861-997d-013c53266f82",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "uppercase UUID",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578F816A-11DC-42EE-9D9C-EF4BAAFC5F75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578F816A-11DC-42EE-9D9C-EF4BAAFC5F75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "non UUID run",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:not-a-uuid",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "not-a-uuid",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "future root course_id",
+      "event": {
+        "contract_version": 1,
+        "event_id": "web.flow-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "web.flow-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "unsupported_course"
+    },
+    {
+      "name": "future root rules_version",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "future-rules",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "unsupported_course"
+    },
+    {
+      "name": "future payload course_version",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "future",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "unsupported_course"
+    },
+    {
+      "name": "future payload rules_version",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 2,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "unsupported_course"
+    },
+    {
+      "name": "future payload tutorial_version",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 2,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "unsupported_course"
+    },
+    {
+      "name": "invalid root mode",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "practice",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "invalid root source_platform",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "web",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "invalid root kind",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "active_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "invalid root contract_version",
+      "event": {
+        "contract_version": 2,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing root contract_version",
+      "event": {
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing root event_id",
+      "event": {
+        "contract_version": 1,
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing root kind",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing root course_id",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing root rules_version",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing root mode",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing root source_platform",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing root payload",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios"
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing payload run_id",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing payload course_version",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing payload rules_version",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing payload tutorial_version",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing payload active_ms",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing payload best_chain",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing payload falls",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "resumed": false,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing payload resumed",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "tutorial_mask": 31,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing payload tutorial_mask",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "testing": true
+        }
+      },
+      "error": "invalid_event"
+    },
+    {
+      "name": "missing payload testing",
+      "event": {
+        "contract_version": 1,
+        "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+        "kind": "completed_run",
+        "course_id": "native.first-ascent-v1",
+        "rules_version": "native-fa-rules-1",
+        "mode": "guided",
+        "source_platform": "ios",
+        "payload": {
+          "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+          "course_version": "first-ascent-1",
+          "rules_version": 1,
+          "tutorial_version": 1,
+          "active_ms": 42000,
+          "best_chain": 7,
+          "falls": 2,
+          "resumed": false,
+          "tutorial_mask": 31
+        }
+      },
+      "error": "invalid_event"
+    }
+  ]
+}
