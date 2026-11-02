@@ -1,4 +1,4 @@
--- Approved fresh QA databases only; runtime never applies schema to retained data.
+-- New, explicitly approved CARVE databases only; runtime never applies migrations.
 BEGIN;
 CREATE TABLE IF NOT EXISTS carve_shared_v1.native_completed_results (
  player_id uuid NOT NULL REFERENCES carve_shared_v1.players(id),

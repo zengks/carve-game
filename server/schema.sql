@@ -1,4 +1,4 @@
--- Only apply to a new isolated test database for this preview milestone.
+-- Apply only to a new, explicitly approved CARVE database (hosted or isolated QA).
 -- No edits to native public tables, auth settings, identities or owner saves.
 BEGIN;
 CREATE SCHEMA IF NOT EXISTS carve_shared_v1;
@@ -51,8 +51,9 @@ CREATE TABLE IF NOT EXISTS carve_shared_v1.course_progress (
   PRIMARY KEY(player_id,course_id,rules_version,mode,testing)
 );
 -- This schema is server-only and not exposed through the Supabase Data API.
--- No anon/authenticated privileges or client mutations. The trusted server DB
--- owner bypasses RLS and must use authenticated owner predicates on every query.
+-- No anon/authenticated privileges or client mutations. The separately reviewed
+-- runtime-role policies grant only server access; authenticated owner predicates
+-- remain required on every API query. Runtime code never applies migrations.
 ALTER TABLE carve_shared_v1.players ENABLE ROW LEVEL SECURITY;
 ALTER TABLE carve_shared_v1.identities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE carve_shared_v1.completed_results ENABLE ROW LEVEL SECURITY;
