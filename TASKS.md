@@ -223,8 +223,11 @@ See [native implementation and evidence limits](docs/native-broker.md).
   actual PostgreSQL implementation/checkpoints independently.
 - [x] Pass113 real Fetch/SQL assertions in fresh retained QA databases, including
   coherent concurrent snapshots, immutable retries, RLS and revocation/expiry.
-- [ ] Run broader browser/game/broker/database regressions and Node24/26 CI;
+- [x] Run broader browser/game/broker/database regressions and Node24/26 CI;
   freeze sources for independent native sync/controller tests.
+- [x] Independently review native headless playable integration: 117 engine and 11
+  database checks, plus 12 mid-climb expiry checks. Test-file vault evidence is
+  separate from Release Keychain/Keystore and OS-delivered touch acceptance.
 - [ ] Native owns playable isolated UI/scopes and reviewed completed-result queue;
   no automatic guest import or unfinished-climb sync. Keep StageE untouched.
 - [ ] Verify preview and restore owned QA service after all participants finish.

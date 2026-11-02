@@ -137,3 +137,36 @@ new/retry events, full echoes after recent-history truncation, immutable conflic
 canonical-owner fault rejection, RLS, untouched Flow tables, scoped signout and
 expiry during a held SQL row lock. Read/write never renew original session time.
 Independent native integration and hosted/provider readiness remain separate.
+
+## Coordinated playable checkpoint — 2026-11-02
+
+Web runtime checkpoint `3d3834c` passes the full browser/game/broker build suite,
+the PostgreSQL regression suites and Node 24/26 push/PR checks. The Ready branch
+preview keeps the native progress endpoint unconfigured; no hosted account or
+save service has been enabled and the live game is unchanged.
+
+Native's independently reviewed local integration receipt records 117 engine
+assertions and 11 database checks across 10 cold client processes. Actual HTTP,
+signed synthetic provider callbacks and PostgreSQL cover iOS-to-Android and
+Android-to-iOS completed-result reads, account isolation, local unfinished
+checkpoints, offline/503 recovery, a lost accepted-write reply and late signout.
+This uses an encrypted test-file vault and automated course completion; it does
+not establish OS Keychain/Keystore behavior, real provider sign-in or manual play.
+The receipt SHA256 is
+efe69efc641e93d4aa826a71a24adab4dc609851bbc04b7bc24f04f58cc00197.
+
+A separate 12-assertion actual-HTTP/PostgreSQL test verifies expiry during a
+climb: the original account's local course can finish, retain its pending result
+and sync exactly once after explicit reauthentication. It uses the same
+test-file-vault evidence boundary. Receipt SHA256:
+a6b8910cf73763cf234941848a3a4b74f1cc06339561d65f1f2f152b723e9718.
+Both fixtures closed their listeners and database pools with zero remaining
+database connections. Their fresh databases and artifacts are retained.
+
+Release iOS/Android secure-store and OS-touch acceptance remains pending. A
+partial iOS pass followed by an Android reporting timeout is excluded from the
+matched OS acceptance. Native owns fresh targets; existing devices, profiles and
+saves remain untouched. The originally stopped shared QA PostgreSQL container
+stays reserved until native explicitly releases it, then must be restored to its
+original stopped state without deleting its data. Both PR17 and PR46 stay draft
+and unmerged; payments and the mobile download prompt remain disabled.
