@@ -5,6 +5,10 @@
 - The user authorized proactive, useful development, fixes and tests without
   asking about routine implementation decisions (2026-10-30). Choose a concrete,
   evidence-based milestone, use a `codex/` task branch and finish its verification.
+- The user requested more frequent commits and pushes for web and mobile
+  (2026-11-02). Make small, coherent checkpoints and push each useful checkpoint
+  after its focused checks pass; do not wait for the whole milestone. Preserve
+  unrelated work and run broader required checks before final release claims.
 - Coordinate directly and bidirectionally with the existing mobile chat whenever
   useful; the user need not relay or approve individual messages. Web chat:
   `01a18660-65a5-78b1-949f-d7c826a4d449`; mobile chat:
