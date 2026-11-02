@@ -1,0 +1,21 @@
+{
+  "contract_version": 1,
+  "event_id": "native.first-ascent-v1:578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+  "kind": "completed_run",
+  "course_id": "native.first-ascent-v1",
+  "rules_version": "native-fa-rules-1",
+  "mode": "guided",
+  "source_platform": "ios",
+  "payload": {
+    "run_id": "578f816a-11dc-42ee-9d9c-ef4baafc5f75",
+    "course_version": "first-ascent-1",
+    "rules_version": 1,
+    "tutorial_version": 1,
+    "active_ms": 42000,
+    "best_chain": 7,
+    "falls": 2,
+    "resumed": false,
+    "tutorial_mask": 31,
+    "testing": true
+  }
+}
