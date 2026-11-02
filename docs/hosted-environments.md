@@ -1,143 +1,149 @@
 # CARVE hosted environment setup
 
-Status checked 2026-11-02. The owner selected Vercel Pro and Supabase Pro and
-authorized isolated production/staging setup, coordinating with carve-mobile.
-The live game must remain unchanged; payments and native download prompts remain
-disabled. Existing accounts, hosted projects, simulators and saves are preserved.
+Verified 2026-11-02. The owner authorized isolated Vercel Pro / Supabase Pro
+production and staging setup, then explicitly approved the restricted staging
+login and Vercel Preview secret storage in the mobile chat. Keep the live game,
+main branches and existing apps/data unchanged. Payments and native download
+prompts remain disabled; web PR17/PR18 and mobile PR46 remain unmerged.
 
-## Current resources and billing
+## Resource inventory and billing
 
-| Resource | Verified state | Next step |
-| --- | --- | --- |
-| Vercel team `zengksoutlookcoms-projects` | Pro, active; existing account | Review payment method/billing details; no upgrade needed |
-| Live Vercel project `carve-game` | Existing deployment and settings untouched | No deployment, production environment or alias changes |
-| New Vercel project `carve-staging` | Protected, Node 26, functions in `yul1`, no Git auto-deploy | Use its separate staging deployment for hosted acceptance |
-| Supabase organization `ponydude` | Pro; three existing unrelated projects retained | Owner must select this organization or a new one |
-| Proposed `carve-staging` Supabase project | Not created | Organization choice and actual project quote first |
-| Proposed `carve-production` Supabase project | Not created | Same; prepare dormant without connecting live clients |
+| Resource | Verified state |
+| --- | --- |
+| Vercel team `zengksoutlookcoms-projects` | Existing Pro account, active |
+| Live Vercel project `carve-game` | Existing deployment/settings/configuration unchanged |
+| New Vercel project `carve-staging` | Protected, Node 26, functions in `yul1`, Git auto-deploy disconnected |
+| Supabase organization `ponydude` | Existing Pro organization; unrelated projects preserved |
+| New Supabase `carve-staging` | `ffxcsgtissldpkuxgxvo`, Canada Central, healthy, Micro |
+| New Supabase `carve-production` | `zeosjsyugyxqeeacpkpx`, Canada Central, healthy, Micro, dormant |
 
-No subscription upgrade, payment-method change, hosted database or SMTP purchase
-has been performed. The Stripe provisioning catalog was unavailable; existing
-authenticated Vercel/Supabase connectors are the setup path. There is no need to
-create a Stripe merchant/payout account to pay hosting bills.
+Public environment bindings are versioned in `config/hosted-projects.json`.
+Canada Central database placement does not guarantee every related service stays
+in Canada. Both new projects report PostgreSQL `17.11.0.011`.
 
 Two additional Micro projects in the existing Pro organization are approximately
-US$20/month extra before tax/usage. A separate Pro organization with two Micros
-starts around US$35/month in total. The existing Vercel Pro platform fee starts
-at US$20/month with one deploying seat; additional usage/seats cost extra. These
-are estimates, not an executed order. Existing projects' compute/usage remains
-part of the existing organization bill. A new organization is separately billed.
+US$20/month extra before tax/usage. Existing projects and usage remain on the
+organization's bill. No plan upgrade, payment-method change, SMTP subscription,
+IPv4 add-on, domain purchase or Stripe merchant/payout setup was performed.
 
-Owner billing actions: choose the organization; review subscription, payment
-method, billing name/address and invoice details in each provider dashboard;
-approve any actual new-project quote. Keep monthly plans and default cost controls
-initially. Compute and some other charges are not a universal capped monthly fee.
-Never provide card details or private credentials in chat.
+Owner billing actions: review payment method, billing name/address, invoices and
+usage alerts in the existing Vercel and Supabase dashboards. There is no further
+hosting subscription to buy for this milestone. Compute and usage are not a
+universal capped monthly fee. Never send card details or credentials in chat.
 
-## Deployment evidence
+## Database provisioning and access
 
-Staging project ID: `prj_zHwA5QqAGGMI1tWa6hdiHmM0lhAT`.
-Stable staging alias:
-https://carve-staging-zengksoutlookcoms-projects.vercel.app
+Both projects were verified fresh before applying the reviewed canonical migration
+`supabase/migrations/20261102205254_carve_shared_foundation.sql`.
+Its source hash is
+`f192d323a54ded034479dd76db927116ed0ab7f6841ffdf746a465dc0b4aec34`.
+The provider recorded migration versions `20261102205337` in staging and
+`20261102205406` in production. Do not reapply this baseline or reset either project.
+`node scripts/hosted-migration.mjs --check` detects drift from the reviewed sources.
 
-Current tested runtime: commit `7bf0764`, deployment
-`dpl_6CuMCAiQg6ARiosFo1L2mTB3YrrV`, Ready in `yul1`:
-https://carve-staging-akdtn8zfc-zengksoutlookcoms-projects.vercel.app
+Actual hosted metadata checks confirm:
 
-The first deployment used committed source `b6b25c6`, exported through `git archive`
-without untracked files, credentials or retained test artifacts. The current
-staging deployment uses the exact published Git commit `7bf0764`, without linking
-the project for automatic Git deployments. Browser inspection of the stable alias
-shows the preview title, `noindex,nofollow` and disabled/unconfigured cloud sign-in.
-The native-progress endpoint also returns `not_configured` as expected.
-Staging has zero configured project environment variables. Deployment protection
-remains enabled; no bypass credential or share link was created.
+- Eleven private `carve_shared_v1` tables in each project, all with RLS enabled.
+- No table grants to anonymous, authenticated or service-role API clients.
+- The server role has schema USAGE and an exact SELECT/INSERT/UPDATE allowlist;
+  immutable results/identity records have narrower grants. No schema CREATE,
+  DELETE/TRUNCATE, superuser, role/database creation, inherited memberships,
+  replication or RLS bypass. Connection limit is twelve.
+- Both projects' security advisors returned no lints. This is a point-in-time
+  configuration check, not complete production qualification.
+- Both have zero player, web-result and native-result records. No owner data or
+  legacy wallets were imported.
 
-The CLI classified the new project's first deployment as Production despite its
-explicit preview flag. This affected only the new staging project. Its original
-deployment remains protected and account APIs are disabled by the unchanged
-production guard. A subsequent API deployment explicitly uses the documented
-legacy `staging` target and staging alias; its rendered page verifies the preview
-build. Do not infer deployment intent from a CLI flag alone. Verify actual target,
-rendered build and project ID before wiring any environment values.
+Production `carve_runtime` remains NOLOGIN and has no runtime credentials in the
+live Vercel project. Only staging received a new independent restricted login
+following the owner's explicit approval. It is unrelated to the database admin
+password and is never shipped to browsers/native apps or stored in Git.
+
+Staging uses the dashboard-confirmed shared transaction pooler
+`aws-1-ca-central-1.pooler.supabase.com:6543`, database `postgres`, username
+`carve_runtime.ffxcsgtissldpkuxgxvo`. Remote connections require certificate and
+hostname verification using the dashboard's Supabase Root 2021 CA. No TLS bypass,
+OS trust change, service-role key or database-admin credential is used.
+
+`server/postgres.mjs` also pins the expected project/role/database and rejects
+connection-string overrides that could replace its TLS or host settings. Runtime
+code never applies migrations.
+
+## Staging deployment and acceptance
+
+Project: `prj_zHwA5QqAGGMI1tWa6hdiHmM0lhAT`.
+Stable origin: https://carve-staging-zengksoutlookcoms-projects.vercel.app
+
+Tested runtime: `b14f4e2e11b18f934bb635c6fe326025dbae9012`, deployment
+`dpl_6kfPUdpKJbgHwmDQa49VvJVvnfHB`, Ready, target `staging`:
+https://carve-staging-a3pixu0uy-zengksoutlookcoms-projects.vercel.app
+
+Exactly six sensitive variables are scoped only to this new project's Preview
+environment: `CARVE_APP_ORIGIN`, `CARVE_SHARED_DATABASE_URL`,
+`CARVE_DATABASE_CA_CERT`, `CARVE_EXPECTED_PROJECT_REF`, `CARVE_SESSION_SECRET`,
+`CARVE_STORAGE_HEALTH_ENABLED`. No Production variables were added. The CA and
+origin are public metadata but remain server configuration. Environment inventory
+was checked without decrypting values.
+
+The actual local readiness handler connected to hosted staging using the restricted
+login and returned HTTP 200. The signed-in browser then verified the deployed
+`/api/storage-health` response reports database/TLS/schema/role ready and
+`production_enabled:false`. This endpoint reads catalog metadata only and cannot
+activate login, query player records or write data. Its tests verify no-store,
+noindex and sanitized failures; hosted response headers were not independently
+measured because the automated short-lived-token path returned
+`TRUSTED_SOURCES_ENVIRONMENT_MISMATCH`. Protection/trust rules were not broadened,
+and no bypass credential/share link was created. Browser account/native routes
+remain unconfigured pending providers; this is database readiness, not a successful
+real-player sign-in or cross-device save test.
+
+The first configured deployment exposed synthetic config tests inheriting hosted
+environment defaults. The test was isolated and environment-default regressions
+added; the subsequent hosted build passed. Local full build passed. CI Node 24/26,
+including the actual PostgreSQL suites, passed on tested runtime `b14f4e2`.
+
+The native CLI shim also misrouted one read-only verification command into creating
+an isolated probe project containing only probe source (no secrets/player data).
+That task-created probe project was removed immediately. Use the CLI JavaScript
+entry point for further commands; inspect actual results rather than trusting a
+flag. An earlier first staging deployment was classified Production despite an
+explicit preview flag; it was limited to this separate project and remains
+protected/unconfigured. Subsequent deployments explicitly use the legacy
+`staging` API target and verify actual project/target/build.
 
 Live remains `dpl_FXTTkFE5TfmJ8M1NMUEiMzNuhmUg`, commit
 `aa5911a9a71e2e4d2b4cfa86a17f3a4736c2980d`, on carve-game.vercel.app.
-No live source, production variables, aliases, security settings or analytics
-configuration were changed. The web setup branch is `codex/hosted-environments`;
-earlier web/native PRs remain unmerged.
+No live deployment, variables, aliases, security settings or analytics changed.
 
-## Database isolation and setup sequence
+## Remaining sign-in and launch requirements
 
-1. Get the owner's explicit organization selection, then request a separate
-   provider quote for each fresh `carve-staging`/`carve-production` project.
-   Prefer specific Canada Central (`ca-central-1`) near the `yul1` staging runtime;
-   primary placement does not guarantee every related service stays in Canada.
-2. Verify each new project's identity, organization, region and healthy state.
-   Inspect schemas first. Apply only the reviewed CARVE schema migrations to the
-   new projects, never portfolio, ApplyIQ or old native public schemas.
-3. Apply `server/schema.sql`, `server/native-schema.sql` and
-   `server/native-progress-schema.sql` as separately named tracked migrations.
-   Create the restricted role using `runtimeRoleSQL('carve_runtime')` in
-   `server/runtime-role.mjs`, as another tracked migration. The builder deliberately
-   fails on an existing role rather than modifying an old account.
-4. Verify all 11 private tables retain RLS; anonymous/authenticated clients have no
-   grants. The server role gets only USAGE plus exact SELECT/INSERT/UPDATE grants
-   and explicit role-specific policies, no bypass/global privileges, schema
-   ownership/CREATE, DELETE/TRUNCATE or future-table defaults. Immutable result
-   tables allow SELECT/INSERT only. API owner predicates remain required.
-5. The role starts NOLOGIN. Keep production dormant with no credentials in live
-   Vercel/client configuration. For staging only, provision an independent strong
-   password through a secret-only path, use the project's verified pooler/TLS
-   settings and install Secret variables only in the new staging project.
-6. Remote DB connections use certificate/hostname verification. The shared
-   `postgresOptions` helper rejects weaker/overriding URL TLS settings and avoids
-   pg's URL parser silently replacing the SSL options or overriding a loopback host through query parameters. Supply the selected
-   project's PEM CA through `CARVE_DATABASE_CA_CERT` if required; otherwise leave
-   this optional variable unset, not empty. No TLS bypass is permitted.
-7. Validate new-project migrations, exact privileges, TLS handshake, API reads,
-   retries and isolation with disposable staging identities. Configure real IdPs,
-   SMTP and exact callbacks only when their owner/provider prerequisites are ready.
-   Verify backups and a restore drill before inviting real players.
+1. Configure owner-controlled Apple/Google credentials and exact callback domains.
+   Email sign-in needs a verified sender domain and production SMTP service;
+   Supabase's default email service is not being advertised as player-ready.
+   Browser Supabase URL/publishable key and native client registries remain unset.
+2. Agree the public callback/domain design. Protected staging currently prevents
+   ordinary external OAuth/system-auth callbacks. Do not weaken deployment
+   protection or put a bypass secret in a native build. A runtime health response
+   does not prove actual provider login, account-linking or browser-to-app return.
+3. Complete real-provider collision/link/recovery testing and hosted completed-save
+   retries/isolation with clearly marked staging identities. Unfinished climbs stay
+   device-local; incompatible web/native course records and wallets stay separate.
+4. Verify backup configuration and perform a retained isolated restore drill;
+   qualify retention/deletion, abuse limits, observability and recovery before
+   inviting real players. Production activation is a separate reviewed release.
 
-Production preparation is not production activation. The account/native routes
-still reject VERCEL_ENV=production. Do not remove that guard as part of setup or
-copy staging secrets into the live project's Production environment. Guest play
-continues, completed-result rules remain versioned, and unfinished climbs stay
-device-local. No legacy wallet, bounty or purchase import is authorized here.
+Native owns dormant public environment descriptors. Proposed public aliases are
+`carve-staging-ios-v1` / `carve-staging-android-v1`, with different production
+aliases. Authorize is `<origin>/native/authorize`; proposed app returns are
+`<origin>/native/return/ios` and `/native/return/android`. These are not registered
+operational links. Provider callbacks
+`/api/native-broker/callback?provider=apple|google` are different. Signed native
+AASA/App Links, system-auth routing and Steam integration remain separate gates.
+No database/session/provider secret belongs in the mobile or Steam client.
 
-## Native coordination and remaining gates
-
-Native owns dormant public environment descriptors, validation and future client
-configuration. It needs only API origin, authorize/return URLs and public client
-aliases. Never ship a database URL/password, Supabase secret/service key, session
-secret or provider client secret in a native build.
-
-Proposed aliases: `carve-staging-ios-v1`, `carve-staging-android-v1` and separate
-`carve-production-ios-v1`/`carve-production-android-v1`. Proposed app returns are
-`<confirmed-origin>/native/return/ios` and `/native/return/android`; authorize is
-`<confirmed-origin>/native/authorize`. These are not registered operational links.
-Provider callbacks `/api/native-broker/callback?provider=apple|google` are different
-from app return URLs. Existing synthetic aliases/loopback tests remain separate.
-
-Hosted native HTTPS configuration, OS system-auth browser routing, verified
-AASA/App Links, real Apple/Google/email flows, production session refresh UX and
-Steam authentication/ownership integration remain acceptance gates. Protected
-staging currently prevents unauthenticated external OAuth callbacks; do not change
-protection or embed a bypass token in the app. Review the public callback/domain
-design before real-provider testing. No real-provider readiness is claimed.
-
-## Local verification
-
-`npm run build` passes. The full existing database suites pass, including 104 native
-broker and 113 native-progress checks. New restricted-role acceptance adds 92 real
-PostgreSQL assertions with actual LOGIN authority, exact grants, RLS, denied
-escalation and web/native completed saves. These run only in fresh retained local
-databases; runtime probe logins are disabled after testing and all pools close.
-The original local QA container was independently restored to Stopped with zero
-client consumers, the same volume/bindings and port 55532 closed. Nothing was
-deleted. This verifies local SQL/configuration; hosted TLS and live-provider
-acceptance are pending rather than inferred from local results.
+Web/native production account guards remain enabled. Guest play continues. No
+payments, ad activation, shared-bounty/purchase imports or production login are
+included in this provisioning milestone.
 
 References: [Vercel Pro](https://vercel.com/docs/plans/pro-plan),
 [Supabase pricing](https://supabase.com/pricing),

@@ -2,9 +2,10 @@
 
 Selected by the owner, 2026-11-02: Vercel Pro and Supabase Pro, with isolated
 production/staging setup and no change to the live game. Read-only inventory now
-confirms both existing provider accounts report Pro. No plan upgrade or checkout
-was performed. A separate protected Vercel staging project has been created;
-Supabase CARVE projects await the owner's organization selection. See the
+confirms both existing provider accounts report Pro. A separate protected Vercel
+staging project and two approved new CARVE Supabase Micro projects now exist.
+Staging has verified restricted-login TLS/schema readiness; production remains
+dormant with login disabled. No plan upgrade was performed. See the
 [current setup record](hosted-environments.md). Company/bank/payout setup and
 receiving payments remain deferred.
 
