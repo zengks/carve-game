@@ -214,3 +214,20 @@ advertising is included in this gameplay trial.
   remain release gates. Both PRs stay draft/unmerged; payments remain deferred.
 
 See [native implementation and evidence limits](docs/native-broker.md).
+
+## Native playable account/shared-save follow-up — 2026-11-02
+
+- [x] Agree separate First Ascent course/rules, raw-compatible completed payload,
+  strict platform provenance, expected-owner guard and revision/full-event ack.
+- [x] Push nested JSON guard,75 contract vectors,52 API-double assertions and
+  actual PostgreSQL implementation/checkpoints independently.
+- [x] Pass113 real Fetch/SQL assertions in fresh retained QA databases, including
+  coherent concurrent snapshots, immutable retries, RLS and revocation/expiry.
+- [ ] Run broader browser/game/broker/database regressions and Node24/26 CI;
+  freeze sources for independent native sync/controller tests.
+- [ ] Native owns playable isolated UI/scopes and reviewed completed-result queue;
+  no automatic guest import or unfinished-climb sync. Keep StageE untouched.
+- [ ] Verify preview and restore owned QA service after all participants finish.
+  Keep both PRs draft/unmerged, public download prompt and payments disabled.
+
+See [agreed native progress contract](docs/native-progress.md).

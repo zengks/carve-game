@@ -129,3 +129,11 @@ native-first-ascent-cases-v1.json. Native mirrors independently before integrati
 Implementation checkpoint:52 synthetic-transaction API assertions pass, alongside
 75 contract vectors and unchanged broker readiness checks. No database/service
 was started for that checkpoint; it is not real PostgreSQL acceptance.
+
+Real PostgreSQL checkpoint:113 assertions pass against actual signed synthetic
+broker callbacks and the actual Fetch progress route in a newly created retained
+QA database. Covers same-owner iOS/Android reads, strict source writes, concurrent
+new/retry events, full echoes after recent-history truncation, immutable conflicts,
+canonical-owner fault rejection, RLS, untouched Flow tables, scoped signout and
+expiry during a held SQL row lock. Read/write never renew original session time.
+Independent native integration and hosted/provider readiness remain separate.
