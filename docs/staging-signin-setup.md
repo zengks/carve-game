@@ -65,8 +65,10 @@ not an inventory of other accounts or proof no differently named client exists.
 
 1. Use a Google account you control to create/select a CARVE staging Google Cloud
    project. Configure Google Auth Platform branding/contact and an External
-   audience in Testing; add only intended test accounts. Do not publish consent
-   or accept agreements on the owner's behalf.
+   audience in Testing and record the intended testers. Do not publish consent
+   or accept agreements on the owner's behalf. Testing is not an access boundary
+   for this flow: Google's basic `openid email` sign-in is exempt from its
+   test-user-list restriction and seven-day authorization expiry.
 2. Create an OAuth **Web application** client for the server/browser broker.
    Supply the exact Google browser callback above; reserve the native broker
    callback for its qualification. The current protocol uses a server redirect,
@@ -78,6 +80,15 @@ not an inventory of other accounts or proof no differently named client exists.
 4. Confirm the Google Console accepts the stable Vercel HTTPS URL. Owned-domain
    verification and consent-page requirements must be satisfied if requested;
    Testing is not the same as public verification or launch readiness.
+
+Before any public staging exposure, CARVE therefore needs independent, server-owned
+tester admission using verified canonical `(issuer, sub)` identities, checked
+before creating a player or granting a session. Unknown identities must fail
+closed. The separately bounded owner enrollment procedure and admission checks
+are not implemented yet. Never use matching emails to join players, trust a
+client-supplied subject, or add unrelated OAuth scopes merely to make Testing
+restrict access. Pre-OAuth requests also need durable abuse quotas; admission
+after token verification does not prevent pending-flow/database flooding.
 
 Native currently opens this same server flow with PKCE-bound one-use app handoff;
 separate iOS/Android Google SDK clients are not a substitute for its web audience.
@@ -159,6 +170,7 @@ Hosted deployment and final CI results are recorded in the draft PR.
 
 References checked:
 - [Google OIDC registration](https://developers.google.com/identity/openid-connect/openid-connect)
+- [Google Testing audience exceptions](https://support.google.com/cloud/answer/15549945?hl=en)
 - [Apple web configuration](https://developer.apple.com/help/account/capabilities/configure-sign-in-with-apple-for-the-web/)
 - [Apple environment requirements](https://developer.apple.com/documentation/signinwithapple/configuring-your-environment-for-sign-in-with-apple)
 - [Supabase email OTP](https://supabase.com/docs/guides/auth/auth-email-passwordless)

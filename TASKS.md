@@ -268,6 +268,9 @@ See [current resource/billing/setup record](docs/hosted-environments.md).
   identities as unregistered until actual signed artifacts are available.
 - [ ] Owner prepares Google Testing project/client credentials; confirm Apple team,
   eligible primary App ID/Services ID and private-key prerequisites.
+- [ ] Before public staging, implement bounded owner enrollment and verified
+  issuer/subject tester admission plus durable pre-OAuth quotas. Google's basic
+  sign-in scopes are exempt from the Testing test-user restriction.
 - [ ] Schedule an explicitly addressed limited team-email delivery test; choose an
   owned sender domain/SMTP and public callback/association access before public use.
 
