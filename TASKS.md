@@ -228,9 +228,12 @@ See [native implementation and evidence limits](docs/native-broker.md).
 - [x] Independently review native headless playable integration: 117 engine and 11
   database checks, plus 12 mid-climb expiry checks. Test-file vault evidence is
   separate from Release Keychain/Keystore and OS-delivered touch acceptance.
-- [ ] Native owns playable isolated UI/scopes and reviewed completed-result queue;
+- [x] Native owns playable isolated UI/scopes and reviewed completed-result queue;
   no automatic guest import or unfinished-climb sync. Keep StageE untouched.
-- [ ] Verify preview and restore owned QA service after all participants finish.
+- [x] Accept 133 Release app checks, 10 database checks and 20 OS-delivered touch
+  checks across iOS 26.5/Android; independently match 80 source hashes, both exported
+  binaries and original reports. Record synthetic-provider/virtual-device limits.
+- [x] Verify preview and restore owned QA service after all participants finish.
   Keep both PRs draft/unmerged, public download prompt and payments disabled.
 
 See [agreed native progress contract](docs/native-progress.md).

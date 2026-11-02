@@ -163,10 +163,46 @@ a6b8910cf73763cf234941848a3a4b74f1cc06339561d65f1f2f152b723e9718.
 Both fixtures closed their listeners and database pools with zero remaining
 database connections. Their fresh databases and artifacts are retained.
 
-Release iOS/Android secure-store and OS-touch acceptance remains pending. A
-partial iOS pass followed by an Android reporting timeout is excluded from the
-matched OS acceptance. Native owns fresh targets; existing devices, profiles and
-saves remain untouched. The originally stopped shared QA PostgreSQL container
-stays reserved until native explicitly releases it, then must be restored to its
-original stopped state without deleting its data. Both PR17 and PR46 stay draft
-and unmerged; payments and the mobile download prompt remain disabled.
+The final source-matched headless integration repeats 117 engine/11 database
+checks after the account-screen fix; receipt SHA256:
+1e8710d3cab7dcdf10e3d2a8f6aac6fe1c2c5e7f5ca145636458f037176124c1.
+The refreshed 12-check mid-climb receipt SHA256 is
+ad4ccac1c33e354724bd13fa8f3fbecd0cb421c8d1c849be399792c59d5a6c70.
+
+Final Release acceptance uses newly created iOS 26.5/Android targets and real
+virtual Keychain/Keystore stores against the actual local HTTP/PostgreSQL route:
+133 scripted app assertions, 10 database assertions and 20 OS-delivered interaction
+assertions (10 XCTest, 10 ADB). It covers both directions of shared-result reads,
+cold account/checkpoint recovery, guest isolation, owner changes, lost replies,
+offline/503 retry, expiry/reauthentication, one-thumb launch and optional
+two-thumb controls. The actual touch sequence includes signing in, reading shared
+results, swiping from a sign-in button without activating it, and returning through
+the fixed Back footer. Course completions are automated, not a manual playthrough.
+Provider callbacks are signed synthetic identities, not real Apple/Google OAuth.
+Receipt SHA256:
+6275277cbe9056a257ba4562403410ca7341ec4c395d088ce91856679b2e95c0.
+
+Independent web review matched all 80 runtime source hashes, 43 iOS/44 Android
+export input hashes, both exported Release binaries and all 3 embedded reports
+against their original files. Account/results screenshots show the reachable
+safe-area Back footer. The selected iOS target passed PosterBoard observation
+and delayed post-shutdown scanning. This is virtual-device evidence; physical
+performance/ergonomics, real providers, HTTPS/App Links and hosted readiness stay
+separate gates. Failed/truncated/navigation attempts are retained and excluded.
+
+Fixes found through testing include accurate failed-signout feedback, compact
+safe-area layout, a fixed Back footer and account-button drag propagation without
+accidental sign-in. Android QA report framing now survives the native logger's
+1023-byte limit and rejects incomplete or damaged reports; this is test tooling,
+not a gameplay/network failure. The final source-matched integration and mid-climb
+receipts above supersede earlier source checkpoints for the fixed build.
+
+After native explicitly released the service, independent metadata checks found
+all 3 final OS/integration/mid-climb databases retained with zero connections and
+zero other client consumers. The exact original PostgreSQL container identity,
+volume mounts and loopback bindings matched the pre-test baseline; it was restored
+to its original stopped state and port 55532 refuses connections. No database,
+volume, target, app or save was deleted. The private peer verification record is
+/private/tmp/carve-peer-game-q1793649543476.json and contains no credentials.
+Both PR17 and PR46 stay draft/unmerged; live gameplay, payments and the mobile
+download prompt are unchanged/disabled as applicable.
