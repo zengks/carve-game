@@ -56,8 +56,8 @@ before tax, overages and other services. Included quotas are not unlimited, and
 compute/branching, egress, log retention and backup add-ons can change the bill.
 
 The connected `ponydude` organization now reports Pro; no CARVE hosted project is
-present. It contains `2026-portfolio`, `2026-portfolio-preview` and inactive
-`applyiq`. Two new Micro projects in that paid organization would add approximately
+present. Its three existing non-CARVE projects are preserved. Two new Micro
+projects in that paid organization would add approximately
 US$20/month before tax/usage, subject to the provider's project quotes. US$35 is
 the new-organization two-project example, not a quote for all existing projects.
 Separate organizations can be appropriate for different owners, budgets or teams;

@@ -12,7 +12,7 @@ disabled. Existing accounts, hosted projects, simulators and saves are preserved
 | Vercel team `zengksoutlookcoms-projects` | Pro, active; existing account | Review payment method/billing details; no upgrade needed |
 | Live Vercel project `carve-game` | Existing deployment and settings untouched | No deployment, production environment or alias changes |
 | New Vercel project `carve-staging` | Protected, Node 26, functions in `yul1`, no Git auto-deploy | Use its separate staging deployment for hosted acceptance |
-| Supabase organization `ponydude` | Pro; portfolio/preview/ApplyIQ projects retained | Owner must select this organization or a new one |
+| Supabase organization `ponydude` | Pro; three existing unrelated projects retained | Owner must select this organization or a new one |
 | Proposed `carve-staging` Supabase project | Not created | Organization choice and actual project quote first |
 | Proposed `carve-production` Supabase project | Not created | Same; prepare dormant without connecting live clients |
 
@@ -40,12 +40,16 @@ Staging project ID: `prj_zHwA5QqAGGMI1tWa6hdiHmM0lhAT`.
 Stable staging alias:
 https://carve-staging-zengksoutlookcoms-projects.vercel.app
 
-Tested deployment: `dpl_FBgQuJPS8rsaBXkguamzQMfmDmyx`, Ready in `yul1`:
-https://carve-staging-iapfbtdmb-zengksoutlookcoms-projects.vercel.app
+Current tested runtime: commit `7bf0764`, deployment
+`dpl_6CuMCAiQg6ARiosFo1L2mTB3YrrV`, Ready in `yul1`:
+https://carve-staging-akdtn8zfc-zengksoutlookcoms-projects.vercel.app
 
-It contains committed source `b6b25c6`, exported through `git archive` without
-untracked files, local credentials or retained test artifacts. Browser inspection
+The first deployment used committed source `b6b25c6`, exported through `git archive`
+without untracked files, credentials or retained test artifacts. The current
+staging deployment uses the exact published Git commit `7bf0764`, without linking
+the project for automatic Git deployments. Browser inspection of the stable alias
 shows the preview title, `noindex,nofollow` and disabled/unconfigured cloud sign-in.
+The native-progress endpoint also returns `not_configured` as expected.
 Staging has zero configured project environment variables. Deployment protection
 remains enabled; no bypass credential or share link was created.
 
