@@ -256,3 +256,19 @@ See [agreed native progress contract](docs/native-progress.md).
   save recovery and backup restore. Real provider/store/payments stay gated.
 
 See [current resource/billing/setup record](docs/hosted-environments.md).
+
+## Preview sign-in preparation without a custom domain — 2026-11-02
+
+- [x] Keep production disabled and add an explicit email readiness gate independent
+  of social providers; verify no disabled email action opens Auth or writes sessions.
+- [x] Version and save code-only sign-in/signup templates in the new staging project.
+- [x] Stage public Auth metadata only on isolated Preview, email flag false; no
+  provider secrets, client registry, domain purchase or email sends.
+- [x] Coordinate native system-browser/HTTPS-return ownership and record proposed
+  identities as unregistered until actual signed artifacts are available.
+- [ ] Owner prepares Google Testing project/client credentials; confirm Apple team,
+  eligible primary App ID/Services ID and private-key prerequisites.
+- [ ] Schedule an explicitly addressed limited team-email delivery test; choose an
+  owned sender domain/SMTP and public callback/association access before public use.
+
+See [exact callbacks and owner steps](docs/staging-signin-setup.md).

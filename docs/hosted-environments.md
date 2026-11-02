@@ -6,6 +6,10 @@ login and Vercel Preview secret storage in the mobile chat. Keep the live game,
 main branches and existing apps/data unchanged. Payments and native download
 prompts remain disabled; web PR17/PR18 and mobile PR46 remain unmerged.
 
+Follow-up: [sign-in preparation without a custom domain](staging-signin-setup.md)
+adds staging-only public Auth configuration and an explicit disabled email gate.
+The deployment/env inventory below describes the original provisioning snapshot.
+
 ## Resource inventory and billing
 
 | Resource | Verified state |
@@ -78,7 +82,7 @@ Tested runtime: `b14f4e2e11b18f934bb635c6fe326025dbae9012`, deployment
 `dpl_6kfPUdpKJbgHwmDQa49VvJVvnfHB`, Ready, target `staging`:
 https://carve-staging-a3pixu0uy-zengksoutlookcoms-projects.vercel.app
 
-Exactly six sensitive variables are scoped only to this new project's Preview
+At this original provisioning snapshot, six sensitive variables were scoped only to this new project's Preview
 environment: `CARVE_APP_ORIGIN`, `CARVE_SHARED_DATABASE_URL`,
 `CARVE_DATABASE_CA_CERT`, `CARVE_EXPECTED_PROJECT_REF`, `CARVE_SESSION_SECRET`,
 `CARVE_STORAGE_HEALTH_ENABLED`. No Production variables were added. The CA and
@@ -120,7 +124,9 @@ No live deployment, variables, aliases, security settings or analytics changed.
 1. Configure owner-controlled Apple/Google credentials and exact callback domains.
    Email sign-in needs a verified sender domain and production SMTP service;
    Supabase's default email service is not being advertised as player-ready.
-   Browser Supabase URL/publishable key and native client registries remain unset.
+   Browser Supabase URL/publishable key were initially unset; the follow-up now
+   prepares them on isolated staging with email explicitly disabled. Native client
+   registries remain unset.
 2. Agree the public callback/domain design. Protected staging currently prevents
    ordinary external OAuth/system-auth callbacks. Do not weaken deployment
    protection or put a bypass secret in a native build. A runtime health response
