@@ -15,7 +15,7 @@ await pool.query(await readFile(new URL('../server/schema.sql',import.meta.url),
 const pair=await generateKeyPair('RS256'),apple=await generateKeyPair('ES256',{extractable:true});
 const publicKey={...await exportJWK(pair.publicKey),alg:'RS256',kid:'synthetic'};
 const run=crypto.randomUUID(),subjects={a:crypto.randomUUID(),b:crypto.randomUUID()};
-const env={CARVE_SUPABASE_URL:'https://isolated-auth.test',CARVE_SUPABASE_PUBLISHABLE_KEY:'test-only',
+const env={CARVE_EMAIL_SIGN_IN_ENABLED:'true',CARVE_SUPABASE_URL:'https://isolated-auth.test',CARVE_SUPABASE_PUBLISHABLE_KEY:'test-only',
   CARVE_SHARED_DATABASE_URL:connectionString,CARVE_SESSION_SECRET:'ef'.repeat(32),
   CARVE_GOOGLE_CLIENT_ID:'google-web',CARVE_GOOGLE_CLIENT_SECRET:'test-only',CARVE_APPLE_SERVICE_ID:'apple-web',
   CARVE_APPLE_TEAM_ID:'TESTTEAM',CARVE_APPLE_KEY_ID:'test-key',CARVE_APPLE_PRIVATE_KEY:await exportPKCS8(apple.privateKey)};
