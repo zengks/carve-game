@@ -316,3 +316,20 @@ See [implementation, evidence and approval scope](docs/protected-android-auth.md
   keep public access, production/native activation and all PR merges off.
 
 See [exact Google owner steps](docs/android-google-staging-credentials.md).
+
+## Shared Stripe coordination — 2026-11-02 (planning only)
+
+- [x] Contact the explicitly authorized Stripe Manage and mobile chats; preserve
+  one existing shared sandbox `acct_1UXW0ID7ADbS69LH`, no second mobile account.
+- [x] Agree responsibility split: Stripe Manage account/catalog/settings and
+  merchant/payout gates, web canonical backend contract, native store-policy and
+  verification/restore adapters. Record scoped read-only inventory evidence.
+- [x] Record source-verified/idempotent grant, immutable owner, restore, refund,
+  dispute and duplicate-purchase planning constraints; no runtime implementation.
+- [ ] Complete peer review of the shared document and mobile policy annex.
+- [ ] Owner approves paid offer, content/price/currency and launch markets;
+  all three chats agree exact catalog, refund/offline/portability rules before code.
+- [ ] Any later sandbox implementation/configuration/testing or live activation
+  remains separately gated. No payments, SDKs, merchant/payout or store changes now.
+
+See [canonical commerce ownership and gates](docs/commerce-coordination.md).
