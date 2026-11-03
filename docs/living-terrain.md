@@ -93,7 +93,7 @@ At 390 × 844, browser input verified a ferry ride/one-thumb launch, an amber sh
 warning/collapse followed by one fall and 2 remaining lives, a perfect bell top
 launch with a visible reward, pause and reload recovery. At 844 × 390, two-thumb
 CARVE launched from a ferry and layout controls stayed accessible. At 1280 × 720,
-original garden/crystal/observatory silhouettes and clear landing/grip markers
+all five theme silhouettes and clear landing/grip markers
 were inspected. These are pointer-driven browser checks, not physical touch.
 
 Mobile reviewed the rule boundaries read-only: no blocking planning mismatch;
@@ -105,3 +105,19 @@ checks. The full local Node 26 build passed; final CI/preview status is recorded
 in the PR. Physical-device touch comfort, full manual course completion and
 player retention remain unqualified. Native geometry still needs its own
 physics/OS-input qualification; no native port is implied by this preview.
+
+
+Code checkpoint `490506bd6c603e7d470ba99c2a0d67b0a64b7853` passed both
+push/PR Node 24 and 26 matrices. Vercel deployment
+`dpl_CcmR66Uegi2VVKso2Qn56TgztcSx` is Ready, Preview only:
+[play Living Terrain](https://carve-game-7gu5lracw-zengksoutlookcoms-projects.vercel.app/?terrain=1).
+The deployed page rendered the new art and field guide on desktop. Its portrait
+one-thumb opening reached 25 m, then pause/reload retained 25 m / 2 bounty / 4.2 s
+and three lives with no browser console errors. This is an opening smoke check,
+not a full manual climb. The dedicated local fixture separately covers upper
+scenes and the new mechanic interactions described above.
+
+Draft [PR22](https://github.com/zengks/carve-game/pull/22) remains unmerged.
+Released main stays `aa5911a9a71e2e4d2b4cfa86a17f3a4736c2980d`.
+Native reviewed the contract; no native game, simulator, shared storage, Stripe,
+merchant/payout or mobile download prompt setting was changed.
