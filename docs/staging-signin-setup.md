@@ -59,6 +59,11 @@ immutable deployment URLs, arbitrary return destinations or production redirects
 
 ### Google first
 
+For the current **Android broker** milestone, follow
+[the dedicated protected auth-project instructions](android-google-staging-credentials.md).
+Those exact redirect/receiver settings supersede the browser-only preparation
+below; do not put Android credentials in the game staging project.
+
 Read-only console inspection found a signed-in Google account but no CARVE-named
 resource in its project search. No existing project/client was changed. This is
 not an inventory of other accounts or proof no differently named client exists.
@@ -84,8 +89,10 @@ not an inventory of other accounts or proof no differently named client exists.
 Before any public staging exposure, CARVE therefore needs independent, server-owned
 tester admission using verified canonical `(issuer, sub)` identities, checked
 before creating a player or granting a session. Unknown identities must fail
-closed. The separately bounded owner enrollment procedure and admission checks
-are not implemented yet. Never use matching emails to join players, trust a
+closed. Core native admission checks and durable quotas are now implemented and
+the private staging schema is installed; the separately bounded operator
+enrollment process remains unqualified and no hosted tester is enrolled.
+Never use matching emails to join players, trust a
 client-supplied subject, or add unrelated OAuth scopes merely to make Testing
 restrict access. Pre-OAuth requests also need durable abuse quotas; admission
 after token verification does not prevent pending-flow/database flooding.

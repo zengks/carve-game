@@ -15,7 +15,7 @@ export function androidAuthHostedOptions(env){
  return postgresOptions(url.href,{max:1,ca:env.CARVE_DATABASE_CA_CERT,projectRef:ref,runtimeRole:'carve_android_auth'});
 }
 export async function checkAndroidAuthHosted({env}={}){
- const pool=new pg.Pool(androidAuthHostedOptions(env));let c;
+ const pool=new pg.Pool({...androidAuthHostedOptions(env),query_timeout:5000});let c;
  try{
   c=await pool.connect();await c.query('BEGIN READ ONLY');
   await c.query("SET LOCAL statement_timeout='3s'");
@@ -46,7 +46,11 @@ export async function checkAndroidAuthHosted({env}={}){
   const unknown=(await c.query("select carve_android_auth_v1.admitted('https://accounts.google.com','carve-unenrolled-readonly-probe') as allowed")).rows[0].allowed;assert(unknown!==true,'probe_subject_unexpectedly_admitted');
   await c.query('ROLLBACK');
   return {project_ref:ref,role:r.actor,actual_login_verified:true,pooler_tls_verified:true,read_only_metadata_transaction:true,admission_transaction:'lock_only_rolled_back',role_connection_limit:r.rolconnlimit,role_memberships:memberships,private_rls_tables:tables.length,data_api_roles_denied:grants.map(g=>g.rolname),legacy_and_tester_select_denials:denials,admission_definer_search_path:'pg_catalog',unknown_subject_admitted:false,player_or_session_created:false,credentials_in_output:false};
- }finally{if(c){await c.query('ROLLBACK').catch(()=>{});c.release();}await pool.end();}
+ }finally{
+  // A pooler can queue before a backend statement timeout exists. Bound client
+  // queries too; on failure disconnect so an unresponsive ROLLBACK cannot hang.
+  if(c)c.release(true);await pool.end();
+ }
 }
 if(process.argv[1]&&await realpath(process.argv[1])===fileURLToPath(import.meta.url)){
  try{

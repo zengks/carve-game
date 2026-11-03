@@ -24,5 +24,6 @@ BEGIN
  EXECUTE format('ALTER ROLE carve_android_auth LOGIN PASSWORD %L',pwd);
  RETURN jsonb_build_object('role','carve_android_auth','database_password',pwd,'session_secret',session_key);
 END $credential$;
+REVOKE ALL ON FUNCTION pg_temp.carve_android_credentials_once() FROM PUBLIC;
 SELECT pg_temp.carve_android_credentials_once() AS credential;
 `;

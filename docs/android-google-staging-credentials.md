@@ -90,9 +90,20 @@ restricted staging DB LOGIN and sensitive Preview secret receiver in mobile chat
 web directly verified that human message. Scope is staging ref
 `ffxcsgtissldpkuxgxvo` and only project `prj_avYmWC0QKUACNm6YrWbc4FsZnSxZ`.
 No old credentials are copied. The role starts NOLOGIN in the schema; independent
-credential provisioning and a read-only actual TLS/login/privilege probe follow.
+credential provisioning and actual TLS/login/privilege checks have passed. The
+metadata transaction was read-only; the fixed admission helper ran separately
+under a lock-only transaction and rollback, with no player/session creation.
 Google secrets, enrollment, production/native activation and public access are
 not supplied or enabled by this database work.
+
+Five Preview variables are installed: explicit activation `false`, expected
+staging reference, public CA, new restricted DB URL and independent session key.
+The latter two are Secret type, with no Production/Development receiver or
+branch override. All 11 old table counts/fingerprints and the old runtime role,
+grants and policies remained unchanged. No hosted tester was enrolled. The sole
+security-advisor INFO item is the intentionally policy-free deny-by-default tester
+table; no permissive policy was added to silence it.
+See [the public-only receipt](android-auth-staging-db.json).
 
 The CLI-generated SQL lives under `staging-auth/supabase/migrations`, separately
 from the shared production foundation. It still uses the **same hosted migration

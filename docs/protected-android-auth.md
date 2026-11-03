@@ -1,7 +1,9 @@
 # Protected Android Google sign-in staging
 
 Status: disabled auth-only Preview deployed on the explicitly approved separate
-Vercel Pro project. No hosted schema/role/secret changes, public exception or activation.
+Vercel Pro project. The separately approved staging-only schema, restricted LOGIN
+and Preview secrets are provisioned; see [the readiness receipt](android-auth-staging-db.json).
+No public exception or Google/native/production activation.
 Production, native activation and the mobile download prompt remain disabled.
 Existing PRs stay unmerged. No purchases.
 
@@ -47,7 +49,8 @@ Activation requires actual `VERCEL=1` and `VERCEL_ENV=preview`, source-reviewed
 project/origin/database/Google-Web-client/package/certificate pins, a matching restricted staging
 DB URL, Google credentials and an independent 32-byte session key. It is never
 possible to enable this handler in an actual Production deployment. No system
-environment variables are spoofed. Project/origin pins are currently empty,
+environment variables are spoofed. The exact approved project and protected
+canonical origin are now pinned. The independent Google client pin stays empty,
 so even a mistakenly set activation variable cannot enable this artifact.
 The Google Web client ID must match the independently reviewed public source pin;
 changing only an environment credential to a different client is rejected. That
@@ -68,10 +71,12 @@ Google's basic `openid email profile` sign-in is exempt from Testing's test-user
 restriction. Google Testing is therefore **not** the access boundary. See
 [Google's documented exception](https://support.google.com/cloud/answer/15549945?hl=en).
 
-`server/android-auth-schema.sql` is a review-only, unapplied schema proposal for
-the existing CARVE **staging** database `ffxcsgtissldpkuxgxvo`. It creates a new
+`server/android-auth-schema.sql` was reviewed, tested and applied only to the
+existing CARVE **staging** database `ffxcsgtissldpkuxgxvo`, under separately verified
+owner approval. It creates a new
 private schema, bounded transient store, admission table and separate
-`carve_android_auth` NOLOGIN role. It does not change the existing runtime role
+`carve_android_auth` role (NOLOGIN in migration; separately provisioned staging
+LOGIN afterward). It does not change the existing runtime role
 or grant access to old sessions, results, progress, bounty or purchase records.
 The shared players/identities grants only support verified principal creation.
 No runtime migration, public enrollment or admin HTTP endpoint exists.
@@ -114,7 +119,14 @@ transient instances. One pool connection per function, role connection limit 4,
 Supavisor role/aggregate connection and platform load limits still need hosted
 qualification before any exposure; local tests do not prove a public cost cap.
 
-## Protected deployment — 2026-11-02
+## Initial protected deployment snapshot — 2026-11-02
+
+The initial empty-environment/closed-origin snapshot below is retained as history.
+The follow-up approved schema/credential setup is recorded in
+[Google staging setup](android-google-staging-credentials.md) and
+[the database readiness receipt](android-auth-staging-db.json). Current source
+pins identify the existing stable alias as canonical, provider pin empty and
+activation false; its updated disabled deployment is a separate verification step.
 
 Existing Pro team: `team_54NtI2RGoT8a0ult0wItXPlF`.
 New project: **`carve-android-auth-staging`** (separate from both existing projects),
@@ -180,11 +192,12 @@ Verified on the new project:
 
 Public-only receipt: [android-auth-protected-deployment.json](android-auth-protected-deployment.json).
 
-Before enabling anything: separately review/apply the new schema to staging,
-approve its new restricted role's LOGIN credential and exact Preview receiver,
-generate an independent session secret securely, and add actual staging Google
-client credentials through a secret entry path. Nothing is copied from existing
-Preview secrets. Google project/client/support contact remain owner prerequisites.
+The separately approved schema/LOGIN/Preview receiver step is now complete.
+Actual verified TLS login, exact privileges and unchanged old-record fingerprints
+are recorded in the new readiness receipt. Credentials were generated anew;
+no old Preview credential was copied. Actual Google Web-client credentials and
+project/support contact remain owner prerequisites. Follow the exact
+[Google owner instructions](android-google-staging-credentials.md).
 
 Keep `CARVE_ANDROID_AUTH_ENABLED=false` until all protected checks pass. Public
 Android system-browser sign-in/App-Link verification will require a **separate**
