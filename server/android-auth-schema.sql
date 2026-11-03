@@ -1,4 +1,4 @@
--- REVIEW ONLY until exact staging project/role/secret receiver approval.
+-- Exact staging schema/role/Preview receiver approved by owner 2026-11-02.
 -- Apply once after the shared foundation, staging or fresh isolated QA ONLY.
 -- Does not alter any existing role, native transient record, player or save.
 BEGIN;
@@ -33,6 +33,8 @@ CREATE TABLE carve_android_auth_v1.flow_index (
 );
 -- Definer can lock the admission row without granting runtime any ability to
 -- enroll, enable, extend or remove testers. This function never creates players.
+-- Custom verified server OIDC is used here, not Supabase JWT auth.uid(). Execute
+-- is limited to the server role; no public/authenticated/anon API exposure.
 CREATE FUNCTION carve_android_auth_v1.admitted(text,text) RETURNS boolean
  LANGUAGE sql SECURITY DEFINER SET search_path=pg_catalog AS $$
  SELECT true FROM carve_android_auth_v1.testers
@@ -57,6 +59,17 @@ ALTER TABLE carve_android_auth_v1.budget ENABLE ROW LEVEL SECURITY;
 ALTER TABLE carve_android_auth_v1.instances ENABLE ROW LEVEL SECURITY;
 ALTER TABLE carve_android_auth_v1.flow_index ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON ALL TABLES IN SCHEMA carve_android_auth_v1 FROM PUBLIC;
+-- Supabase can have explicit/default role grants beyond PUBLIC. Keep any such
+-- grants away from these NEW objects; never revoke legacy schema privileges.
+DO $$ DECLARE r text; BEGIN
+ FOREACH r IN ARRAY ARRAY['anon','authenticated','service_role'] LOOP
+  IF EXISTS(SELECT 1 FROM pg_roles WHERE rolname=r) THEN
+   EXECUTE format('REVOKE ALL ON SCHEMA carve_android_auth_v1 FROM %I',r);
+   EXECUTE format('REVOKE ALL ON ALL TABLES IN SCHEMA carve_android_auth_v1 FROM %I',r);
+   EXECUTE format('REVOKE ALL ON FUNCTION carve_android_auth_v1.admitted(text,text) FROM %I',r);
+  END IF;
+ END LOOP;
+END $$;
 GRANT SELECT,UPDATE ON carve_android_auth_v1.budget TO carve_android_auth;
 GRANT SELECT,INSERT,UPDATE,DELETE ON carve_android_auth_v1.instances TO carve_android_auth;
 GRANT SELECT,INSERT ON carve_android_auth_v1.flow_index TO carve_android_auth;

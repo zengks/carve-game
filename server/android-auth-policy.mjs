@@ -10,7 +10,8 @@ const fail=(message,status=400)=>{throw Object.assign(Error(message),{status});}
 const exact=(o,keys)=>Object.keys(o).sort().join(',')===[...keys].sort().join(',');
 const fields={begin:['provider','intent','redirect_uri','state','code_challenge','code_challenge_method'],exchange:['provider','intent','code','state','verifier'],session:[],cancel:['flow_id'],signout:[]};
 // Reviewed source pins, not request headers or freely configurable host envs.
-// Empty pins are intentional until a separately approved resource exists.
+// Provider client pin stays empty until the owner's actual staging Web client
+// is reviewed. Pinning a protected host/project never enables authentication.
 export function androidAuthConfiguration(env,pins){
  try{
   if(env.VERCEL!=='1'||env.VERCEL_ENV!=='preview'||env.CARVE_ANDROID_AUTH_ENABLED!=='true')return null;

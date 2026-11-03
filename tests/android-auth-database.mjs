@@ -17,6 +17,13 @@ const owner=new pg.Pool({connectionString:url.href});let db,second,release=null;
 const token=()=>randomBytes(32).toString('base64url');
 try{
  for(const name of ['schema.sql','native-schema.sql'])await owner.query(await readFile(new URL('../server/'+name,import.meta.url),'utf8'));
+ // Reproduce explicit platform default grants in this NEW QA database. The
+ // migration must revoke them on new auth objects without changing old grants.
+ for(const role of ['anon','authenticated','service_role']){
+  if(!(await owner.query('select 1 from pg_roles where rolname=$1',[role])).rowCount)await owner.query('create role '+role+' nologin');
+  await owner.query('alter default privileges grant select,insert,update,delete on tables to '+role);
+  await owner.query('alter default privileges grant execute on functions to '+role);
+ }
  let sql=await readFile(new URL('../server/android-auth-schema.sql',import.meta.url),'utf8');
  // Cluster roles are retained across fresh QA databases. Never alter an old role.
  if((await owner.query("select 1 from pg_roles where rolname='carve_android_auth'")).rowCount){
@@ -25,6 +32,8 @@ try{
   sql=sql.replace(/^CREATE ROLE carve_android_auth .*;\n/m,'');
  }
  await owner.query(sql);
+ const defaultGrants=(await owner.query("select r.rolname,has_schema_privilege(r.rolname,'carve_android_auth_v1','USAGE') as schema_usage,has_table_privilege(r.rolname,'carve_android_auth_v1.testers','SELECT') as tester_select,has_function_privilege(r.rolname,'carve_android_auth_v1.admitted(text,text)','EXECUTE') as admission from pg_roles r where r.rolname in('anon','authenticated','service_role')")).rows;
+ assert.equal(defaultGrants.length,3);assert(defaultGrants.every(g=>!g.schema_usage&&!g.tester_select&&!g.admission),'Explicit platform default grants must be removed from new auth objects');
  const pool=()=>new pg.Pool({connectionString:url.href,max:2,options:'-c role=carve_android_auth'});
  db=createAndroidAuthDatabase(url.href,{pool:pool()});second=createAndroidAuthDatabase(url.href,{pool:pool()});
  const pins={project_id:'prj_fixture',origin:'https://android-auth.example.test',google_web_client_id:'123456789012-fixturewebclient.apps.googleusercontent.com',database_ref:'ffxcsgtissldpkuxgxvo',android_package:'com.carve.preview.staging',android_certificate_sha256:Array(32).fill('AB').join(':')};
@@ -66,6 +75,11 @@ try{
  // Privileges, RLS and least-privilege denial are tested under the actual role.
  const restrictedPool=pool(),restricted=await restrictedPool.connect();
  try{
+  await restricted.query('BEGIN READ ONLY');
+  await assert.rejects(restricted.query("select carve_android_auth_v1.admitted('https://accounts.google.com','readonly-probe')"),e=>e.code==='25006');
+  await restricted.query('ROLLBACK');await restricted.query('BEGIN');
+  assert.equal((await restricted.query("select carve_android_auth_v1.admitted('https://accounts.google.com','lock-only-probe') as allowed")).rows[0].allowed,null);
+  await restricted.query('ROLLBACK');
   for(const query of ["insert into carve_android_auth_v1.testers(issuer,subject,expires_at) values('https://accounts.google.com','injected',clock_timestamp()+interval '1 day')",'select * from carve_android_auth_v1.testers','delete from carve_shared_v1.players','select * from carve_shared_v1.completed_results','select * from carve_shared_v1.native_instances','select * from carve_shared_v1.broker_sessions','create table carve_android_auth_v1.evil(id int)'])await assert.rejects(restricted.query(query),e=>e.code==='42501');
  }finally{restricted.release();await restrictedPool.end();}
  const rls=await owner.query("select relname,relrowsecurity from pg_class join pg_namespace n on n.oid=relnamespace where n.nspname='carve_android_auth_v1' and relkind='r'");assert.equal(rls.rows.length,4);assert(rls.rows.every(r=>r.relrowsecurity));

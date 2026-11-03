@@ -297,3 +297,22 @@ See [exact callbacks and owner steps](docs/staging-signin-setup.md).
 - [ ] Public access/actual Android OAuth/App Links remains a separate future gate.
 
 See [implementation, evidence and approval scope](docs/protected-android-auth.md).
+
+## Google Android staging credentials and restricted database — 2026-11-02
+
+- [x] Verify direct owner approval in mobile chat for the exact new schema/role
+  LOGIN and Preview Secret receiver; keep all production/provider/native gates off.
+- [x] Repoint only the existing protected auth alias to the verified Preview;
+  prepare exact server origin/project pins and owner Web-client instructions.
+- [x] Add staging-only CLI migration/parity check and stronger new-object revokes;
+  test actual SQL against explicit platform default grants in a fresh QA database.
+- [ ] Apply reviewed auth schema to staging, generate independent credentials,
+  store only in approved Preview, verify actual TLS/login/role/scope read-only.
+- [ ] Deploy disabled origin-pinned Preview, recheck authentication/disabled routes
+  and preserved data/role/protection/production baselines; coordinate receipt.
+- [ ] Owner creates Google Testing Web client, shares public project/client ID,
+  and enters matching secret directly in this project's Preview Secret field.
+- [ ] Real Google/Android return/admission qualification remains a later gate;
+  keep public access, production/native activation and all PR merges off.
+
+See [exact Google owner steps](docs/android-google-staging-credentials.md).

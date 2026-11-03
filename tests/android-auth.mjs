@@ -8,9 +8,12 @@ import {createNativeFetchHandler} from '../server/native-vercel.mjs';
 import {createAndroidAuthHandler,returnHTML} from '../server/android-auth.mjs';
 import {androidAuthConfiguration,androidClient,quotaIdentity,classifyAuthRequest} from '../server/android-auth-policy.mjs';
 import {buildAndroidAuth} from '../scripts/build-android-auth.mjs';
+import {androidAuthHostedOptions} from '../scripts/check-android-auth-hosted.mjs';
 const pins={project_id:'prj_fixture',origin:'https://android-auth.example.test',google_web_client_id:'123456789012-fixturewebclient.apps.googleusercontent.com',database_ref:'ffxcsgtissldpkuxgxvo',android_package:'com.carve.preview.staging',android_certificate_sha256:Array(32).fill('AB').join(':')};
 const env={VERCEL:'1',VERCEL_ENV:'preview',VERCEL_PROJECT_ID:pins.project_id,CARVE_ANDROID_AUTH_ENABLED:'true',CARVE_EXPECTED_PROJECT_REF:pins.database_ref,CARVE_SHARED_DATABASE_URL:`postgres://carve_android_auth.${pins.database_ref}:synthetic@aws-1-ca-central-1.pooler.supabase.com:6543/postgres`,CARVE_SESSION_SECRET:'a'.repeat(64),CARVE_GOOGLE_CLIENT_ID:pins.google_web_client_id,CARVE_GOOGLE_CLIENT_SECRET:'synthetic'};
 assert(androidAuthConfiguration(env,pins));
+const hostedOptions=androidAuthHostedOptions(env);assert.equal(hostedOptions.ssl.rejectUnauthorized,true);assert.equal(hostedOptions.max,1);
+for(const patch of [{CARVE_EXPECTED_PROJECT_REF:'zeosjsyugyxgxeeacpkpx'},{CARVE_SHARED_DATABASE_URL:env.CARVE_SHARED_DATABASE_URL.replace('carve_android_auth.','carve_runtime.')},{CARVE_SHARED_DATABASE_URL:env.CARVE_SHARED_DATABASE_URL.replace(':6543',':5432')},{CARVE_SHARED_DATABASE_URL:env.CARVE_SHARED_DATABASE_URL.replace('aws-1-ca-central-1.pooler.supabase.com','other.example.test')},{CARVE_SHARED_DATABASE_URL:env.CARVE_SHARED_DATABASE_URL+'?sslmode=disable'}])assert.throws(()=>androidAuthHostedOptions({...env,...patch}));
 for(const id of ['',undefined,'123456789012-otherwebclient.apps.googleusercontent.com','native-client'])assert.equal(androidAuthConfiguration({...env,CARVE_GOOGLE_CLIENT_ID:id},pins),null);
 for(const id of ['',undefined,'invalid-id'])assert.equal(androidAuthConfiguration(env,{...pins,google_web_client_id:id}),null);
 for(const patch of [{VERCEL_ENV:'production'},{VERCEL_ENV:'development'},{VERCEL:'0'},{VERCEL_PROJECT_ID:'prj_other'},{CARVE_ANDROID_AUTH_ENABLED:'false'},{CARVE_NATIVE_CLIENTS:'{}'},{CARVE_NATIVE_PROGRESS_CLIENTS:'{}'},{CARVE_APPLE_SERVICE_ID:'x'},{CARVE_EXPECTED_PROJECT_REF:'zeosjsyugyxqeeacpkpx'},{CARVE_SHARED_DATABASE_URL:env.CARVE_SHARED_DATABASE_URL.replace('carve_android_auth.','carve_runtime.')}])assert.equal(androidAuthConfiguration({...env,...patch},pins),null);
@@ -50,8 +53,10 @@ const config=JSON.parse(await readFile(join(output,'config.json'),'utf8'));
 assert.equal(config.version,3);assert.equal(config.routes.length,6);assert.equal(config.routes.at(-1).status,404);assert(!config.routes.some(r=>r.handle==='filesystem'));
 assert.deepEqual(await readdir(output),['config.json','functions']);
 const artifact=await import(pathToFileURL(join(output,'functions/auth-router.func/index.mjs')));
-const inactive=await createNativeFetchHandler(artifact.default)(new Request('https://unconfigured.invalid/api/native-broker/v1',{method:'POST',headers:{Host:'unconfigured.invalid'}}));assert.equal(inactive.status,503);
-const actualPins=JSON.parse(await readFile(new URL('../staging-auth/pins.json',import.meta.url),'utf8'));assert.equal(actualPins.project_id,'');assert.equal(actualPins.origin,'');assert.equal(actualPins.google_web_client_id,'');
+const actualPins=JSON.parse(await readFile(new URL('../staging-auth/pins.json',import.meta.url),'utf8'));
+assert.equal(actualPins.project_id,'prj_avYmWC0QKUACNm6YrWbc4FsZnSxZ');assert.equal(actualPins.origin,'https://carve-android-auth-staging-zengksoutlookcoms-projects.vercel.app');assert.equal(actualPins.google_web_client_id,'');
+const inactive=await createNativeFetchHandler(artifact.default)(new Request(actualPins.origin+'/api/native-broker/v1',{method:'POST',headers:{Host:new URL(actualPins.origin).host}}));assert.equal(inactive.status,503);
+assert.equal(androidAuthConfiguration({...env,VERCEL_PROJECT_ID:actualPins.project_id},actualPins),null,'Approved project/origin pins without reviewed provider client stay disabled');
 // Vercel installs only staging-auth, not root dev/game dependencies. Prove the
 // build entrypoint works in that layout instead of relying on root node_modules.
 const standalone=await mkdtemp(join(tmpdir(),'carve-auth-standalone-'));
