@@ -6,6 +6,19 @@ the next evidence-based task rather than treating a checkpoint as a new decision
 for the user. Preserve all existing data and virtual devices. Device testing is
 Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
 
+## Preview milestone: Living Terrain — 2026-11-02
+
+Branch `codex/living-platforms`, entry `/?terrain=1`; [design and acceptance](docs/living-terrain.md).
+
+- [x] Research official platformer references and design original themed objects.
+- [x] Add distinct garden, kite, crystal, cistern, observatory, mushroom and camp art.
+- [x] Add optional cloud ferries, cracked shelves and precision bells with readable cues.
+- [x] Isolate experimental profiles/results/runs and persist transient surface state.
+- [x] Preserve stable main-route geometry; six seeded no-skill scripted climbs reach 1,000 m.
+- [ ] Verify real browser rendering/input/reload in desktop, portrait and landscape.
+- [ ] Pass full Node 24/26 checks and verify branch deployment; keep main/live unchanged.
+- [ ] Share exact contracts/evidence with mobile; native port and player-fun evaluation remain separate.
+
 ## Active web milestone: camera, reading flow and route decisions
 
 Branch `codex/flow-and-encounters`, preview entry `/?flow=1`. See

@@ -788,7 +788,7 @@
       <button class="btn" id="rift-start">Accept the challenge</button><button class="btn hidden" id="rift-action">Seal the gate</button><button class="btn ghost" id="rift-exit">Leave without entering</button></div>
     </dialog>
     <div id="return-layer" class="hidden" role="status" aria-live="polite"><div><div class="eyebrow" id="return-label">returning to the climb</div><h2 id="return-title"></h2><p id="return-copy"></p><div class="return-progress"></div></div></div>
-    <dialog id="journal-dialog" aria-labelledby="journal-title"><div class="rift-body"><h2 id="journal-title">Field journal</h2><details><summary>How bounty, Flow and lives work</summary><p>Gold shards earn bounty. Spend it on skill unlocks or camp services. Surge spends 26 Flow for a dash, separate from skill recharge. Perfect catches earn more Flow; neither currency is a life. Gold walls save the place you return to after losing a life.</p><p>Public runs have 3 lives. Your height record and bounty survive Game Over. Optional camp contracts risk only their stated deposit, and marked directional rings need you to cross in the arrow's direction.</p><p>Hollow gold shards above central ledges pay 1 bounty; wall-side shards pay 2 or 4. Both count for Courier, so the high route can finish its goal without diving below the ledges.</p><p>In the new course, skills recharge by climbing: a PERFECT fresh catch restores 3 points, GOOD restores 2, other catches 1; a shard restores 1 and a directional ring 4. Waiting does not refill skills. Contracts can grant a ready skill, one Overdrive activation or a life.</p></details><ol id="journal-entries"></ol></div><div class="rift-actions"><button class="btn ghost" id="camp-guide">Plan the next camp</button><button class="btn" id="journal-close">Back</button></div></dialog>
+    <dialog id="journal-dialog" aria-labelledby="journal-title"><div class="rift-body"><h2 id="journal-title">Field journal</h2><details><summary>How bounty, Flow and lives work</summary><p>Gold shards earn bounty. Spend it on skill unlocks or camp services. Surge spends 26 Flow for a dash, separate from skill recharge. Perfect catches earn more Flow; neither currency is a life. Gold walls save the place you return to after losing a life.</p><p>Public runs have 3 lives. Your height record and bounty survive Game Over. Optional camp contracts risk only their stated deposit, and marked directional rings need you to cross in the arrow's direction.</p><p>Hollow gold shards above central ledges pay 1 bounty; wall-side shards pay 2 or 4. Both count for Courier, so the high route can finish its goal without diving below the ledges.</p><p>In the new course, skills recharge by climbing: a PERFECT fresh catch restores 3 points, GOOD restores 2, other catches 1; a shard restores 1 and a directional ring 4. Waiting does not refill skills. Contracts can grant a ready skill, one Overdrive activation or a life.</p></details><details id="terrain-guide" class="hidden" open><summary>Living terrain · read before exploring</summary><p>Solid glowing edges show the surfaces you can land on or catch. Decorative roots, crystals and machinery are scenery. Mushroom caps are automatic springs: land, lift your thumb, then press again to catch.</p><p>↔ Cloud ferry: a slow moving, one-way landing deck. It carries you sideways while standing or charging. Jump through it from below. No extra button.</p><p>Cracked shelf: optional amber stepping stone. First landing or catch starts a 1.8-second climb-clock countdown. Jump before it breaks; it regrows 5 seconds later. The warning bar drains even while charging. Safe walls and camps never crumble.</p><p>◇ Crystal bell: release a PERFECT catch from its marked wall to earn +12 Flow and restore 4 skill recharge points, once per bell per run. GOOD catches still work normally. No currency, skill or perfect release is required to climb.</p><p>Hanging gardens, wind kites, hollow arches, root bridges and observatory drums change the scenery; their glowing grip and landing edges keep the original collision rules. All progress in this trial stays separate.</p></details><ol id="journal-entries"></ol></div><div class="rift-actions"><button class="btn ghost" id="camp-guide">Plan the next camp</button><button class="btn" id="journal-close">Back</button></div></dialog>
     <dialog id="skill-dialog" aria-labelledby="skill-title"><div class="rift-body"><div class="eyebrow">understand your equipment</div><h2 id="skill-title"></h2><p id="skill-copy"></p><p>Use between catches, after lifting your thumb. Changing equipment never refills your skill. In the new course, fresh catches and shards recharge it; waiting does not. You can read all skills again in the Workshop.</p></div><div class="rift-actions"><button class="btn" id="skill-confirm">Use this skill</button><button class="btn ghost" id="skill-cancel">Keep climbing</button></div></dialog>
     <dialog id="camp-dialog" aria-labelledby="camp-title"><div class="rift-body"><div class="eyebrow">a moment to choose</div><h2 id="camp-title">Trail camp</h2><p id="camp-copy"></p><p id="camp-status" role="status"></p><div id="camp-options"></div></div><div class="rift-actions"><button class="btn" id="camp-repair">Restore one life · 18 bounty</button><button class="btn ghost hidden" id="camp-rift">Explore nearby rift</button><button class="btn ghost" id="camp-close">Leave camp</button></div></dialog>
     <dialog id="bank-dialog" aria-labelledby="bank-title"><h2 id="bank-title">Bank this expedition?</h2><p>Your highest altitude joins this browser's records. Bounty and unlocks are kept. The next expedition starts at the ground.</p><button class="btn" id="bank-cancel" autofocus>Keep climbing</button><button class="btn ghost" id="bank-confirm">Bank &amp; end run</button></dialog>
@@ -808,11 +808,12 @@
     <script>
       "use strict";
       const TESTING = true; // Replaced with false by the production build; query strings cannot enable it.
-      const FLOW_TRIAL = !TESTING || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('flow') === '1');
+      const LIVING_PLATFORMS = TESTING && typeof location !== 'undefined' && new URLSearchParams(location.search).get('terrain') === '1';
+      const FLOW_TRIAL = LIVING_PLATFORMS || !TESTING || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('flow') === '1');
       const MEMORY_PREVIEW = FLOW_TRIAL ? 3.2 : 2.5;
       const RELIC_TRIAL = typeof location !== 'undefined' && new URLSearchParams(location.search).get('relics') === '1';
-      const CONTROL_KEY = FLOW_TRIAL ? 'carve.flow.controls.v1' : RELIC_TRIAL ? 'carve.relic-trial.controls.v1' : 'carve.controls.v1';
-      const AUDIO_KEY = FLOW_TRIAL ? 'carve.flow.muted.v1' : RELIC_TRIAL ? 'carve.relic-trial.muted' : 'carve.expedition.muted';
+      const CONTROL_KEY = LIVING_PLATFORMS ? 'carve.terrain.controls.v1' : FLOW_TRIAL ? 'carve.flow.controls.v1' : RELIC_TRIAL ? 'carve.relic-trial.controls.v1' : 'carve.controls.v1';
+      const AUDIO_KEY = LIVING_PLATFORMS ? 'carve.terrain.audio.v1' : FLOW_TRIAL ? 'carve.flow.muted.v1' : RELIC_TRIAL ? 'carve.relic-trial.muted' : 'carve.expedition.muted';
       /* ============================================================================
    CARVE — a momentum / "drift-as-grip" vertical climber.
    Single-file, dependency-free. Fixed-timestep simulation, y-up world space.
@@ -1161,7 +1162,7 @@
       // Deterministic six-column streams. Only the current 16-row neighborhood lives
       // in memory; returning to an old checkpoint reconstructs its geometry.
       const Level = {
-        course:FLOW_TRIAL ? (RELIC_TRIAL ? 7 : 6) : RELIC_TRIAL ? 5 : 4,
+        course:LIVING_PLATFORMS ? (RELIC_TRIAL ? 9 : 8) : FLOW_TRIAL ? (RELIC_TRIAL ? 7 : 6) : RELIC_TRIAL ? 5 : 4,
         encounters:[
           {name:'LAUNCH GARDEN',hint:'Find the gold beacon. Hold, steer and release through the first catches.',color:'#38f0e0'},
           {name:'WIND GAP',hint:'The gap opens wide. Drag toward the opposite wall; neutral launches may fall short.',color:'#9bcaff'},
@@ -1192,7 +1193,7 @@
           const previous = new Map([...this.blocks, ...this.poles].map(b => [b.id, b]));
           this.blocks = []; this.poles = []; this.tokens = []; this.portals = []; this.zones = []; this.landmarks = [];
           const add = (id, x, y, w, h, kind, extra = {}) => {
-            const b = previous.get(id) || {id, x, y, w, h, kind, grip: ['rock','rail','check'].includes(kind), hazard:kind === 'spike', broken:false, t:0, ...extra};
+            const b = previous.get(id) || {id, x, y, w, h, kind, homeX:x, grip: ['rock','rail','check'].includes(kind), hazard:kind === 'spike', broken:false, t:0, ...extra};
             this.blocks.push(b); return b;
           };
           if (row < 5) {
@@ -1210,7 +1211,7 @@
               const offset = spine || r < 4 ? 0 : Math.floor(this.random(Math.floor(r / 12),c < 2 ? 12 : 13) * 15) - 7;
               const kind = r % 5 === 4 ? 'check' : 'rock';
               const shape=this.shape(r,c,spine);
-              const b = add(`b:${r}:${c}`, shape.x, y + offset, shape.w, shape.h, kind, {row:r, column:c, spine, biome});
+              const b = add(`b:${r}:${c}`, shape.x, y + offset, shape.w, shape.h, kind, {row:r, column:c, spine, biome, bell:LIVING_PLATFORMS&&spine&&r%6===2});
               this.tokens.push({id:`t:${r}:${c}`, row:r, x:b.x + (c % 2 ? -30 : 180), y:b.y + 65, value:spine ? 2 : 4});
               if(FLOW_TRIAL&&spine)this.tokens.push({id:`t:${r}:7`,row:r,x:b.x+b.w/2+sign(this.centerX-b.x-b.w/2)*45,y:b.y+b.h+200,value:1,highLine:true});
               if (!spine && r > 3 && r % 6 === 3) add(`s:${r}:${c}`, b.x + (c < 2 ? -24 : 150), b.y + 25, 24, 65, 'spike', {row:r});
@@ -1231,9 +1232,138 @@
               this.poles.push(previous.get(id) || {id, row:r, x:405, y:y + 110, r:1});
             }
             if(FLOW_TRIAL&&r%6===3)this.tokens.push({id:`t:${r}:8`,row:r,x:405,y:y+240,value:6,direction:r%12===3?1:-1});
+            if(LIVING_PLATFORMS&&r%6===1)add(`r:${r}:3`,330,y+195,150,16,'rail',{row:r,mechanic:'ferry',biome});
+            if(LIVING_PLATFORMS&&r%6===4)add(`r:${r}:3`,690,y+200,155,18,'rail',{row:r,mechanic:'crumble',biome});
             if (r % 7 === 0) this.portals.push({id:`v:${r}`, row:r, x:405, y:y + 20, type:Math.floor(r / 7) % 2 ? 'memory' : 'pulse'});
             if (r % 4 === 2) this.zones.push({row:r, x:biome % 2 ? -130 : 970, y:y - 30, w:110, h:270, type:biome % 2 ? 'wind' : 'lift', direction:r % 3 ? 1 : -1});
           }
+        },
+      };
+
+      // Preview-only ruleset. Presentation never changes the solid grip frame;
+      // new mechanical surfaces are explicitly typed one-way decks.
+      const Terrain = {
+        cracks:new Map(),
+        reset(){this.cracks=new Map();},
+        phase(b,time=Game.time){return (b.homeX??b.x)+Math.sin(time*.65+b.row*1.7)*70;},
+        age(b){return this.cracks.has(b.id)?Game.time-this.cracks.get(b.id):-1;},
+        absent(b){const age=LIVING_PLATFORMS&&b.mechanic==='crumble'?this.age(b):-1;return age>=1.8&&age<6.8;},
+        contact(b){
+          if(!LIVING_PLATFORMS||b.mechanic!=='crumble'||this.cracks.has(b.id))return;
+          this.cracks.set(b.id,Game.time);
+          Journey.notify('CRACKED SHELF · jump within 1.8 seconds · regrows after 5 seconds');
+        },
+        position(carry=true){
+          if(!LIVING_PLATFORMS)return;
+          for(const b of Level.blocks)if(b.mechanic==='ferry'){
+            const riding=carry&&((Player.carve?.block.id===b.id&&Player.carve.type==='rail')||
+              (Player.onGround&&Player.x+Player.w>b.x&&Player.x<b.x+b.w&&Math.abs(Player.y-b.y-b.h)<3));
+            const next=this.phase(b);if(riding)Player.x+=next-b.x;b.x=next;
+          }
+        },
+        update(){
+          if(!LIVING_PLATFORMS)return;
+          this.position();
+          for(const [id,at]of this.cracks)if(Game.time-at>=6.8)this.cracks.delete(id);
+          const b=Player.carve?.block||Level.blocks.find(b=>Player.onGround&&Player.x+Player.w>b.x&&Player.x<b.x+b.w&&Math.abs(Player.y-b.y-b.h)<3&&this.absent(b));
+          if(b&&this.absent(b)){
+            Player.carve=null;Player.state='AIR';Player.onGround=false;Player.groundCharge=null;
+            Player.vx=0;Player.vy=-40;Input.retire();
+            Journey.notify('SHELF CRUMBLED · fresh hold to catch a safe wall');
+          }
+        },
+        reward(q,b){
+          if(!LIVING_PLATFORMS||!b.bell||q.n!=='perfect')return;
+          const id=`t:${b.row}:10`;if(Journey.collected.has(id))return;
+          Journey.collected.add(id);Game.flow=Math.min(T.FLOW_MAX,Game.flow+12);
+          Journey.cooldown=Math.max(0,Journey.cooldown-4);
+          Journey.notify('CRYSTAL BELL · +12 Flow · restored 4 skill recharge points');
+        },
+        snapshot(){return LIVING_PLATFORMS?{version:1,cracks:[...this.cracks].map(([id,at])=>({id,at}))}:null;},
+        valid(d,time){return !LIVING_PLATFORMS?d==null:!!d&&d.version===1&&Array.isArray(d.cracks)&&d.cracks.length<=64&&new Set(d.cracks.map(r=>r?.id)).size===d.cracks.length&&d.cracks.every(r=>r&&/^r:\d+:3$/.test(r.id)&&Number.isSafeInteger(Number(r.id.split(':')[1]))&&Number(r.id.split(':')[1])%6===4&&Number.isFinite(r.at)&&r.at>=0&&r.at<=time&&time-r.at<6.8);},
+        restore(d){this.reset();if(LIVING_PLATFORMS)for(const r of d.cracks)this.cracks.set(r.id,r.at);},
+        cue(){
+          const b=Level.blocks.filter(b=>(b.mechanic||b.bell)&&Math.hypot(b.x+b.w/2-Player.x-17,b.y+b.h-Player.y)<330).sort((a,b)=>Math.abs(a.y-Player.y)-Math.abs(b.y-Player.y))[0];
+          return !b?'':b.mechanic==='ferry'?'CLOUD FERRY ↔ · land or charge to ride; jump through from below':b.mechanic==='crumble'?'CRACKED SHELF · optional · jump before the amber bar empties':'CRYSTAL BELL ◇ · optional PERFECT release: +12 Flow and 4 recharge';
+        },
+        path(ctx,points,fill,stroke){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}},
+        oval(ctx,x,y,rx,ry,fill,stroke){ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}},
+        label(ctx,text,x,y,color){ctx.save();ctx.translate(x,y);ctx.scale(1,-1);ctx.font='800 20px system-ui';ctx.textAlign='center';ctx.fillStyle=color;ctx.fillText(text,0,0);ctx.restore();},
+        draw(ctx,b){
+          const stage=Math.floor((b.row??0)/6)%5,w=b.w,h=b.h;
+          const colors=['#87e6ab','#b5dfff','#d1a8ff','#76dfd2','#f6ce7b'];
+          const c=b.kind==='check'?'#ffcf4d':b.rescue?'#8df7c8':colors[stage];
+          ctx.save();ctx.translate(b.x,b.y);ctx.lineWidth=2;
+          if(b.kind==='rail'||b.id==='start'){
+            if(b.mechanic==='ferry'){
+              // Clouds are scenery; the wooden gondola deck is the landing surface.
+              ctx.strokeStyle='#58758e';ctx.setLineDash([5,9]);ctx.beginPath();ctx.moveTo(-70,h-32);ctx.lineTo(w+70,h-32);ctx.stroke();ctx.setLineDash([]);
+              for(let i=0;i<4;i++)this.oval(ctx,w*(.15+i*.23),h-25,30,16,'#334e68');
+              this.path(ctx,[[8,h-3],[w-8,h-3],[w-25,h-31],[25,h-31]],'#577c94',c);
+              this.label(ctx,'↔ FERRY',w/2,-53,c);
+            }else if(b.mechanic==='crumble'){
+              const age=this.age(b),fraction=age<0?1:clamp(1-age/1.8,0,1);
+              this.path(ctx,[[0,h],[w,h],[w-6,-6],[w*.65,-14],[w*.48,-5],[w*.22,-18],[4,-6]],'#77503b','#f2b66e');
+              this.path(ctx,[[w*.36,h],[w*.48,h-10],[w*.42,-8]],null,'#201f32');
+              ctx.fillStyle='#352b30';ctx.fillRect(0,h+8,w,5);ctx.fillStyle='#ffce80';ctx.fillRect(0,h+8,w*fraction,5);
+              this.label(ctx,age<0?'CRACKED':'JUMP NOW',w/2,-40,'#ffd09a');
+            }else if(b.feature==='spring'){
+              ctx.fillStyle='#64715b';ctx.fillRect(w*.44,-42,w*.12,44);
+              this.path(ctx,[[0,h],[w,h],[w-9,-4],[w*.75,-12],[w*.5,-6],[w*.25,-12],[9,-4]],b.shortcut?'#7953aa':'#a75171',b.shortcut?'#d6b0ff':'#ffadd6');
+              for(let i=0;i<4;i++)this.oval(ctx,18+i*(w-36)/3,h-8,5,3,'#ffe8bd');
+              this.label(ctx,b.shortcut?'↖ BOOST':'↑ SPRING',w/2,-64,'#ffd4e6');
+            }else if(b.rest){
+              this.path(ctx,[[0,h],[w,h],[w-13,-14],[w/2,-23],[13,-14]],'#624b39','#dfc092');
+              for(let x=15;x<w;x+=24){ctx.strokeStyle='#a17b50';ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+              ctx.strokeStyle='#748172';ctx.beginPath();ctx.moveTo(15,h);ctx.lineTo(38,h+65);ctx.moveTo(w-15,h);ctx.lineTo(w-38,h+65);ctx.stroke();
+              this.label(ctx,'CAMP',w/2,-46,'#ffe4aa');
+            }else if(stage===1){
+              this.path(ctx,[[0,h],[w,h],[w*.78,-25],[w*.5,-40],[w*.2,-25]],'#355276',c);
+              ctx.strokeStyle='#7698ae';ctx.beginPath();ctx.moveTo(10,h);ctx.lineTo(28,h+65);ctx.moveTo(w-10,h);ctx.lineTo(w-28,h+65);ctx.stroke();
+            }else{
+              ctx.strokeStyle='#637655';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(2,h-5);ctx.bezierCurveTo(w*.3,-12,w*.7,4,w-2,h-5);ctx.stroke();
+              for(let i=0;i<5;i++)this.oval(ctx,12+i*(w-24)/4,h-12-(i%2)*6,13,5,stage===2?'#8e6aaf':'#507957');
+            }
+            ctx.strokeStyle=b.mechanic==='crumble'?'#ffd09a':b.feature==='spring'?'#ffa8d9':c;ctx.lineWidth=4;
+            ctx.beginPath();ctx.moveTo(0,h);ctx.lineTo(w,h);ctx.stroke();
+          }else{
+            // Exact flat top and side rails remain visible at the AABB boundary.
+            // Irregular sculpted bodies and inset decoration are not extra solids.
+            const body=['#254d43','#344562','#4c3b63','#244d55','#534936'][stage];
+            this.path(ctx,[[0,0],[w*.15,-18],[w*.36,-5],[w*.63,-22],[w*.85,-9],[w,0],[w,h],[0,h]],body,c);
+            if(stage===0){
+              ctx.strokeStyle='#72a97a';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(w*.35,-12);ctx.bezierCurveTo(w*.1,h*.3,w*.75,h*.5,w*.4,h-8);ctx.stroke();
+              for(let i=0;i<5;i++){const x=20+(i*37)%(w-30),y=20+i*23;this.oval(ctx,x,y,15,6,i%2?'#74ba84':'#4d8d6b');}
+              this.oval(ctx,w/2,h*.55,w*.24,h*.31,'#172f32','#618970');
+              for(let i=0;i<3;i++)this.oval(ctx,w*.4+i*14,h*.45,4,7,'#91dab3');
+            }else if(stage===1){
+              const x=w/2,y=h*.5;this.path(ctx,[[x,y-52],[x+43,y],[x,y+52],[x-43,y]],'#708aaa',c);
+              ctx.strokeStyle='#304967';ctx.beginPath();ctx.moveTo(x,y-52);ctx.lineTo(x,y+52);ctx.moveTo(x-43,y);ctx.lineTo(x+43,y);ctx.stroke();
+              this.oval(ctx,x,y,9,9,'#dae9ea');
+            }else if(stage===2){
+              for(let i=0;i<4;i++){const x=12+i*(w-32)/4,high=55+(i%2)*35;this.path(ctx,[[x,18],[x+4,high],[x+17,high+20],[x+28,high-10],[x+24,18]],i%2?'#9a71b6':'#67619c',c);}
+            }else if(stage===3){
+              this.oval(ctx,w/2,h*.48,w*.34,h*.35,'#152f3c','#568d91');
+              ctx.strokeStyle='#7ac3bd';ctx.lineWidth=3;for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(w/2,h*.48,15+i*13,.15,Math.PI*1.7);ctx.stroke();}
+            }else{
+              this.oval(ctx,w/2,h/2,Math.min(w,h)*.4,Math.min(w,h)*.4,'#2d3140','#bba06d');
+              this.oval(ctx,w/2,h/2,Math.min(w,h)*.26,Math.min(w,h)*.26,null,c);
+              for(let i=0;i<8;i++){const a=i*Math.PI/4;ctx.strokeStyle=c;ctx.beginPath();ctx.moveTo(w/2+Math.cos(a)*26,h/2+Math.sin(a)*26);ctx.lineTo(w/2+Math.cos(a)*48,h/2+Math.sin(a)*48);ctx.stroke();}
+              this.oval(ctx,w/2,h/2,12,12,'#cab67f');
+            }
+            ctx.strokeStyle=c;ctx.lineWidth=b.rescue?5:3;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,h);ctx.lineTo(w,h);ctx.lineTo(w,0);ctx.stroke();
+            if(b.bell){
+              const rung=Journey.collected.has(`t:${b.row}:10`);
+              this.path(ctx,[[w/2-14,h+14],[w/2,h+36],[w/2+14,h+14],[w/2,h+2]],rung?'#52627c':'#d9c8ff','#f0deff');
+              this.label(ctx,rung?'BELL ✓':'◇ PERFECT',w/2,-46,'#e7caff');
+            }
+            if(b.kind==='check'){
+              ctx.strokeStyle='#ffcf4d';ctx.beginPath();ctx.moveTo(18,h);ctx.lineTo(18,h+42);ctx.stroke();
+              this.path(ctx,[[18,h+42],[48,h+33],[18,h+24]],Player.checkpoint?.id===b.id?'#ffcf4d':'#a59054');
+            }
+            if(b.rescue)this.label(ctx,'RESCUE',w/2,-35,'#aaffd8');
+          }
+          ctx.restore();
         },
       };
 
@@ -1290,7 +1420,7 @@
           this.x += this.vx * dt;
           for (const b of Level.blocks) {
             if (b.kind === "rail") continue;
-            if (b.broken) continue;
+            if (b.broken || Terrain.absent(b)) continue;
             if (aabb(this, b)) {
               if (this.vx > 0) {
                 this.x = b.x - this.w;
@@ -1307,14 +1437,14 @@
           const previousY = this.y;
           this.y += this.vy * dt;
           for (const b of Level.blocks) {
-            if (b.broken) continue;
+            if (b.broken || Terrain.absent(b)) continue;
             if (b.kind === "rail" && (this.vy >= 0 || previousY < b.y + b.h - 0.01)) continue;
             if (aabb(this, b)) {
               if (this.vy < 0) {
                 this.y = b.y + b.h;
                 this.onGround = true;
                 if (b.hazard) this.hit();
-                this.saveCheckpoint(b);
+                this.saveCheckpoint(b); Terrain.contact(b);
               } else if (this.vy > 0) {
                 this.y = b.y - this.h;
                 if (b.hazard) this.hit();
@@ -1377,7 +1507,7 @@
           let best = null,
             bestD = 1e9;
           for (const b of Level.blocks) {
-            if (!b.grip || b.broken) continue;
+            if (!b.grip || b.broken || Terrain.absent(b)) continue;
             const vOver = this.y < b.y + b.h && this.y + this.h > b.y;
             const hOver = this.x < b.x + b.w && this.x + this.w > b.x;
             // right face of block -> player on its right (wallL: wall is to player's left)
@@ -1419,6 +1549,7 @@
           if (Game.lesson < 2) Game.lesson = 2;
           this.state = "CARVE";
           const b = t.block;
+          Terrain.contact(b);
           this.saveCheckpoint(b);
           if (t.type === "rail" && b.kind !== "rail") {
             // A column-top catch should continue into the course unless steered.
@@ -1603,7 +1734,7 @@
           );
           if (Game.combo > Game.bestChain) Game.bestChain = Game.combo;
           Game.showCombo();
-          Journey.onCarve(q,surface);
+          Journey.onCarve(q,surface); Terrain.reward(q,surface);
         },
 
         update(dt) {
@@ -1914,7 +2045,7 @@
       };
 
       const Profile = {
-        key:FLOW_TRIAL ? (RELIC_TRIAL ? 'carve.flow-relic.profile.v1' : 'carve.flow.profile.v1') : RELIC_TRIAL ? 'carve.relic-trial.profile.v1' : 'carve.variety.profile.v1', name:'Climber', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], lessons:[], routeLedger:[], trialCredits:[], trialQuests:[], best:0, challengeBest:0, storageAvailable:true,
+        key:LIVING_PLATFORMS ? (RELIC_TRIAL ? 'carve.terrain-relic.profile.v1' : 'carve.terrain.profile.v1') : FLOW_TRIAL ? (RELIC_TRIAL ? 'carve.flow-relic.profile.v1' : 'carve.flow.profile.v1') : RELIC_TRIAL ? 'carve.relic-trial.profile.v1' : 'carve.variety.profile.v1', name:'Climber', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], lessons:[], routeLedger:[], trialCredits:[], trialQuests:[], best:0, challengeBest:0, storageAvailable:true,
         load() {
           try {
             const d = JSON.parse(localStorage.getItem(this.key)); this.storageAvailable = true;
@@ -1964,7 +2095,7 @@
           this.load();
           const bestKey = Journey.mode === 'challenge' ? 'challengeBest' : 'best';
           this[bestKey] = Math.max(this[bestKey], Math.floor((Journey.peak - 64) / 10));
-          const record = {id:Journey.id, course:FLOW_TRIAL ? (RELIC_TRIAL ? 'flow-relic-v1' : 'flow-v1') : RELIC_TRIAL ? 'relic-trial-v1' : 'variety-v2', ...(RELIC_TRIAL?{relics:{version:1,owned:[...Relics.owned]},assisted:true}:{}), rescues:Journey.rescues, mode:Journey.mode, rules:FLOW_TRIAL?'flow-v1':RELIC_TRIAL?'relic-v1':Journey.controlsUsed.some(c=>c==='one'||c==='two')?'manual-touch-v1':'web-v2', controls:[...Journey.controlsUsed], outcome, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
+          const record = {id:Journey.id, course:LIVING_PLATFORMS ? (RELIC_TRIAL ? 'terrain-relic-v1' : 'terrain-v1') : FLOW_TRIAL ? (RELIC_TRIAL ? 'flow-relic-v1' : 'flow-v1') : RELIC_TRIAL ? 'relic-trial-v1' : 'variety-v2', ...(RELIC_TRIAL?{relics:{version:1,owned:[...Relics.owned]},assisted:true}:{}), rescues:Journey.rescues, mode:Journey.mode, rules:LIVING_PLATFORMS?'terrain-v1':FLOW_TRIAL?'flow-v1':RELIC_TRIAL?'relic-v1':Journey.controlsUsed.some(c=>c==='one'||c==='two')?'manual-touch-v1':'web-v2', controls:[...Journey.controlsUsed], outcome, name:Journey.name, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
           this.records = this.records.filter(r => r.id !== record.id);
           if (record.height > 0) this.records.push(record);
           this.trimRecords(); this.save();
@@ -1990,7 +2121,7 @@
           return {profile,active};
         },
         init() {
-          if (RELIC_TRIAL || (FLOW_TRIAL&&TESTING)) { show('previous-open',false); return; }
+          if (LIVING_PLATFORMS || RELIC_TRIAL || (FLOW_TRIAL&&TESTING)) { show('previous-open',false); return; }
           const data=this.read();
           this.activeKept=!!data.active;
           show('previous-open',!!(data.profile||data.active));
@@ -2131,7 +2262,8 @@
         },
         init() {
           document.getElementById('climber-name').value = Profile.name;
-          if(FLOW_TRIAL){document.getElementById('play').textContent='Begin new expedition ▸';document.getElementById('menu-summary').textContent='Choose a route, take a contract, and recharge skills by climbing. Camp decisions and secret trials change your next section.';}
+          if(LIVING_PLATFORMS){document.getElementById('menu-summary').textContent='Living Terrain preview · ride cloud ferries, escape cracked shelves and ring crystal bells. Stable walls remain your main route. Pause → Journal explains every new object.';}
+          else if(FLOW_TRIAL){document.getElementById('play').textContent='Begin new expedition ▸';document.getElementById('menu-summary').textContent='Choose a route, take a contract, and recharge skills by climbing. Camp decisions and secret trials change your next section.';}
           document.getElementById('mode-close').onclick = () => document.getElementById('mode-dialog').close();
           document.getElementById('mode-open').onclick = () => { if (!Game.running) document.getElementById('mode-dialog').showModal(); };
           for (const mode of ['practice','challenge']) {
@@ -2178,7 +2310,7 @@
           addEventListener('blur',suspend); document.addEventListener('visibilitychange',() => { if (document.hidden) suspend(); });
           this.menuStatus();
         },
-        menuStatus() { document.getElementById('menu-progress').textContent = `${FLOW_TRIAL ? 'FLOW COURSE · separate progress' : RELIC_TRIAL ? 'RELIC TRIAL · separate progress' : 'Endless Expedition'} · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${!TESTING?' · 3 lives per run; earlier testing runs kept separately':''}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
+        menuStatus() { document.getElementById('menu-progress').textContent = `${LIVING_PLATFORMS ? 'LIVING TERRAIN · separate preview progress' : FLOW_TRIAL ? 'FLOW COURSE · separate progress' : RELIC_TRIAL ? 'RELIC TRIAL · separate progress' : 'Endless Expedition'} · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${!TESTING?' · 3 lives per run; earlier testing runs kept separately':''}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
         buy(id) {
           if (PreviousProgress.pending) { document.getElementById('workshop-dialog').close(); PreviousProgress.open(); return false; }
           const skill = this.skills[id]; if (!skill) return false;
@@ -2516,7 +2648,7 @@
       };
 
       const RunSave = {
-        key:FLOW_TRIAL ? (TESTING ? (RELIC_TRIAL ? 'carve.flow-relic.run.v1' : 'carve.flow.run.v1') : (RELIC_TRIAL ? 'carve.public-flow-relic.run.v1' : 'carve.public-flow.run.v1')) : !TESTING ? (RELIC_TRIAL ? 'carve.public-relic.run.v1' : 'carve.public.run.v1') : RELIC_TRIAL ? 'carve.relic-trial.run.v1' : 'carve.variety.run.v1', incompatibleCourse:false,
+        key:LIVING_PLATFORMS ? (RELIC_TRIAL ? 'carve.terrain-relic.run.v1' : 'carve.terrain.run.v1') : FLOW_TRIAL ? (TESTING ? (RELIC_TRIAL ? 'carve.flow-relic.run.v1' : 'carve.flow.run.v1') : (RELIC_TRIAL ? 'carve.public-flow-relic.run.v1' : 'carve.public-flow.run.v1')) : !TESTING ? (RELIC_TRIAL ? 'carve.public-relic.run.v1' : 'carve.public.run.v1') : RELIC_TRIAL ? 'carve.relic-trial.run.v1' : 'carve.variety.run.v1', incompatibleCourse:false,
         gameFields:['flow','score','combo','bestChain','perfects','time','comboTimer','lesson','noticeTime'],
         playerFields:['x','y','vx','vy','face','coyote','wallDir','surgeCD','stun','relatch'],
         journeyFields:['peak','fallAnchor','rescues','shards','clean','wins','cooldown','wingTime'],
@@ -2526,7 +2658,7 @@
           const pick = (o,fields) => Object.fromEntries(fields.map(k=>[k,o[k]]));
           const d = {version:1,course:Level.course,controlsUsed:Journey.controlsUsed,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
             state:Player.state,onGround:Player.onGround,respawn:{...Player.respawn},checkpoint:Player.checkpoint && {id:Player.checkpoint.id,x:Player.checkpoint.x,y:Player.checkpoint.y,kind:'check'},
-            rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,relics:Relics.snapshot(),camera:{x:Cam.x,y:Cam.y},journal:Journal.entries,route:Routes.snapshot(),
+            rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,relics:Relics.snapshot(),camera:{x:Cam.x,y:Cam.y},journal:Journal.entries,route:Routes.snapshot(),terrain:Terrain.snapshot(),
             carve:Player.carve && {type:Player.carve.type,charge:Player.carve.charge,block:Player.carve.block.id,manual:!!Player.carve.manual},
             pole:Player.pole && {...pick(Player.pole,['ang','r','angVel','charge']),ref:Player.pole.ref.id,manual:!!Player.pole.manual},
             touch:document.body.classList.contains('istouch'),controls:{scheme:Game.controlScheme,hand:Game.controlHand},notice:Game.notice};
@@ -2564,7 +2696,7 @@
             if (d.state === 'CARVE' ? (!d.carve || !['wallL','wallR','rail'].includes(d.carve.type) || typeof d.carve.block !== 'string' || !numeric(d.carve,['charge']) || d.carve.charge < 0 || d.carve.charge > 1.3) : !!d.carve) return null;
             if (d.state === 'POLE' ? (!d.pole || typeof d.pole.ref !== 'string' || !numeric(d.pole,['ang','angVel','r','charge']) || d.pole.r < 48 || d.pole.r > T.POLE_GRAB || d.pole.charge < 0 || d.pole.charge > 1.3) : !!d.pole) return null;
             if(d.camera&&!numeric(d.camera,['x','y']))return null;
-            if(!Routes.valid(d.route))return null;
+            if(!Routes.valid(d.route)||!Terrain.valid(d.terrain,d.game.time))return null;
             if (!Relics.valid(d.relics,d.seed) || (d.rift && d.relics?.offer) || (d.relics?.offer && (!d.onGround || d.state!=='GROUND' || Math.abs(d.player.vx)>30))) return null;
             if (d.rift) {
               const r = d.rift;
@@ -2581,6 +2713,7 @@
           Journey.controlsUsed = Array.isArray(d.controlsUsed) ? [...new Set(d.controlsUsed.filter(c=>['one','two','keyboard'].includes(c)))].slice(0,3) : [Game.controlLabel()];
           Journey.seed = d.seed; Journey.mode = d.mode; Journey.selectedMode = d.mode; Journey.lives = d.lives; Journey.renderMode();
           Game.start(false); Level.ensure(d.player.y);
+          Game.time=d.game.time; Terrain.restore(d.terrain); Terrain.position(false);
           const carve = d.carve && Level.blocks.find(b=>b.id === d.carve.block && b.grip);
           const pole = d.pole && Level.poles.find(b=>b.id === d.pole.ref);
           if ((d.carve && !carve) || (d.pole && !pole)) { Game.running = false; show('menu',true); return false; }
@@ -2636,6 +2769,7 @@
         },
         init() {
           Profile.load();
+          show('terrain-guide',LIVING_PLATFORMS);
           this.ui = Object.fromEntries(["h-height", "h-score", "h-time", "flowfill", "flowtier", "combo", "combo-n"].map(id => [id, document.getElementById(id)]));
           this.lastHUD = {};
           try {
@@ -2679,6 +2813,7 @@
         },
         start(save = true) {
           if (save) { if (this.running) Profile.record('restarted'); Journey.begin(); }
+          Terrain.reset();
           Level.build();
           Player.reset();
           Input.clear();
@@ -2703,6 +2838,7 @@
           Cam.x = Level.centerX+sign(offset)*Math.max(0,Math.abs(offset)-160);
           Cam.y = Player.y+150;
           Cam.zoom = 1;
+          Terrain.position(false);
           this.running = true;
           this.paused = false;
           show("menu", false);
@@ -2782,6 +2918,7 @@
         sim(dt) {
           Level.ensure(Player.y);
           this.time += dt;
+          Terrain.update();
           this.noticeTime = Math.max(0, this.noticeTime - dt);
           if (this.lesson === 0 && (Input.axis() || Input.jumpBuf)) this.lesson = 1;
           if (this.lesson === 3 && this.rewarded.size >= 2) this.lesson = 4;
@@ -2831,6 +2968,7 @@
             if (this.lastHUD.padMarker !== marker) { document.getElementById('one-marker').style.left = marker+'%'; this.lastHUD.padMarker = marker; }
           }
           if (this.lesson >= 4) hints[4] = Journey.recovering() ? 'FALLING · fresh hold to catch a marked wall; lower cyan grips can rescue a miss.' : Player.y<7050 ? Level.encounter(Player.y).hint : (FLOW_TRIAL ? Level.encounter(Player.y).name+' · '+Level.encounter(Player.y).hint+' Camps offer a new contract every six floors.' : 'Read the next line. Bank your run from Pause whenever you choose.');
+          if(LIVING_PLATFORMS&&this.lesson>=4&&Terrain.cue())hints[4]=Terrain.cue();
           if(FLOW_TRIAL&&Routes.coach()&&!Journey.recovering())hints[4]=Routes.coach();
           const coach = this.awaitingGrip ? (one ? "Press the pad to continue your saved grip with fresh input." : touch ? "Hold CARVE to continue your saved grip." : "Hold Z (or J / Shift) to continue your saved grip.") : this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
           if (this.lastHUD.coach !== coach) {
@@ -2910,7 +3048,7 @@
 
           // blocks
           for (const b of Level.blocks) {
-            if (b.broken) continue;
+            if (b.broken || Terrain.absent(b)) continue;
             // cull
             const top = b.y + b.h;
             if (top < Cam.y - H / z || b.y > Cam.y + H / z) continue;
@@ -2959,6 +3097,7 @@
         },
 
         drawBlock(ctx, b, tier) {
+          if(LIVING_PLATFORMS&&b.kind!=="spike"&&b.id!=="ground")return Terrain.draw(ctx,b);
           let fill,
             edge = null;
           if (b.kind === "spike") {
