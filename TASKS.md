@@ -14,8 +14,10 @@ User authorized merge of PR22 and Vercel production deployment after checks.
 - [x] Preserve old Flow saves/records, explicit progress carry, current-wallet priority and testing save isolation.
 - [x] Pass full local production build plus nine actual compiled-artifact release checks.
 - [x] Inspect the compiled public browser build with new art/avatar and Challenge-only selection.
-- [ ] Verify final Node 24/26 CI / branch preview, merge PR22 and wait for production Ready.
-- [ ] Check live desktop/mobile browser play, avatar selection and reload; keep download prompt disabled.
+- [x] Verify release code Node 24/26 CI and final branch preview.
+- Release execution receipt (merge SHA, production Ready and live desktop/mobile
+  checks) is maintained in [PR22](https://github.com/zengks/carve-game/pull/22).
+  The mobile download prompt stays disabled.
 
 ## Preview continuation: selectable climbers — 2026-11-02
 
