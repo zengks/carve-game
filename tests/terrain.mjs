@@ -26,6 +26,12 @@ test('cloud ferry is one-way and carries standing and charged players at every f
 test('ferry position and rider offset survive reload and paused time does not advance it',()=>{
  const session=new Map(),local=new Map();let g=load({session,local});g.Game.time=17;g.Terrain.position(false);const b=surface(g,'ferry');land(g,b);g.RunSave.write();const x=g.Player.x,bx=b.x;g=loadGame({session,local,search:'?terrain=1'});assert(g.Game.paused);assert.equal(g.Player.x,x);assert.equal(surface(g,'ferry').x,bx);const time=g.Game.time;g.Game.frame(1000);g.Game.frame(1500);assert.equal(g.Game.time,time);assert.equal(surface(g,'ferry').x,bx);
 });
+test('ferry reversal keeps the gesture neutral fixed on screen and final aim independent of deck velocity',()=>{
+ const g=load(),b=surface(g,'ferry');g.Game.time=(5*Math.PI/2-b.row*1.7)/.65-.2;g.Terrain.position(false);land(g,b);g.Player.onGround=false;
+ el('one-pad').dispatch('pointerdown',{pointerId:1,clientX:200});el('one-pad').dispatch('pointermove',{pointerId:1,clientX:275});g.Player.startCarve({type:'rail',block:b});g.Player.carve.manual=true;g.Player.carve.charge=.7;
+ const offset=g.Player.x-b.x;for(let i=0;i<48;i++){g.Game.time+=STEP;g.Terrain.position();assert(Math.abs(g.Player.x-b.x-offset)<1e-9);assert.equal(g.Input.oneOrigin,200);assert.equal(g.Input.axis(),1);}
+ el('one-pad').dispatch('pointerup',{pointerId:1});assert.equal(g.Player.vx,g.T.RAIL_FWD+g.T.STEER);assert(g.Player.vy>0);
+});
 test('cracked shelf warns on first contact, collapses at 1.8 seconds, and regrows after five more',()=>{
  const g=load(),b=surface(g,'crumble');land(g,b);assert.match(g.Game.notice,/CRACKED SHELF/);const at=g.Terrain.cracks.get(b.id);g.Game.time=at+1.79;g.Terrain.update();assert(!g.Terrain.absent(b));g.Game.time=at+1.8;g.Terrain.update();assert(g.Terrain.absent(b));assert(!g.Player.onGround);assert.equal(g.Player.groundCharge,null);assert.equal(g.Journey.lives,3);g.Game.time=at+6.81;g.Terrain.update();assert(!g.Terrain.absent(b));assert(!g.Terrain.cracks.has(b.id));land(g,b);assert.equal(g.Terrain.cracks.get(b.id),g.Game.time);
 });
@@ -49,6 +55,17 @@ test('a GOOD first catch does not consume bell mastery, and repeated perfects ca
  g.Player.award(g.Player.quality(.45),b);assert.equal(g.Journey.cooldown,18);const score=g.Game.score;
  g.Player.award(g.Player.quality(.7),b);assert.equal(g.Game.flow,20);assert.equal(g.Journey.cooldown,14);assert.equal(g.Game.score,score);
  g.Player.award(g.Player.quality(.7),b);assert.equal(g.Game.flow,20);assert.equal(g.Journey.cooldown,14);
+});
+test('perfect top launches ring the same bell through either manual touch layout',()=>{
+ for(const scheme of ['one','two']){
+  const g=load(),b=g.Level.blocks.find(b=>b.bell);g.Game.configureControls(scheme);if(g.Game.paused)g.Game.togglePause();land(g,b);g.Journey.cooldown=10;const pad=el(scheme==='one'?'one-pad':'t-carve');pad.dispatch('pointerdown',{pointerId:1,clientX:200});step(g,43);assert.equal(g.Player.quality(g.Player.groundCharge).n,'perfect');pad.dispatch('pointerup',{pointerId:1});assert.equal(g.Game.flow,12);assert.equal(g.Journey.cooldown,6);assert(g.Journey.collected.has(`t:${b.row}:10`));assert(g.Player.vy>0);assert.match(g.Game.notice,/CRYSTAL BELL/);
+ }
+});
+test('bell receipts state capped actual benefits instead of claiming unused recharge',()=>{
+ const g=load(),b=g.Level.blocks.find(b=>b.bell);g.Game.flow=97;g.Journey.cooldown=0;g.Terrain.reward(g.Player.quality(.7),b);assert.equal(g.Game.flow,100);assert.match(g.Game.notice,/\+3 Flow · skill already ready/);
+});
+test('bells below the retained reward horizon remain ineligible after claim pruning and reload',()=>{
+ const session=new Map(),local=new Map();let g=load({session,local});const b=g.Level.blocks.find(b=>b.bell);g.Terrain.reward(g.Player.quality(.7),b);g.Journey.peak=150+60*230;g.Journey.update(STEP);assert(!g.Journey.collected.has(`t:${b.row}:10`));g.Game.flow=0;g.Journey.cooldown=10;g.RunSave.write();g=loadGame({session,local,search:'?terrain=1'});g.Terrain.reward(g.Player.quality(.7),b);assert.equal(g.Game.flow,0);assert.equal(g.Journey.cooldown,10);
 });
 test('new surface failures still lose exactly one life per incident and Game Over stops the run',()=>{
  const g=load();for(let lives=2;lives>=0;lives--){g.Player.stun=0;g.Player.hit(true);assert.equal(g.Journey.lives,lives);if(g.Game.returning)g.Game.tickReturn(1);}assert(!g.Game.running);assert.equal(g.Journey.result.course,8);assert.equal(g.Journey.result.outcome,'gameover');

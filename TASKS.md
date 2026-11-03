@@ -15,9 +15,9 @@ Branch `codex/living-platforms`, entry `/?terrain=1`; [design and acceptance](do
 - [x] Add optional cloud ferries, cracked shelves and precision bells with readable cues.
 - [x] Isolate experimental profiles/results/runs and persist transient surface state.
 - [x] Preserve stable main-route geometry; six seeded no-skill scripted climbs reach 1,000 m.
-- [ ] Verify real browser rendering/input/reload in desktop, portrait and landscape.
+- [x] Verify real browser rendering/input/reload in desktop, portrait and landscape.
 - [ ] Pass full Node 24/26 checks and verify branch deployment; keep main/live unchanged.
-- [ ] Share exact contracts/evidence with mobile; native port and player-fun evaluation remain separate.
+- [x] Share exact contracts/evidence and incorporate mobile review; native port and player-fun evaluation remain separate.
 
 ## Active web milestone: camera, reading flow and route decisions
 

@@ -30,7 +30,7 @@ retention. All new art is original Canvas path code.
 | Camp gondolas | Presentation | Existing stable broad rest rails and camp action; ropes are scenery |
 | Cloud ferry | New mechanic | Optional one-way 150-unit deck, x = homeX + sin(time × 0.65 + row × 1.7) × 70; carries standing and rail-charging players; no momentum bonus |
 | Cracked shelf | New mechanic | Optional one-way 155-unit deck; first landing/catch starts 1.8 active simulation seconds, then absent for 5 seconds; repeats after regrowth |
-| Crystal bell | New mechanic | First PERFECT release on marked wall gives +12 Flow and restores 4 recharge points; never bounty/lives/height; GOOD releases still work |
+| Crystal bell | New mechanic | First PERFECT wall catch or top launch on marked wall gives +12 Flow and restores 4 recharge points; never bounty/lives/height; GOOD releases still work |
 
 Stable original walls, checkpoints, camps, rescue wall and shortcuts retain their
 geometry and semantics. New ferry rows are `row % 6 == 1`, ID `r:row:3`;
@@ -44,7 +44,9 @@ The glowing flat landing edges and dashed vertical grip markers remain the colli
 bodies/ornaments are deliberately distinct from these grip surfaces. Shelves
 show an amber countdown bar; absent shelves neither collide nor accept catches.
 Collapse clears standing/charged/latched state and requires fresh input. The
-ferry uses climb-clock time, so pause, backgrounding and reading freeze it.
+ferry explicitly moves a rail attachment in world space. The one-thumb gesture
+neutral remains its original screen-space press position; deck direction or speed
+adds no release impulse and never changes final steering. The ferry uses climb-clock time, so pause, backgrounding and reading freeze it.
 Reload restores phase and rider offset. Existing camera follows the player with
 no mechanic-driven zoom or snap.
 
@@ -70,7 +72,7 @@ contact times, bounded to 64 and checked for duplicate/invalid surface IDs,
 nonfinite/future/expired timestamps. Active history survives streaming/reload;
 expired entries retire after regrowth. Bell claims use collected ID `t:row:10`,
 pruned under the existing finite reward horizon. Reload never grants the same
-bell twice. Finished results retain the distinct numeric course ID.
+bell twice; claims pruned below the reward horizon remain ineligible by row. Finished results retain the distinct numeric course ID.
 
 ## Verification and limits
 
@@ -81,6 +83,25 @@ bell idempotence, three-life Game Over, themed rendering and six seeded
 one-thumb scripted climbs to 1,000 m with GOOD/PERFECT releases and no skills.
 These establish scripted reachability, not manual completion or fun.
 
-Browser visual/input findings and final preview verification will be recorded
-below after inspection. Physical-device touch comfort and player retention
-remain unqualified; native geometry needs its own physics/OS-input qualification.
+Browser checks used a new ordinary gameplay tab on local port 5198 and a separate
+local-only QA fixture on port 5199. The fixture chooses positions, so its upper
+heights and bounty are synthetic evidence, not a manual completion. No fixture
+controls are committed or deployed. Ordinary opening one-thumb UI play reached
+31 m; it was not a full playthrough.
+
+At 390 × 844, browser input verified a ferry ride/one-thumb launch, an amber shelf
+warning/collapse followed by one fall and 2 remaining lives, a perfect bell top
+launch with a visible reward, pause and reload recovery. At 844 × 390, two-thumb
+CARVE launched from a ferry and layout controls stayed accessible. At 1280 × 720,
+original garden/crystal/observatory silhouettes and clear landing/grip markers
+were inspected. These are pointer-driven browser checks, not physical touch.
+
+Mobile reviewed the rule boundaries read-only: no blocking planning mismatch;
+it correctly flagged moving-world attachment versus screen-space aiming and
+bell claim pruning. Regression coverage now includes ferry reversal/final aim,
+GOOD-before-PERFECT, top launches in both touch layouts, actual capped reward
+receipts and an ineligible pruned bell after reload. There are 22 new terrain
+checks. The full local Node 26 build passed; final CI/preview status is recorded
+in the PR. Physical-device touch comfort, full manual course completion and
+player retention remain unqualified. Native geometry still needs its own
+physics/OS-input qualification; no native port is implied by this preview.
