@@ -6,6 +6,43 @@ the next evidence-based task rather than treating a checkpoint as a new decision
 for the user. Preserve all existing data and virtual devices. Device testing is
 Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
 
+## Release: Living Terrain and avatars — 2026-11-02
+
+User authorized merge of PR22 and Vercel production deployment after checks.
+
+- [x] Correct the preview-only terrain gate: public root always uses the new course.
+- [x] Preserve old Flow saves/records, explicit progress carry, current-wallet priority and testing save isolation.
+- [x] Pass full local production build plus nine actual compiled-artifact release checks.
+- [x] Inspect the compiled public browser build with new art/avatar and Challenge-only selection.
+- [x] Verify release code Node 24/26 CI and final branch preview.
+- Release execution receipt (merge SHA, production Ready and live desktop/mobile
+  checks) is maintained in [PR22](https://github.com/zengks/carve-game/pull/22).
+  The mobile download prompt stays disabled.
+
+## Preview continuation: selectable climbers — 2026-11-02
+
+Same `codex/living-platforms` / draft PR22; [avatar contract](docs/avatars.md).
+
+- [x] Replace the blank capsule with six original themed character silhouettes.
+- [x] Add a pre-start portrait picker, explicit confirm/cancel and keyboard access.
+- [x] Persist preferences and bind active-run/result appearance without physics changes.
+- [x] Preserve legacy saves, pending imports, wallet updates and blocked-storage play.
+- [x] Check browser sizes, selection/cancel, keyboard and reload; full build and Node 24/26 CI pass.
+- [x] Share stable IDs, art source and scoped evidence with mobile; native sync/port remains separate.
+
+## Preview milestone: Living Terrain — 2026-11-02
+
+Branch `codex/living-platforms`, entry `/?terrain=1`; [design and acceptance](docs/living-terrain.md).
+
+- [x] Research official platformer references and design original themed objects.
+- [x] Add distinct garden, kite, crystal, cistern, observatory, mushroom and camp art.
+- [x] Add optional cloud ferries, cracked shelves and precision bells with readable cues.
+- [x] Isolate experimental profiles/results/runs and persist transient surface state.
+- [x] Preserve stable main-route geometry; six seeded no-skill scripted climbs reach 1,000 m.
+- [x] Verify real browser rendering/input/reload in desktop, portrait and landscape.
+- [x] Pass full Node 24/26 checks and verify branch deployment; main/live remain unchanged.
+- [x] Share exact contracts/evidence and incorporate mobile review; native port and player-fun evaluation remain separate.
+
 ## Active web milestone: camera, reading flow and route decisions
 
 Branch `codex/flow-and-encounters`, preview entry `/?flow=1`. See

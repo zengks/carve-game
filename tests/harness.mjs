@@ -94,14 +94,14 @@ export function installDomStubs(options = {}) {
 /** Load the game into this process and return its internal objects. */
 export function loadGame(options = {}) {
   installDomStubs(options);
-  let src = extractScript(options.path);
+  let src = options.script ?? extractScript(options.path);
   if(options.production)src=src.replace('const TESTING = true;', 'const TESTING = false;');
   src += '\nglobalThis.__T=T;globalThis.__Level=Level;globalThis.__Player=Player;'
-       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;globalThis.__RunSave=RunSave;globalThis.__Journey=typeof Journey === "undefined" ? null : Journey;globalThis.__Relics=typeof Relics === "undefined" ? null : Relics;globalThis.__Routes=Routes;globalThis.__Journal=Journal;globalThis.__Profile=typeof Profile === "undefined" ? null : Profile;';
+       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;globalThis.__RunSave=RunSave;globalThis.__Journey=typeof Journey === "undefined" ? null : Journey;globalThis.__Relics=typeof Relics === "undefined" ? null : Relics;globalThis.__Avatars=Avatars;globalThis.__Terrain=Terrain;globalThis.__Routes=Routes;globalThis.__Journal=Journal;globalThis.__Profile=typeof Profile === "undefined" ? null : Profile;';
   // eslint-disable-next-line no-eval
   (0, eval)(src);
-  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam, __RunSave: RunSave, __Journey: Journey, __Profile: Profile, __Relics: Relics, __Routes: Routes, __Journal: Journal } = globalThis;
-  return { T, Level, Player, Game, Input, Cam, RunSave, Journey, Profile, Relics, Routes, Journal };
+  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam, __RunSave: RunSave, __Journey: Journey, __Profile: Profile, __Relics: Relics, __Routes: Routes, __Journal: Journal, __Terrain: Terrain, __Avatars: Avatars } = globalThis;
+  return { T, Level, Player, Game, Input, Cam, RunSave, Journey, Profile, Relics, Routes, Journal, Terrain, Avatars };
 }
 
 /** Begin a fresh playthrough (build level, reset player, clear scores). */

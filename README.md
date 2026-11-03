@@ -18,13 +18,16 @@ score. Miss the window and you slip.
 
 Single file, zero dependencies, plain Canvas 2D + Web Audio.
 
-## Current Flow course
+## Current Living Terrain course
 
-Public builds serve the Flow course at `/`; testing previews use `/?flow=1`: steady camera, readable secret-trial
+Public builds serve Living Terrain at `/`; source/testing previews use `/?terrain=1`.
+Original themed platforms, moving cloud ferries, cracked shelves and crystal bells
+join six free selectable climbers. The course retains a steady camera, readable secret-trial
 results and return travel, first-use skill explanations, a Journal, movement
 recharge, directional rings and optional camp contracts/repairs. Production
 artifacts enforce three lives; unlimited Practice is test-build only. Earlier
-course data is retained separately. See [the design and verification](docs/flow-course.md).
+course data is retained separately. See [terrain rules and verification](docs/living-terrain.md),
+[avatar selection](docs/avatars.md) and the [Flow movement baseline](docs/flow-course.md).
 
 ## Gameplay
 
@@ -40,8 +43,8 @@ stages player validation, business-model trials, purchase/entitlement design and
 operating-cost checks. Monetization is planned; no paid products or live ads are
 enabled by this update.
 
-The released Flow course uses separate current-route records. Public returning
-players can explicitly carry their prior course name, bounty and unlocked skills;
+The released Terrain course uses separate current-route records. Public returning
+players can explicitly carry their Flow name, bounty, unlocked skills and avatar;
 previous scores and active snapshots remain separate and untouched. The
 following earlier course migration also remains available in legacy test builds.
 Course revision 4 uses separate current-route records. Returning players can
@@ -93,8 +96,8 @@ windows and does not change jump strength or timing.
 
 ### Practice and Challenge
 
-Choose a mode before beginning an expedition. **Practice** is the default and
-keeps unlimited checkpoint recovery. **Challenge** starts each new run with
+Production uses **Challenge** only. Source/testing builds also offer **Practice**
+with unlimited checkpoint recovery. **Challenge** starts each new run with
 three lives: falling into the void or hitting spikes costs one life. Checkpoints
 set the recovery position without refilling lives. The third loss ends the run
 with a highest-climb summary; Retry starts a fresh three-life challenge.
