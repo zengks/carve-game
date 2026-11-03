@@ -69,7 +69,7 @@ const account=s=>({player_id:s.player_id,account_scope:s.scope});
 // Reuse the exact native-purpose authorization policy for shared progress.
 export {configFor as nativeConfiguration,actor as nativeActor,acknowledge as acknowledgeNativeActor,rawBody as readNativeBody};
 
-export function createNativeBrokerHandler({env=process.env,database,oidc=createOidc(env),now=()=>Date.now(),beforeGrant=async()=>{}}={}){
+export function createNativeBrokerHandler({env=process.env,database,oidc=createOidc(env),now=()=>Date.now(),beforeGrant=async()=>{},createOnSignout=true}={}){
  const config=configFor(env);let db=database;
  const store=()=>db??=createNativeDatabase(env.CARVE_SHARED_DATABASE_URL);
  const codec=config?cookieCodec(env.CARVE_SESSION_SECRET,{secure:config.secure,now}):null;
@@ -131,10 +131,11 @@ export function createNativeBrokerHandler({env=process.env,database,oidc=createO
   const proof=await oidc.exchange(flow,value.code);
   if(!Number.isFinite(proof.authenticated_at)||proof.authenticated_at>now())fail('handoff_rejected',401);
   const code=randomSecret();
-  const redirect=await store().atomic(location.client_id,location.binding_hash,state=>{
+  const redirect=await store().atomic(location.client_id,location.binding_hash,async(state,tx)=>{
    const f=state.flows[cookie.id];currentFlow(state,f,now(),'provider');
    // This only returns a one-use handoff code. Native exchange must recheck
    // proof freshness before staging an offer; no identity/session is granted here.
+   if(tx.admit)await tx.admit(proof);
    f.proof=proof;f.code_hash=digest(code);f.code_until=now()+120000;
    return config.registry[location.client_id].redirect_uri+'?'+new URLSearchParams({code,state:f.state});
   });
@@ -200,15 +201,20 @@ export function createNativeBrokerHandler({env=process.env,database,oidc=createO
      if(req.headers.authorization!==undefined)actor(state,req,now());
      cancelFlow(state,state.flows[b.flow_id]);return success(client,'cancelled',{flow_id:b.flow_id});
     }
-    const s=actor(state,req,now());acknowledge(state,s);
+    const s=actor(state,req,now());
+    if(tx.sessionAllowed&&!await tx.sessionAllowed(s)){
+     // Commit revocation rather than throwing and rolling the transaction back.
+     revoke(state,s.key);return {contract_version:1,error:'sign_in_required'};
+    }
+    acknowledge(state,s);
     if(b.action==='session')return success(client,'session',{...account(s),expires_in:Math.ceil((s.until-now())/1000)});
     if(!opaque(b.offer_id))fail('offer_expired',409);
     const o=state.offers[b.offer_id];if(!o||o.actor!==s.key||o.cancelled||state.flows[o.flow_id]?.cancelled||o.until<=now())fail('offer_expired',409);
     if(b.action==='cancel-link'){if(o.confirmed)fail('offer_expired',409);o.cancelled=true;return success(client,'link_cancelled',account(s));}
     fresh(s,now());if(o.proof.authenticated_at>now()||now()-o.proof.authenticated_at>300000)fail('handoff_rejected',401);
     await tx.link(s,o.proof);o.confirmed=true;return success(client,'linked',{provider:o.proof.provider,...account(s)});
-   },{create:b.action==='begin'||b.action==='signout'});
-   return json(res,200,reply);
+   },{create:b.action==='begin'||b.action==='signout'&&createOnSignout});
+   return json(res,reply.error?401:200,reply);
   }catch(e){return json(res,e.status??503,{contract_version:1,error:e.status?e.message:'unavailable'});}
  };
 }

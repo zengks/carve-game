@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-11-02",
+  "project": {
+    "id": "prj_avYmWC0QKUACNm6YrWbc4FsZnSxZ",
+    "name": "carve-android-auth-staging",
+    "team": "team_54NtI2RGoT8a0ult0wItXPlF",
+    "nodeVersion": "26.x",
+    "rootDirectory": "staging-auth",
+    "sourceFilesOutsideRootDirectory": true,
+    "ssoProtection": {
+      "deploymentType": "all"
+    },
+    "autoAssignCustomDomains": false,
+    "live": false,
+    "targets": {
+      "preview": "dpl_Fex9YsTGTmVdSdphT5RhWFkZkCt2"
+    },
+    "gitConnected": false,
+    "configuredEnvCount": 0,
+    "protectionBypassCount": 0,
+    "optionsAllowlist": null,
+    "protectedSourcemaps": true,
+    "resourceConfig": {
+      "fluid": true,
+      "functionDefaultRegions": [
+        "yul1"
+      ],
+      "functionDefaultTimeout": 15,
+      "buildMachineSelection": "fixed",
+      "buildMachineType": "basic",
+      "elasticConcurrencyEnabled": true
+    }
+  },
+  "deployment": {
+    "id": "dpl_Fex9YsTGTmVdSdphT5RhWFkZkCt2",
+    "url": "https://carve-android-auth-staging-c3pdxgw9s-zengksoutlookcoms-projects.vercel.app",
+    "readyState": "READY",
+    "target": null,
+    "source": "cli",
+    "sourceCommit": "10b8134b326d5fa32da02d9a1f9ad74253b4f867",
+    "activation": "disabled",
+    "regions": [
+      "yul1"
+    ],
+    "carveEnvCount": 0
+  },
+  "retained_first_upload": {
+    "id": "dpl_GMt3vzKrqujk1gmpUBhtBLSSHEmK",
+    "target": "production",
+    "disabled": true,
+    "protected": true,
+    "activeProductionTarget": false
+  },
+  "anonymous": {
+    "requests": 27,
+    "hosts": 3,
+    "statuses": [
+      302,
+      401
+    ],
+    "all_blocked": true,
+    "no_redirects_followed": true,
+    "no_authentication_secrets_used": true
+  },
+  "owner_browser": {
+    "route": "/api/native-broker/v1",
+    "observed_body": {
+      "contract_version": 1,
+      "error": "not_found"
+    },
+    "protection_dashboard": "Require Log In / All Deployments",
+    "source_origin_pin_empty": true,
+    "runtime_vercel_env_not_directly_observed": true
+  },
+  "changes": {
+    "hosted_database": false,
+    "project_credentials": false,
+    "public_exceptions": false,
+    "git_link": false,
+    "production_activation": false,
+    "native_activation": false,
+    "purchases": false
+  },
+  "limitations": [
+    "First disabled fully protected CLI upload was labeled production; project has only an active Preview target. First artifact/history retained.",
+    "Production pause was not applied: API reported no active production deployment.",
+    "Elastic concurrency remains provider default true; attempt to disable was denied by platform role permissions. Build machine is fixed basic; no Git auto-deploy is configured.",
+    "Real OAuth, App Links, runtime environment binding, hosted DB/pool limits and platform log redaction remain unqualified."
+  ]
+}

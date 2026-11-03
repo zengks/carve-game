@@ -1,0 +1,9 @@
+{
+  "name": "carve-protected-android-auth-staging",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "engines": {"node": ">=24 <27"},
+  "scripts": {"build": "node ../scripts/build-android-auth.mjs"},
+  "dependencies": {"jose": "6.2.14", "pg": "8.23.1"}
+}

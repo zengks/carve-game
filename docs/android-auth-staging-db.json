@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-11-02",
+  "scope": {
+    "supabase_project": "ffxcsgtissldpkuxgxvo",
+    "vercel_project": "prj_avYmWC0QKUACNm6YrWbc4FsZnSxZ",
+    "environment": "preview",
+    "canonical_origin": "https://carve-android-auth-staging-zengksoutlookcoms-projects.vercel.app",
+    "google_callback": "https://carve-android-auth-staging-zengksoutlookcoms-projects.vercel.app/api/native-broker/callback?provider=google"
+  },
+  "migration": {
+    "local_version": "20261103025208",
+    "hosted_version": "20261103025756",
+    "name": "carve_android_auth_staging",
+    "source_sha256": "231f2fbb2484f7983fd6e56bcad725571e43d93b47f3ec9e6d503c58f98a76a5",
+    "migration_sha256": "640aabb62815b4bf227236dabe9ed9cc03182d7484e2f7720ae2dd60eed73d4a",
+    "foundation_history_preserved": true,
+    "production_applied": false
+  },
+  "actual_hosted_probe": {
+    "project_ref": "ffxcsgtissldpkuxgxvo",
+    "role": "carve_android_auth",
+    "actual_login_verified": true,
+    "pooler_tls_verified": true,
+    "read_only_metadata_transaction": true,
+    "admission_transaction": "lock_only_rolled_back",
+    "role_connection_limit": 4,
+    "role_memberships": 0,
+    "private_rls_tables": 4,
+    "data_api_roles_denied": [
+      "anon",
+      "authenticated",
+      "service_role"
+    ],
+    "legacy_and_tester_select_denials": 7,
+    "admission_definer_search_path": "pg_catalog",
+    "unknown_subject_admitted": false,
+    "player_or_session_created": false,
+    "credentials_in_output": false
+  },
+  "environment_metadata": [
+    {
+      "key": "CARVE_ANDROID_AUTH_ENABLED",
+      "target": [
+        "preview"
+      ],
+      "type": "plain"
+    },
+    {
+      "key": "CARVE_EXPECTED_PROJECT_REF",
+      "target": [
+        "preview"
+      ],
+      "type": "plain"
+    },
+    {
+      "key": "CARVE_DATABASE_CA_CERT",
+      "target": [
+        "preview"
+      ],
+      "type": "plain"
+    },
+    {
+      "key": "CARVE_SHARED_DATABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "type": "sensitive"
+    },
+    {
+      "key": "CARVE_SESSION_SECRET",
+      "target": [
+        "preview"
+      ],
+      "type": "sensitive"
+    }
+  ],
+  "preservation": {
+    "existing_table_counts_and_fingerprints_unchanged": true,
+    "tables": [
+      {
+        "name": "auth_flows",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "broker_sessions",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "completed_results",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "course_progress",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "identities",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "link_offers",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "native_completed_results",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "native_course_progress",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "native_flow_index",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "native_instances",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "players",
+        "count": 0,
+        "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "existing_runtime_role_grants_and_policies_unchanged": true,
+    "player_or_session_created": false
+  },
+  "security_advisor": {
+    "errors": 0,
+    "warnings": 0,
+    "info": [
+      {
+        "name": "rls_enabled_no_policy",
+        "table": "carve_android_auth_v1.testers",
+        "disposition": "intentional server-only deny-by-default admission; no broad policy added"
+      }
+    ]
+  },
+  "credential_handling": {
+    "new_independent_credentials": true,
+    "existing_credentials_copied": false,
+    "regular_credential_files_created": false,
+    "private_memory_relay_removed": true,
+    "generated_credentials_cleared_from_working_store": true,
+    "secret_values_in_receipt": false
+  },
+  "activation": {
+    "google": false,
+    "native": false,
+    "production": false,
+    "public_access": false,
+    "google_client_pin_empty": true,
+    "hosted_testers_enrolled": 0
+  },
+  "limitations": [
+    "Google Cloud project/client/secret and exact redirect acceptance remain owner prerequisites.",
+    "Native app and actual Android OAuth/App Links remain unqualified; no public access or OS/app operations.",
+    "Actual in-function Vercel environment/original URL binding remains a qualification gate before activation.",
+    "Initial direct NodeREPL probe failed DNS; direct Node FIFO input also stalled with non-secret input. Bounded approved-network relay verified login/TLS; credentials were not regenerated.",
+    "This is a database/credential readiness receipt, not gameplay, anti-cheat, public load or aggregate cost-cap evidence."
+  ],
+  "protected_deployment": {
+    "project_id": "prj_avYmWC0QKUACNm6YrWbc4FsZnSxZ",
+    "deployment_id": "dpl_HEE1VHSv75kj4PFLh7qfMboD87mz",
+    "url": "https://carve-android-auth-staging-liyy0ehtf-zengksoutlookcoms-projects.vercel.app",
+    "source_commit": "6f238e5df0c2775e8a6aa81d3dbccebdee326b08",
+    "target": null,
+    "status": "READY",
+    "canonical_origin": "https://carve-android-auth-staging-zengksoutlookcoms-projects.vercel.app",
+    "sso_protection": {
+      "deploymentType": "all"
+    },
+    "auto_assign_custom_domains": false,
+    "active_production_target": false,
+    "git_connected": false,
+    "protection_bypass_count": 0,
+    "options_allowlist": false,
+    "received_carve_env_names": [
+      "CARVE_ANDROID_AUTH_ENABLED",
+      "CARVE_DATABASE_CA_CERT",
+      "CARVE_EXPECTED_PROJECT_REF",
+      "CARVE_SESSION_SECRET",
+      "CARVE_SHARED_DATABASE_URL"
+    ],
+    "project_env_count": 5,
+    "google_variables_present": false,
+    "live_game_production_unchanged": true,
+    "activation_flag": "false",
+    "anonymous_checks": {
+      "requests": 18,
+      "hosts": 2,
+      "statuses": [
+        302,
+        401
+      ],
+      "all_blocked": true,
+      "credentials_or_bypass_used": false
+    },
+    "owner_browser": {
+      "canonical_get_authorize": {
+        "contract_version": 1,
+        "error": "not_configured"
+      },
+      "unique_host_get_authorize": {
+        "contract_version": 1,
+        "error": "not_found"
+      },
+      "body_observation_only": true,
+      "actual_in_function_vercel_env_not_directly_observed": true
+    }
+  },
+  "verification": {
+    "full_local_build": true,
+    "node24_node26_ci": "https://github.com/zengks/carve-game/actions/runs/41570650624",
+    "actual_restricted_sql_tests": true,
+    "qa_services_stopped": true,
+    "qa_databases_retained": true,
+    "web_and_mobile_prs_unmerged": true
+  }
+}

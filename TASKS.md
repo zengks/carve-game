@@ -275,3 +275,44 @@ See [current resource/billing/setup record](docs/hosted-environments.md).
   owned sender domain/SMTP and public callback/association access before public use.
 
 See [exact callbacks and owner steps](docs/staging-signin-setup.md).
+
+## Protected Android Google auth staging — 2026-11-02
+
+- [x] Isolate an auth-only artifact, exact Google/Android/signin route policy,
+  empty source-reviewed host/project pins and unconditional Production denial.
+- [x] Implement separate review-only NOLOGIN role/schema, operator admission,
+  final-transaction checks, persistent bearer revocation and durable bounded quotas.
+- [x] Verify focused policy/artifact checks and actual restricted-role SQL/Fetch
+  in fresh retained local QA databases; preserve old data and native apps.
+- [x] Independently inspect native's actual inert Release APK signature, public
+  certificate/package and frozen input hashes; copy only public signing metadata.
+- [x] Complete broader Node24/26 builds and actual database regressions; both CI
+  runtimes pass on checkpoint 8482f37. Push small reviewable unmerged checkpoints.
+- [x] Receive explicit exact-project approval and deploy a disabled protected
+  Preview; verify all-deployment auth, zero project vars, 27 anonymous rejections
+  and owner-only disabled response. Preserve first CLI Production-labeled history;
+  the new project has only an active Preview target and automatic domains OFF.
+- [ ] Approve staging-only new role/secret receiver, provider prerequisites and
+  controlled enrollment, then qualify protected deployment with activation OFF.
+- [ ] Public access/actual Android OAuth/App Links remains a separate future gate.
+
+See [implementation, evidence and approval scope](docs/protected-android-auth.md).
+
+## Google Android staging credentials and restricted database — 2026-11-02
+
+- [x] Verify direct owner approval in mobile chat for the exact new schema/role
+  LOGIN and Preview Secret receiver; keep all production/provider/native gates off.
+- [x] Repoint only the existing protected auth alias to the verified Preview;
+  prepare exact server origin/project pins and owner Web-client instructions.
+- [x] Add staging-only CLI migration/parity check and stronger new-object revokes;
+  test actual SQL against explicit platform default grants in a fresh QA database.
+- [x] Apply reviewed auth schema to staging, generate independent credentials,
+  store only in approved Preview, verify actual TLS/login/role/scope read-only.
+- [x] Deploy disabled origin-pinned Preview, recheck authentication/disabled routes
+  and preserved data/role/protection/production baselines; coordinate receipt.
+- [ ] Owner creates Google Testing Web client, shares public project/client ID,
+  and enters matching secret directly in this project's Preview Secret field.
+- [ ] Real Google/Android return/admission qualification remains a later gate;
+  keep public access, production/native activation and all PR merges off.
+
+See [exact Google owner steps](docs/android-google-staging-credentials.md).
