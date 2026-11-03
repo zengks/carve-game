@@ -4,6 +4,8 @@
 // connection values. Caller supplies approved credentials in memory, not argv.
 import assert from 'node:assert/strict';
 import pg from 'pg';
+import {realpath} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
 import {postgresOptions} from '../server/postgres.mjs';
 const ref='ffxcsgtissldpkuxgxvo';
 export function androidAuthHostedOptions(env){
@@ -45,4 +47,12 @@ export async function checkAndroidAuthHosted({env}={}){
   await c.query('ROLLBACK');
   return {project_ref:ref,role:r.actor,actual_login_verified:true,pooler_tls_verified:true,read_only_metadata_transaction:true,admission_transaction:'lock_only_rolled_back',role_connection_limit:r.rolconnlimit,role_memberships:memberships,private_rls_tables:tables.length,data_api_roles_denied:grants.map(g=>g.rolname),legacy_and_tester_select_denials:denials,admission_definer_search_path:'pg_catalog',unknown_subject_admitted:false,player_or_session_created:false,credentials_in_output:false};
  }finally{if(c){await c.query('ROLLBACK').catch(()=>{});c.release();}await pool.end();}
+}
+if(process.argv[1]&&await realpath(process.argv[1])===fileURLToPath(import.meta.url)){
+ try{
+  const chunks=[];let size=0;
+  for await(const chunk of process.stdin){size+=chunk.length;if(size>8192)throw Error('config_too_large');chunks.push(chunk);}
+  const env=JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  console.log(JSON.stringify(await checkAndroidAuthHosted({env})));
+ }catch(e){console.error(JSON.stringify({error:'hosted_probe_failed',code:/^[A-Z0-9_]{2,64}$/.test(e.code??'')?e.code:'UNAVAILABLE'}));process.exitCode=1;}
 }

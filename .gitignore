@@ -9,6 +9,7 @@ build/
 !.env.example
 .vercel/
 supabase/.temp/
+staging-auth/supabase/.temp/
 *.swp
 *.swo
 *~

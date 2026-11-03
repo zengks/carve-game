@@ -7,6 +7,7 @@ import {createAndroidAuthHandler} from '../server/android-auth.mjs';
 import {createNativeFetchHandler} from '../server/native-vercel.mjs';
 import {androidClient} from '../server/android-auth-policy.mjs';
 import {digest} from '../server/oidc.mjs';
+import {androidAuthCredentialSQL} from '../scripts/android-auth-credential-sql.mjs';
 const adminURL=new URL(process.env.CARVE_TEST_DATABASE_URL??'http://invalid');
 if(!['postgres:','postgresql:'].includes(adminURL.protocol)||adminURL.hostname!=='127.0.0.1'||!adminURL.pathname.startsWith('/carve_shared_test_'))throw Error('Explicit isolated loopback QA database URL required');
 const databaseName='carve_shared_test_android_'+randomUUID().replaceAll('-','');
@@ -112,5 +113,17 @@ try{
  for(let i=0;i<quotaLimits.instances-1;i++)await db.atomic(androidClient,digest('cap-'+i),()=>true,{create:true});
  const race=await Promise.allSettled([db,second].map((d,i)=>d.atomic(androidClient,digest('cap-race-'+i),()=>true,{create:true})));
  assert.equal(race.filter(r=>r.status==='fulfilled').length,1);assert.equal(race.find(r=>r.status==='rejected').reason.status,429);assert.equal(await count('carve_android_auth_v1.instances'),quotaLimits.instances);
+ // One-shot provisioning is operator-only, creates an actual working fresh
+ // login and refuses to rotate an already enabled role. Synthetic QA only.
+ await owner.query('create schema extensions');await owner.query('create extension pgcrypto with schema extensions');
+ const operator=await owner.connect();let loginPool;
+ try{
+  const result=await operator.query(androidAuthCredentialSQL),credential=result.at(-1).rows[0].credential;
+  assert.equal(credential.role,'carve_android_auth');assert(/^[a-f0-9]{64}$/.test(credential.database_password));assert(/^[a-f0-9]{64}$/.test(credential.session_secret));assert.notEqual(credential.database_password,credential.session_secret);
+  const loginURL=new URL(url);loginURL.username=credential.role;loginURL.password=credential.database_password;
+  loginPool=new pg.Pool({connectionString:loginURL.href,max:1});
+  assert.equal((await loginPool.query('select current_user as actor')).rows[0].actor,credential.role);
+  await assert.rejects(operator.query('select pg_temp.carve_android_credentials_once()'),e=>e.code==='P0001'&&e.message==='fresh_restricted_nologin_role_required');
+ }finally{await loginPool?.end();await operator.query('alter role carve_android_auth nologin password null');operator.release();}
  console.log('PASS Android auth actual SQL/Fetch: restricted NOLOGIN role, unknown tester denied before player creation, successful synthetic handoff, removal during held exchange, bearer revocation persisted, restart-safe quotas, parallel cap and scoped retention. Fresh QA DB retained: '+databaseName);
 }finally{release?.();await db?.close();await second?.close();await owner.end();}
