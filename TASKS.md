@@ -286,7 +286,8 @@ See [exact callbacks and owner steps](docs/staging-signin-setup.md).
   in fresh retained local QA databases; preserve old data and native apps.
 - [x] Independently inspect native's actual inert Release APK signature, public
   certificate/package and frozen input hashes; copy only public signing metadata.
-- [ ] Complete broader Node24/26 checks and push reviewable unmerged checkpoints.
+- [x] Complete broader Node24/26 builds and actual database regressions; both CI
+  runtimes pass on checkpoint 8482f37. Push small reviewable unmerged checkpoints.
 - [ ] Owner approval for exact new protected Vercel project (automatic creation
   review blocked it); do not retry via another tool or change an existing project.
 - [ ] Approve staging-only new role/secret receiver, provider prerequisites and

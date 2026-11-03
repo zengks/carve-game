@@ -168,7 +168,9 @@ new role/session credentials; preserve all older apps, records and QA evidence.
   `carve-android-auth-qa-20261102`; no existing QA or hosted database is reset.
 - Full game/auth builds passed locally on Node 24.22.1 and 26.10.0; all broader
   database regressions passed on the new local QA service. Initial checkpoint
-  `598ce12` passed both GitHub CI runtimes. Final follow-up CI must be green too.
+  `598ce12` and peer-review correction `8482f37` passed both GitHub CI runtimes,
+  including all actual database suites. Final code run:
+  [CI 41553412857](https://github.com/zengks/carve-game/actions/runs/41553412857).
 - The identical static fallback HTML was checked in a temporary local browser
   rendering probe on desktop and 390×844: readable text, content width 390px,
   no horizontal overflow, script, links, buttons or form. This is layout evidence
