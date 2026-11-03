@@ -79,3 +79,13 @@ The full local Node 26 build and 13 avatar checks pass. Node 24/26 push/PR CI an
 Vercel Preview also passed at checkpoint `8830e28`; final catalog-version metadata
 and this evidence record are a follow-up checkpoint. PR22 remains unmerged,
 main/live unchanged. See the PR for the latest immutable preview URL.
+
+
+## Authorized release continuation — 2026-11-02
+
+The owner subsequently authorized release with Living Terrain. All six avatars
+ship with the public course, still free and cosmetic-only. Explicit previous Flow
+progress carry also retains a supported avatar ID; old missing/unknown IDs use
+Aster. Production root/query/life/save behavior is covered by the compiled-artifact
+checks in `tests/terrain-release.mjs`. No payment, native handoff prompt or hosted
+account feature is enabled by this release. PR22 holds final deployment evidence.

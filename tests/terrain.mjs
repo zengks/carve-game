@@ -7,10 +7,10 @@ function surface(g,kind){return g.Level.blocks.find(b=>b.mechanic===kind);}
 function land(g,b){Object.assign(g.Player,{x:b.x+45,y:b.y+b.h+.1,vx:0,vy:-50,state:'AIR',onGround:false,carve:null,pole:null,groundCharge:null});g.Journey.fallAnchor=g.Player.y;g.Player.collide(STEP);assert(g.Player.onGround);}
 const step=(g,n=1)=>{for(let i=0;i<n;i++)g.Game.sim(STEP);};
 test('preview isolates profiles, settings, active runs and outcome provenance from released Flow and relics',()=>{
- const local=new Map(),session=new Map();let old=loadGame({production:true,local,session});old.Game.start();old.Profile.credit(81);old.RunSave.write();const oldProfile=local.get(old.Profile.key),oldRun=session.get(old.RunSave.key);
+ const local=new Map(),session=new Map();let old=loadGame({search:'?flow=1',local,session});old.Game.start();old.Profile.credit(81);old.RunSave.write();const oldProfile=local.get(old.Profile.key),oldRun=session.get(old.RunSave.key);
  const g=load({local,session});assert.equal(g.Level.course,8);assert.equal(g.Profile.coins,0);g.Profile.credit(15);g.RunSave.write();g.Journey.peak=300;g.Profile.record('banked');assert.equal(g.Profile.records[0].course,'terrain-v1');assert.equal(g.Profile.records[0].rules,'terrain-v1');assert.equal(local.get(old.Profile.key),oldProfile);assert.equal(session.get(old.RunSave.key),oldRun);
  const relic=load({local,session,search:'?terrain=1&relics=1'});assert.equal(relic.Level.course,9);assert.equal(relic.Profile.coins,0);assert.notEqual(relic.RunSave.key,g.RunSave.key);
- const publicGame=loadGame({production:true,search:'?terrain=1&testing=1'});assert.equal(publicGame.Level.course,6);assert(!publicGame.Profile.key.includes('terrain'));
+ const publicGame=loadGame({production:true,search:'?terrain=1&testing=1'});assert.equal(publicGame.Level.course,8);assert.equal(publicGame.RunSave.key,'carve.public-terrain.run.v1');
 });
 test('every required wall, camp, rescue and spring retains stable released collision geometry',()=>{
  const base=loadGame({search:'?flow=1'});base.Game.start();const g=load();g.Journey.seed=base.Journey.seed;g.Level.build();

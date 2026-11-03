@@ -6,6 +6,17 @@ the next evidence-based task rather than treating a checkpoint as a new decision
 for the user. Preserve all existing data and virtual devices. Device testing is
 Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
 
+## Release: Living Terrain and avatars — 2026-11-02
+
+User authorized merge of PR22 and Vercel production deployment after checks.
+
+- [x] Correct the preview-only terrain gate: public root always uses the new course.
+- [x] Preserve old Flow saves/records, explicit progress carry, current-wallet priority and testing save isolation.
+- [x] Pass full local production build plus nine actual compiled-artifact release checks.
+- [x] Inspect the compiled public browser build with new art/avatar and Challenge-only selection.
+- [ ] Verify final Node 24/26 CI / branch preview, merge PR22 and wait for production Ready.
+- [ ] Check live desktop/mobile browser play, avatar selection and reload; keep download prompt disabled.
+
 ## Preview continuation: selectable climbers — 2026-11-02
 
 Same `codex/living-platforms` / draft PR22; [avatar contract](docs/avatars.md).

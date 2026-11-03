@@ -94,7 +94,7 @@ export function installDomStubs(options = {}) {
 /** Load the game into this process and return its internal objects. */
 export function loadGame(options = {}) {
   installDomStubs(options);
-  let src = extractScript(options.path);
+  let src = options.script ?? extractScript(options.path);
   if(options.production)src=src.replace('const TESTING = true;', 'const TESTING = false;');
   src += '\nglobalThis.__T=T;globalThis.__Level=Level;globalThis.__Player=Player;'
        + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;globalThis.__RunSave=RunSave;globalThis.__Journey=typeof Journey === "undefined" ? null : Journey;globalThis.__Relics=typeof Relics === "undefined" ? null : Relics;globalThis.__Avatars=Avatars;globalThis.__Terrain=Terrain;globalThis.__Routes=Routes;globalThis.__Journal=Journal;globalThis.__Profile=typeof Profile === "undefined" ? null : Profile;';

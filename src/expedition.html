@@ -834,7 +834,7 @@
       <button class="btn" id="rift-start">Accept the challenge</button><button class="btn hidden" id="rift-action">Seal the gate</button><button class="btn ghost" id="rift-exit">Leave without entering</button></div>
     </dialog>
     <div id="return-layer" class="hidden" role="status" aria-live="polite"><div><div class="eyebrow" id="return-label">returning to the climb</div><h2 id="return-title"></h2><p id="return-copy"></p><div class="return-progress"></div></div></div>
-    <dialog id="journal-dialog" aria-labelledby="journal-title"><div class="rift-body"><h2 id="journal-title">Field journal</h2><details><summary>How bounty, Flow and lives work</summary><p>Gold shards earn bounty. Spend it on skill unlocks or camp services. Surge spends 26 Flow for a dash, separate from skill recharge. Perfect catches earn more Flow; neither currency is a life. Gold walls save the place you return to after losing a life.</p><p>Public runs have 3 lives. Your height record and bounty survive Game Over. Optional camp contracts risk only their stated deposit, and marked directional rings need you to cross in the arrow's direction.</p><p>Hollow gold shards above central ledges pay 1 bounty; wall-side shards pay 2 or 4. Both count for Courier, so the high route can finish its goal without diving below the ledges.</p><p>In the new course, skills recharge by climbing: a PERFECT fresh catch restores 3 points, GOOD restores 2, other catches 1; a shard restores 1 and a directional ring 4. Waiting does not refill skills. Contracts can grant a ready skill, one Overdrive activation or a life.</p></details><details id="terrain-guide" class="hidden" open><summary>Living terrain · read before exploring</summary><p>Solid glowing edges show the surfaces you can land on or catch. Decorative roots, crystals and machinery are scenery. Mushroom caps are automatic springs: land, lift your thumb, then press again to catch.</p><p>↔ Cloud ferry: a slow moving, one-way landing deck. It carries you sideways while standing or charging. Jump through it from below. No extra button.</p><p>Cracked shelf: optional amber stepping stone. First landing or catch starts a 1.8-second climb-clock countdown. Jump before it breaks; it regrows 5 seconds later. The warning bar drains even while charging. Safe walls and camps never crumble.</p><p>◇ Crystal bell: make a PERFECT release from its marked wall or top to earn +12 Flow and restore 4 skill recharge points, once per bell per run. GOOD catches still work normally. No currency, skill or perfect release is required to climb.</p><p>Hanging gardens, wind kites, hollow arches, root bridges and observatory drums change the scenery; their glowing grip and landing edges keep the original collision rules. All progress in this trial stays separate.</p></details><ol id="journal-entries"></ol></div><div class="rift-actions"><button class="btn ghost" id="camp-guide">Plan the next camp</button><button class="btn" id="journal-close">Back</button></div></dialog>
+    <dialog id="journal-dialog" aria-labelledby="journal-title"><div class="rift-body"><h2 id="journal-title">Field journal</h2><details><summary>How bounty, Flow and lives work</summary><p>Gold shards earn bounty. Spend it on skill unlocks or camp services. Surge spends 26 Flow for a dash, separate from skill recharge. Perfect catches earn more Flow; neither currency is a life. Gold walls save the place you return to after losing a life.</p><p>Public runs have 3 lives. Your height record and bounty survive Game Over. Optional camp contracts risk only their stated deposit, and marked directional rings need you to cross in the arrow's direction.</p><p>Hollow gold shards above central ledges pay 1 bounty; wall-side shards pay 2 or 4. Both count for Courier, so the high route can finish its goal without diving below the ledges.</p><p>In the new course, skills recharge by climbing: a PERFECT fresh catch restores 3 points, GOOD restores 2, other catches 1; a shard restores 1 and a directional ring 4. Waiting does not refill skills. Contracts can grant a ready skill, one Overdrive activation or a life.</p></details><details id="terrain-guide" class="hidden" open><summary>Living terrain · read before exploring</summary><p>Solid glowing edges show the surfaces you can land on or catch. Decorative roots, crystals and machinery are scenery. Mushroom caps are automatic springs: land, lift your thumb, then press again to catch.</p><p>↔ Cloud ferry: a slow moving, one-way landing deck. It carries you sideways while standing or charging. Jump through it from below. No extra button.</p><p>Cracked shelf: optional amber stepping stone. First landing or catch starts a 1.8-second climb-clock countdown. Jump before it breaks; it regrows 5 seconds later. The warning bar drains even while charging. Safe walls and camps never crumble.</p><p>◇ Crystal bell: make a PERFECT release from its marked wall or top to earn +12 Flow and restore 4 skill recharge points, once per bell per run. GOOD catches still work normally. No currency, skill or perfect release is required to climb.</p><p>Hanging gardens, wind kites, hollow arches, root bridges and observatory drums change the scenery; their glowing grip and landing edges keep the original collision rules. Course records stay separate from earlier routes.</p></details><ol id="journal-entries"></ol></div><div class="rift-actions"><button class="btn ghost" id="camp-guide">Plan the next camp</button><button class="btn" id="journal-close">Back</button></div></dialog>
     <dialog id="skill-dialog" aria-labelledby="skill-title"><div class="rift-body"><div class="eyebrow">understand your equipment</div><h2 id="skill-title"></h2><p id="skill-copy"></p><p>Use between catches, after lifting your thumb. Changing equipment never refills your skill. In the new course, fresh catches and shards recharge it; waiting does not. You can read all skills again in the Workshop.</p></div><div class="rift-actions"><button class="btn" id="skill-confirm">Use this skill</button><button class="btn ghost" id="skill-cancel">Keep climbing</button></div></dialog>
     <dialog id="camp-dialog" aria-labelledby="camp-title"><div class="rift-body"><div class="eyebrow">a moment to choose</div><h2 id="camp-title">Trail camp</h2><p id="camp-copy"></p><p id="camp-status" role="status"></p><div id="camp-options"></div></div><div class="rift-actions"><button class="btn" id="camp-repair">Restore one life · 18 bounty</button><button class="btn ghost hidden" id="camp-rift">Explore nearby rift</button><button class="btn ghost" id="camp-close">Leave camp</button></div></dialog>
     <dialog id="bank-dialog" aria-labelledby="bank-title"><h2 id="bank-title">Bank this expedition?</h2><p>Your highest altitude joins this browser's records. Bounty and unlocks are kept. The next expedition starts at the ground.</p><button class="btn" id="bank-cancel" autofocus>Keep climbing</button><button class="btn ghost" id="bank-confirm">Bank &amp; end run</button></dialog>
@@ -854,7 +854,7 @@
     <script>
       "use strict";
       const TESTING = true; // Replaced with false by the production build; query strings cannot enable it.
-      const LIVING_PLATFORMS = TESTING && typeof location !== 'undefined' && new URLSearchParams(location.search).get('terrain') === '1';
+      const LIVING_PLATFORMS = !TESTING || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('terrain') === '1');
       const FLOW_TRIAL = LIVING_PLATFORMS || !TESTING || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('flow') === '1');
       const MEMORY_PREVIEW = FLOW_TRIAL ? 3.2 : 2.5;
       const RELIC_TRIAL = typeof location !== 'undefined' && new URLSearchParams(location.search).get('relics') === '1';
@@ -2292,20 +2292,23 @@
         },
         current() { return this.json(localStorage,Profile.key,200000)?.version===1; },
         read() {
-          const d=this.json(localStorage,FLOW_TRIAL?'carve.variety.profile.v1':'carve.expedition.profile.v1',200000);
+          const flowProfile=LIVING_PLATFORMS?this.json(localStorage,'carve.flow.profile.v1',200000):null;
+          const flowRun=LIVING_PLATFORMS?this.json(sessionStorage,'carve.public-flow.run.v1',100000):null;
+          const previousFlow=!!(flowProfile||flowRun);
+          const d=previousFlow?flowProfile:this.json(localStorage,FLOW_TRIAL?'carve.variety.profile.v1':'carve.expedition.profile.v1',200000);
           const number=n=>Number.isFinite(n)&&n>=0&&n<=1e12;
           const profile=d?.version===1 && typeof d.name==='string' && Number.isSafeInteger(d.coins) && d.coins>=0 ? {
-            name:d.name.slice(0,16), coins:Math.min(1000000,d.coins),
+            name:d.name.slice(0,16), avatar:Avatars.valid(d.avatar)?d.avatar:Avatars.defaultId, coins:Math.min(1000000,d.coins),
             unlocked:['pulse',...['wing','hook'].filter(id=>Array.isArray(d.unlocked)&&d.unlocked.includes(id))],
             equipped:d.equipped, best:number(d.best)?d.best:0, challengeBest:number(d.challengeBest)?d.challengeBest:0,
             records:Array.isArray(d.records)?d.records.filter(r=>r&&typeof r.name==='string'&&[r.height,r.score,r.time,r.portals].every(number)).slice(0,20):[],
           } : null;
-          const run=FLOW_TRIAL?(this.json(sessionStorage,'carve.public.run.v1',100000)||this.json(sessionStorage,'carve.variety.run.v1',100000)):this.json(sessionStorage,'carve.expedition.run.v1',100000);
-          const active=run?.version===1 && run.course===(FLOW_TRIAL?4:2) && number(run.journey?.peak) && number(run.game?.score) ? {height:Math.max(0,Math.floor((run.journey.peak-64)/10)),score:run.game.score} : null;
+          const run=previousFlow?flowRun:FLOW_TRIAL?(this.json(sessionStorage,'carve.public.run.v1',100000)||this.json(sessionStorage,'carve.variety.run.v1',100000)):this.json(sessionStorage,'carve.expedition.run.v1',100000);
+          const active=run?.version===1 && run.course===(previousFlow?6:FLOW_TRIAL?4:2) && number(run.journey?.peak) && number(run.game?.score) ? {height:Math.max(0,Math.floor((run.journey.peak-64)/10)),score:run.game.score} : null;
           return {profile,active};
         },
         init() {
-          if (LIVING_PLATFORMS || RELIC_TRIAL || (FLOW_TRIAL&&TESTING)) { show('previous-open',false); return; }
+          if (RELIC_TRIAL || (FLOW_TRIAL&&TESTING)) { show('previous-open',false); return; }
           const data=this.read();
           this.activeKept=!!data.active;
           show('previous-open',!!(data.profile||data.active));
@@ -2334,8 +2337,8 @@
           if(!this.pending||Game.running) return false;
           if(this.current()) { Profile.load();document.getElementById('climber-name').value=Profile.name;this.pending=false;document.getElementById('previous-dialog').close();Journey.menuStatus();return false; }
           const p=this.read().profile;if(!p)return false;
-          const before={name:Profile.name,coins:Profile.coins,unlocked:Profile.unlocked,equipped:Profile.equipped};
-          if(carry) { Profile.name=p.name;Profile.coins=p.coins;Profile.unlocked=[...p.unlocked];Profile.equipped=p.unlocked.includes(p.equipped)?p.equipped:'pulse'; }
+          const before={name:Profile.name,avatar:Profile.avatar,coins:Profile.coins,unlocked:Profile.unlocked,equipped:Profile.equipped};
+          if(carry) { Profile.name=p.name;Profile.avatar=p.avatar;Profile.coins=p.coins;Profile.unlocked=[...p.unlocked];Profile.equipped=p.unlocked.includes(p.equipped)?p.equipped:'pulse'; }
           if(!Profile.save() && carry) {
             Object.assign(Profile,before);document.getElementById('previous-message').textContent='Saving is unavailable. Previous progress is untouched. Choose Start separate for a temporary run.';return false;
           }
@@ -2446,7 +2449,7 @@
         },
         init() {
           document.getElementById('climber-name').value = Profile.name;
-          if(LIVING_PLATFORMS){document.getElementById('menu-summary').textContent='Living Terrain preview · ride cloud ferries, escape cracked shelves and ring crystal bells. Stable walls remain your main route. Pause → Journal explains every new object.';}
+          if(LIVING_PLATFORMS){document.getElementById('menu-summary').textContent=(TESTING?'Living Terrain preview':'Living Terrain')+' · ride cloud ferries, escape cracked shelves and ring crystal bells. Stable walls remain your main route. Pause → Journal explains every new object.';}
           else if(FLOW_TRIAL){document.getElementById('play').textContent='Begin new expedition ▸';document.getElementById('menu-summary').textContent='Choose a route, take a contract, and recharge skills by climbing. Camp decisions and secret trials change your next section.';}
           document.getElementById('mode-close').onclick = () => document.getElementById('mode-dialog').close();
           document.getElementById('mode-open').onclick = () => { if (!Game.running) document.getElementById('mode-dialog').showModal(); };
@@ -2494,7 +2497,7 @@
           addEventListener('blur',suspend); document.addEventListener('visibilitychange',() => { if (document.hidden) suspend(); });
           this.menuStatus();
         },
-        menuStatus() { Avatars.menu();document.getElementById('menu-progress').textContent = `${LIVING_PLATFORMS ? 'LIVING TERRAIN · separate preview progress' : FLOW_TRIAL ? 'FLOW COURSE · separate progress' : RELIC_TRIAL ? 'RELIC TRIAL · separate progress' : 'Endless Expedition'} · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${!TESTING?' · 3 lives per run; earlier testing runs kept separately':''}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
+        menuStatus() { Avatars.menu();document.getElementById('menu-progress').textContent = `${LIVING_PLATFORMS ? (TESTING?'LIVING TERRAIN · separate preview progress':'LIVING TERRAIN') : FLOW_TRIAL ? 'FLOW COURSE · separate progress' : RELIC_TRIAL ? 'RELIC TRIAL · separate progress' : 'Endless Expedition'} · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${!TESTING?' · 3 lives per run; earlier testing runs kept separately':''}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
         buy(id) {
           if (PreviousProgress.pending) { document.getElementById('workshop-dialog').close(); PreviousProgress.open(); return false; }
           const skill = this.skills[id]; if (!skill) return false;
@@ -2832,7 +2835,7 @@
       };
 
       const RunSave = {
-        key:LIVING_PLATFORMS ? (RELIC_TRIAL ? 'carve.terrain-relic.run.v1' : 'carve.terrain.run.v1') : FLOW_TRIAL ? (TESTING ? (RELIC_TRIAL ? 'carve.flow-relic.run.v1' : 'carve.flow.run.v1') : (RELIC_TRIAL ? 'carve.public-flow-relic.run.v1' : 'carve.public-flow.run.v1')) : !TESTING ? (RELIC_TRIAL ? 'carve.public-relic.run.v1' : 'carve.public.run.v1') : RELIC_TRIAL ? 'carve.relic-trial.run.v1' : 'carve.variety.run.v1', incompatibleCourse:false,
+        key:LIVING_PLATFORMS ? (TESTING ? (RELIC_TRIAL ? 'carve.terrain-relic.run.v1' : 'carve.terrain.run.v1') : (RELIC_TRIAL ? 'carve.public-terrain-relic.run.v1' : 'carve.public-terrain.run.v1')) : FLOW_TRIAL ? (TESTING ? (RELIC_TRIAL ? 'carve.flow-relic.run.v1' : 'carve.flow.run.v1') : (RELIC_TRIAL ? 'carve.public-flow-relic.run.v1' : 'carve.public-flow.run.v1')) : !TESTING ? (RELIC_TRIAL ? 'carve.public-relic.run.v1' : 'carve.public.run.v1') : RELIC_TRIAL ? 'carve.relic-trial.run.v1' : 'carve.variety.run.v1', incompatibleCourse:false,
         gameFields:['flow','score','combo','bestChain','perfects','time','comboTimer','lesson','noticeTime'],
         playerFields:['x','y','vx','vy','face','coyote','wallDir','surgeCD','stun','relatch'],
         journeyFields:['peak','fallAnchor','rescues','shards','clean','wins','cooldown','wingTime'],

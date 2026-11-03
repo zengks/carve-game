@@ -2,7 +2,9 @@
 
 2026-11-02. Branch `codex/living-platforms`, entry `/?terrain=1`.
 Built from released `main`, keeping shared-storage/auth/commerce PRs separate.
-Preview only: the flag requires the testing build. Production builds ignore it.
+The release continuation below makes Terrain the production default at `/`.
+Source/testing previews still opt in with `?terrain=1`. Public URL parameters
+cannot disable Terrain or enable testing Practice.
 Mobile download/deep-link prompts remain disabled. No assets were copied from
 other games, no new dependency/service, and no payments were added.
 
@@ -63,9 +65,11 @@ and generator compatibility differs from Flow. No shared ranking/wallet mapping
 is claimed; mobile First Ascent remains independent.
 
 Profiles: `carve.terrain.profile.v1` / `carve.terrain-relic.profile.v1`.
-Runs: `carve.terrain.run.v1` / `carve.terrain-relic.run.v1`.
+Testing runs: `carve.terrain.run.v1` / `carve.terrain-relic.run.v1`.
+Public runs: `carve.public-terrain.run.v1` / `carve.public-terrain-relic.run.v1`.
 Controls/audio: `carve.terrain.controls.v1` / `carve.terrain.audio.v1`.
-No automatic previous-profile import or writes to released Flow keys.
+No automatic previous-profile import or writes to earlier Flow keys. Public
+returning players explicitly choose Carry or Start separate; see release notes below.
 
 Run schema adds a versioned `terrain.cracks` list of `{id, at}` climb-clock
 contact times, bounded to 64 and checked for duplicate/invalid surface IDs,
@@ -77,7 +81,7 @@ bell twice; claims pruned below the reward horizon remain ineligible by row. Fin
 ## Verification and limits
 
 `tests/terrain.mjs` covers released-geometry preservation, namespace/provenance
-isolation, production flag rejection, 60/120 Hz ferry carry, one-way collision,
+isolation, public-course selection, 60/120 Hz ferry carry, one-way collision,
 reload/paused phase, crumble timings/restore/invalid input/charge detachment,
 bell idempotence, three-life Game Over, themed rendering and six seeded
 one-thumb scripted climbs to 1,000 m with GOOD/PERFECT releases and no skills.
@@ -121,3 +125,33 @@ Draft [PR22](https://github.com/zengks/carve-game/pull/22) remains unmerged.
 Released main stays `aa5911a9a71e2e4d2b4cfa86a17f3a4736c2980d`.
 Native reviewed the contract; no native game, simulator, shared storage, Stripe,
 merchant/payout or mobile download prompt setting was changed.
+
+
+## Production release continuation — 2026-11-02
+
+The user authorized merge/deployment of platforms and avatars after passing checks.
+Pre-release inspection found Terrain was still testing-only. Production now always
+selects course 8 (or isolated relic comparison 9), new artwork and avatars at `/`.
+Testing previews remain opt-in; query strings cannot turn off public Terrain or
+turn on unlimited lives. Public copy no longer calls the course a preview.
+
+A current Flow profile/run is the preferred previous-progress source; an earlier
+Variety profile is used only when no Flow source exists. Confirming Carry copies
+name, bounty, supported skills and avatar, with old scores/bests and active geometry
+kept separate. Existing Terrain wallets and another tab's completed choice win;
+wallets are never summed. Avatar/Workshop/Begin cannot bypass an unresolved import
+choice. Failed saving retains the original and choice; separate temporary play
+remains possible. Old Flow active snapshots cannot resume on the changed route,
+and stay untouched in their original key with that limitation explained.
+
+`tests/terrain-release.mjs` builds and executes the actual production JavaScript
+artifact, covering default geometry/avatars/lives, query immunity, Flow-first
+migration, no silent import/bypass, existing/stale wallets, blocked saving, old
+active-run preservation, exact Terrain/appearance recovery and testing-save
+isolation. Nine compiled production checks pass, alongside the full local Node
+26 build and all prior suites. Browser inspection of this exact compiled build
+at isolated local port 5197 confirms the flag-free new course, avatar selection,
+new platforms, clean public labels and the Challenge-only picker.
+
+Final CI, merge SHA and production verification are recorded in PR22. Prior
+preview hashes/URLs above are historical evidence, not the current release URL.
