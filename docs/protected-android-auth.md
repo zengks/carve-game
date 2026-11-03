@@ -126,7 +126,16 @@ The follow-up approved schema/credential setup is recorded in
 [Google staging setup](android-google-staging-credentials.md) and
 [the database readiness receipt](android-auth-staging-db.json). Current source
 pins identify the existing stable alias as canonical, provider pin empty and
-activation false; its updated disabled deployment is a separate verification step.
+activation false. The current disabled Preview is
+`dpl_HEE1VHSv75kj4PFLh7qfMboD87mz`, READY/Preview, artifact source `6f238e5`.
+Its five received `CARVE_` variable names match the exact Preview receiver;
+Google variables are absent. Post-upload automatic domains are OFF and only a
+Preview target is active. Eighteen fresh anonymous checks across canonical alias
+and unique host are blocked by Vercel Authentication (302/401). Signed-in canonical
+GET authorize shows `not_configured`; the unique host shows `not_found`, enforcing
+the reviewed Host pin. These are disabled-route/body checks, not proof of real
+Google OAuth or actual in-function environment binding. Node24/26 CI passes at
+[the deployed source](https://github.com/zengks/carve-game/actions/runs/41570650624).
 
 Existing Pro team: `team_54NtI2RGoT8a0ult0wItXPlF`.
 New project: **`carve-android-auth-staging`** (separate from both existing projects),

@@ -308,7 +308,7 @@ See [implementation, evidence and approval scope](docs/protected-android-auth.md
   test actual SQL against explicit platform default grants in a fresh QA database.
 - [x] Apply reviewed auth schema to staging, generate independent credentials,
   store only in approved Preview, verify actual TLS/login/role/scope read-only.
-- [ ] Deploy disabled origin-pinned Preview, recheck authentication/disabled routes
+- [x] Deploy disabled origin-pinned Preview, recheck authentication/disabled routes
   and preserved data/role/protection/production baselines; coordinate receipt.
 - [ ] Owner creates Google Testing Web client, shares public project/client ID,
   and enters matching secret directly in this project's Preview Secret field.

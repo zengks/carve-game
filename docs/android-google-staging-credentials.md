@@ -105,6 +105,15 @@ security-advisor INFO item is the intentionally policy-free deny-by-default test
 table; no permissive policy was added to silence it.
 See [the public-only receipt](android-auth-staging-db.json).
 
+The updated disabled Preview `dpl_HEE1VHSv75kj4PFLh7qfMboD87mz` is READY, with
+the stable alias pointing to it. Authentication remains All Deployments; 18 fresh
+anonymous checks are blocked, while the signed-in canonical route reports
+`not_configured`. The unique deployment host is intentionally denied by the
+canonical Host pin. Activation Config was read back as `false`; secrets were
+never read back. Production has no active target or variables, no Google variables
+are installed, and the live game remains unchanged. Native descriptors remain
+disabled/unassigned. All app/data/QA preservation and PR constraints still apply.
+
 The CLI-generated SQL lives under `staging-auth/supabase/migrations`, separately
 from the shared production foundation. It still uses the **same hosted migration
 history table on staging** when applied there. Do not repair/delete history or

@@ -170,5 +170,63 @@
     "Actual in-function Vercel environment/original URL binding remains a qualification gate before activation.",
     "Initial direct NodeREPL probe failed DNS; direct Node FIFO input also stalled with non-secret input. Bounded approved-network relay verified login/TLS; credentials were not regenerated.",
     "This is a database/credential readiness receipt, not gameplay, anti-cheat, public load or aggregate cost-cap evidence."
-  ]
+  ],
+  "protected_deployment": {
+    "project_id": "prj_avYmWC0QKUACNm6YrWbc4FsZnSxZ",
+    "deployment_id": "dpl_HEE1VHSv75kj4PFLh7qfMboD87mz",
+    "url": "https://carve-android-auth-staging-liyy0ehtf-zengksoutlookcoms-projects.vercel.app",
+    "source_commit": "6f238e5df0c2775e8a6aa81d3dbccebdee326b08",
+    "target": null,
+    "status": "READY",
+    "canonical_origin": "https://carve-android-auth-staging-zengksoutlookcoms-projects.vercel.app",
+    "sso_protection": {
+      "deploymentType": "all"
+    },
+    "auto_assign_custom_domains": false,
+    "active_production_target": false,
+    "git_connected": false,
+    "protection_bypass_count": 0,
+    "options_allowlist": false,
+    "received_carve_env_names": [
+      "CARVE_ANDROID_AUTH_ENABLED",
+      "CARVE_DATABASE_CA_CERT",
+      "CARVE_EXPECTED_PROJECT_REF",
+      "CARVE_SESSION_SECRET",
+      "CARVE_SHARED_DATABASE_URL"
+    ],
+    "project_env_count": 5,
+    "google_variables_present": false,
+    "live_game_production_unchanged": true,
+    "activation_flag": "false",
+    "anonymous_checks": {
+      "requests": 18,
+      "hosts": 2,
+      "statuses": [
+        302,
+        401
+      ],
+      "all_blocked": true,
+      "credentials_or_bypass_used": false
+    },
+    "owner_browser": {
+      "canonical_get_authorize": {
+        "contract_version": 1,
+        "error": "not_configured"
+      },
+      "unique_host_get_authorize": {
+        "contract_version": 1,
+        "error": "not_found"
+      },
+      "body_observation_only": true,
+      "actual_in_function_vercel_env_not_directly_observed": true
+    }
+  },
+  "verification": {
+    "full_local_build": true,
+    "node24_node26_ci": "https://github.com/zengks/carve-game/actions/runs/41570650624",
+    "actual_restricted_sql_tests": true,
+    "qa_services_stopped": true,
+    "qa_databases_retained": true,
+    "web_and_mobile_prs_unmerged": true
+  }
 }
