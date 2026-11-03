@@ -66,10 +66,11 @@ new animation loop. OS reduced motion forces static stars and the quieter trail.
 
 ## Coordination and verification
 
-Web owns this code. Existing carve-mobile chat reviewed hitbox/anchor parity,
-separate selection/run identity, preview labels, reduced effects, input neutrality
-and safe result recovery before implementation. Share final art source/IDs and
-browser evidence there for later native review; native implementation is separate.
+Web owns this code. Before implementation, carve-mobile reviewed the proposed
+hitbox/anchor parity, isolation, input and accessibility requirements. It then
+performed a limited static source/contract review at `7f4f451` and found no
+blocking issue in the inspected paths. Actual rendering/input evidence below is
+web browser QA, not native verification; no native port was performed.
 Stripe Manage was informed that this is a no-sale visual study; its shared
 resource ownership and merchant/payout gates remain intact. The verified shared
 sandbox remains unchanged; this branch makes no Stripe requests.
@@ -79,6 +80,36 @@ draft/current identity, confirmation/cancel, blocked storage, result recovery,
 both touch layouts, deterministic simulation parity, bounded drawing and reduced
 motion. `tests/terrain-release.mjs` also loads the actual compiled production
 artifact with a showroom query to verify that it stays disabled. Run the full
-`npm run build`; Node 24/26 remain required. Browser QA and final deployment
-receipts will be added after the preview exists. Scripted or emulated checks do
-not establish physical-device comfort, retention, demand or commercial readiness.
+`npm run build`; Node 24/26 remain required.
+
+### Verified preview receipt — 2026-11-02
+
+- Playable code checkpoint: `7f4f451114c6434a0fc2edfad871198ff0dc08b3`.
+- Draft [PR23](https://github.com/zengks/carve-game/pull/23), intentionally unmerged.
+- [Tested Vercel preview](https://carve-game-nsnj80rmf-zengksoutlookcoms-projects.vercel.app/?showroom=1),
+  deployment `dpl_2DA3q5KeSBJq52bDeA9UoRiMKVx7`, READY, preview target.
+- Full local Node 26 build passes (282 PASS lines); GitHub Node 24 and 26 PR/push
+  checks pass at the code checkpoint, including actual compiled production gate.
+- Local/deployed desktop browser and 390x844 phone viewport: both outfit choices,
+  original comparison, trail/celebration toggles and reduced effects. Desktop
+  Space/Z play reached 66 m peak before pausing; reload retained Stormbound Aster,
+  score and best, with explicit paused recovery. This was a short smoke run.
+- Local one-thumb hold/release reached 17 m; reload retained Solar Cinder paused.
+  Opening another outfit and cancelling replacement preserved that run. Banking
+  showed the constellation with three lives; reload kept the result/static art.
+- Local 844x390 landscape: optional two-thumb Jump/CARVE produced a release,
+  altitude and score; pause remained available. No simultaneous real finger input
+  or physical phone ergonomics was tested by those browser actions.
+- Deployed 390x844: explicit new-demo switch to Solar Cinder/reduced effects,
+  one-thumb launch, paused reload with correct name, and banked result all work.
+  Narrow 320x568 and 844x390 modal layout keeps footer actions reachable while
+  content scrolls. A distorted mobile canvas was found and corrected; current art
+  uses uniform scale and matches the displayed canvas aspect ratio.
+- Deployed browser console: no error entries during these checks. The preview
+  remained under existing Vercel protection; no bypass/share access was created.
+- GitHub main remains `21cff4d35a35813e91af4e9c5e020d5642982442`; latest production
+  remains `dpl_51jDKVveytxeR43hgeFFRpiUBBN2` at that same SHA. No production action.
+
+These are short browser interaction checks and synthetic regressions, not a full
+manual course completion, physical-device comfort/performance qualification,
+retention, demand or commercial readiness evidence. Frame pacing was not profiled.

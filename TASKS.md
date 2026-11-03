@@ -14,9 +14,9 @@ Branch `codex/supporter-showroom`; [art and safety contract](docs/supporter-show
 - [x] Playable showroom, original comparison and explicit new-demo confirmation.
 - [x] Isolated demo saves/preferences/results; no paid ownership or live wallet changes.
 - [x] Focused recovery, controls, effect bounds and physics parity tests.
-- [ ] Verify browser desktop, small portrait and landscape, including reload and banking.
-- [ ] Pass final Node 24/26 checks; deploy and verify branch preview, keep PR unmerged.
-- [ ] Share exact concept IDs/art/evidence with carve-mobile and Stripe Manage.
+- [x] Verify browser desktop, small portrait and landscape, including reload and banking.
+- [x] Pass final Node 24/26 checks; deploy and verify branch preview, keep PR23 unmerged.
+- [x] Share exact concept IDs/art/evidence with carve-mobile and Stripe Manage.
 
 Payments and mobile download prompt remain disabled. Main/live remain unchanged.
 
