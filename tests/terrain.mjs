@@ -44,6 +44,12 @@ test('malformed crack histories never restore and source save text stays preserv
 test('perfect crystal bell gives a noncurrency bonus once, survives reload and good releases remain normal',()=>{
  const session=new Map(),local=new Map();let g=load({session,local});const b=g.Level.blocks.find(b=>b.bell),coins=g.Profile.coins;g.Game.flow=0;g.Journey.cooldown=20;g.Terrain.reward(g.Player.quality(.45),b);assert.equal(g.Game.flow,0);assert.equal(g.Journey.cooldown,20);g.Terrain.reward(g.Player.quality(.7),b);assert.equal(g.Game.flow,12);assert.equal(g.Journey.cooldown,16);assert.equal(g.Profile.coins,coins);g.Terrain.reward(g.Player.quality(.7),b);assert.equal(g.Game.flow,12);g.RunSave.write();g=loadGame({session,local,search:'?terrain=1'});g.Terrain.reward(g.Player.quality(.7),g.Level.blocks.find(b=>b.bell));assert.equal(g.Game.flow,12);assert.equal(g.Journey.cooldown,16);
 });
+test('a GOOD first catch does not consume bell mastery, and repeated perfects cannot farm it',()=>{
+ const g=load(),b=g.Level.blocks.find(b=>b.bell);g.Game.flow=0;g.Journey.cooldown=20;
+ g.Player.award(g.Player.quality(.45),b);assert.equal(g.Journey.cooldown,18);const score=g.Game.score;
+ g.Player.award(g.Player.quality(.7),b);assert.equal(g.Game.flow,20);assert.equal(g.Journey.cooldown,14);assert.equal(g.Game.score,score);
+ g.Player.award(g.Player.quality(.7),b);assert.equal(g.Game.flow,20);assert.equal(g.Journey.cooldown,14);
+});
 test('new surface failures still lose exactly one life per incident and Game Over stops the run',()=>{
  const g=load();for(let lives=2;lives>=0;lives--){g.Player.stun=0;g.Player.hit(true);assert.equal(g.Journey.lives,lives);if(g.Game.returning)g.Game.tickReturn(1);}assert(!g.Game.running);assert.equal(g.Journey.result.course,8);assert.equal(g.Journey.result.outcome,'gameover');
 });

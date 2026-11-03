@@ -1273,7 +1273,7 @@
           }
         },
         reward(q,b){
-          if(!LIVING_PLATFORMS||!b.bell||q.n!=='perfect')return;
+          if(!LIVING_PLATFORMS||!b?.bell||q.n!=='perfect'||!Journey.eligible(b.row))return;
           const id=`t:${b.row}:10`;if(Journey.collected.has(id))return;
           Journey.collected.add(id);Game.flow=Math.min(T.FLOW_MAX,Game.flow+12);
           Journey.cooldown=Math.max(0,Journey.cooldown-4);
@@ -1330,10 +1330,26 @@
             // Exact flat top and side rails remain visible at the AABB boundary.
             // Irregular sculpted bodies and inset decoration are not extra solids.
             const body=['#254d43','#344562','#4c3b63','#244d55','#534936'][stage];
-            this.path(ctx,[[0,0],[w*.15,-18],[w*.36,-5],[w*.63,-22],[w*.85,-9],[w,0],[w,h],[0,h]],body,c);
+            const variant=((b.row??0)+(b.column??0))%3;
+            if(stage===0){
+              if(variant===0)this.path(ctx,[[0,0],[w*.24,-18],[w*.34,h*.4],[w*.2,h-12],[w*.8,h-12],[w*.65,h*.4],[w*.78,-18],[w,0],[w*.7,h],[w*.3,h]],body,c);
+              else this.oval(ctx,w/2,h*.49,w*(variant===1?.4:.3),h*.51,body,c);
+            }else if(stage===1){
+              this.path(ctx,[[0,h*.5],[w*.5,h],[w,h*.5],[w*.5,-15]],body,c);
+            }else if(stage===2){
+              this.path(ctx,[[0,0],[w*.18,h*.5],[w*.35,h*.35],[w*.55,h],[w*.73,h*.55],[w*.9,h*.7],[w,0],[w*.5,-20]],body,c);
+            }else if(stage===3){
+              this.oval(ctx,w/2,h/2,w*.49,h*.53,body,c);
+            }else{
+              const teeth=[];for(let i=0;i<32;i++){const a=i*Math.PI/16,r=i%4<2?.51:.43;teeth.push([w/2+Math.cos(a)*w*r,h/2+Math.sin(a)*h*r]);}this.path(ctx,teeth,body,c);
+            }
+            // A thin scaffold marks actual collision edges around sculpted bodies.
+            ctx.strokeStyle='#49576b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(w,0);ctx.stroke();
             if(stage===0){
               ctx.strokeStyle='#72a97a';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(w*.35,-12);ctx.bezierCurveTo(w*.1,h*.3,w*.75,h*.5,w*.4,h-8);ctx.stroke();
               for(let i=0;i<5;i++){const x=20+(i*37)%(w-30),y=20+i*23;this.oval(ctx,x,y,15,6,i%2?'#74ba84':'#4d8d6b');}
+              if(variant===0){for(let i=0;i<4;i++)this.oval(ctx,w*.25+i*w*.17,h-17+(i%2)*9,23,12,'#416d54');}
+              else if(variant===2){for(let i=0;i<6;i++){const a=i*Math.PI/3;this.oval(ctx,w/2+Math.cos(a)*32,h/2+Math.sin(a)*35,19,20,'#856274');}}
               this.oval(ctx,w/2,h*.55,w*.24,h*.31,'#172f32','#618970');
               for(let i=0;i<3;i++)this.oval(ctx,w*.4+i*14,h*.45,4,7,'#91dab3');
             }else if(stage===1){
@@ -1351,7 +1367,7 @@
               for(let i=0;i<8;i++){const a=i*Math.PI/4;ctx.strokeStyle=c;ctx.beginPath();ctx.moveTo(w/2+Math.cos(a)*26,h/2+Math.sin(a)*26);ctx.lineTo(w/2+Math.cos(a)*48,h/2+Math.sin(a)*48);ctx.stroke();}
               this.oval(ctx,w/2,h/2,12,12,'#cab67f');
             }
-            ctx.strokeStyle=c;ctx.lineWidth=b.rescue?5:3;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,h);ctx.lineTo(w,h);ctx.lineTo(w,0);ctx.stroke();
+            ctx.strokeStyle=c;ctx.lineWidth=b.rescue?5:3;ctx.setLineDash([10,8]);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,h);ctx.moveTo(w,0);ctx.lineTo(w,h);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(0,h);ctx.lineTo(w,h);ctx.stroke();
             if(b.bell){
               const rung=Journey.collected.has(`t:${b.row}:10`);
               this.path(ctx,[[w/2-14,h+14],[w/2,h+36],[w/2+14,h+14],[w/2,h+2]],rung?'#52627c':'#d9c8ff','#f0deff');
@@ -1684,6 +1700,9 @@
           if (p.manual) Input.retire();
         },
         award(q, surface) {
+          // Bell mastery is independently once-only: a first GOOD catch must not
+          // consume the later PERFECT opportunity on this wall.
+          if(surface&&Game.rewarded.has(surface.id))Terrain.reward(q,surface);
           // A run has a finite set of rewards. Recovery still launches normally.
           if (!surface || Game.rewarded.has(surface.id) || !Journey.eligible(surface.row ?? 0)) {
             Game.popup("RECOVERY", this.x + this.w / 2, this.y + this.h, "#9fb4ff");

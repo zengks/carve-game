@@ -40,7 +40,7 @@ perfect release or paid upgrade. One-thumb manual remains the mobile default;
 two-thumb/keyboard stay available. Three-life incidents and eased return camera
 remain unchanged. The main course still spans five opening sections.
 
-The glowing flat landing and side edges remain the collision authority. Shaped
+The glowing flat landing edges and dashed vertical grip markers remain the collision authority. Shaped
 bodies/ornaments are deliberately distinct from these grip surfaces. Shelves
 show an amber countdown bar; absent shelves neither collide nor accept catches.
 Collapse clears standing/charged/latched state and requires fresh input. The
