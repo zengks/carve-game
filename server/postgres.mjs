@@ -1,7 +1,8 @@
 // Explicit TLS avoids connection-string flags silently replacing pg's ssl object.
 // This configures a connection; it never applies migrations or chooses a project.
-export function postgresOptions(connectionString,{max,ca=process.env.CARVE_DATABASE_CA_CERT,projectRef=process.env.CARVE_EXPECTED_PROJECT_REF}={}){
+export function postgresOptions(connectionString,{max,ca=process.env.CARVE_DATABASE_CA_CERT,projectRef=process.env.CARVE_EXPECTED_PROJECT_REF,runtimeRole='carve_runtime'}={}){
  const fail=()=>{throw Error('invalid_database_configuration');};
+ if(!['carve_runtime','carve_android_auth'].includes(runtimeRole))fail();
  let url;try{url=new URL(connectionString);}catch{fail();}
  if(!['postgres:','postgresql:'].includes(url.protocol)||!url.hostname||url.hash)fail();
  const local=['127.0.0.1','localhost','[::1]'].includes(url.hostname);
@@ -14,8 +15,8 @@ export function postgresOptions(connectionString,{max,ca=process.env.CARVE_DATAB
  if(!url.username||!url.password)fail();
  if(projectRef!==undefined){
   if(!/^[a-z]{20}$/.test(projectRef)||url.pathname!=='/postgres')fail();
-  const direct=url.hostname===`db.${projectRef}.supabase.co`&&url.username==='carve_runtime'&&['','5432','6543'].includes(url.port);
-  const pooled=/^aws-\d+-[a-z0-9-]+\.pooler\.supabase\.com$/.test(url.hostname)&&url.username===`carve_runtime.${projectRef}`&&['5432','6543'].includes(url.port);
+  const direct=url.hostname===`db.${projectRef}.supabase.co`&&url.username===runtimeRole&&['','5432','6543'].includes(url.port);
+  const pooled=/^aws-\d+-[a-z0-9-]+\.pooler\.supabase\.com$/.test(url.hostname)&&url.username===`${runtimeRole}.${projectRef}`&&['5432','6543'].includes(url.port);
   if(!direct&&!pooled)fail();
  }
  // Only verify-full can be specified. Other TLS URL options can override ssl.

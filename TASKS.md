@@ -275,3 +275,22 @@ See [current resource/billing/setup record](docs/hosted-environments.md).
   owned sender domain/SMTP and public callback/association access before public use.
 
 See [exact callbacks and owner steps](docs/staging-signin-setup.md).
+
+## Protected Android Google auth staging — 2026-11-02
+
+- [x] Isolate an auth-only artifact, exact Google/Android/signin route policy,
+  empty source-reviewed host/project pins and unconditional Production denial.
+- [x] Implement separate review-only NOLOGIN role/schema, operator admission,
+  final-transaction checks, persistent bearer revocation and durable bounded quotas.
+- [x] Verify focused policy/artifact checks and actual restricted-role SQL/Fetch
+  in fresh retained local QA databases; preserve old data and native apps.
+- [x] Independently inspect native's actual inert Release APK signature, public
+  certificate/package and frozen input hashes; copy only public signing metadata.
+- [ ] Complete broader Node24/26 checks and push reviewable unmerged checkpoints.
+- [ ] Owner approval for exact new protected Vercel project (automatic creation
+  review blocked it); do not retry via another tool or change an existing project.
+- [ ] Approve staging-only new role/secret receiver, provider prerequisites and
+  controlled enrollment, then qualify protected deployment with activation OFF.
+- [ ] Public access/actual Android OAuth/App Links remains a separate future gate.
+
+See [implementation, evidence and approval scope](docs/protected-android-auth.md).

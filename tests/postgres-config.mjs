@@ -25,6 +25,9 @@ assert.equal(new pg.Client(named).connectionParameters.application_name,'carve-s
 const projectRef='a'.repeat(20),bound=`postgres://carve_runtime.${projectRef}:test-only@aws-1-ca-central-1.pooler.supabase.com:6543/postgres`;
 assert.throws(()=>postgresOptions(local,{projectRef}),/invalid_database_configuration/);
 assert.equal(postgresOptions(bound,{projectRef}).ssl.rejectUnauthorized,true);
+assert.equal(postgresOptions(bound.replace('carve_runtime.','carve_android_auth.'),{projectRef,runtimeRole:'carve_android_auth'}).ssl.rejectUnauthorized,true);
+assert.throws(()=>postgresOptions(bound,{projectRef,runtimeRole:'carve_android_auth'}),/invalid_database_configuration/);
+assert.throws(()=>postgresOptions(bound,{projectRef,runtimeRole:'postgres'}),/invalid_database_configuration/);
 for(const url of [bound.replace(projectRef,'b'.repeat(20)),bound.replace('/postgres','/other'),bound.replace('carve_runtime.','postgres.'),bound.replace('pooler.supabase.com','other.example.test')])assert.throws(()=>postgresOptions(url,{projectRef}),/invalid_database_configuration/);
 for(const url of ['not-a-url','https://example.test/db','postgres://pooler.example.test/db',hosted+'#fragment'])assert.throws(()=>postgresOptions(url),/invalid_database_configuration/);
 for(const ca of ['',false,'PRIVATE KEY','-----BEGIN CERTIFICATE-----\nPRIVATE KEY'])assert.throws(()=>postgresOptions(hosted,{ca}),/invalid_database_configuration/);
