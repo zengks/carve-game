@@ -42,6 +42,6 @@ export async function buildAndroidAuth(output=join(root,'staging-auth/.vercel/ou
  await writeFile(join(output,'config.json'),JSON.stringify({version:3,routes},null,2)+'\n');
  return {sourceFiles:[...sourceFiles].sort(),dependencies:Object.fromEntries([...installed].sort()),files:await readdir(output)};
 }
-if(process.argv[1]===fileURLToPath(import.meta.url)){
+if(process.argv[1]&&await realpath(process.argv[1])===fileURLToPath(import.meta.url)){
  const result=await buildAndroidAuth();console.log('Built protected Android auth-only output; '+result.sourceFiles.length+' server/contract sources, '+Object.keys(result.dependencies).length+' pinned runtime packages.');
 }

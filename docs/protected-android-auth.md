@@ -44,11 +44,14 @@ CSP. If the OS does not intercept the return link, the static page instructs the
 tester to cancel/retry in the app; it never publishes a credential-bearing link.
 
 Activation requires actual `VERCEL=1` and `VERCEL_ENV=preview`, source-reviewed
-project/origin/database/package/certificate pins, a matching restricted staging
+project/origin/database/Google-Web-client/package/certificate pins, a matching restricted staging
 DB URL, Google credentials and an independent 32-byte session key. It is never
 possible to enable this handler in an actual Production deployment. No system
 environment variables are spoofed. Project/origin pins are currently empty,
 so even a mistakenly set activation variable cannot enable this artifact.
+The Google Web client ID must match the independently reviewed public source pin;
+changing only an environment credential to a different client is rejected. That
+pin is also currently empty pending owner provider setup.
 
 The inspected public signing identity is `com.carve.preview.staging`, signer
 `52:AA:73:50:0E:3C:A2:D8:27:C2:B1:F1:30:66:4E:28:D0:22:23:BE:B4:04:49:48:BF:BC:03:06:F0:C5:05:2F`.
@@ -94,7 +97,7 @@ Vercel-supplied `x-vercel-forwarded-for`, with no arbitrary proxy-header fallbac
 This trust applies only behind the pinned Vercel function; see
 [Vercel request headers](https://vercel.com/docs/headers/request-headers).
 
-| Budget | All requests/min | Begin/min | Begin/hour |
+| Budget | Broker requests/min | Begin/min | Begin/hour |
 | --- | ---: | ---: | ---: |
 | Global | 240 | 60 | 600 |
 | Platform IP | 60 | 12 | 60 |
@@ -155,13 +158,21 @@ new role/session credentials; preserve all older apps, records and QA evidence.
 
 - `node tests/android-auth.mjs`: exact-route/body/config gates, no allocation on
   unknown signout/cancel, static non-reflective return, IP boundary, disabled
-  Production and executable minimal artifact import.
+  Production, exact Google Web-client pin, executable minimal artifact import
+  and a standalone build without any root game/dev dependency installation.
 - `node tests/android-auth-database.mjs`: actual restricted-role SQL and Fetch
   adapter with **synthetic provider proof**, admitted/unknown identities, removal
   during held exchange, persistent bearer revocation, cross-adapter budgets,
   parallel instance cap and scoped retention in a fresh retained QA database.
 - All QA uses a separate loopback-only local PostgreSQL container/volume
   `carve-android-auth-qa-20261102`; no existing QA or hosted database is reset.
+- Full game/auth builds passed locally on Node 24.22.1 and 26.10.0; all broader
+  database regressions passed on the new local QA service. Initial checkpoint
+  `598ce12` passed both GitHub CI runtimes. Final follow-up CI must be green too.
+- The identical static fallback HTML was checked in a temporary local browser
+  rendering probe on desktop and 390×844: readable text, content width 390px,
+  no horizontal overflow, script, links, buttons or form. This is layout evidence
+  only, not an actual provider return. The probe tab/viewport were cleaned up.
 
 These checks do not prove real Google OAuth, email delivery, hosted pooler
 behavior, Android App Links, OS/browser interaction or physical-device readiness.

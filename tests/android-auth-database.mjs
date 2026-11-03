@@ -27,8 +27,8 @@ try{
  await owner.query(sql);
  const pool=()=>new pg.Pool({connectionString:url.href,max:2,options:'-c role=carve_android_auth'});
  db=createAndroidAuthDatabase(url.href,{pool:pool()});second=createAndroidAuthDatabase(url.href,{pool:pool()});
- const pins={project_id:'prj_fixture',origin:'https://android-auth.example.test',database_ref:'ffxcsgtissldpkuxgxvo',android_package:'com.carve.preview.staging',android_certificate_sha256:Array(32).fill('AB').join(':')};
- const env={VERCEL:'1',VERCEL_ENV:'preview',VERCEL_PROJECT_ID:pins.project_id,CARVE_ANDROID_AUTH_ENABLED:'true',CARVE_EXPECTED_PROJECT_REF:pins.database_ref,CARVE_SHARED_DATABASE_URL:`postgres://carve_android_auth.${pins.database_ref}:synthetic@aws-1-ca-central-1.pooler.supabase.com:6543/postgres`,CARVE_SESSION_SECRET:'a'.repeat(64),CARVE_GOOGLE_CLIENT_ID:'synthetic',CARVE_GOOGLE_CLIENT_SECRET:'synthetic'};
+ const pins={project_id:'prj_fixture',origin:'https://android-auth.example.test',google_web_client_id:'123456789012-fixturewebclient.apps.googleusercontent.com',database_ref:'ffxcsgtissldpkuxgxvo',android_package:'com.carve.preview.staging',android_certificate_sha256:Array(32).fill('AB').join(':')};
+ const env={VERCEL:'1',VERCEL_ENV:'preview',VERCEL_PROJECT_ID:pins.project_id,CARVE_ANDROID_AUTH_ENABLED:'true',CARVE_EXPECTED_PROJECT_REF:pins.database_ref,CARVE_SHARED_DATABASE_URL:`postgres://carve_android_auth.${pins.database_ref}:synthetic@aws-1-ca-central-1.pooler.supabase.com:6543/postgres`,CARVE_SESSION_SECRET:'a'.repeat(64),CARVE_GOOGLE_CLIENT_ID:pins.google_web_client_id,CARVE_GOOGLE_CLIENT_SECRET:'synthetic'};
  let proof={issuer:'https://accounts.google.com',subject:'synthetic-admitted',provider:'google',label:'same-display@example.test',authenticated_at:Date.now()},hold=null;
  const oidc={ready:p=>p==='google',begin:()=>{const flow={id:token(),provider:'google'};return {flow,url:'https://accounts.google.com/o/oauth2/v2/auth?state='+flow.id};},exchange:async()=>({...proof})};
  const handler=createNativeFetchHandler(createAndroidAuthHandler({env,pins,database:db,oidc,beforeGrant:async()=>{if(hold){hold();hold=null;await new Promise(r=>{release=r;});}}}));
@@ -77,6 +77,14 @@ try{
  assert.equal(await second.admitRequest(q),false);
  for(let i=0;i<8;i++)assert.equal(await second.admitRequest({...q,binding:digest('rotate-'+i)}),true);
  assert.equal(await db.admitRequest({...q,binding:digest('rotate-exceeded')}),false,'IP quota survives binding changes');
+ await owner.query("update carve_android_auth_v1.budget set buckets='{}'");
+ for(let i=0;i<quotaLimits.beginMinute.global;i++)assert(await db.admitRequest({ip:digest('global-ip-'+i),binding:digest('global-binding-'+i),begin:true}));
+ assert.equal(await second.admitRequest({ip:digest('global-new-ip'),binding:digest('global-new-binding'),begin:true}),false,'Global quota survives IP and binding changes');
+ const keyTime=Number((await owner.query('select extract(epoch from clock_timestamp())::bigint as now')).rows[0].now);
+ const full=Object.fromEntries(Array.from({length:quotaLimits.keys},(_,i)=>['bounded-fixture-'+i,{count:1,until:keyTime+3600}]));
+ await owner.query('update carve_android_auth_v1.budget set buckets=$1',[JSON.stringify(full)]);
+ assert.equal(await db.admitRequest(q),false,'No allocation beyond fixed budget-key capacity');
+ assert.equal(Object.keys((await owner.query('select buckets from carve_android_auth_v1.budget')).rows[0].buckets).length,quotaLimits.keys);
  await owner.query("update carve_android_auth_v1.budget set buckets='{}'");
  const parallel=await Promise.all(Array.from({length:30},(_,i)=>[db,second][i%2].admitRequest({ip:digest('parallel-'+i),binding:digest('parallel-binding-'+i),begin:true})));
  assert(parallel.some(Boolean));assert(parallel.filter(Boolean).length<=quotaLimits.beginMinute.global);

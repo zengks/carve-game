@@ -18,7 +18,8 @@ export function androidAuthConfiguration(env,pins){
   const origin=new URL(pins.origin);
   if(origin.origin!==pins.origin||origin.protocol!=='https:'||origin.port||origin.username||origin.password)return null;
   if(pins.database_ref!=='ffxcsgtissldpkuxgxvo'||env.CARVE_EXPECTED_PROJECT_REF!==pins.database_ref)return null;
-  if(!/^[a-f\d]{64}$/i.test(env.CARVE_SESSION_SECRET??'')||!env.CARVE_GOOGLE_CLIENT_ID||!env.CARVE_GOOGLE_CLIENT_SECRET)return null;
+  if(!/^[a-f\d]{64}$/i.test(env.CARVE_SESSION_SECRET??'')||!env.CARVE_GOOGLE_CLIENT_SECRET)return null;
+  if(!/^\d{6,32}-[A-Za-z0-9_-]{10,128}\.apps\.googleusercontent\.com$/.test(pins.google_web_client_id??'')||env.CARVE_GOOGLE_CLIENT_ID!==pins.google_web_client_id)return null;
   if(env.CARVE_NATIVE_PROGRESS_CLIENTS||env.CARVE_NATIVE_CLIENTS||env.CARVE_APPLE_PRIVATE_KEY||env.CARVE_APPLE_SERVICE_ID||env.CARVE_EMAIL_SIGN_IN_ENABLED==='true')return null;
   if(!/^com\.carve\.preview\.staging$/.test(pins.android_package)||!/^([A-F0-9]{2}:){31}[A-F0-9]{2}$/.test(pins.android_certificate_sha256))return null;
   const db=new URL(env.CARVE_SHARED_DATABASE_URL);
