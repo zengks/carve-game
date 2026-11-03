@@ -6,6 +6,17 @@ the next evidence-based task rather than treating a checkpoint as a new decision
 for the user. Preserve all existing data and virtual devices. Device testing is
 Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
 
+## Preview continuation: selectable climbers — 2026-11-02
+
+Same `codex/living-platforms` / draft PR22; [avatar contract](docs/avatars.md).
+
+- [x] Replace the blank capsule with six original themed character silhouettes.
+- [x] Add a pre-start portrait picker, explicit confirm/cancel and keyboard access.
+- [x] Persist preferences and bind active-run/result appearance without physics changes.
+- [x] Preserve legacy saves, pending imports, wallet updates and blocked-storage play.
+- [ ] Complete browser size/selection/reload checks and final Node 24/26 CI/preview review.
+- [ ] Share stable IDs, art source and evidence with mobile; keep native sync/port separate.
+
 ## Preview milestone: Living Terrain — 2026-11-02
 
 Branch `codex/living-platforms`, entry `/?terrain=1`; [design and acceptance](docs/living-terrain.md).
