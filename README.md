@@ -48,6 +48,11 @@ stages player validation, business-model trials, purchase/entitlement design and
 operating-cost checks. Monetization is planned; no paid products or live ads are
 enabled by this update.
 
+The [commerce coordination plan](docs/commerce-coordination.md) records the shared
+Stripe sandbox, Stripe Manage/web/mobile responsibilities, purchase verification and
+refund proposals, Canada-first review priority and the decisions required before
+any payment implementation. Native store billing remains a separate qualification.
+
 The released Flow course uses separate current-route records. Public returning
 players can explicitly carry their prior course name, bounty and unlocked skills;
 previous scores and active snapshots remain separate and untouched. The

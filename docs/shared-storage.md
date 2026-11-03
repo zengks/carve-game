@@ -55,8 +55,13 @@ could be imported. Require an explicit choice; retain the source and current
 climb. Imports use a one-time source/grant ID, not repeated balance addition.
 Existing unverified local balances need an eligibility/cap policy before import;
 do not call arbitrary client data verified merely because it reached the server.
-Guest purchases are deferred: the proposed first purchase flow requires a CARVE
+Guest purchases are deferred: the proposed first Stripe web checkout requires a CARVE
 account so ownership can be recovered and linked consistently.
+Native guest/store-local purchase and restore versus optional CARVE linking
+remain a separate owner/platform UX decision; this web proposal does not impose
+mandatory native sign-up. Cross-platform sharing needs a verified stable CARVE
+claim and approved product/target-storefront eligibility. See
+[the coordinated commerce qualifications](commerce-coordination.md).
 
 ## Data boundaries and proposed records
 
@@ -111,7 +116,12 @@ This gate does not block authorized account/progress development without payment
 Use one canonical catalog with separate Apple, Google Play and possible web
 product mappings. Keep earned unlocks, durable purchases, consumables and any
 future time-limited benefits distinct. No product, price, subscription or paid
-currency is selected by this plan. A browser checkout provider is not selected.
+currency is selected by this plan. On 2026-11-02 the owner selected the existing
+shared Stripe account/sandbox for CARVE web/mobile Stripe planning, coordinated
+by Stripe Manage. This does not select native billing or activate checkout. See
+[the canonical commerce coordination plan](commerce-coordination.md) for the
+exact sandbox, three-chat responsibilities, verification/refund/restore proposals
+and unresolved offer/market/portability gates. No second mobile Stripe account.
 
 Plan native digital purchases around Apple In-App Purchase and Google Play
 Billing, with regional exceptions reviewed at release. Browser checkout would

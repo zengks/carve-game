@@ -46,7 +46,16 @@ platform capability. Display names and local scores are not authenticated purcha
 identities. Keep the existing no-deletion rules and preserve all guest/account
 saves during future migrations.
 
-Exact next commercial planning action: choose the first candidate to validate,
+The 2026-11-02 [commerce coordination plan](commerce-coordination.md) assigns one
+existing Stripe sandbox to both apps, Stripe resource ownership to Stripe Manage,
+shared backend ownership to web and store-policy/adapters to mobile. The compatible
+one-time cosmetic Supporter candidate remains unapproved; price, currency,
+exact catalog and portability/refund policies are not selected. The owner's
+latest review priority is Canada, with BC as the first audience; wider North
+America remains tentative and does not authorize US/Mexico rollout or payment flows.
+Do not create another account/catalog or treat this as native billing approval.
+
+Exact next commercial planning action: agree the first candidate to validate,
 define its player value and the retention/revenue/cost success criteria, then
 check the current distribution requirements before any billing or advertising
 integration. Actual demand and income remain unverified until real publication
