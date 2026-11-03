@@ -26,7 +26,8 @@ another account. No secret or customer/financial record belongs in this document
 
 This file is canonical for the shared process/backend plan. Stripe Manage keeps
 its account/settings record in `STRIPE_SETUP_PLAN.md`; mobile keeps
-`docs/payment-coordination.md` as its platform-policy/restore annex. Cross-link and reconcile revisions rather
+[the native policy/restore annex, revision 1](https://github.com/zengks/carve-mobile/blob/eb9ab98d4cf142c7d1a5b4a50539d347169953a8/docs/payment-coordination.md).
+Cross-link and reconcile revisions rather
 than maintain different commercial terms in three places. Share public catalog
 IDs, scope, status and redacted evidence; never exchange secrets or raw customer,
 receipt, payment or financial logs between chats.
@@ -63,7 +64,9 @@ entitlement to provider SKU/price, environment and merchant/app scope, quantity,
 benefit type, compatible game/content version and allowed target storefronts.
 Keep historical revisions for already sold benefits. A mapping entry must not
 silently change the meaning of a previous purchase. Sandbox and production IDs,
-orders, events and grants must never confer access across environments.
+orders, events and grants must never confer access across environments. Scope
+this catalog and its grants to CARVE; a shared account does not merge other games'
+data, wallets or purchase rights.
 
 ## Verified grant contract
 
@@ -209,6 +212,15 @@ cache expiry. These are required future checks, **not tests performed now**.
   records Canada-first policy review, not expanded release or billing approval.
 - Web records the canonical backend/process plan here. No SDK, schema, catalog,
   webhook, key, checkout, payment, refund or release change is part of this work.
+
+Stripe Manage and mobile both peer-reviewed this plan for consistency. Stripe
+Manage's store-inventory wording correction and mobile's guest/restore and
+eligibility qualifications are incorporated. Web also reviewed the native policy
+annex. This agreement approves the coordination and technical planning boundaries,
+not a final offer, commercial refund policy, store certification or implementation.
+The native planning checkpoint is `eb9ab98d4cf142c7d1a5b4a50539d347169953a8`;
+the initial web planning checkpoint is `8448ed298eeb809e442bc0c559bbd23e791077ad`.
+Checks were documentation links/diff review; no purchase or runtime tests occurred.
 
 See the [shared ownership plan](shared-storage.md#purchase-ownership-without-payment-implementation)
 and [revenue roadmap](expedition.md#post-launch-revenue-capability--2026-10-30).

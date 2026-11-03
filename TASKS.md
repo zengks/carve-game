@@ -326,7 +326,8 @@ See [exact Google owner steps](docs/android-google-staging-credentials.md).
   verification/restore adapters. Record scoped read-only inventory evidence.
 - [x] Record source-verified/idempotent grant, immutable owner, restore, refund,
   dispute and duplicate-purchase planning constraints; no runtime implementation.
-- [ ] Complete peer review of the shared document and mobile policy annex.
+- [x] Cross-review the shared document and mobile policy annex; both chats confirm
+  planning consistency, with native guest/restore and target-eligibility qualifiers.
 - [ ] Owner approves paid offer, content/price/currency and launch markets;
   all three chats agree exact catalog, refund/offline/portability rules before code.
 - [ ] Any later sandbox implementation/configuration/testing or live activation
