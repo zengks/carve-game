@@ -2268,14 +2268,16 @@
       // Original code-native art study, revision 1. Concept IDs are not sale SKUs.
       // No payment, entitlement, network or shared-save integration exists here.
       const Showroom = {
-        enabled:SHOWROOM, revision:1, key:'carve.showroom.selection.v1', active:null, draft:null,
+        enabled:SHOWROOM, revision:1, motion:matchMedia('(prefers-reduced-motion: reduce)'), key:'carve.showroom.selection.v1', active:null, draft:null,
         burstAt:null, clock:0, lastPaint:-Infinity,
         looks:{storm:{id:'concept-stormbound-aster-r1',base:'aster',name:'Stormbound Aster',copy:'A silver storm hood and folded cobalt cloak, held by a compass star.'},solar:{id:'concept-solar-cinder-r1',base:'cinder',name:'Solar Cinder',copy:'A fox in a sun-ray mantle, with a cream blaze and a layered comet tail.'}},
         clean(value){
           const d=value&&typeof value==='object'?value:{};
-          return {revision:1,look:Object.hasOwn(this.looks,d.look)?d.look:'storm',original:d.original===true,trail:d.trail!==false,celebration:d.celebration!==false,reduced:d.reduced===true||!!matchMedia('(prefers-reduced-motion: reduce)').matches};
+          return {revision:1,look:Object.hasOwn(this.looks,d.look)?d.look:'storm',original:d.original===true,trail:d.trail!==false,celebration:d.celebration!==false,reduced:d.reduced===true||!!this.motion.matches};
         },
         base(selection){return this.looks[this.clean(selection).look].base;},
+        label(selection){const d=this.clean(selection);return d.original?'Original '+Avatars.get(this.base(d)).name:this.looks[d.look].name;},
+        runLabel(){if(SHOWROOM)document.getElementById('showroom-ribbon-label').textContent='PREVIEW DEMO · '+this.label(this.active);},
         init(){
           if(!SHOWROOM)return;
           let saved;try{saved=JSON.parse(localStorage.getItem(this.key));}catch{}
@@ -2295,7 +2297,7 @@
           document.getElementById('showroom-close').onclick=()=>this.close();
           document.getElementById('showroom-dialog').addEventListener('cancel',e=>{e.preventDefault();this.close();});
           document.getElementById('showroom-resume').onclick=()=>{this.close();if(Game.running&&Game.paused&&Game.windowFocused&&!document.hidden)Game.togglePause();};
-          document.getElementById('showroom-celebrate').onclick=()=>{this.celebrate();this.lastPaint=-Infinity;};
+          document.getElementById('showroom-celebrate').onclick=()=>{this.celebrate();this.lastPaint=-Infinity;document.getElementById('showroom-stage').scrollIntoView?.({block:'center',behavior:'instant'});document.getElementById('showroom-status').textContent=this.draft.celebration?'Skyburst preview: a quiet constellation. Cosmetic only; no rewards or ownership granted.':'Enable Skyburst to preview its constellation.';};
           this.render();
         },
         change(fields){
@@ -2378,13 +2380,15 @@
           const progress=reduced?1:clamp(age/1.8,0,1);
           ctx.save();ctx.strokeStyle='#8cbac1';ctx.lineWidth=1;
           for(let i=0;i<18;i++){
-            const a=i*2.39996,r=(.25+.7*((i*7)%18)/18)*(Math.min(w,h)*.44),x=w/2+Math.cos(a)*r*(.5+.5*progress),y=h/2+Math.sin(a)*r*(.5+.5*progress);
+            const a=i*2.39996,r=(.25+.7*((i*7)%18)/18)*.44,x=w/2+Math.cos(a)*r*w*(.5+.5*progress),y=h/2+Math.sin(a)*r*h*(.5+.5*progress);
             ctx.globalAlpha=.25;ctx.beginPath();ctx.moveTo(w/2,h/2);ctx.lineTo(x,y);ctx.stroke();ctx.globalAlpha=.85;
             Avatars.path(ctx,[[x,y-4],[x+1.5,y-1],[x+4,y],[x+1.5,y+1],[x,y+4],[x-1.5,y+1],[x-4,y],[x-1.5,y-1]],i%2?'#c6b5ef':'#a5f3d6');
           }ctx.restore();
         },
         stage(t){
-          const cv=document.getElementById('showroom-stage'),ctx=cv.getContext('2d'),w=cv.width,h=cv.height,d=this.draft;
+          const cv=document.getElementById('showroom-stage'),ctx=cv.getContext('2d'),d=this.draft;
+          const w=Math.round((cv.clientWidth||300)*2),h=Math.round((cv.clientHeight||300)*2);
+          if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}
           const g=ctx.createLinearGradient(0,0,w,h);g.addColorStop(0,'#233448');g.addColorStop(.6,'#17253f');g.addColorStop(1,'#332744');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
           ctx.strokeStyle='#79929840';ctx.lineWidth=1;for(let i=0;i<4;i++){ctx.beginPath();ctx.arc(w*.5,h*.45,70+i*56,.2,Math.PI*1.8);ctx.stroke();}
           Avatars.path(ctx,[[0,h*.8],[w*.2,h*.53],[w*.35,h*.8],[w*.62,h*.55],[w,h*.9],[w,h],[0,h]],'#101f34');
@@ -2394,8 +2398,8 @@
           Avatars.path(ctx,[[-110,-9],[-67,5],[70,5],[110,-9],[64,-23],[-60,-23]],'#58717d','#a4c9c7');
           ctx.strokeStyle='#b8ebd5';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-67,5);ctx.lineTo(70,5);ctx.stroke();
           if(d.trail)this.ribbon(ctx,Array.from({length:16},(_,i)=>({x:-128+i*7,y:30+Math.sin(i*.14)*42})),d.reduced);
-          ctx.translate(0,5+22*4);ctx.scale(4,4);this.draw(ctx,d);ctx.restore();
-                    ctx.fillStyle='#c6d5df';ctx.font='12px monospace';ctx.textAlign='left';ctx.fillText(d.original?'ORIGINAL / FREE':'SKYBOUND / CONCEPT 01',24,32);
+          const scale=Math.min(w/150,h/100);ctx.translate(0,5+22*scale);ctx.scale(scale,scale);this.draw(ctx,d);ctx.restore();
+                    ctx.fillStyle='#c6d5df';ctx.font='20px monospace';ctx.textAlign='left';ctx.fillText(d.original?'ORIGINAL / FREE':'SKYBOUND / CONCEPT 01',24,32);
           ctx.fillStyle='#9caec5';ctx.fillText('ORIGINAL ART · IDENTICAL PHYSICS',24,h-24);
         },
         tick(t){
@@ -2679,7 +2683,7 @@
           addEventListener('blur',suspend); document.addEventListener('visibilitychange',() => { if (document.hidden) suspend(); });
           this.menuStatus();
         },
-        menuStatus() { Avatars.menu();document.getElementById('menu-progress').textContent = `${LIVING_PLATFORMS ? (TESTING?'LIVING TERRAIN · separate preview progress':'LIVING TERRAIN') : FLOW_TRIAL ? 'FLOW COURSE · separate progress' : RELIC_TRIAL ? 'RELIC TRIAL · separate progress' : 'Endless Expedition'} · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${!TESTING?' · 3 lives per run; earlier testing runs kept separately':''}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
+        menuStatus() { Avatars.menu();document.getElementById('menu-progress').textContent = `${SHOWROOM ? 'COSMETIC DEMO · isolated preview progress' : LIVING_PLATFORMS ? (TESTING?'LIVING TERRAIN · separate preview progress':'LIVING TERRAIN') : FLOW_TRIAL ? 'FLOW COURSE · separate progress' : RELIC_TRIAL ? 'RELIC TRIAL · separate progress' : 'Endless Expedition'} · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${!TESTING?' · 3 lives per run; earlier testing runs kept separately':''}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
         buy(id) {
           if (PreviousProgress.pending) { document.getElementById('workshop-dialog').close(); PreviousProgress.open(); return false; }
           const skill = this.skills[id]; if (!skill) return false;
@@ -2749,7 +2753,7 @@
           for (const [id,value] of Object.entries({height:r.height + ' m',score:r.score,time:r.time.toFixed(1) + ' s',rifts:r.portals})) document.getElementById('challenge-result-' + id).textContent = String(value);
           document.getElementById('challenge-result-wallet').textContent = Profile.storageAvailable ? `${Profile.coins} bounty · Bounty and unlocks are kept. Practice and Challenge records are separate.` : 'Storage is unavailable; progress may be temporary.';
           if(RELIC_TRIAL)document.getElementById('challenge-result-wallet').textContent+=' Trial relics: '+(r.relics.owned.map(id=>Relics.catalog[id].name).join(', ')||'none')+'.';
-          if(SHOWROOM){document.getElementById('challenge-result-copy').textContent+=' Preview-only demo; no purchase or ownership granted.';document.getElementById('challenge-result-wallet').textContent='Demo bounty and records stay in this isolated showroom.';}
+          if(SHOWROOM){document.getElementById('challenge-result-copy').textContent+=' '+Showroom.label(r.showroom)+' · preview-only; no purchase or ownership granted.';document.getElementById('challenge-result-wallet').textContent='Demo bounty and records stay in this isolated showroom.';}
           show('showroom-result-art',SHOWROOM&&r.outcome==='banked'&&!!Showroom.clean(r.showroom).celebration);
           document.getElementById('challenge-result').showModal();
         },
@@ -3105,7 +3109,8 @@
           if (!Journey.controlsUsed.includes(Game.controlLabel())) Journey.controlsUsed.push(Game.controlLabel());
           Game.awaitingGrip = !!(Player.carve || Player.pole);
           Cam.x = d.camera?.x ?? Player.x + 17; Cam.y = d.camera?.y ?? Player.y + 170; Game.togglePause();
-          document.getElementById('pause-message').textContent = 'Expedition restored. Your altitude, bounty and discoveries are safe.';
+          Showroom.runLabel();
+          document.getElementById('pause-message').textContent = SHOWROOM?'Cosmetic demo restored · '+Showroom.label(Showroom.active)+'. Regular progress is untouched.':'Expedition restored. Your altitude, bounty and discoveries are safe.';
           if (Journey.rift?.phase === 'result' && !Journey.rift.receipt) Journey.returnToClimb(false);
           else if (Journey.rift) { Journey.renderRift(); document.getElementById('rift-dialog').showModal(); }
           else if(Relics.offer) { Relics.render(); document.getElementById('relic-dialog').showModal(); }
@@ -3140,7 +3145,7 @@
           return Math.min(5, Math.floor(this.flow / 20));
         },
         init() {
-          Profile.load(); Avatars.init(); Showroom.init();
+          Profile.load(); Avatars.init();
           show('terrain-guide',LIVING_PLATFORMS);
           this.ui = Object.fromEntries(["h-height", "h-score", "h-time", "flowfill", "flowtier", "combo", "combo-n"].map(id => [id, document.getElementById(id)]));
           this.lastHUD = {};
@@ -3157,7 +3162,7 @@
           Input.init();
           this.bindUI();
           this.bindTouch();
-          Journey.init(); Relics.init();
+          Journey.init(); Relics.init(); Showroom.init();
           this.syncMute();
           document.addEventListener("visibilitychange", () => {
             if (document.hidden && this.running && !this.paused) this.togglePause();
@@ -3219,6 +3224,7 @@
           document.getElementById("hud").classList.remove("hidden");
           document.getElementById("flowwrap").classList.remove("hidden");
           document.getElementById("pausebtn").classList.remove("hidden");
+          Showroom.runLabel();
           if (save) { Sfx.resume(); RunSave.write(); }
           this.syncHUD();
         },
