@@ -288,8 +288,10 @@ See [exact callbacks and owner steps](docs/staging-signin-setup.md).
   certificate/package and frozen input hashes; copy only public signing metadata.
 - [x] Complete broader Node24/26 builds and actual database regressions; both CI
   runtimes pass on checkpoint 8482f37. Push small reviewable unmerged checkpoints.
-- [ ] Owner approval for exact new protected Vercel project (automatic creation
-  review blocked it); do not retry via another tool or change an existing project.
+- [x] Receive explicit exact-project approval and deploy a disabled protected
+  Preview; verify all-deployment auth, zero project vars, 27 anonymous rejections
+  and owner-only disabled response. Preserve first CLI Production-labeled history;
+  the new project has only an active Preview target and automatic domains OFF.
 - [ ] Approve staging-only new role/secret receiver, provider prerequisites and
   controlled enrollment, then qualify protected deployment with activation OFF.
 - [ ] Public access/actual Android OAuth/App Links remains a separate future gate.

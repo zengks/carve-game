@@ -1,7 +1,7 @@
 # Protected Android Google sign-in staging
 
-Status: implementation branch only; no new hosted project, no deployed auth
-artifact, no hosted schema/role/secret changes, no public exception or activation.
+Status: disabled auth-only Preview deployed on the explicitly approved separate
+Vercel Pro project. No hosted schema/role/secret changes, public exception or activation.
 Production, native activation and the mobile download prompt remain disabled.
 Existing PRs stay unmerged. No purchases.
 
@@ -114,10 +114,15 @@ transient instances. One pool connection per function, role connection limit 4,
 Supavisor role/aggregate connection and platform load limits still need hosted
 qualification before any exposure; local tests do not prove a public cost cap.
 
-## Proposed protected deployment — not yet created
+## Protected deployment — 2026-11-02
 
 Existing Pro team: `team_54NtI2RGoT8a0ult0wItXPlF`.
-New project: **`carve-android-auth-staging`** (separate from both existing projects).
+New project: **`carve-android-auth-staging`** (separate from both existing projects),
+ID `prj_avYmWC0QKUACNm6YrWbc4FsZnSxZ`.
+Verified Preview: `dpl_Fex9YsTGTmVdSdphT5RhWFkZkCt2`, READY, API target `null`
+(Preview), source CLI artifact from commit `10b8134b326d5fa32da02d9a1f9ad74253b4f867`.
+[Open the protected Preview](https://carve-android-auth-staging-c3pdxgw9s-zengksoutlookcoms-projects.vercel.app/api/native-broker/v1).
+Signed-in owners see the intentionally disabled handler, not a sign-in screen.
 
 - Root `staging-auth`, source files outside root enabled, framework none.
 - Install `npm ci --ignore-scripts`; build `npm run build`.
@@ -125,17 +130,57 @@ New project: **`carve-android-auth-staging`** (separate from both existing proje
 - Vercel Authentication on **all deployments**, including aliases/custom domains.
 - No Git link/autodeploy, production domains, protection exceptions, bypass
   secrets, public source, analytics, log drain or source maps.
-- First deployment: disabled artifact with no runtime/provider/DB secrets.
-  Inspect actual project settings/protection and Preview environment before pins.
+- Deployed disabled artifact with zero project variables, no `CARVE_` deployment
+  environment variables and no provider/DB/session credentials.
+- Source project/origin/Google-client pins remain empty. No canonical Android
+  origin is assigned; this deployment does not activate or qualify native OAuth.
 - No Production variables. Do not reuse any existing session key/DB login.
 
-Automatic approval review rejected creation of this persistent new resource
-because of potential usage charges and the repository's explicit approval gate
-for new hosted services. No project was created. Do not retry via another tool,
-existing project or temporary public host. Owner approval for this exact project
-and disabled protected deployment is still required.
+Initial automatic approval review rejected resource creation. On 2026-11-02 the
+owner explicitly approved this exact project and disabled fully protected upload
+in both chats. Creation then succeeded; no purchase or plan upgrade was made.
 
-Only after that approval: separately review/apply the new schema to staging,
+The first CLI 65.5.0 upload, despite explicit `--environment preview`, was assigned
+the first-deployment Production label and generated an alias. It was always
+disabled, credential-free and protected on all deployments. This historical
+artifact `dpl_GMt3vzKrqujk1gmpUBhtBLSSHEmK` is retained. A second identical upload
+is the verified Preview above. The new project's actual targets now contain
+**only Preview**, `live:false`, no active Production target. A production-pause
+request returned `invalid_deployment` because no active production existed; no
+pause took effect. Do not claim that the first attempt never received that label.
+
+CLI uploads reset automatic custom-domain assignment; it was explicitly set back
+to **false after the final upload** and read back. Keep it false. Fixed basic
+builds and the 15s/`yul1` function settings are verified. Disabling the provider's
+default elastic build concurrency was denied by the connected API's role
+permissions; it remains default true. There is no Git connection/automatic build
+trigger, and no paid add-on was activated. Do not claim an aggregate cost cap.
+
+CLI prebuilt upload requires output at the checkout root while validating the
+project's `staging-auth` subdirectory. Upload used an isolated temporary directory
+with the identical `.vercel/output` and an empty `staging-auth` directory, avoiding
+the game's config/link/files. No root game project link was created or changed.
+
+Verified on the new project:
+
+- Vercel dashboard: Require Log In ON, **All Deployments**, protected sourcemaps.
+- No bypass secret, share link, domain exception or OPTIONS allowlist. The
+  platform's default same-project Trusted Sources entry was not expanded.
+- 27 anonymous requests across Preview, first-upload URL and generated alias:
+  GET on root/all five routes, plus API POST/OPTIONS/HEAD. All receive Vercel
+  authentication 302/401; no redirects followed or credentials used.
+- Authenticated browser GET on the Preview API visibly returns
+  `{"contract_version":1,"error":"not_found"}`. With origin pin empty, the host
+  policy rejects before configuration's 503; this is the expected disabled state.
+- Actual in-function `VERCEL_ENV` and original URL/Host forwarding are still not
+  qualified by this closed-pin request. Preview platform metadata alone is not
+  direct runtime environment evidence; no debug endpoint was added.
+- Existing game and staging project metadata/protection matched the baseline.
+  Live production remains `dpl_FXTTkFE5TfmJ8M1NMUEiMzNuhmUg`, main `aa5911a`.
+
+Public-only receipt: [android-auth-protected-deployment.json](android-auth-protected-deployment.json).
+
+Before enabling anything: separately review/apply the new schema to staging,
 approve its new restricted role's LOGIN credential and exact Preview receiver,
 generate an independent session secret securely, and add actual staging Google
 client credentials through a secret entry path. Nothing is copied from existing
