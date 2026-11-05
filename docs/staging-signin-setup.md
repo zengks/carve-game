@@ -154,6 +154,36 @@ or create share/bypass credentials to make a native test pass. Production stays
 dormant and native compiled activation stays off until signed artifact/provider/
 external return acceptance is complete.
 
+## Credential entry for shared staging
+
+Open [carve-staging → Settings → Environment Variables](https://vercel.com/zengksoutlookcoms-projects/carve-staging/settings/environment-variables).
+Add each field below with **Preview** as the only environment and **Secret** as
+the variable type. This is the shared web/mobile staging broker. The separate
+`carve-android-auth-staging` project is an Android Google-only rehearsal and
+cannot serve shared scores. Keep its credential configuration separate.
+
+| Variable | Value |
+| --- | --- |
+| `CARVE_GOOGLE_CLIENT_ID` | Google OAuth **Web application** client ID |
+| `CARVE_GOOGLE_CLIENT_SECRET` | Matching Google OAuth client secret |
+| `CARVE_APPLE_SERVICE_ID` | Apple Services ID associated with the primary App ID |
+| `CARVE_APPLE_TEAM_ID` | Apple Developer Team ID for that App ID |
+| `CARVE_APPLE_KEY_ID` | ID of its Sign in with Apple key |
+| `CARVE_APPLE_PRIVATE_KEY` | Complete contents of the corresponding Apple `.p8`, including PEM boundary lines |
+
+Use the browser/server callback URLs in the table above when creating the
+staging clients. Keep the native callback candidates for after the access design
+is approved and the signed apps match their association files. Save the variables
+and leave the redeploy for the coordinated test. Enter secrets only in the
+dashboard.
+
+The First Ascent reader uses the existing server-side `carve_runtime` staging
+login and an authenticated CARVE account's canonical player ID. The protected
+`/api/storage-health` endpoint checks that this login can read the table using
+catalog metadata only. The account snapshot applies the player filter and keeps
+First Ascent separate from Flow. The Android auth-only role and client API roles
+have no read access to the table.
+
 ## Verification record
 
 Runtime checkpoint `258bcd5`: focused account API guard tests and full local build

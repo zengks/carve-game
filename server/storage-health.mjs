@@ -8,7 +8,8 @@ export const healthQuery=`select current_user='carve_runtime'
  and exists(select 1 from pg_roles where rolname=current_user and not rolsuper and not rolcreatedb and not rolcreaterole and not rolinherit and not rolreplication and not rolbypassrls)
  and not exists(select 1 from pg_auth_members where member=current_user::regrole::oid)
  and not has_schema_privilege(current_user,'carve_shared_v1','CREATE') as role_ok,
- (select count(*)=11 and bool_and(c.relrowsecurity) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='carve_shared_v1' and c.relkind='r') as schema_ok`;
+ (select count(*)=11 and bool_and(c.relrowsecurity) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='carve_shared_v1' and c.relkind='r') as schema_ok,
+ has_table_privilege(current_user,to_regclass('carve_shared_v1.native_completed_results'),'SELECT') as native_reader_ok`;
 export function createStorageHealthHandler({env=process.env,poolFactory=options=>new pg.Pool(options)}={}){
  let pool;
  const handler=async(req,res)=>{
@@ -25,8 +26,8 @@ export function createStorageHealthHandler({env=process.env,poolFactory=options=
    pool??=poolFactory(options);client=await pool.connect();
    if(client.connection?.stream?.encrypted!==true||client.connection.stream.authorized!==true)throw Error('unverified_tls');
    const r=(await client.query(healthQuery)).rows[0];
-   if(r?.role_ok!==true||r?.schema_ok!==true)throw Error('unexpected_database');
-   json(200,{status:'ready',checks:{database:true,tls:true,schema:true,role:true},production_enabled:false});
+   if(r?.role_ok!==true||r?.schema_ok!==true||r?.native_reader_ok!==true)throw Error('unexpected_database');
+   json(200,{status:'ready',checks:{database:true,tls:true,schema:true,role:true,native_results_reader:true},production_enabled:false});
   }catch{json(503,{error:'unavailable'});}
   finally{client?.release();}
  };
