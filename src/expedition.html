@@ -630,7 +630,7 @@
       #account-results { padding-left:20px; font-size:12px; }
       #account-dialog [hidden] { display:none; }
       #menu #account-open { margin-top:8px; min-height:44px; padding:8px 12px; font-size:11px; }
-      #menu #account-open[hidden] { display:none; }
+      #menu #account-open[hidden], #challenge-save-score[hidden] { display:none; }
       @media(max-height:480px) { #menu .keys { display:none; } #menu #menu-progress { margin-top:6px; } }
     </style>
   </head>
@@ -723,7 +723,7 @@
       <div class="rift-body"><h2 id="account-title">Your CARVE account</h2>
       <p id="account-identity">Playing as a guest on this device.</p>
       <p id="account-config">Checking cloud availability…</p>
-      <p>This first preview saves completed Flow results and their progress to your account when configured. Your current climb, bounty and skill equipment stay on this device. Payments are not available.</p>
+      <p>Save completed Flow scores to your CARVE account. You can review guest scores after signing in. Your current climb and equipment stay on this device.</p>
       <div id="account-signin">
         <div class="account-actions"><button class="btn ghost" id="account-apple" disabled>Continue with Apple</button><button class="btn ghost" id="account-google" disabled>Continue with Google</button></div>
         <label class="account-field">Email <input id="account-email" type="email" autocomplete="email" maxlength="254" disabled /></label>
@@ -741,7 +741,7 @@
           <button class="btn ghost" id="account-link-verify">Review email connection</button>
         </details>
         <div id="account-link-offer" hidden><p id="account-link-copy"></p><button class="btn" id="account-link-confirm">Confirm connection</button><button class="btn ghost" id="account-link-cancel">Cancel connection</button></div>
-        <div class="account-actions"><button class="btn" id="account-sync">Sync now</button><button class="btn ghost" id="account-import">Review guest import</button><button class="btn ghost" id="account-signout">Sign out</button></div>
+        <div class="account-actions"><button class="btn" id="account-sync">Sync now</button><button class="btn ghost" id="account-import">Review guest scores</button><button class="btn ghost" id="account-signout">Sign out</button></div>
         <p id="account-import-copy">Guest records are never imported automatically.</p><button class="btn ghost" id="account-import-confirm" hidden>Confirm import</button>
         <h3>Shared completed results</h3><ol id="account-results"></ol>
       </div>
@@ -842,7 +842,7 @@
       <p id="challenge-result-copy"></p>
       <div class="result-stats"><div>Highest climb<strong id="challenge-result-height"></strong></div><div>Score<strong id="challenge-result-score"></strong></div><div>Climb time<strong id="challenge-result-time"></strong></div><div>Rifts cleared<strong id="challenge-result-rifts"></strong></div></div>
       <p id="challenge-result-wallet"></p></div>
-      <div class="rift-actions"><button class="btn" id="challenge-retry">Try challenge again</button><button class="btn ghost" id="challenge-menu" autofocus>Back to menu</button></div>
+      <div class="rift-actions"><button class="btn" id="challenge-retry">Try challenge again</button><button class="btn ghost" id="challenge-save-score" aria-haspopup="dialog" hidden>Sign in to save scores</button><button class="btn ghost" id="challenge-menu" autofocus>Back to menu</button></div>
     </dialog>
     <dialog id="relic-dialog" aria-labelledby="relic-title">
       <div class="rift-body"><div class="eyebrow">optional relic experiment</div><h2 id="relic-title">Relic cache</h2>
@@ -1957,13 +1957,16 @@
         },
       };
 
+      const defaultClimberName = TESTING && FLOW_TRIAL && !RELIC_TRIAL
+        ? 'Guest-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(16).padStart(8,'0')
+        : 'Climber';
       const Profile = {
-        key:FLOW_TRIAL ? (RELIC_TRIAL ? 'carve.flow-relic.profile.v1' : 'carve.flow.profile.v1') : RELIC_TRIAL ? 'carve.relic-trial.profile.v1' : 'carve.variety.profile.v1', name:'Climber', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], lessons:[], routeLedger:[], trialCredits:[], trialQuests:[], best:0, challengeBest:0, storageAvailable:true,
+        key:FLOW_TRIAL ? (RELIC_TRIAL ? 'carve.flow-relic.profile.v1' : 'carve.flow.profile.v1') : RELIC_TRIAL ? 'carve.relic-trial.profile.v1' : 'carve.variety.profile.v1', name:defaultClimberName, coins:0, unlocked:['pulse'], equipped:'pulse', records:[], lessons:[], routeLedger:[], trialCredits:[], trialQuests:[], best:0, challengeBest:0, storageAvailable:true,
         load() {
           try {
             const d = JSON.parse(localStorage.getItem(this.key)); this.storageAvailable = true;
             if (!d || d.version !== 1) return;
-            this.name = typeof d.name === 'string' ? d.name.slice(0,16) : 'Climber';
+            this.name = typeof d.name === 'string' && d.name.trim() ? d.name.slice(0,16) : defaultClimberName;
             this.coins = Number.isSafeInteger(d.coins) && d.coins >= 0 ? Math.min(1000000,d.coins) : 0;
             if(RELIC_TRIAL||FLOW_TRIAL)this.trialCredits=Array.isArray(d.trialCredits)?[...new Set(d.trialCredits.filter(id=>typeof id==='string'&&id.length<=160&&id.startsWith('relic-v1:')))].slice(-4096):[];
             if(RELIC_TRIAL||FLOW_TRIAL)this.trialQuests=Array.isArray(d.trialQuests)?d.trialQuests.filter(r=>r&&typeof r.run==='string'&&r.run.length<=80&&Array.isArray(r.totals)&&r.totals.length===3&&r.totals.every(n=>Number.isSafeInteger(n)&&n>=0)).slice(-64):[];
@@ -2151,7 +2154,7 @@
           this.controlsUsed = [Game.controlLabel()];
           this.mode = TESTING ? this.selectedMode : 'challenge'; this.selectedMode = this.mode; this.lives = this.mode === 'challenge' ? 3 : null;
           Profile.load();
-          Profile.name = (document.getElementById('climber-name').value || Profile.name || 'Climber').trim().slice(0,16) || 'Climber';
+          Profile.name = (document.getElementById('climber-name').value || Profile.name).trim().slice(0,16) || defaultClimberName;
           this.name = Profile.name; Profile.save();
           this.seed = Math.floor(Math.random() * 2147483646) + 1;
           this.id = Date.now().toString(36) + '-' + this.seed.toString(36);
@@ -2296,6 +2299,7 @@
           for (const [id,value] of Object.entries({height:r.height + ' m',score:r.score,time:r.time.toFixed(1) + ' s',rifts:r.portals})) document.getElementById('challenge-result-' + id).textContent = String(value);
           document.getElementById('challenge-result-wallet').textContent = Profile.storageAvailable ? `${Profile.coins} bounty · Bounty and unlocks are kept. Practice and Challenge records are separate.` : 'Storage is unavailable; progress may be temporary.';
           if(RELIC_TRIAL)document.getElementById('challenge-result-wallet').textContent+=' Trial relics: '+(r.relics.owned.map(id=>Relics.catalog[id].name).join(', ')||'none')+'.';
+          window.CarveAccount?.renderSaveInvite?.();
           document.getElementById('challenge-result').showModal();
         },
         dismissResult() {
@@ -3304,6 +3308,7 @@
       // or unfinished climb. Account controls are available from the menu only.
       window.CarveGameStorage = {
         running: () => Game.running,
+        finishedRun: () => Journey.result?.id,
         accountRecords: owner => Profile.records.filter(r => r.ownerScope === owner)
           .map(record => ({record,profile:{unlocked:['pulse'],lessons:[]},testing:true})),
         guestRecords: () => Profile.records.filter(r => !r.ownerScope || r.ownerScope === 'guest')
