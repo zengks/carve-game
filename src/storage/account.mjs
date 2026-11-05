@@ -5,6 +5,7 @@ const $=id=>document.getElementById(id);
 const outbox=openOutbox(globalThis.indexedDB);
 let session={configured:false,account:null,providers:{}},snapshot=null,busy=false,syncing=false,epoch=0;
 const scope=()=>session.account?.scope??'guest';
+const canSignIn=()=>session.configured&&Object.values(session.providers).some(Boolean);
 const message=text=>{$('account-status').textContent=text;};
 function guestEvents() {
   return window.CarveGameStorage.guestRecords().flatMap(({record,profile,testing})=>{
@@ -18,7 +19,7 @@ function guestEvents() {
   });
 }
 function renderSaveInvite() {
-  const canSave=scope()==='guest'&&session.configured&&Object.values(session.providers).some(Boolean);
+  const canSave=scope()==='guest'&&canSignIn();
   const events=canSave?guestEvents():[];
   const runId=window.CarveGameStorage.finishedRun();
   $('account-open').textContent=scope()!=='guest'?'Account & sync':events.length?'Sign in to save scores':'Guest · Sign in';
@@ -66,9 +67,9 @@ function render() {
   for(const id of ['account-send','account-verify'])$(id).disabled=busy||!session.providers.email;
   for(const id of ['account-sync','account-import','account-signout'])$(id).disabled=busy;
   $('account-config').hidden=signed;
-  $('account-config').textContent=!session.configured||!Object.values(session.providers).some(Boolean)
-    ?'Cloud sign-in is unavailable in this preview. You can keep playing as a guest.'
-    :'Choose an available sign-in method to save completed scores to your account.';
+  $('account-config').textContent=canSignIn()
+    ?'Choose an available sign-in method to save completed scores to your account.'
+    :'Cloud sign-in is unavailable in this preview. You can keep playing as a guest.';
   renderSnapshot();
 }
 async function refresh() {
@@ -116,7 +117,10 @@ $('account-open').hidden=false;
 function openAccount() {
   if(window.CarveGameStorage.running())return;
   $('account-dialog').showModal();
-  return act(async()=>{await refresh();message(scope()==='guest'?'Sign in to save completed scores. You can review your guest scores before uploading.':'Choose Sync or review completed guest scores to import.');});
+  return act(async()=>{
+    await refresh();
+    message(scope()==='guest'?'':'Choose Sync or review completed guest scores to import.');
+  });
 }
 $('account-open').onclick=openAccount;
 $('challenge-save-score').onclick=()=>{
