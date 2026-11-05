@@ -47,6 +47,15 @@ function renderSnapshot() {
     const li=document.createElement('li');li.textContent=`${event.payload.height_m} m · ${event.mode} · ${event.payload.testing?'testing · ':''}${event.course_id} · unverified`;rows.appendChild(li);
   }
   if(!rows.children.length)rows.textContent='No shared results loaded.';
+  const nativeRows=$('account-native-rows');nativeRows.textContent='';
+  for(const event of snapshot?.native_results??[]) {
+    const platform=event.source_platform==='ios'?'iOS':'Android';
+    const time=(event.payload.active_ms/1000).toFixed(3);
+    const li=document.createElement('li');
+    li.textContent=`${time} s · ${event.mode} · ${platform} · ${event.payload.resumed?'resumed · ':''}${event.payload.testing?'testing · ':''}unverified`;
+    nativeRows.appendChild(li);
+  }
+  $('account-native-results').hidden=!nativeRows.children.length;
 }
 function render() {
   const signed=scope()!=='guest';
