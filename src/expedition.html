@@ -664,6 +664,29 @@
       #camp-options { display:grid; gap:12px; margin-top:18px; }
       #camp-options button:disabled { opacity:1; color:var(--ink); border-style:dashed; cursor:default; }
       #camp-options button { font-weight:400; margin:0; min-height:52px; padding:14px; text-align:left; white-space:normal; font-size:13px; line-height:1.5; }
+      #showroom-dialog { width:min(960px,95vw); padding:0; max-height:94dvh; }
+      #showroom-dialog[open] { display:flex; flex-direction:column; overflow:hidden; }
+      .showroom-body { overflow:auto; padding:24px; }
+      .showroom-header { display:flex; gap:20px; justify-content:space-between; align-items:start; }
+      .showroom-header h2 { font-size:42px; letter-spacing:-2px; margin:6px 0; }
+      .showroom-header p { max-width:560px; }
+      .showroom-badge { color:#bff6e4; border:1px solid #406d68; border-radius:30px; padding:8px 12px; font-size:10px; white-space:nowrap; }
+      .showroom-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:24px; align-items:start; }
+      #showroom-stage { width:100%; aspect-ratio:1; border-radius:18px; background:#111b30; }
+      .showroom-options { display:grid; gap:10px; }
+      .look-card { display:flex; align-items:center; gap:12px; background:#162138; color:var(--ink); border:1px solid #49536a; padding:8px 14px; text-align:left; border-radius:12px; cursor:pointer; min-height:82px; }
+      .look-card[aria-pressed="true"] { border-color:#a5f5db; background:#1b3540; box-shadow:inset 3px 0 #a5f5db; }
+      .look-card canvas { width:66px; height:66px; flex:none; }
+      .look-card strong,.look-card small { display:block; }
+      .look-card small { color:#b8c4d6; line-height:1.5; margin-top:5px; }
+      .showroom-check { display:flex; gap:10px; align-items:start; font-size:13px; line-height:1.6; padding:4px; cursor:pointer; }
+      .showroom-check input { width:20px; height:20px; accent-color:#8df7c8; flex:none; }
+      #showroom-detail { color:#c1cfe0; font-size:13px; line-height:1.7; min-height:44px; }
+      #showroom-status { font-size:12px; color:#ffdb95; margin-bottom:0; }
+      #showroom-result-art { width:100%; height:100px; border-radius:12px; }
+      #showroom-ribbon-label { position:fixed; left:12px; bottom:calc(12px + env(safe-area-inset-bottom)); font-size:10px; color:#bdd5e1; pointer-events:none; z-index:5; }
+      @media(max-width:620px) { .showroom-grid { grid-template-columns:1fr; gap:12px; } .showroom-body { padding:16px; } .showroom-header h2 { font-size:32px; } .showroom-badge { display:none; } #showroom-stage { aspect-ratio:1.6; } .showroom-options { gap:7px; } .look-card { min-height:68px; padding:4px 10px; } .look-card canvas { width:56px; height:56px; } }
+      @media(max-height:500px) { .showroom-grid { grid-template-columns:1fr 1fr; } #showroom-stage { aspect-ratio:1; } .showroom-header p { margin:6px 0; } .showroom-header h2 { font-size:28px; } }
     </style>
   </head>
   <body>
@@ -803,7 +826,7 @@
         <h1 class="title">HOLD</h1>
         <p class="tag" id="pause-message">Time to read the next line.</p>
         <button class="btn" id="resume">Resume</button>
-        <button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost hidden" id="relic-loadout" aria-haspopup="dialog">Relics</button><button class="btn ghost" id="journal-open">Journal</button><button class="btn ghost hidden" id="camp-pause">Stop at camp</button><button class="btn ghost" id="bank-open">Bank run</button><button class="btn ghost" id="controls-pause" aria-haspopup="dialog">Controls</button></div>
+        <button class="btn ghost hidden" id="showroom-pause">Cosmetic showroom</button><button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost hidden" id="relic-loadout" aria-haspopup="dialog">Relics</button><button class="btn ghost" id="journal-open">Journal</button><button class="btn ghost hidden" id="camp-pause">Stop at camp</button><button class="btn ghost" id="bank-open">Bank run</button><button class="btn ghost" id="controls-pause" aria-haspopup="dialog">Controls</button></div>
       </div>
     </div>
 
@@ -845,13 +868,13 @@
     <dialog id="journal-dialog" aria-labelledby="journal-title"><div class="rift-body"><h2 id="journal-title">Field journal</h2><details><summary>How bounty, Flow and lives work</summary><p>Gold shards earn bounty. Spend it on skill unlocks or camp services. Surge spends 26 Flow for a dash, separate from skill recharge. Perfect catches earn more Flow; neither currency is a life. Gold walls save the place you return to after losing a life.</p><p>Public runs have 3 lives. Your height record and bounty survive Game Over. Optional camp contracts risk only their stated deposit, and marked directional rings need you to cross in the arrow's direction.</p><p>Hollow gold shards above central ledges pay 1 bounty; wall-side shards pay 2 or 4. Both count for Courier, so the high route can finish its goal without diving below the ledges.</p><p>In the new course, skills recharge by climbing: a PERFECT fresh catch restores 3 points, GOOD restores 2, other catches 1; a shard restores 1 and a directional ring 4. Waiting does not refill skills. Contracts can grant a ready skill, one Overdrive activation or a life.</p></details><details id="terrain-guide" class="hidden" open><summary>Living terrain · read before exploring</summary><p>Solid glowing edges show the surfaces you can land on or catch. Decorative roots, crystals and machinery are scenery. Mushroom caps are automatic springs: land, lift your thumb, then press again to catch.</p><p>↔ Cloud ferry: a slow moving, one-way landing deck. It carries you sideways while standing or charging. Jump through it from below. No extra button.</p><p>Cracked shelf: optional amber stepping stone. First landing or catch starts a 1.8-second climb-clock countdown. Jump before it breaks; it regrows 5 seconds later. The warning bar drains even while charging. Safe walls and camps never crumble.</p><p>◇ Crystal bell: make a PERFECT release from its marked wall or top to earn +12 Flow and restore 4 skill recharge points, once per bell per run. GOOD catches still work normally. No currency, skill or perfect release is required to climb.</p><p>Hanging gardens, wind kites, hollow arches, root bridges and observatory drums change the scenery; their glowing grip and landing edges keep the original collision rules. Course records stay separate from earlier routes.</p></details><ol id="journal-entries"></ol></div><div class="rift-actions"><button class="btn ghost" id="camp-guide">Plan the next camp</button><button class="btn" id="journal-close">Back</button></div></dialog>
     <dialog id="skill-dialog" aria-labelledby="skill-title"><div class="rift-body"><div class="eyebrow">understand your equipment</div><h2 id="skill-title"></h2><p id="skill-copy"></p><p>Use between catches, after lifting your thumb. Changing equipment never refills your skill. In the new course, fresh catches and shards recharge it; waiting does not. You can read all skills again in the Workshop.</p></div><div class="rift-actions"><button class="btn" id="skill-confirm">Use this skill</button><button class="btn ghost" id="skill-cancel">Keep climbing</button></div></dialog>
     <dialog id="camp-dialog" aria-labelledby="camp-title"><div class="rift-body"><div class="eyebrow">a moment to choose</div><h2 id="camp-title">Trail camp</h2><p id="camp-copy"></p><p id="camp-status" role="status"></p><div id="camp-options"></div></div><div class="rift-actions"><button class="btn" id="camp-repair">Restore one life · 18 bounty</button><button class="btn ghost hidden" id="camp-rift">Explore nearby rift</button><button class="btn ghost" id="camp-close">Leave camp</button></div></dialog>
-    <dialog id="bank-dialog" aria-labelledby="bank-title"><h2 id="bank-title">Bank this expedition?</h2><p>Your highest altitude joins this browser's records. Bounty and unlocks are kept. The next expedition starts at the ground.</p><button class="btn" id="bank-cancel" autofocus>Keep climbing</button><button class="btn ghost" id="bank-confirm">Bank &amp; end run</button></dialog>
+    <dialog id="bank-dialog" aria-labelledby="bank-title"><h2 id="bank-title">Bank this expedition?</h2><p id="bank-copy">Your highest altitude joins this browser's records. Bounty and unlocks are kept. The next expedition starts at the ground.</p><button class="btn" id="bank-cancel" autofocus>Keep climbing</button><button class="btn ghost" id="bank-confirm">Bank &amp; end run</button></dialog>
 
     <dialog id="challenge-result" aria-labelledby="challenge-result-title">
       <div class="rift-body"><div class="eyebrow">challenge complete</div><h2 id="challenge-result-title">GAME OVER</h2>
       <p id="challenge-result-copy"></p>
       <div class="result-stats"><div>Highest climb<strong id="challenge-result-height"></strong></div><div>Score<strong id="challenge-result-score"></strong></div><div>Climb time<strong id="challenge-result-time"></strong></div><div>Rifts cleared<strong id="challenge-result-rifts"></strong></div></div>
-      <p id="challenge-result-wallet"></p></div>
+      <canvas id="showroom-result-art" width="700" height="140" class="hidden" role="img" aria-label="Skyburst cosmetic constellation, preview only"></canvas><p id="challenge-result-wallet"></p></div>
       <div class="rift-actions"><button class="btn" id="challenge-retry">Try challenge again</button><button class="btn ghost" id="challenge-menu" autofocus>Back to menu</button></div>
     </dialog>
     <dialog id="relic-dialog" aria-labelledby="relic-title">
@@ -859,15 +882,30 @@
       <p id="relic-copy"></p><div id="relic-choices"><button class="btn" id="relic-choice-0"></button><button class="btn" id="relic-choice-1"></button><button class="btn" id="relic-choice-2"></button></div>
       <p id="relic-inventory"></p></div><div class="rift-actions"><button class="btn ghost" id="relic-skip">Skip &amp; continue</button><button class="btn ghost" id="relic-back">Back to pause</button></div>
     </dialog>
+    <dialog id="showroom-dialog" aria-labelledby="showroom-title" aria-describedby="showroom-note">
+      <div class="showroom-body"><div class="showroom-header"><div><div class="eyebrow">supporter pack · art direction study</div><h2 id="showroom-title">SKYBOUND</h2><p id="showroom-note">Two wanderers, dressed for the stars. Try these original cosmetic concepts on the real course. Preview only: not for sale, no ownership granted, no gameplay advantage.</p></div><span class="showroom-badge">CONCEPT 01 / NOT FOR SALE</span></div>
+      <div class="showroom-grid"><div><canvas id="showroom-stage" width="600" height="600" role="img" aria-label="Selected outfit standing on a floating observatory ledge"></canvas><p id="showroom-detail"></p></div><div class="showroom-options">
+      <button class="look-card" id="showroom-storm" aria-pressed="true"><canvas id="showroom-storm-art" width="160" height="160" aria-hidden="true"></canvas><span><strong>01 · Stormbound Aster</strong><small>Folded storm cloak · compass clasp · silver hood</small></span></button>
+      <button class="look-card" id="showroom-solar" aria-pressed="false"><canvas id="showroom-solar-art" width="160" height="160" aria-hidden="true"></canvas><span><strong>02 · Solar Cinder</strong><small>Sun-ray ears · layered mantle · comet tail</small></span></button>
+      <label class="showroom-check"><input type="checkbox" id="showroom-original" />Compare original outfit</label>
+      <label class="showroom-check"><input type="checkbox" id="showroom-trail" checked />Astral Ribbon · twin strands behind your flight</label>
+      <label class="showroom-check"><input type="checkbox" id="showroom-celebration" checked />Skyburst · constellation after banking a run</label>
+      <label class="showroom-check"><input type="checkbox" id="showroom-reduced" />Reduced effects · static stars, quieter trail</label>
+      <button class="btn ghost" id="showroom-celebrate">Preview Skyburst</button><p id="showroom-status" role="status"></p>
+      </div></div></div><div class="rift-actions"><button class="btn" id="showroom-try">Try on the course</button><button class="btn ghost hidden" id="showroom-resume">Resume current demo</button><button class="btn ghost" id="showroom-close">Back</button></div>
+    </dialog>
+    <dialog id="showroom-restart" aria-labelledby="showroom-restart-title"><h2 id="showroom-restart-title">Start a new cosmetic demo?</h2><p>Your current demo ends and its local result is recorded. The next demo starts at ground level with the look selected in the showroom. Regular game saves are untouched.</p><button class="btn" id="showroom-restart-cancel" autofocus>Keep current demo</button><button class="btn ghost" id="showroom-restart-confirm">Start new demo</button></dialog>
+    <div id="showroom-ribbon-label" class="hidden">COSMETIC DEMO · PREVIEW ONLY</div>
     <script>
       "use strict";
       const TESTING = true; // Replaced with false by the production build; query strings cannot enable it.
-      const LIVING_PLATFORMS = !TESTING || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('terrain') === '1');
+      const SHOWROOM = TESTING && typeof location !== 'undefined' && new URLSearchParams(location.search).get('showroom') === '1';
+      const LIVING_PLATFORMS = SHOWROOM || !TESTING || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('terrain') === '1');
       const FLOW_TRIAL = LIVING_PLATFORMS || !TESTING || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('flow') === '1');
       const MEMORY_PREVIEW = FLOW_TRIAL ? 3.2 : 2.5;
-      const RELIC_TRIAL = typeof location !== 'undefined' && new URLSearchParams(location.search).get('relics') === '1';
-      const CONTROL_KEY = LIVING_PLATFORMS ? 'carve.terrain.controls.v1' : FLOW_TRIAL ? 'carve.flow.controls.v1' : RELIC_TRIAL ? 'carve.relic-trial.controls.v1' : 'carve.controls.v1';
-      const AUDIO_KEY = LIVING_PLATFORMS ? 'carve.terrain.audio.v1' : FLOW_TRIAL ? 'carve.flow.muted.v1' : RELIC_TRIAL ? 'carve.relic-trial.muted' : 'carve.expedition.muted';
+      const RELIC_TRIAL = !SHOWROOM && typeof location !== 'undefined' && new URLSearchParams(location.search).get('relics') === '1';
+      const CONTROL_KEY = SHOWROOM ? 'carve.showroom.controls.v1' : LIVING_PLATFORMS ? 'carve.terrain.controls.v1' : FLOW_TRIAL ? 'carve.flow.controls.v1' : RELIC_TRIAL ? 'carve.relic-trial.controls.v1' : 'carve.controls.v1';
+      const AUDIO_KEY = SHOWROOM ? 'carve.showroom.audio.v1' : LIVING_PLATFORMS ? 'carve.terrain.audio.v1' : FLOW_TRIAL ? 'carve.flow.muted.v1' : RELIC_TRIAL ? 'carve.relic-trial.muted' : 'carve.expedition.muted';
       /* ============================================================================
    CARVE — a momentum / "drift-as-grip" vertical climber.
    Single-file, dependency-free. Fixed-timestep simulation, y-up world space.
@@ -1216,7 +1254,7 @@
       // Deterministic six-column streams. Only the current 16-row neighborhood lives
       // in memory; returning to an old checkpoint reconstructs its geometry.
       const Level = {
-        course:LIVING_PLATFORMS ? (RELIC_TRIAL ? 9 : 8) : FLOW_TRIAL ? (RELIC_TRIAL ? 7 : 6) : RELIC_TRIAL ? 5 : 4,
+        course:SHOWROOM ? 10 : LIVING_PLATFORMS ? (RELIC_TRIAL ? 9 : 8) : FLOW_TRIAL ? (RELIC_TRIAL ? 7 : 6) : RELIC_TRIAL ? 5 : 4,
         encounters:[
           {name:'LAUNCH GARDEN',hint:'Find the gold beacon. Hold, steer and release through the first catches.',color:'#38f0e0'},
           {name:'WIND GAP',hint:'The gap opens wide. Drag toward the opposite wall; neutral launches may fall short.',color:'#9bcaff'},
@@ -2235,8 +2273,156 @@
         },
       };
 
+      // Original code-native art study, revision 1. Concept IDs are not sale SKUs.
+      // No payment, entitlement, network or shared-save integration exists here.
+      const Showroom = {
+        enabled:SHOWROOM, revision:1, motion:matchMedia('(prefers-reduced-motion: reduce)'), key:'carve.showroom.selection.v1', active:null, draft:null,
+        burstAt:null, clock:0, lastPaint:-Infinity,
+        looks:{storm:{id:'concept-stormbound-aster-r1',base:'aster',name:'Stormbound Aster',copy:'A silver storm hood and folded cobalt cloak, held by a compass star.'},solar:{id:'concept-solar-cinder-r1',base:'cinder',name:'Solar Cinder',copy:'A fox in a sun-ray mantle, with a cream blaze and a layered comet tail.'}},
+        clean(value){
+          const d=value&&typeof value==='object'?value:{};
+          return {revision:1,look:Object.hasOwn(this.looks,d.look)?d.look:'storm',original:d.original===true,trail:d.trail!==false,celebration:d.celebration!==false,reduced:d.reduced===true||!!this.motion.matches};
+        },
+        base(selection){return this.looks[this.clean(selection).look].base;},
+        label(selection){const d=this.clean(selection);return d.original?'Original '+Avatars.get(this.base(d)).name:this.looks[d.look].name;},
+        runLabel(){if(SHOWROOM)document.getElementById('showroom-ribbon-label').textContent='PREVIEW DEMO · '+this.label(this.active);},
+        init(){
+          if(!SHOWROOM)return;
+          let saved;try{saved=JSON.parse(localStorage.getItem(this.key));}catch{}
+          this.draft=this.clean(saved);this.active=this.clean(null);
+          show('avatar-open',false); show('showroom-pause',true);show('showroom-ribbon-label',true);
+          document.getElementById('play').textContent='Explore the Skybound showroom';
+          document.getElementById('bank-title').textContent='Bank this cosmetic demo?';
+          document.getElementById('bank-copy').textContent='This demo ends and its result stays in the isolated showroom. No regular bounty, scores, purchases or ownership change. Skyburst is a cosmetic celebration, not an extra reward.';
+          document.getElementById('menu-summary').textContent='Cosmetic concept preview. Separate demo saves; six original climbers remain free in the regular game.';
+          document.getElementById('showroom-pause').onclick=()=>this.open();
+          for(const look of Object.keys(this.looks))document.getElementById('showroom-'+look).onclick=()=>this.change({look});
+          for(const field of ['original','trail','celebration','reduced'])document.getElementById('showroom-'+field).onchange=e=>this.change({[field]:e.target.checked});
+          document.getElementById('showroom-try').onclick=()=>{if(Game.running)document.getElementById('showroom-restart').showModal();else this.start();};
+          document.getElementById('showroom-restart-confirm').onclick=()=>{document.getElementById('showroom-restart').close();this.start();};
+          document.getElementById('showroom-restart-cancel').onclick=()=>{document.getElementById('showroom-restart').close();Input.clear();document.getElementById('showroom-try').focus?.();};
+          document.getElementById('showroom-restart').addEventListener('cancel',()=>Input.clear());
+          document.getElementById('showroom-close').onclick=()=>this.close();
+          document.getElementById('showroom-dialog').addEventListener('cancel',e=>{e.preventDefault();this.close();});
+          document.getElementById('showroom-resume').onclick=()=>{this.close();if(Game.running&&Game.paused&&Game.windowFocused&&!document.hidden)Game.togglePause();};
+          document.getElementById('showroom-celebrate').onclick=()=>{this.celebrate();this.lastPaint=-Infinity;document.getElementById('showroom-stage').scrollIntoView?.({block:'center',behavior:'instant'});document.getElementById('showroom-status').textContent=this.draft.celebration?'Skyburst preview: a quiet constellation. Cosmetic only; no rewards or ownership granted.':'Enable Skyburst to preview its constellation.';};
+          this.render();
+        },
+        change(fields){
+          this.draft=this.clean({...this.draft,...fields});
+          let stored=true;try{localStorage.setItem(this.key,JSON.stringify(this.draft));}catch{stored=false;}
+          this.render();
+          if(!stored)document.getElementById('showroom-status').textContent='Preview choice kept for this tab only; browser storage is unavailable.';
+          Input.clear();
+        },
+        open(){
+          if(!SHOWROOM)return false;
+          if(Game.running&&!Game.paused)Game.togglePause();
+          Input.clear();this.render();document.getElementById('showroom-dialog').showModal();return true;
+        },
+        close(){Input.clear();document.getElementById('showroom-dialog').close();document.getElementById(Game.running?'showroom-pause':'play').focus?.();},
+        start(){
+          if(!SHOWROOM)return false;
+          this.close();Game.start();return true;
+        },
+        render(){
+          if(!SHOWROOM)return;
+          const d=this.clean(this.draft);this.draft=d;this.lastPaint=-Infinity;
+          for(const [look,entry] of Object.entries(this.looks)){
+            document.getElementById('showroom-'+look).setAttribute('aria-pressed',String(d.look===look));
+            const cv=document.getElementById('showroom-'+look+'-art'),ctx=cv.getContext('2d');
+            ctx.clearRect(0,0,cv.width,cv.height);ctx.save();ctx.translate(cv.width/2,cv.height/2);ctx.scale(cv.width/57,-cv.height/57);this.draw(ctx,{...d,look,original:false});ctx.restore();
+          }
+          for(const field of ['original','trail','celebration','reduced'])document.getElementById('showroom-'+field).checked=d[field];
+          document.getElementById('showroom-detail').textContent=(d.original?'Original '+Avatars.get(this.base(d)).name+' · free baseline. ':this.looks[d.look].copy+' ' )+'Same movement, reach and feet. Artwork preview only.';
+          document.getElementById('showroom-status').textContent=Game.running?'Your current demo keeps its existing look. Resume it, or explicitly start a new demo to try these choices.':'No checkout. No purchase. Demo bounty, settings and records stay separate from regular play.';
+          document.getElementById('showroom-try').textContent=Game.running?'Start new demo with this look':'Try on the course';
+          show('showroom-resume',Game.running);
+        },
+        draw(ctx,selection,face=1,gripping=false){
+          const d=this.clean(selection);
+          if(d.original){Avatars.draw(ctx,this.base(d),face,gripping);return;}
+          const path=(p,f,st)=>Avatars.path(ctx,p,f,st),oval=(x,y,rx,ry,f,st)=>Avatars.oval(ctx,x,y,rx,ry,f,st);
+          ctx.save();ctx.scale(face<0?-1:1,1);ctx.lineWidth=.9;ctx.lineJoin='round';ctx.lineCap='round';
+          ctx.shadowColor=d.look==='storm'?'#a5f5eb':'#ffcc83';ctx.shadowBlur=d.reduced?0:gripping?5:2;
+          if(d.look==='storm'){
+            // Split folded cloak, asymmetric scarf, unambiguous boot/contact baseline.
+            path([[-8,3],[-16,-8],[-14,-18],[-4,-14],[8,-18],[13,-6],[8,4]],'#314574','#a6c8ef');
+            path([[-8,1],[-14,-13],[-7,-9],[-3,-15],[0,0]],'#6371ac');
+            path([[2,1],[8,-16],[11,-9],[8,-4]],'#192d51');
+            path([[-11,4],[-12,13],[-5,22],[4,21],[12,13],[12,3]],'#adbdcc','#f2f9ed');
+            path([[-11,12],[-4,20],[-1,16],[-7,6]],'#6983a6');
+            oval(1,10,8,8,'#142338','#d2e4f0');
+            path([[-10,2],[11,3],[12,-2],[2,-3],[-14,-9],[-12,-3]],'#90dfd5','#d6fff2');
+            path([[-7,-16],[-8,-22],[-2,-22],[-1,-16]],'#cad8da');path([[4,-16],[4,-22],[11,-22],[9,-16]],'#cad8da');
+            path([[0,-2],[3,-5],[0,-8],[-3,-5]],'#fff3ba','#c49a5c');
+            ctx.strokeStyle='#b7dded';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(10,-3);ctx.lineTo(15,gripping?8:-7);ctx.stroke();
+            ctx.fillStyle='#fff2ce';ctx.fillRect(2,10,2.4,3);ctx.fillRect(8,10,2,3);
+          }else{
+            // Tail and sun-ray ears distinguish this from an orange recolor.
+            path([[-6,-14],[-16,-10],[-17,5],[-12,1],[-10,8],[-9,-4],[-2,-7]],'#d17b53','#ffdc9b');
+            path([[-17,5],[-12,1],[-10,8],[-11,-4],[-15,-5]],'#fff0cb');
+            path([[-9,-16],[-11,-2],[0,3],[10,-2],[12,-14],[2,-18]],'#6a3b59','#ffcf87');
+            path([[-12,1],[-7,5],[0,1],[7,5],[13,-2],[6,-7],[0,-4],[-7,-8]],'#e9b264','#fff1cb');
+            path([[-12,6],[-13,22],[-4,16],[5,16],[13,23],[14,5],[7,0],[-6,0]],'#e9ab70','#fff0cc');
+            path([[-11,19],[-8,10],[-3,15]],'#7c4561');path([[11,20],[7,14],[12,11]],'#7c4561');
+            path([[-8,9],[0,5],[12,9],[9,1],[0,-2]],'#fff0d1');
+            path([[-3,17],[0,22],[3,17],[0,14]],'#fff7d0','#dda753');
+            path([[-8,-17],[-8,-22],[-2,-22],[-1,-17]],'#efdcb1');path([[3,-17],[4,-22],[11,-22],[9,-17]],'#efdcb1');
+            ctx.fillStyle='#30283c';ctx.fillRect(0,9,3,3);ctx.fillRect(9,10,2,3);oval(9,3,2,1.5,'#30283c');
+            path([[0,-6],[2,-9],[0,-12],[-2,-9]],'#f8edd0');
+          }
+          ctx.restore();
+        },
+        ribbon(ctx,samples,reduced){
+          const points=samples.slice(-16);if(points.length<2)return;
+          ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+          for(let strand=0;strand<(reduced?1:2);strand++){
+            ctx.strokeStyle=strand?'#c3aeef':'#9ae5d3';ctx.lineWidth=reduced?2:3;ctx.globalAlpha=reduced?.3:.42;
+            ctx.beginPath();points.forEach((p,i)=>{const offset=(strand?1:-1)*Math.sin(i*.38)*3;i?ctx.lineTo(p.x+offset,p.y):ctx.moveTo(p.x+offset,p.y);});ctx.stroke();
+          }ctx.restore();
+        },
+        celebrate(){this.burstAt=this.clock;},
+        stars(ctx,w,h,age,reduced){
+          // 18 deterministic stars, <=1.8s; static constellation after animation/reload.
+          const progress=reduced?1:clamp(age/1.8,0,1);
+          ctx.save();ctx.strokeStyle='#8cbac1';ctx.lineWidth=1;
+          for(let i=0;i<18;i++){
+            const a=i*2.39996,r=(.25+.7*((i*7)%18)/18)*.44,x=w/2+Math.cos(a)*r*w*(.5+.5*progress),y=h/2+Math.sin(a)*r*h*(.5+.5*progress);
+            ctx.globalAlpha=.25;ctx.beginPath();ctx.moveTo(w/2,h/2);ctx.lineTo(x,y);ctx.stroke();ctx.globalAlpha=.85;
+            Avatars.path(ctx,[[x,y-4],[x+1.5,y-1],[x+4,y],[x+1.5,y+1],[x,y+4],[x-1.5,y+1],[x-4,y],[x-1.5,y-1]],i%2?'#c6b5ef':'#a5f3d6');
+          }ctx.restore();
+        },
+        stage(t){
+          const cv=document.getElementById('showroom-stage'),ctx=cv.getContext('2d'),d=this.draft;
+          const w=Math.round((cv.clientWidth||300)*2),h=Math.round((cv.clientHeight||300)*2);
+          if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}
+          const g=ctx.createLinearGradient(0,0,w,h);g.addColorStop(0,'#233448');g.addColorStop(.6,'#17253f');g.addColorStop(1,'#332744');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+          ctx.strokeStyle='#79929840';ctx.lineWidth=1;for(let i=0;i<4;i++){ctx.beginPath();ctx.arc(w*.5,h*.45,70+i*56,.2,Math.PI*1.8);ctx.stroke();}
+          Avatars.path(ctx,[[0,h*.8],[w*.2,h*.53],[w*.35,h*.8],[w*.62,h*.55],[w,h*.9],[w,h],[0,h]],'#101f34');
+          if(d.celebration)this.stars(ctx,w,h,this.burstAt===null?2:(t-this.burstAt)/1000,d.reduced);
+          ctx.save();ctx.translate(w*.5,h*.76);ctx.scale(1,-1);
+          Avatars.path(ctx,[[-105,-14],[-70,-62],[45,-75],[106,-10]],'#26364d','#52627a');
+          Avatars.path(ctx,[[-110,-9],[-67,5],[70,5],[110,-9],[64,-23],[-60,-23]],'#58717d','#a4c9c7');
+          ctx.strokeStyle='#b8ebd5';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-67,5);ctx.lineTo(70,5);ctx.stroke();
+          if(d.trail)this.ribbon(ctx,Array.from({length:16},(_,i)=>({x:-128+i*7,y:30+Math.sin(i*.14)*42})),d.reduced);
+          const scale=Math.min(w/150,h/100);ctx.translate(0,5+22*scale);ctx.scale(scale,scale);this.draw(ctx,d);ctx.restore();
+                    ctx.fillStyle='#c6d5df';ctx.font='20px monospace';ctx.textAlign='left';ctx.fillText(d.original?'ORIGINAL / FREE':'SKYBOUND / CONCEPT 01',24,32);
+          ctx.fillStyle='#9caec5';ctx.fillText('ORIGINAL ART · IDENTICAL PHYSICS',24,h-24);
+        },
+        tick(t){
+          if(!SHOWROOM)return;this.clock=t;
+          const modal=document.getElementById('showroom-dialog').open,result=document.getElementById('challenge-result').open;
+          if(!modal&&!result)return;
+          const moving=this.burstAt!==null&&t-this.burstAt<1800;
+          if(t-this.lastPaint<(moving?1000/30:500))return;this.lastPaint=t;
+          if(modal)this.stage(t);
+          if(result&&Journey.result?.outcome==='banked'&&this.active?.celebration){const cv=document.getElementById('showroom-result-art'),ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);this.stars(ctx,cv.width,cv.height,this.burstAt===null?2:(t-this.burstAt)/1000,this.active.reduced);}
+        },
+      };
+
       const Profile = {
-        key:LIVING_PLATFORMS ? (RELIC_TRIAL ? 'carve.terrain-relic.profile.v1' : 'carve.terrain.profile.v1') : FLOW_TRIAL ? (RELIC_TRIAL ? 'carve.flow-relic.profile.v1' : 'carve.flow.profile.v1') : RELIC_TRIAL ? 'carve.relic-trial.profile.v1' : 'carve.variety.profile.v1', name:'Climber', avatar:'aster', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], lessons:[], routeLedger:[], trialCredits:[], trialQuests:[], best:0, challengeBest:0, storageAvailable:true,
+        key:SHOWROOM ? 'carve.showroom.profile.v1' : LIVING_PLATFORMS ? (RELIC_TRIAL ? 'carve.terrain-relic.profile.v1' : 'carve.terrain.profile.v1') : FLOW_TRIAL ? (RELIC_TRIAL ? 'carve.flow-relic.profile.v1' : 'carve.flow.profile.v1') : RELIC_TRIAL ? 'carve.relic-trial.profile.v1' : 'carve.variety.profile.v1', name:'Climber', avatar:'aster', coins:0, unlocked:['pulse'], equipped:'pulse', records:[], lessons:[], routeLedger:[], trialCredits:[], trialQuests:[], best:0, challengeBest:0, storageAvailable:true,
         load() {
           try {
             const d = JSON.parse(localStorage.getItem(this.key)); this.storageAvailable = true;
@@ -2287,7 +2473,7 @@
           this.load();
           const bestKey = Journey.mode === 'challenge' ? 'challengeBest' : 'best';
           this[bestKey] = Math.max(this[bestKey], Math.floor((Journey.peak - 64) / 10));
-          const record = {id:Journey.id, course:LIVING_PLATFORMS ? (RELIC_TRIAL ? 'terrain-relic-v1' : 'terrain-v1') : FLOW_TRIAL ? (RELIC_TRIAL ? 'flow-relic-v1' : 'flow-v1') : RELIC_TRIAL ? 'relic-trial-v1' : 'variety-v2', ...(RELIC_TRIAL?{relics:{version:1,owned:[...Relics.owned]},assisted:true}:{}), rescues:Journey.rescues, mode:Journey.mode, rules:LIVING_PLATFORMS?'terrain-v1':FLOW_TRIAL?'flow-v1':RELIC_TRIAL?'relic-v1':Journey.controlsUsed.some(c=>c==='one'||c==='two')?'manual-touch-v1':'web-v2', controls:[...Journey.controlsUsed], outcome, name:Journey.name, avatar:Journey.avatar, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
+          const record = {id:Journey.id, ...(SHOWROOM?{demo:true}:{}), course:SHOWROOM ? 'showroom-demo-v1' : LIVING_PLATFORMS ? (RELIC_TRIAL ? 'terrain-relic-v1' : 'terrain-v1') : FLOW_TRIAL ? (RELIC_TRIAL ? 'flow-relic-v1' : 'flow-v1') : RELIC_TRIAL ? 'relic-trial-v1' : 'variety-v2', ...(RELIC_TRIAL?{relics:{version:1,owned:[...Relics.owned]},assisted:true}:{}), rescues:Journey.rescues, mode:Journey.mode, rules:LIVING_PLATFORMS?'terrain-v1':FLOW_TRIAL?'flow-v1':RELIC_TRIAL?'relic-v1':Journey.controlsUsed.some(c=>c==='one'||c==='two')?'manual-touch-v1':'web-v2', controls:[...Journey.controlsUsed], outcome, name:Journey.name, avatar:Journey.avatar, height:Math.floor((Journey.peak - 64) / 10), score:Game.score, time:Game.time, portals:Journey.wins};
           this.records = this.records.filter(r => r.id !== record.id);
           if (record.height > 0) this.records.push(record);
           this.trimRecords(); this.save();
@@ -2415,11 +2601,11 @@
         biomes:[['MOSS CATHEDRAL','#38f0e0'],['STORM ARCHIVE','#b8a4ff'],['GLASS ORCHARD','#8df7c8'],['EMBER FOUNDRY','#ffaf75']],
         skills:{pulse:{name:'Rocket Pulse',cost:0,cd:14,description:'A powerful upward burst. Ready every 14s.'},wing:{name:'Windwing',cost:25,cd:24,description:'Eight seconds of light gravity. Great for chaining.'},hook:{name:'Skyhook',cost:50,cd:18,description:'Zip to a safe ledge several floors above.'}},
         chooseMode(mode) {
-          if (Game.running || (!TESTING && mode === 'practice') || !['practice','challenge'].includes(mode)) return false;
+          if (Game.running || ((!TESTING||SHOWROOM) && mode === 'practice') || !['practice','challenge'].includes(mode)) return false;
           this.selectedMode = mode; this.renderMode(); return true;
         },
         renderMode() {
-          show('mode-practice',TESTING);show('practice-description',TESTING);
+          show('mode-practice',TESTING&&!SHOWROOM);show('practice-description',TESTING&&!SHOWROOM);
           document.getElementById('mode-open').textContent = this.selectedMode === 'challenge' ? 'Challenge · 3 lives' : 'Practice · ∞';
           for (const mode of ['practice','challenge']) document.getElementById('mode-' + mode).setAttribute('aria-pressed',String(this.selectedMode === mode));
           this.menuStatus();
@@ -2430,7 +2616,7 @@
           this.mode = TESTING ? this.selectedMode : 'challenge'; this.selectedMode = this.mode; this.lives = this.mode === 'challenge' ? 3 : null;
           Profile.load();
           Profile.name = (document.getElementById('climber-name').value || Profile.name || 'Climber').trim().slice(0,16) || 'Climber';
-          this.name = Profile.name; this.avatar=Avatars.valid(Avatars.forRun())?Avatars.forRun():Avatars.defaultId; Profile.avatar=this.avatar; Profile.save();
+          this.name = Profile.name; this.avatar=SHOWROOM?Showroom.base(Showroom.active):Avatars.valid(Avatars.forRun())?Avatars.forRun():Avatars.defaultId; Profile.avatar=this.avatar; Profile.save();
           this.seed = Math.floor(Math.random() * 2147483646) + 1;
           this.id = Date.now().toString(36) + '-' + this.seed.toString(36);
           Object.assign(this,{peak:64,fallAnchor:64,rescues:0,shards:0,clean:0,wins:0,cooldown:0,wingTime:0,quests:[0,0,0],rift:null,nearest:null,lastUI:''});
@@ -2505,7 +2691,7 @@
           addEventListener('blur',suspend); document.addEventListener('visibilitychange',() => { if (document.hidden) suspend(); });
           this.menuStatus();
         },
-        menuStatus() { Avatars.menu();document.getElementById('menu-progress').textContent = `${LIVING_PLATFORMS ? (TESTING?'LIVING TERRAIN · separate preview progress':'LIVING TERRAIN') : FLOW_TRIAL ? 'FLOW COURSE · separate progress' : RELIC_TRIAL ? 'RELIC TRIAL · separate progress' : 'Endless Expedition'} · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${!TESTING?' · 3 lives per run; earlier testing runs kept separately':''}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
+        menuStatus() { Avatars.menu();document.getElementById('menu-progress').textContent = `${SHOWROOM ? 'COSMETIC DEMO · isolated preview progress' : LIVING_PLATFORMS ? (TESTING?'LIVING TERRAIN · separate preview progress':'LIVING TERRAIN') : FLOW_TRIAL ? 'FLOW COURSE · separate progress' : RELIC_TRIAL ? 'RELIC TRIAL · separate progress' : 'Endless Expedition'} · ${Profile.coins} bounty · ${this.selectedMode === 'challenge' ? 'Challenge' : 'Practice'} best ${Profile.bestFor(this.selectedMode)} m · ${Profile.storageAvailable ? 'Records stay on this browser' : 'Storage blocked: progress is temporary'}${!TESTING?' · 3 lives per run; earlier testing runs kept separately':''}${RunSave.incompatibleCourse ? ' · Course revised: the previous active run is kept but cannot resume here. Choose Begin for a new run.' : ''}${PreviousProgress.activeKept ? ' · Previous active run kept; see Previous progress.' : ''}`; },
         buy(id) {
           if (PreviousProgress.pending) { document.getElementById('workshop-dialog').close(); PreviousProgress.open(); return false; }
           const skill = this.skills[id]; if (!skill) return false;
@@ -2561,11 +2747,11 @@
         finish(outcome = 'banked') {
           if (!Game.running) return false;
           this.peak = Math.max(this.peak,Player.y);
-          const result = this.mode === 'challenge' ? {id:this.id,course:Level.course,name:this.name,avatar:this.avatar,mode:this.mode,lives:this.lives,controls:{scheme:Game.controlScheme,hand:Game.controlHand},touch:document.body.classList.contains('istouch'),outcome,height:Math.floor((this.peak - 64) / 10),score:Game.score,time:Game.time,portals:this.wins,relics:RELIC_TRIAL ? {version:1,owned:[...Relics.owned]} : null} : null;
+          const result = this.mode === 'challenge' ? {id:this.id,course:Level.course,name:this.name,avatar:this.avatar,...(SHOWROOM?{showroom:Showroom.active}:{}),mode:this.mode,lives:this.lives,controls:{scheme:Game.controlScheme,hand:Game.controlHand},touch:document.body.classList.contains('istouch'),outcome,height:Math.floor((this.peak - 64) / 10),score:Game.score,time:Game.time,portals:this.wins,relics:RELIC_TRIAL ? {version:1,owned:[...Relics.owned]} : null} : null;
           Profile.record(outcome); Game.running = false; Game.paused = false; Game.acc = 0; Game.awaitingGrip = false; this.rift = null; Relics.offer=null; document.getElementById('relic-dialog').close(); RunSave.clear(); Input.clear();
           for (const id of ['paused','hud','flowwrap','coach','pausebtn','run-mode-status','expedition-status','contractline','ability','portal-enter']) show(id,false);
           show('menu',true); Game.needsRender = true; this.menuStatus();
-          if (result) { this.result = result; RunSave.writeResult(result); this.renderResult(); }
+          if (result) { if(SHOWROOM&&outcome==='banked')Showroom.celebrate(); this.result = result; RunSave.writeResult(result); this.renderResult(); }
           return true;
         },
         renderResult() {
@@ -2575,6 +2761,8 @@
           for (const [id,value] of Object.entries({height:r.height + ' m',score:r.score,time:r.time.toFixed(1) + ' s',rifts:r.portals})) document.getElementById('challenge-result-' + id).textContent = String(value);
           document.getElementById('challenge-result-wallet').textContent = Profile.storageAvailable ? `${Profile.coins} bounty · Bounty and unlocks are kept. Practice and Challenge records are separate.` : 'Storage is unavailable; progress may be temporary.';
           if(RELIC_TRIAL)document.getElementById('challenge-result-wallet').textContent+=' Trial relics: '+(r.relics.owned.map(id=>Relics.catalog[id].name).join(', ')||'none')+'.';
+          if(SHOWROOM){document.getElementById('challenge-result-copy').textContent+=' '+Showroom.label(r.showroom)+' · preview-only; no purchase or ownership granted.';document.getElementById('challenge-result-wallet').textContent='Demo bounty and records stay in this isolated showroom.';}
+          show('showroom-result-art',SHOWROOM&&r.outcome==='banked'&&!!Showroom.clean(r.showroom).celebration);
           document.getElementById('challenge-result').showModal();
         },
         dismissResult() {
@@ -2843,7 +3031,7 @@
       };
 
       const RunSave = {
-        key:LIVING_PLATFORMS ? (TESTING ? (RELIC_TRIAL ? 'carve.terrain-relic.run.v1' : 'carve.terrain.run.v1') : (RELIC_TRIAL ? 'carve.public-terrain-relic.run.v1' : 'carve.public-terrain.run.v1')) : FLOW_TRIAL ? (TESTING ? (RELIC_TRIAL ? 'carve.flow-relic.run.v1' : 'carve.flow.run.v1') : (RELIC_TRIAL ? 'carve.public-flow-relic.run.v1' : 'carve.public-flow.run.v1')) : !TESTING ? (RELIC_TRIAL ? 'carve.public-relic.run.v1' : 'carve.public.run.v1') : RELIC_TRIAL ? 'carve.relic-trial.run.v1' : 'carve.variety.run.v1', incompatibleCourse:false,
+        key:SHOWROOM ? 'carve.showroom.run.v1' : LIVING_PLATFORMS ? (TESTING ? (RELIC_TRIAL ? 'carve.terrain-relic.run.v1' : 'carve.terrain.run.v1') : (RELIC_TRIAL ? 'carve.public-terrain-relic.run.v1' : 'carve.public-terrain.run.v1')) : FLOW_TRIAL ? (TESTING ? (RELIC_TRIAL ? 'carve.flow-relic.run.v1' : 'carve.flow.run.v1') : (RELIC_TRIAL ? 'carve.public-flow-relic.run.v1' : 'carve.public-flow.run.v1')) : !TESTING ? (RELIC_TRIAL ? 'carve.public-relic.run.v1' : 'carve.public.run.v1') : RELIC_TRIAL ? 'carve.relic-trial.run.v1' : 'carve.variety.run.v1', incompatibleCourse:false,
         gameFields:['flow','score','combo','bestChain','perfects','time','comboTimer','lesson','noticeTime'],
         playerFields:['x','y','vx','vy','face','coyote','wallDir','surgeCD','stun','relatch'],
         journeyFields:['peak','fallAnchor','rescues','shards','clean','wins','cooldown','wingTime'],
@@ -2851,7 +3039,7 @@
           if (!Game.running) return true;
           this.incompatibleCourse = false;
           const pick = (o,fields) => Object.fromEntries(fields.map(k=>[k,o[k]]));
-          const d = {version:1,course:Level.course,controlsUsed:Journey.controlsUsed,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,avatar:Journey.avatar,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
+          const d = {version:1,course:Level.course,controlsUsed:Journey.controlsUsed,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,avatar:Journey.avatar,...(SHOWROOM?{showroom:Showroom.active}:{}),game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
             state:Player.state,onGround:Player.onGround,respawn:{...Player.respawn},checkpoint:Player.checkpoint && {id:Player.checkpoint.id,x:Player.checkpoint.x,y:Player.checkpoint.y,kind:'check'},
             rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,relics:Relics.snapshot(),camera:{x:Cam.x,y:Cam.y},journal:Journal.entries,route:Routes.snapshot(),terrain:Terrain.snapshot(),
             carve:Player.carve && {type:Player.carve.type,charge:Player.carve.charge,block:Player.carve.block.id,manual:!!Player.carve.manual},
@@ -2903,10 +3091,11 @@
         },
         restore() {
           const result = this.readResult();
-          if (result) { Journey.selectedMode = result.mode; Journey.mode = result.mode; Journey.lives = result.lives; Journey.result = result; Journey.avatar=Avatars.valid(result.avatar)?result.avatar:Avatars.defaultId; if (result.controls) Game.configureControls(result.controls.scheme,result.controls.hand,false); Game.setTouch(result.touch); Journey.renderMode(); Journey.renderResult(); return true; }
+          if (result) { if(SHOWROOM)Showroom.active=Showroom.clean(result.showroom); Journey.selectedMode = result.mode; Journey.mode = result.mode; Journey.lives = result.lives; Journey.result = result; Journey.avatar=SHOWROOM?Showroom.base(Showroom.active):Avatars.valid(result.avatar)?result.avatar:Avatars.defaultId; if (result.controls) Game.configureControls(result.controls.scheme,result.controls.hand,false); Game.setTouch(result.touch); Journey.renderMode(); Journey.renderResult(); return true; }
           const d = this.read(); if (!d) return false;
           Journey.controlsUsed = Array.isArray(d.controlsUsed) ? [...new Set(d.controlsUsed.filter(c=>['one','two','keyboard'].includes(c)))].slice(0,3) : [Game.controlLabel()];
           Journey.seed = d.seed; Journey.mode = d.mode; Journey.selectedMode = d.mode; Journey.lives = d.lives; Journey.renderMode();
+          if(SHOWROOM)Showroom.active=Showroom.clean(d.showroom);
           Game.start(false); Level.ensure(d.player.y);
           Game.time=d.game.time; Terrain.restore(d.terrain); Terrain.position(false);
           const carve = d.carve && Level.blocks.find(b=>b.id === d.carve.block && b.grip);
@@ -2915,7 +3104,7 @@
           for (const k of this.gameFields) Game[k] = d.game[k];
           for (const k of this.playerFields) Player[k] = d.player[k];
           for (const k of this.journeyFields) Journey[k] = d.journey[k];
-          Journey.id = d.id; Journey.name = d.name; Journey.avatar=Avatars.valid(d.avatar)?d.avatar:Avatars.defaultId; Journey.collected = new Set(d.collected); Journey.visited = new Set(d.visited); Journey.quests = d.quests; Journey.nearest = null;
+          Journey.id = d.id; Journey.name = d.name; Journey.avatar=SHOWROOM?Showroom.base(Showroom.active):Avatars.valid(d.avatar)?d.avatar:Avatars.defaultId; Journey.collected = new Set(d.collected); Journey.visited = new Set(d.visited); Journey.quests = d.quests; Journey.nearest = null;
           Journal.entries=Array.isArray(d.journal)?d.journal.filter(t=>typeof t==='string').slice(0,12):[]; Routes.restore(d.route);
           Journey.rift = d.rift; if (Journey.rift) Journey.rift.ready = false;
           if(RELIC_TRIAL)Relics.restore(d.relics);
@@ -2928,7 +3117,8 @@
           if (!Journey.controlsUsed.includes(Game.controlLabel())) Journey.controlsUsed.push(Game.controlLabel());
           Game.awaitingGrip = !!(Player.carve || Player.pole);
           Cam.x = d.camera?.x ?? Player.x + 17; Cam.y = d.camera?.y ?? Player.y + 170; Game.togglePause();
-          document.getElementById('pause-message').textContent = 'Expedition restored. Your altitude, bounty and discoveries are safe.';
+          Showroom.runLabel();
+          document.getElementById('pause-message').textContent = SHOWROOM?'Cosmetic demo restored · '+Showroom.label(Showroom.active)+'. Regular progress is untouched.':'Expedition restored. Your altitude, bounty and discoveries are safe.';
           if (Journey.rift?.phase === 'result' && !Journey.rift.receipt) Journey.returnToClimb(false);
           else if (Journey.rift) { Journey.renderRift(); document.getElementById('rift-dialog').showModal(); }
           else if(Relics.offer) { Relics.render(); document.getElementById('relic-dialog').showModal(); }
@@ -2968,7 +3158,7 @@
           this.ui = Object.fromEntries(["h-height", "h-score", "h-time", "flowfill", "flowtier", "combo", "combo-n"].map(id => [id, document.getElementById(id)]));
           this.lastHUD = {};
           try {
-            this.best = Math.max(0, Number(localStorage.getItem("carve.expedition.best.v1")) || 0);
+            this.best = Math.max(0, Number(localStorage.getItem(SHOWROOM?"carve.showroom.best.v1":"carve.expedition.best.v1")) || 0);
             if (!Number.isFinite(this.best)) this.best = 0;
             Sfx.muted = localStorage.getItem(AUDIO_KEY) === "true";
           } catch {} // Storage may be unavailable in private/file browsing.
@@ -2980,7 +3170,7 @@
           Input.init();
           this.bindUI();
           this.bindTouch();
-          Journey.init(); Relics.init();
+          Journey.init(); Relics.init(); Showroom.init();
           this.syncMute();
           document.addEventListener("visibilitychange", () => {
             if (document.hidden && this.running && !this.paused) this.togglePause();
@@ -2998,6 +3188,7 @@
           RunSave.restore();
           if (!this.running) Journey.menuStatus();
           PreviousProgress.init();
+          if(SHOWROOM&&!this.running&&!Journey.result)Showroom.open();
           requestAnimationFrame((t) => this.frame(t));
         },
         resize() {
@@ -3007,7 +3198,7 @@
           this.H = this.cv.height = Math.floor(innerHeight * this.dpr);
         },
         start(save = true) {
-          if (save) { if (this.running) Profile.record('restarted'); Journey.begin(); }
+          if (save) { if (this.running) Profile.record('restarted'); if(SHOWROOM)Showroom.active=Showroom.clean(Showroom.draft); Journey.begin(); }
           Terrain.reset();
           Level.build();
           Player.reset();
@@ -3041,6 +3232,7 @@
           document.getElementById("hud").classList.remove("hidden");
           document.getElementById("flowwrap").classList.remove("hidden");
           document.getElementById("pausebtn").classList.remove("hidden");
+          Showroom.runLabel();
           if (save) { Sfx.resume(); RunSave.write(); }
           this.syncHUD();
         },
@@ -3085,7 +3277,7 @@
         frame(t) {
           const dtReal = Math.min(0.05, (t - this.last) / 1000 || 0);
           this.last = t;
-          this.tickReturn(dtReal); Journey.tickTrial(dtReal);
+          this.tickReturn(dtReal); Journey.tickTrial(dtReal); Showroom.tick(t);
           if (this.paused && Journey.rift && t - this.lastSaveAt >= 1000) { RunSave.write(); this.lastSaveAt = t; }
           if (this.awaitingGrip && Input.carve()) this.awaitingGrip = false;
           if (this.running && !this.paused && !this.awaitingGrip) {
@@ -3389,7 +3581,8 @@
             cx = p.x + p.w / 2,
             cy = p.y + p.h / 2;
           // trail
-          for (let i = 0; i < p.trail.length; i++) {
+          if(SHOWROOM&&Showroom.active.trail)Showroom.ribbon(ctx,p.trail,Showroom.active.reduced);
+          else for (let i = 0; i < p.trail.length; i++) {
             const tt = p.trail[i],
               k = i / p.trail.length;
             ctx.globalAlpha = k * 0.5;
@@ -3403,7 +3596,8 @@
           const lean = clamp(p.vx / 600, -0.5, 0.5);
           ctx.translate(cx, cy);
           ctx.rotate(-lean * 0.4);
-          Avatars.draw(ctx,Journey.avatar,p.face,p.state==='CARVE'||p.state==='POLE');
+          if(SHOWROOM)Showroom.draw(ctx,Showroom.active,p.face,p.state==='CARVE'||p.state==='POLE');
+          else Avatars.draw(ctx,Journey.avatar,p.face,p.state==='CARVE'||p.state==='POLE');
           ctx.restore();
 
           // Preview the actual manual ground/wall launch direction.
@@ -3476,6 +3670,7 @@
             if (!Sfx.muted) Sfx.resume();
           };
           document.getElementById("play").onclick = () => {
+            if(SHOWROOM){Showroom.open();return;}
             if (PreviousProgress.pending) { PreviousProgress.open(); return; }
             Sfx.resume();
             this.start();

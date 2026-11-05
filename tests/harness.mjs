@@ -83,7 +83,7 @@ export function installDomStubs(options = {}) {
   const session = options.session || new Map();
   globalThis.sessionStorage = { getItem: key => session.get(key) ?? null, setItem: (key, value) => session.set(key, value) };
   globalThis.requestAnimationFrame = noop;
-  globalThis.matchMedia = () => ({ matches: !!options.coarse });
+  globalThis.matchMedia = query => ({ matches: query.includes('reduced-motion') ? !!options.reduced : !!options.coarse });
   globalThis.location = {search:options.search || ''};
   globalThis.innerWidth = 800;
   globalThis.innerHeight = 600;
@@ -97,11 +97,11 @@ export function loadGame(options = {}) {
   let src = options.script ?? extractScript(options.path);
   if(options.production)src=src.replace('const TESTING = true;', 'const TESTING = false;');
   src += '\nglobalThis.__T=T;globalThis.__Level=Level;globalThis.__Player=Player;'
-       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;globalThis.__RunSave=RunSave;globalThis.__Journey=typeof Journey === "undefined" ? null : Journey;globalThis.__Relics=typeof Relics === "undefined" ? null : Relics;globalThis.__Avatars=Avatars;globalThis.__Terrain=Terrain;globalThis.__Routes=Routes;globalThis.__Journal=Journal;globalThis.__Profile=typeof Profile === "undefined" ? null : Profile;';
+       + 'globalThis.__Game=Game;globalThis.__Input=Input;globalThis.__Cam=Cam;globalThis.__RunSave=RunSave;globalThis.__Journey=typeof Journey === "undefined" ? null : Journey;globalThis.__Relics=typeof Relics === "undefined" ? null : Relics;globalThis.__Showroom=Showroom;globalThis.__Avatars=Avatars;globalThis.__Terrain=Terrain;globalThis.__Routes=Routes;globalThis.__Journal=Journal;globalThis.__Profile=typeof Profile === "undefined" ? null : Profile;';
   // eslint-disable-next-line no-eval
   (0, eval)(src);
-  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam, __RunSave: RunSave, __Journey: Journey, __Profile: Profile, __Relics: Relics, __Routes: Routes, __Journal: Journal, __Terrain: Terrain, __Avatars: Avatars } = globalThis;
-  return { T, Level, Player, Game, Input, Cam, RunSave, Journey, Profile, Relics, Routes, Journal, Terrain, Avatars };
+  const { __T: T, __Level: Level, __Player: Player, __Game: Game, __Input: Input, __Cam: Cam, __RunSave: RunSave, __Journey: Journey, __Profile: Profile, __Relics: Relics, __Routes: Routes, __Journal: Journal, __Terrain: Terrain, __Avatars: Avatars, __Showroom: Showroom } = globalThis;
+  return { T, Level, Player, Game, Input, Cam, RunSave, Journey, Profile, Relics, Routes, Journal, Terrain, Avatars, Showroom };
 }
 
 /** Begin a fresh playthrough (build level, reset player, clear scores). */

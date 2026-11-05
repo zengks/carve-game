@@ -6,6 +6,20 @@ the next evidence-based task rather than treating a checkpoint as a new decision
 for the user. Preserve all existing data and virtual devices. Device testing is
 Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
 
+## Preview: Skybound Supporter Pack showroom — 2026-11-02
+
+Branch `codex/supporter-showroom`; [art and safety contract](docs/supporter-showroom.md).
+
+- [x] Original outfit artwork, flight ribbon and banked-run constellation study.
+- [x] Playable showroom, original comparison and explicit new-demo confirmation.
+- [x] Isolated demo saves/preferences/results; no paid ownership or live wallet changes.
+- [x] Focused recovery, controls, effect bounds and physics parity tests.
+- [x] Verify browser desktop, small portrait and landscape, including reload and banking.
+- [x] Pass final Node 24/26 checks; deploy and verify branch preview, keep PR23 unmerged.
+- [x] Share exact concept IDs/art/evidence with carve-mobile and Stripe Manage.
+
+Payments and mobile download prompt remain disabled. Main/live remain unchanged.
+
 ## Release: Living Terrain and avatars — 2026-11-02
 
 User authorized merge of PR22 and Vercel production deployment after checks.

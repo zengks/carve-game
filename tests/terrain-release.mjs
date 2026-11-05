@@ -19,7 +19,7 @@ try{
  const load=options=>loadGame({script,...options});
  const prior=()=>({local:new Map([[profileKey,JSON.stringify(old)],['carve.variety.profile.v1',JSON.stringify({...old,coins:999,name:'Earlier'})]]),session:new Map([[oldRunKey,JSON.stringify(oldRun)]])});
  test('the actual production artifact defaults to new platforms, avatars and three lives without flags',()=>{
-  for(const search of ['', '?terrain=0&flow=0&testing=1&practice=1','?terrain=1']){
+  for(const search of ['', '?terrain=0&flow=0&testing=1&practice=1','?terrain=1','?showroom=1&testing=1']){
    const g=load({search});assert.equal(g.Level.course,8);assert.equal(g.RunSave.key,'carve.public-terrain.run.v1');assert.equal(g.Profile.key,currentKey);assert.equal(g.Journey.selectedMode,'challenge');assert(!g.Journey.chooseMode('practice'));g.Game.start();assert.equal(g.Journey.lives,3);assert(g.Level.blocks.some(b=>b.mechanic==='ferry'));assert(g.Level.blocks.some(b=>b.mechanic==='crumble'));assert(g.Level.blocks.some(b=>b.bell));assert.equal(g.Journey.avatar,'aster');assert.equal(Object.keys(g.Avatars.catalog).length,6);assert(!el('menu-summary').textContent.includes('preview'));assert(!el('menu-progress').textContent.includes('preview'));
   }
   assert.equal(mobileRelease.enabled,false);assert(!html.includes('mobile-handoff'));assert(!script.includes('mobile-handoff'));assert(!/experimental/i.test(html));
