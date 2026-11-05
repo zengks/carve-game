@@ -3132,13 +3132,15 @@
               this.lastHUD[id] = value;
             }
           };
-          const charge = Player.groundCharge ?? Player.carve?.charge ?? Player.pole?.charge ?? 0;
+          const activeCharge = Player.groundCharge ?? Player.carve?.charge ?? Player.pole?.charge;
+          const charge = activeCharge ?? 0;
           const touch = document.body.classList.contains("istouch");
           const one = touch && this.controlScheme === "one";
+          const chargeHint = one ? "3 · CHARGE: hold the pad; release as the marker reaches gold." : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.";
           const hints = [
             one ? "1 · HOLD the pad, DRAG to steer, RELEASE to jump. Press again to catch." : touch ? "1 · APPROACH: hold ▶ with your left thumb; tap JUMP with your right." : "1 · APPROACH: move right + jump toward the cyan wall (D / → + Space).",
             one ? "2 · CATCH: hold the pad beside a wall; drag to aim, release on gold." : touch ? "2 · GRIP: hold CARVE beside a cyan wall. Keep steering with your left thumb." : "2 · GRIP: hold Z (or J / Shift) beside a cyan wall.",
-            charge > T.ZONE_PERFECT_HI ? "LATE — release before you slip; try gold on the next wall." : charge >= T.ZONE_PERFECT_LO ? (one ? "RELEASE THE PAD NOW — gold is the perfect window!" : "RELEASE CARVE NOW — gold is the perfect window!") : one ? "3 · CHARGE: hold the pad; release as the marker reaches gold." : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.",
+            chargeHint,
             one ? "4 · STEER: drag toward the opposite wall; press the pad again to catch." : "4 · STEER: move toward the opposite wall and hold CARVE to catch it.",
           ];
           const feedback = Player.groundCharge !== null || Player.carve || Player.pole ? `${Player.quality(charge).n.toUpperCase()} · ${Math.round(charge * 100)}% · release to launch` : Input.blocked ? 'Lift, then press again' : Input.oneHeld ? 'Catch ready · drag to steer' : 'Hold to charge or catch · drag to steer';
@@ -3157,7 +3159,14 @@
           if (this.lesson >= 4) hints[4] = Journey.recovering() ? 'FALLING · fresh hold to catch a marked wall; lower cyan grips can rescue a miss.' : Player.y<7050 ? Level.encounter(Player.y).hint : (FLOW_TRIAL ? Level.encounter(Player.y).name+' · '+Level.encounter(Player.y).hint+' Camps offer a new contract every six floors.' : 'Read the next line. Bank your run from Pause whenever you choose.');
           if(LIVING_PLATFORMS&&this.lesson>=4&&Terrain.cue())hints[4]=Terrain.cue();
           if(FLOW_TRIAL&&Routes.coach()&&!Journey.recovering())hints[4]=Routes.coach();
-          const coach = this.awaitingGrip ? (one ? "Press the pad to continue your saved grip with fresh input." : touch ? "Hold CARVE to continue your saved grip." : "Hold Z (or J / Shift) to continue your saved grip.") : this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
+          let coach = this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
+          if (this.awaitingGrip) {
+            coach = one ? "Press the pad to continue your saved grip with fresh input." : touch ? "Hold CARVE to continue your saved grip." : "Hold Z (or J / Shift) to continue your saved grip.";
+          } else if (!this.paused && this.lesson < 4 && activeCharge !== undefined) {
+            if (charge > T.ZONE_PERFECT_HI) coach = "LATE · Release before you slip.";
+            else if (charge >= T.ZONE_PERFECT_LO) coach = one ? "RELEASE THE PAD NOW · Gold timing!" : "RELEASE CARVE NOW · Gold timing!";
+            else coach = chargeHint;
+          }
           if (this.lastHUD.coach !== coach) {
             document.getElementById("coach").textContent = coach;
             show("coach", !!coach);

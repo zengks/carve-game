@@ -126,6 +126,24 @@ test('timing feedback resets on pause and reload while saved grips request the v
  g.Game.togglePause();assert.equal(el('one-marker').style.left,'0%');assert.equal(el('one-pad')['data-charging'],'false');
  g=loadGame({session,local});g.Game.syncHUD();assert(g.Game.awaitingGrip);assert.equal(el('one-pad')['data-charging'],'false');assert.match(el('coach').textContent,/Press the pad/);assert(!el('coach').textContent.includes('Hold CARVE'));assert.equal(el('one-marker').style.left,'0%');
 });
+test('first ground charge and next wall catch show release timing in both touch layouts',()=>{
+ for(const scheme of ['one','two']){
+  const g=load();g.Game.configureControls(scheme,'right',false);settle(g);
+  const pad=el(scheme==='one'?'one-pad':'t-carve');
+  const hold=()=>pad.dispatch('pointerdown',{pointerId:1,clientX:200,button:0});
+  const release=()=>pad.dispatch('pointerup',{pointerId:1});
+  const coach=()=>{g.Game.syncHUD();return el('coach').textContent;};
+  const action=scheme==='one'?'THE PAD':'CARVE';
+  hold();step(g,45);assert.equal(g.Game.lesson,0);assert.match(coach(),new RegExp(`RELEASE ${action} NOW`));
+  step(g,14);assert.match(coach(),/LATE.*release/i);release();
+  const wall=g.Level.blocks.find(b=>b.spine);
+  g.Player.startCarve({type:'wallR',block:wall});g.Player.carve.charge=.75;g.Player.releaseCarve();assert.equal(g.Game.lesson,3);
+  hold();g.Player.startCarve({type:'wallR',block:wall});step(g,45);
+  g.Game.notice='BOUNTY +2';g.Game.noticeTime=1;
+  assert.match(coach(),new RegExp(`RELEASE ${action} NOW`));
+  g.Game.togglePause();assert.match(coach(),/saved grip/);
+ }
+});
 test('one-thumb coaching names the pad for charging and steering; two-thumb coaching retains CARVE',()=>{
  const g=load();g.Game.lesson=2;g.Game.syncHUD();assert.match(el('coach').textContent,/hold the pad/);
  g.Game.lesson=3;g.Game.syncHUD();assert.match(el('coach').textContent,/press the pad again/);
