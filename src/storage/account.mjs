@@ -6,6 +6,24 @@ const outbox=openOutbox(globalThis.indexedDB);
 let session={configured:false,account:null,providers:{}},snapshot=null,busy=false,syncing=false,epoch=0;
 const scope=()=>session.account?.scope??'guest';
 const message=text=>{$('account-status').textContent=text;};
+function guestEvents() {
+  return window.CarveGameStorage.guestRecords().flatMap(({record,profile,testing})=>{
+    try {
+      const event=completedEvent(record,profile,testing);
+      return event?[event]:[];
+    } catch {
+      // Older local results may lack fields required for a cloud import.
+      return [];
+    }
+  });
+}
+function renderSaveInvite() {
+  const canSave=scope()==='guest'&&session.configured&&Object.values(session.providers).some(Boolean);
+  const events=canSave?guestEvents():[];
+  const runId=window.CarveGameStorage.finishedRun();
+  $('account-open').textContent=scope()!=='guest'?'Account & sync':events.length?'Sign in to save scores':'Guest · Sign in';
+  $('challenge-save-score').hidden=!events.some(event=>event.payload.run_id===runId);
+}
 async function request(path,body,owner) {
   const reply=await fetch(path,{method:body?'POST':'GET',credentials:'same-origin',cache:'no-store',
     headers:{...(body?{'Content-Type':'application/json'}:{}),...(owner?{'X-Carve-Account':owner}:{})},body:body?JSON.stringify(body):undefined,
@@ -31,7 +49,7 @@ function renderSnapshot() {
 }
 function render() {
   const signed=scope()!=='guest';
-  $('account-open').textContent=signed?'Account & sync':'Guest · Sign in';
+  renderSaveInvite();
   $('account-identity').textContent=signed?'Signed in as '+session.account.label+'.':'Playing as a guest on this device.';
   $('account-signin').hidden=signed;$('account-signed').hidden=!signed;
   $('account-email').disabled=busy||!session.providers.email;$('account-code').disabled=busy||!session.providers.email;
@@ -46,8 +64,9 @@ function render() {
   for(const id of ['account-link-confirm','account-link-cancel'])$(id).disabled=busy;
   for(const id of ['account-send','account-verify'])$(id).disabled=busy||!session.providers.email;
   for(const id of ['account-sync','account-import','account-signout'])$(id).disabled=busy;
-  $('account-config').textContent=!session.configured?'Cloud sign-in is not configured in this preview. You can keep playing as a guest.':
-    !session.providers.apple||!session.providers.google?'Email code is available. Apple and Google need their provider credentials configured.':'';
+  $('account-config').textContent=!session.configured||!Object.values(session.providers).some(Boolean)
+    ?'Cloud sign-in is unavailable in this preview. You can keep playing as a guest.'
+    :'Choose an available sign-in method to save completed scores to your account.';
   renderSnapshot();
 }
 async function refresh() {
@@ -82,7 +101,8 @@ async function act(fn) {
   try{await fn();}catch(e){message(explanation(e));}finally{busy=false;render();}
 }
 
-window.CarveAccount={scope,completed(record,profile,owner,testing) {
+window.CarveAccount={scope,renderSaveInvite,completed(record,profile,owner,testing) {
+  renderSaveInvite();
   try {
     const event=completedEvent(record,profile,testing);if(!event)return;
     outbox.put(owner??'guest',event).then(()=>{
@@ -91,10 +111,17 @@ window.CarveAccount={scope,completed(record,profile,owner,testing) {
   }catch(e){message(explanation(e));}
 }};
 $('account-open').hidden=false;
-$('account-open').onclick=()=>{
+function openAccount() {
   if(window.CarveGameStorage.running())return;
-  $('account-dialog').showModal();act(async()=>{await refresh();message(scope()==='guest'?'Sign in optionally; guest progress is never imported automatically.':'Choose Sync or explicitly import completed guest records.');});
+  $('account-dialog').showModal();
+  return act(async()=>{await refresh();message(scope()==='guest'?'Sign in to save completed scores. You can review your guest scores before uploading.':'Choose Sync or review completed guest scores to import.');});
+}
+$('account-open').onclick=openAccount;
+$('challenge-save-score').onclick=()=>{
+  $('challenge-menu').onclick();
+  return openAccount();
 };
+if (/Android/i.test(navigator.userAgent)) $('account-apple').before($('account-google'));
 $('account-close').onclick=()=>$('account-dialog').close();
 $('account-send').onclick=()=>act(async()=>{
   await request('/api/account',{action:'email',email:$('account-email').value.trim()});
@@ -130,7 +157,7 @@ $('account-signout').onclick=()=>act(async()=>{
 $('account-sync').onclick=()=>act(synchronize);
 $('account-import').onclick=()=>act(async()=>{
   const owner=scope();if(owner==='guest')return;
-  const candidates=window.CarveGameStorage.guestRecords().map(({record,profile,testing})=>completedEvent(record,profile,testing)).filter(Boolean);
+  const candidates=guestEvents();
   if(!candidates.length){$('account-import-confirm').hidden=true;message('No completed guest Flow records are available to import. Your existing saves are kept.');return;}
   $('account-import-copy').textContent=`Import ${candidates.length} completed Flow results into ${session.account.label}? These are unverified personal records. Active climbs, bounty and purchased items will not be imported. Original saves are kept.`;
   $('account-import-confirm').hidden=false;
