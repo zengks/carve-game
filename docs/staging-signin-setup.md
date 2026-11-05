@@ -145,14 +145,49 @@ associated-domain entitlement, plus Android signing certificate SHA-256, before
 publishing AASA/assetlinks. No invented fingerprints, broad wildcard links,
 custom-scheme credential fallback or bypass secret in an app.
 
-Existing protected staging remains protected. Real provider callbacks and OS
-association fetches need unauthenticated, redirect-free access to the required
-URLs. A signed-in owner's browser check does not establish external access.
-Agree a narrowly scoped public auth/association surface and its access controls
-before enabling native registrations. Do not disable whole-project protection
-or create share/bypass credentials to make a native test pass. Production stays
-dormant and native compiled activation stays off until signed artifact/provider/
-external return acceptance is complete.
+### Private mobile return QA
+
+Keep both hosted staging projects behind Vercel Authentication. On November 5,
+signed-out association requests to the shared iOS and dedicated Android origins
+returned 302 and direct native broker POSTs returned 401. Vercel access in a
+browser does not carry into the app's HTTP client or the OS association fetch.
+
+1. Use the existing local broker fixture with signed synthetic Apple and Google
+   identities, a fresh fixture database and isolated QA builds. Keep the exact
+   HTTPS return, one-use broker code, state and PKCE exchange. Test OS delivery
+   independently from the provider exchange and check that a rejected or
+   cancelled return leaves the current account and guest save intact.
+2. On Android, use a QA-only manifest and manually select the test domain for
+   the isolated app. Record this as manual link handling. Android's automatic
+   verification is a separate check requiring the exact signed package and
+   certificate in a redirect-free HTTPS `assetlinks.json`.
+3. On iOS, qualify the HTTPS callback on a development-signed build with the
+   actual application identifier, matching `webcredentials` AASA and entitlement.
+   Apple supports `?mode=developer` for direct association fetches on opted-in
+   development devices. The QA device must still reach the AASA over private HTTPS,
+   and the actual system-auth return must pass before claiming coverage.
+
+For a later real-provider test with private access, first qualify a dedicated
+HTTPS QA broker reachable only by enrolled devices on a private network. The
+current v1 contract pins one origin for native API, browser launch, provider
+callback and app return. Confirm that the provider accepts the exact HTTPS
+callback and that the same enrolled device can reach it in the system browser,
+including Apple's form POST. Keep provider secrets on the broker and require
+verified tester identity before creating an account or issuing a session. Start
+with a fresh fixture database. Connect to hosted shared staging only after
+restricted database access and the explicit guest-copy test are ready. If
+provider registration or OS verification requires external reachability, record
+that test as blocked under the private-only scope.
+
+Do not use a Vercel bypass token, browser session cookie, custom-scheme fallback
+or general-purpose proxy as a mobile credential. The current deployment and app
+activation gates stay in place. Private QA evidence covers development builds;
+release verification still needs the normal signed OS association path.
+
+References: [Apple associated domains and developer mode](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.associated-domains),
+[Android manual selection versus verification](https://developer.android.com/training/app-links/verify-applinks),
+[Android asset links](https://developer.android.com/training/app-links/configure-assetlinks),
+[Vercel Deployment Protection](https://vercel.com/docs/deployment-protection).
 
 ## Credential entry for shared staging
 
