@@ -627,7 +627,7 @@
       .account-field { display:grid; gap:6px; margin-top:14px; font-size:13px; }
       .account-field input { box-sizing:border-box; width:100%; min-height:44px; padding:10px; background:#111b26; color:white; border:1px solid #617080; border-radius:8px; font-size:16px; }
       #account-status { color:var(--gold); }
-      #account-results { padding-left:20px; font-size:12px; }
+      #account-results, #account-native-rows { padding-left:20px; font-size:12px; }
       #account-dialog [hidden] { display:none; }
       #menu #account-open { margin-top:8px; min-height:44px; padding:8px 12px; font-size:11px; }
       #menu #account-open[hidden], #challenge-save-score[hidden] { display:none; }
@@ -743,7 +743,8 @@
         <div id="account-link-offer" hidden><p id="account-link-copy"></p><button class="btn" id="account-link-confirm">Confirm connection</button><button class="btn ghost" id="account-link-cancel">Cancel connection</button></div>
         <div class="account-actions"><button class="btn" id="account-sync">Sync now</button><button class="btn ghost" id="account-import">Review guest scores</button><button class="btn ghost" id="account-signout">Sign out</button></div>
         <p id="account-import-copy">Guest records are never imported automatically.</p><button class="btn ghost" id="account-import-confirm" hidden>Confirm import</button>
-        <h3>Shared completed results</h3><ol id="account-results"></ol>
+        <h3>Flow results</h3><ol id="account-results"></ol>
+        <div id="account-native-results" hidden><h3>First Ascent results</h3><ol id="account-native-rows"></ol></div>
       </div>
       <p id="account-status" role="status" aria-live="polite"></p>
       <p>Guest saves depend on this device's browser storage. Shared records are client-reported personal results, not a verified competitive leaderboard.</p></div>
