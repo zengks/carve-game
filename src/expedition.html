@@ -3311,7 +3311,7 @@
         finishedRun: () => Journey.result?.id,
         accountRecords: owner => Profile.records.filter(r => r.ownerScope === owner)
           .map(record => ({record,profile:{unlocked:['pulse'],lessons:[]},testing:true})),
-        guestRecords: () => Profile.records.filter(r => !r.ownerScope || r.ownerScope === 'guest')
+        guestRecords: () => (Profile.storageAvailable ? Profile.records : []).filter(r => !r.ownerScope || r.ownerScope === 'guest')
           .map(record => ({record,profile:{unlocked:['pulse'],lessons:[]},testing:true})),
       };
 

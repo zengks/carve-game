@@ -64,6 +64,7 @@ function render() {
   for(const id of ['account-link-confirm','account-link-cancel'])$(id).disabled=busy;
   for(const id of ['account-send','account-verify'])$(id).disabled=busy||!session.providers.email;
   for(const id of ['account-sync','account-import','account-signout'])$(id).disabled=busy;
+  $('account-config').hidden=signed;
   $('account-config').textContent=!session.configured||!Object.values(session.providers).some(Boolean)
     ?'Cloud sign-in is unavailable in this preview. You can keep playing as a guest.'
     :'Choose an available sign-in method to save completed scores to your account.';
@@ -159,13 +160,15 @@ $('account-import').onclick=()=>act(async()=>{
   const owner=scope();if(owner==='guest')return;
   const candidates=guestEvents();
   if(!candidates.length){$('account-import-confirm').hidden=true;message('No completed guest Flow records are available to import. Your existing saves are kept.');return;}
-  $('account-import-copy').textContent=`Import ${candidates.length} completed Flow results into ${session.account.label}? These are unverified personal records. Active climbs, bounty and purchased items will not be imported. Original saves are kept.`;
+  $('account-import-copy').textContent=`Copy ${candidates.length} completed Flow ${candidates.length===1?'score':'scores'} to ${session.account.label}? The original scores stay on this device.`;
   $('account-import-confirm').hidden=false;
   $('account-import-confirm').onclick=()=>act(async()=>{
     if(scope()!==owner)throw new Error('sign_in_required');
     await refresh();if(scope()!==owner)throw new Error('sign_in_required');
     for(const event of candidates)await outbox.put(owner,event);
-    $('account-import-confirm').hidden=true;await synchronize();
+    $('account-import-confirm').hidden=true;
+    $('account-import-copy').textContent='Guest scores are copied only after you confirm.';
+    await synchronize();
   });
 });
 window.addEventListener('online',()=>{synchronize();});
