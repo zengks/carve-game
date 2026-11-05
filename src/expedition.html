@@ -658,8 +658,8 @@
       #return-layer h2 { font-size:30px; color:var(--cyan); margin:14px 0; }
       #return-layer p { font-size:15px; line-height:1.6; }
       .return-progress { height:3px; background:var(--cyan); margin-top:24px; transform-origin:left; transform:scaleX(var(--progress,0)); }
-      #journal-dialog[open],#skill-dialog[open],#camp-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
-      #journal-dialog summary { min-height:44px; box-sizing:border-box; padding:12px 0; color:var(--cyan); font-size:13px; cursor:pointer; }
+      #journal-dialog[open],#skill-dialog[open],#camp-dialog[open],#help-dialog[open] { display:flex; flex-direction:column; overflow:hidden; padding:0; }
+      #journal-dialog summary,#help-dialog summary { min-height:44px; box-sizing:border-box; padding:12px 0; color:var(--cyan); font-size:13px; cursor:pointer; }
       #journal-entries { padding:0 20px; font-size:13px; line-height:1.7; }
       #camp-options { display:grid; gap:12px; margin-top:18px; }
       #camp-options button:disabled { opacity:1; color:var(--ink); border-style:dashed; cursor:default; }
@@ -775,15 +775,23 @@
       <div class="rift-actions"><button class="btn" id="mode-practice" aria-pressed="true">Practice · ∞ lives</button><button class="btn" id="mode-challenge" aria-pressed="false">Challenge · 3 lives</button><button class="btn ghost" id="mode-close">Keep current mode</button></div>
     </dialog>
     <dialog id="help-dialog" aria-labelledby="help-title">
+      <div class="rift-body">
       <h2 id="help-title" tabindex="-1" autofocus>Expedition field guide</h2>
-      <p>Five landmarks: Launch Garden, Wind Gap, The Fork, Second Chance and Observatory. Wide crossings need deliberate steering. The violet outer spring at The Fork is an optional shortcut with an 8-bounty shard. A lower cyan wall in Second Chance can rescue a missed catch. Broad ledges let you rest; there is no timer or final roof.</p>
-      <p>A fresh catch during a fall can save a life before the world-space fall boundary. Public play has three lives. Test builds also offer unlimited Practice. Previous progress lets returning players bring their name, bounty and skills into this course. Old course records stay separate and readable; old saves are kept. Relics are not included.</p>
-      <p>Move and jump toward a glowing edge. Hold CARVE to grip it, then release when the charge ring turns gold to launch higher. On a keyboard, use A/D or the arrows to steer, Space/W to jump, Z to carve, X for Flow Surge, and C for your equipped skill. This keeps your left hand together while your right hand uses the arrows. Prefer A/D? J (carve), K (surge) and L (skill) also work; Shift and Q remain available.</p>
-      <p>Choose One thumb to hold/catch/charge, drag to steer and release to launch. Choose Two thumbs for independent steering and CARVE, plus optional JUMP. Touch wall grips stay still until release. Ground charging launches only on release. A cancelled gesture pauses safely. Press again after each launch or slip.</p>
-      <p>Public play starts with 3 lives; test builds also offer unlimited Practice. Falling or hitting spikes costs one Challenge life; the third loss ends the run. Checkpoints do not refill lives. Rift misses only cost altitude. You can bank a run from Pause at any time.</p>
-      <p>Clean releases build Flow and help you chain launches. Momentum carries between jumps; steer against your movement to brake.</p>
-      <p>Gold beacons save your recovery point. Cyan bridges are one-way; gold chevrons mark springboards. Explore sideways to find richer shards and colored wind or lift lanes. Every 100 m and each contract earns bounty. Press C / L / Q or tap your skill to climb faster; unlock more in the Workshop. Purple rifts are optional: press E nearby to see their rules before entering. There is no roof. Pause and bank your run whenever you like. Records, bounty and unlocks stay on this browser.</p>
-      <form method="dialog"><button class="btn">Got it</button></form>
+      <p><strong>Make your first catch.</strong> Jump toward a glowing edge, then hold to grip it. Release when the charge marker reaches gold. Press again to catch the next edge.</p>
+      <p><strong>One thumb.</strong> Hold the pad to charge, drag to aim, then lift to launch. Hold it again beside the next wall.</p>
+      <p><strong>Two thumbs.</strong> Steer with the arrows on screen. Tap JUMP or hold and release CARVE to leave the ground, then hold CARVE beside a wall.</p>
+      <p><strong>Keyboard.</strong> Use A/D or the arrows to steer, Space or W to jump, and Z, J or Shift to carve.</p>
+      <details>
+        <summary>Falls, checkpoints and banking</summary>
+        <p>Challenge starts with three lives. A fall or spike costs a life, and gold beacons mark where you return. During a fall, a fresh grip on a reachable edge can save the life. You can bank your best height from Pause. Records, bounty and unlocks stay on this browser.</p>
+      </details>
+      <details>
+        <summary>Landmarks, skills and rifts</summary>
+        <p>The route leads through Launch Garden, Wind Gap, The Fork, Second Chance and Observatory, then keeps climbing. Look for The Fork's violet shortcut and Second Chance's lower cyan rescue wall. Gold chevrons mark springboards.</p>
+        <p>Good releases build Flow. Press X or K for Surge, and C, L or Q for your equipped skill. On touch, use the action buttons between launches. Earn bounty from shards, height milestones and contracts, then unlock skills in the Workshop. Nearby purple rifts open with E or Enter rift. A missed trial can cost altitude.</p>
+      </details>
+      </div>
+      <form class="rift-actions" method="dialog"><button class="btn">Got it</button></form>
     </dialog>
 
     <div id="coach" role="status" style="position:fixed;top:calc(112px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(88vw,460px);text-align:center;pointer-events:none;color:#eef2ff;background:#101829e8;border-radius:12px;padding:10px 14px;font-size:13px;z-index:8" class="hidden"></div>
@@ -3132,13 +3140,15 @@
               this.lastHUD[id] = value;
             }
           };
-          const charge = Player.groundCharge ?? Player.carve?.charge ?? Player.pole?.charge ?? 0;
+          const activeCharge = Player.groundCharge ?? Player.carve?.charge ?? Player.pole?.charge;
+          const charge = activeCharge ?? 0;
           const touch = document.body.classList.contains("istouch");
           const one = touch && this.controlScheme === "one";
+          const chargeHint = one ? "3 · CHARGE: hold the pad; release as the marker reaches gold." : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.";
           const hints = [
             one ? "1 · HOLD the pad, DRAG to steer, RELEASE to jump. Press again to catch." : touch ? "1 · APPROACH: hold ▶ with your left thumb; tap JUMP with your right." : "1 · APPROACH: move right + jump toward the cyan wall (D / → + Space).",
             one ? "2 · CATCH: hold the pad beside a wall; drag to aim, release on gold." : touch ? "2 · GRIP: hold CARVE beside a cyan wall. Keep steering with your left thumb." : "2 · GRIP: hold Z (or J / Shift) beside a cyan wall.",
-            charge > T.ZONE_PERFECT_HI ? "LATE — release before you slip; try gold on the next wall." : charge >= T.ZONE_PERFECT_LO ? (one ? "RELEASE THE PAD NOW — gold is the perfect window!" : "RELEASE CARVE NOW — gold is the perfect window!") : one ? "3 · CHARGE: hold the pad; release as the marker reaches gold." : "3 · CHARGE: keep holding CARVE; release when the ring turns gold.",
+            chargeHint,
             one ? "4 · STEER: drag toward the opposite wall; press the pad again to catch." : "4 · STEER: move toward the opposite wall and hold CARVE to catch it.",
           ];
           const feedback = Player.groundCharge !== null || Player.carve || Player.pole ? `${Player.quality(charge).n.toUpperCase()} · ${Math.round(charge * 100)}% · release to launch` : Input.blocked ? 'Lift, then press again' : Input.oneHeld ? 'Catch ready · drag to steer' : 'Hold to charge or catch · drag to steer';
@@ -3157,7 +3167,14 @@
           if (this.lesson >= 4) hints[4] = Journey.recovering() ? 'FALLING · fresh hold to catch a marked wall; lower cyan grips can rescue a miss.' : Player.y<7050 ? Level.encounter(Player.y).hint : (FLOW_TRIAL ? Level.encounter(Player.y).name+' · '+Level.encounter(Player.y).hint+' Camps offer a new contract every six floors.' : 'Read the next line. Bank your run from Pause whenever you choose.');
           if(LIVING_PLATFORMS&&this.lesson>=4&&Terrain.cue())hints[4]=Terrain.cue();
           if(FLOW_TRIAL&&Routes.coach()&&!Journey.recovering())hints[4]=Routes.coach();
-          const coach = this.awaitingGrip ? (one ? "Press the pad to continue your saved grip with fresh input." : touch ? "Hold CARVE to continue your saved grip." : "Hold Z (or J / Shift) to continue your saved grip.") : this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
+          let coach = this.noticeTime > 0 ? this.notice : hints[this.lesson] || "";
+          if (this.awaitingGrip) {
+            coach = one ? "Press the pad to continue your saved grip with fresh input." : touch ? "Hold CARVE to continue your saved grip." : "Hold Z (or J / Shift) to continue your saved grip.";
+          } else if (!this.paused && this.lesson < 4 && activeCharge !== undefined) {
+            if (charge > T.ZONE_PERFECT_HI) coach = "LATE · Release before you slip.";
+            else if (charge >= T.ZONE_PERFECT_LO) coach = one ? "RELEASE THE PAD NOW · Gold timing!" : "RELEASE CARVE NOW · Gold timing!";
+            else coach = chargeHint;
+          }
           if (this.lastHUD.coach !== coach) {
             document.getElementById("coach").textContent = coach;
             show("coach", !!coach);
