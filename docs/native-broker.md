@@ -123,5 +123,17 @@ This fixture checks HTTPS transport and the exchange. Native OS association is
 separate. A positive iOS test needs a development-signed QA build with
 `webcredentials:carve-private-qa.test?mode=developer`, an opted-in target and
 private HTTPS serving an AASA that matches the signed application identifier.
-Use an isolated target and its own trust configuration. The fixture serves no
-placeholder association file and carries no provider or Vercel credentials.
+Once carve-mobile's signing preflight produces an association, use its exact
+output with `CARVE_NATIVE_TEST_ADMIN_URL` set to the loopback QA admin connection:
+
+```sh
+node tests/serve-private-ios-qa.mjs /path/to/apple-app-site-association /path/to/tls-key.pem /path/to/tls-cert.pem
+```
+
+The command accepts only the isolated iOS QA application identifier, serves
+the matching JSON at `/.well-known/apple-app-site-association`, and prints the
+ephemeral loopback port. The TLS certificate must match the QA hostname.
+Connect canonical port 443 to the listener through the owned test target's
+private network and trust configuration. Stop the fixture with Ctrl+C after
+the run. The default fixture serves no association, and neither path uses
+provider or Vercel credentials.

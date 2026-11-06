@@ -14,9 +14,10 @@ import {createNativeFetchHandler} from '../../server/native-vercel.mjs';
 import {createNativeProgressHandler} from '../../server/native-progress.mjs';
 const secret=()=>randomBytes(32).toString('base64url');
 export const privateBrokerHost='carve-private-qa.test';
-export async function createNativeIntegrationFixture({artifactDirectory,adminConnectionString=process.env.CARVE_NATIVE_TEST_ADMIN_URL,progress=false,privateTls}={}){
+export async function createNativeIntegrationFixture({artifactDirectory,adminConnectionString=process.env.CARVE_NATIVE_TEST_ADMIN_URL,progress=false,privateTls,privateIosAppId}={}){
  const adminURL=new URL(adminConnectionString??'http://invalid');
  if(adminURL.protocol!=='postgres:'||adminURL.hostname!=='127.0.0.1'||adminURL.pathname!=='/postgres')throw Error('Explicit loopback PostgreSQL admin URL required');
+ if(privateIosAppId!==undefined&&(!privateTls||typeof privateIosAppId!=='string'||privateIosAppId!==privateIosAppId.trim()||!/^[A-Z0-9]{10}\.com\.carve\.authqa\.q[0-9]{13}\.staging$/.test(privateIosAppId)))throw Error('Isolated signed iOS QA application identifier required');
  const databaseName='carve_shared_test_native_'+randomUUID().replaceAll('-','');
  const admin=new pg.Pool({connectionString:adminURL.href});
  try{await admin.query('CREATE DATABASE '+databaseName);}finally{await admin.end();}
@@ -124,6 +125,9 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
     res.setHeader('Cache-Control','no-store');
     res.setHeader('Referrer-Policy','no-referrer');
     if(req.headers.host!==privateBrokerHost||!req.url.startsWith('/'))return res.writeHead(421).end();
+    if(privateIosAppId&&req.method==='GET'&&req.url==='/.well-known/apple-app-site-association'){
+     return res.writeHead(200,{'Content-Type':'application/json'}).end(JSON.stringify({webcredentials:{apps:[privateIosAppId]}}));
+    }
     if(req.method==='POST'&&(req.url==='/api/native-broker/v1'||(progress&&req.url==='/api/native-progress/v1')))return serveBroker(req,res);
     const launch=new URL(appOrigin+req.url);
     if(req.method!=='GET'||launch.pathname!=='/native/authorize'||[...launch.searchParams.keys()].join()!=='flow_id')return res.writeHead(404).end();

@@ -32,13 +32,22 @@ try{
  execFileSync('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-days','1','-keyout',keyPath,'-out',certPath,
   '-subj','/CN='+privateBrokerHost,'-addext','subjectAltName=DNS:'+privateBrokerHost],{stdio:'ignore'});
  cert=await readFile(certPath);
- fixture=await createNativeIntegrationFixture({adminConnectionString:admin,privateTls:{key:await readFile(keyPath),cert}});
+ const privateTls={key:await readFile(keyPath),cert};
+ const privateIosAppId='ABCDEFGHIJ.com.carve.authqa.q0000000000000.staging';
+ await assert.rejects(createNativeIntegrationFixture({adminConnectionString:admin,privateTls,privateIosAppId:'ABCDEFGHIJ.com.carve.production'}),/Isolated signed iOS/);
+ fixture=await createNativeIntegrationFixture({adminConnectionString:admin,privateTls,privateIosAppId});
  assert.equal(fixture.httpsAddress.address,'127.0.0.1');
  await assert.rejects(send('/native/authorize',{ca:[]}),{code:'DEPTH_ZERO_SELF_SIGNED_CERT'});
  await assert.rejects(send('/native/authorize',{servername:'different.test'}),{code:'ERR_TLS_CERT_ALTNAME_INVALID'});
  assert.equal((await send('/native/authorize',{headers:{Host:'different.test'}})).status,421);
  assert.equal((await send('/_fixture')).status,404);
- assert.equal((await send('/.well-known/apple-app-site-association')).status,404);
+ const associationPath='/.well-known/apple-app-site-association';
+ const association=await send(associationPath);
+ assert.equal(association.status,200);
+ assert.equal(association.headers['content-type'],'application/json');
+ assert.equal(association.headers.location,undefined);
+ assert.deepEqual(JSON.parse(association.text),{webcredentials:{apps:[privateIosAppId]}});
+ assert.equal((await send(associationPath+'?unexpected=1')).status,404);
 
  for(const [platform,provider] of [['ios','apple'],['android','google']]){
   const client_id='fixture-'+platform,verifier=token(),state=token();
