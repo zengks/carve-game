@@ -1,0 +1,40 @@
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#09121d;color:#f0ebdc;font-family:system-ui,-apple-system,sans-serif}
+body{display:flex;justify-content:center;overscroll-behavior:none}
+main{width:min(100%,520px);height:100svh;max-height:1100px;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom);display:grid;grid-template-rows:64px minmax(130px,1fr) 62px 132px 42px;gap:8px}
+button,select,a{-webkit-tap-highlight-color:transparent}
+button,select{font:inherit;color:inherit;background:#203342;border:1px solid #52626b;border-radius:12px;cursor:pointer}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #f0cc65;outline-offset:3px}
+button{padding:10px 14px}header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+header>a{color:#f4d073;text-decoration:none;font-weight:900;letter-spacing:.1em;font-size:22px}
+header>a span{display:block;font-size:9px;letter-spacing:.22em;color:#9ebfbd}
+header>div{display:flex;gap:6px}header button{font-size:12px;padding:8px}
+#stage{position:relative;border-radius:22px;overflow:hidden;box-shadow:0 15px 50px #0005;background:#101c29;border:1px solid #2b434e}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#hud{position:absolute;inset:14px 12px auto;display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:750;pointer-events:none;text-shadow:0 2px 6px #000}
+#lives{color:#ffb78b;letter-spacing:3px}
+#caption{position:absolute;left:14px;right:14px;bottom:12px;text-align:center;font-size:12px;line-height:1.4;color:#e3f0e8;text-shadow:0 2px 6px #000;pointer-events:none}
+#overlay{position:absolute;inset:0;display:grid;place-items:center;background:#07131dcf;backdrop-filter:blur(8px);padding:16px;overflow:auto}
+.card{text-align:center;max-width:350px}.card h1{font-size:clamp(25px,6vw,38px);margin:8px 0 12px;letter-spacing:-.04em}
+.eyebrow{font-size:9px;letter-spacing:.22em;color:#ecc86c}
+.card p{font-size:13px;line-height:1.55;color:#c2d2d2;margin:12px 0}
+.card #detail{color:#f3eddd}.card button{width:100%;margin-top:8px}
+.primary{background:#e9c469;color:#15232b;border-color:#f7d98e;font-weight:800}
+.quiet{background:transparent}#save-note{font-size:10px;color:#87a6a7}#result{color:#f2d582}
+#coaching{text-align:center;display:grid;gap:5px;align-content:center;font-size:10px;color:#a3c2c0}
+#instruction{color:#efead9;font-size:11px;letter-spacing:.06em}
+.meter{height:5px;background:linear-gradient(to right,#405561 0 22%,#6fbfa9 22% 57%,#f5d66a 57% 76%,#c88367 76%);border-radius:4px;overflow:hidden;width:80%;margin:auto}
+.meter span{display:block;width:2%;height:100%;background:white;box-shadow:0 0 7px white;border-radius:3px;transition:width 40ms linear}
+#controls{display:flex;gap:12px;touch-action:none;user-select:none;-webkit-user-select:none}
+#pad{position:relative;flex:1;overflow:hidden;touch-action:none;border:1px solid #6ba19e;background:radial-gradient(ellipse at 50% 110%,#2a6665,#18353d 80%);box-shadow:inset 0 1px 15px #ffffff08;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#eddda8;letter-spacing:.1em;font-size:13px;font-weight:750}
+#pad small{font-size:10px;letter-spacing:.02em;color:#a9cbc7}
+#pad.active{background:radial-gradient(ellipse,#407d72,#234449);border-color:#f0d27a}
+#thumb{display:none;position:absolute;width:38px;height:38px;border-radius:50%;border:2px solid #f3db94;background:#f3db9420;left:calc(50% - 19px);bottom:12px;pointer-events:none}
+.active #thumb{display:block}
+#two-steer{display:flex;flex:1;gap:8px}
+#two-steer button{flex:1;touch-action:none;font-size:28px;background:#193440;border-color:#528581}
+#controls.two #pad{flex:.95}#controls.left{flex-direction:row-reverse}
+footer{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:9px;color:#8ca6ac}
+footer label{display:flex;gap:4px;align-items:center}select{font-size:10px;padding:5px;max-width:110px}
+[hidden]{display:none!important}
+@media(max-height:580px){main{grid-template-rows:42px minmax(100px,1fr) 40px 76px 30px;gap:4px;padding-inline:8px}#coaching{gap:2px}.card p{font-size:11px;margin:7px 0}.card h1{font-size:25px}header>a{font-size:18px}#hud{inset:8px 8px auto;font-size:10px}.card button{padding:7px}#pad small{font-size:9px}#save-note{display:none}}

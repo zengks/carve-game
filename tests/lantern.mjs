@@ -25,6 +25,10 @@ const deaths=start();for(let i=0;i<3;i++){deaths.y=-200;deaths.ground=null;stepR
 assert.equal(deaths.status,'lost');const ended=structuredClone(deaths);stepRun(deaths,{held:true},course);assert.deepEqual(deaths,ended);
 const camp=start();Object.assign(camp,{x:310,y:650,ground:null,vy:0});stepRun(camp,{held:false},course);assert.equal(camp.checkpoint,'camp');
 camp.y=400;stepRun(camp,{held:false},course);assert.equal(camp.status,'recovery');assert.equal(camp.y,624);assert.equal(camp.lives,2);
+const lowCamp=start();Object.assign(lowCamp,{x:310,y:613,ground:null});
+stepRun(lowCamp,{held:false},course);assert.equal(lowCamp.checkpoint,'camp');
+lowCamp.y=400;stepRun(lowCamp,{held:false},course);assert.equal(lowCamp.peak,624);
+assert.equal(restoreRun(lowCamp,course).status,'recovery','recovery at the safe camp remains reloadable');
 const expired=start();Object.assign(expired,{x:60,y:220,ground:null,grip:'west',away:1});
 for(let i=0;i<147;i++)stepRun(expired,{held:true},course);
 assert.equal(expired.grip,null);assert(expired.require_lift);assert.equal(expired.launches,0);

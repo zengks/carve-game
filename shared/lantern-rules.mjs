@@ -125,6 +125,7 @@ export function stepRun(s,input,course){
  const spawn=s.checkpoint?course.surfaces.find(b=>b.id===s.checkpoint).spawn:course.start;
  if(s.status==='playing'&&(s.y<spawn[1]-r.fall_below_checkpoint||s.x<0||s.x>course.width)){
   s.lives--;s.falls++;s.status=s.lives?'recovery':'lost';s.x=spawn[0];s.y=spawn[1];
+  s.peak=Math.max(s.peak,s.y);
   s.vx=0;s.vy=0;s.ground=s.checkpoint??'start';s.grip=null;s.last_wall=null;
   s.charge=0;s.held=false;s.require_lift=true;
   s.notice=s.lives?'One life lost. Return to '+(s.checkpoint?'camp':'the start')+' with a fresh touch.':'Three lives used. Your lanterns and height are in this run’s result.';
