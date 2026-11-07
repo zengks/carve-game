@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101c29">
+  <title>CARVE · Lantern Reach</title>
+  <link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/lantern/style.css">
+</head>
+<body>
+<main>
+  <header><a href="/" aria-label="Back to CARVE">CARVE<span>LANTERN REACH</span></a><div><button id="mute" aria-pressed="false" aria-label="Mute sound">Sound on</button><button id="pause">Pause</button></div></header>
+  <section id="stage" aria-label="Lantern Reach climbing course">
+    <canvas id="world" tabindex="0" aria-label="Climb the blue walls, light camp, and reach the summit bell."></canvas>
+    <div id="hud"><span id="height">0 m</span><span id="lives">♥ ♥ ♥</span><span id="lanterns">0 / 4 lanterns</span></div>
+    <div id="caption" role="status" aria-live="polite"></div>
+    <section id="overlay" aria-labelledby="title">
+      <div class="card">
+        <p class="eyebrow">A SHARED CARVE CLIMB</p><h1 id="title">Lantern Reach</h1>
+        <p id="description">Light the mountain, one leap at a time.</p>
+        <p id="detail">Hold to charge. Drag to aim. Release to leap. Hold again in flight to catch a blue wall.</p>
+        <p id="result"></p><button id="continue" class="primary">Begin the climb</button>
+        <button id="restart" class="quiet" hidden>Start a new run</button>
+        <p id="save-note">This preview keeps its own local save. Three lives per run.</p>
+      </div>
+    </section>
+  </section>
+  <section id="coaching"><strong id="instruction">HOLD · AIM · RELEASE</strong><div class="meter"><span id="charge"></span></div><span id="quality">Fresh touches after pause</span></section>
+  <section id="controls" aria-label="Climbing controls">
+    <div id="two-steer" hidden><button id="left" aria-label="Steer left">←</button><button id="right" aria-label="Steer right">→</button></div>
+    <button id="pad" aria-label="Hold to charge, drag to aim, release to leap"><span>HOLD TO CHARGE</span><small id="pad-detail">drag ← to aim → · release to leap</small><i id="thumb"></i></button>
+  </section>
+  <footer><label>Controls <select id="scheme"><option value="one">One thumb</option><option value="two">Two thumbs</option></select></label><label>Hand <select id="hand"><option value="right">Right</option><option value="left">Left</option></select></label><span>← → + Space</span></footer>
+</main>
+<script type="module" src="/lantern/game.mjs"></script>
+</body>
+</html>

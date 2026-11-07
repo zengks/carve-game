@@ -1,5 +1,15 @@
 # Endless Expedition
 
+## Release sequencing — 2026-11-06
+
+The user deferred paid Apple Developer enrollment to the final App Store
+preparation phase. Schedule activation, eligible development signing,
+successful real sign-in and HTTPS return testing, and final release qualification
+before submission. Continue private local development in the meantime.
+The user selected browser and native iOS/Android, including tablets, as the
+active platforms. Windows/Steam is out of the active roadmap. Preserve the
+common gameplay/data goal and existing versioned records.
+
 ## Post-launch revenue capability — 2026-10-30
 
 The user explicitly requires both browser and native CARVE to have the ability

@@ -6,7 +6,8 @@ import {validateEvent,completedEvent,canonical} from '../shared/contract.mjs';
 import {readFile} from 'node:fs/promises';
 const source=(await readFile(new URL('../src/storage/outbox.mjs',import.meta.url),'utf8'))
   .replace("'./contract.mjs'",JSON.stringify(new URL('../shared/contract.mjs',import.meta.url).href));
-const {openOutbox,flushOutbox}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const outboxModule='data:text/javascript;base64,'+Buffer.from(source).toString('base64');
+const {openOutbox,flushOutbox}=await import(outboxModule);
 const accountA='a'.repeat(64),accountB='b'.repeat(64);
 export const fixture=()=>({contract_version:1,event_id:'web.flow-v1:test-run',kind:'completed_run',
   course_id:'web.flow-v1',rules_version:'flow-v1',mode:'challenge',source_platform:'web',payload:{
@@ -56,3 +57,47 @@ profile.unlocked.push('hook');assert.equal(canonical(completedEvent(record,profi
 assert(local.has('carve.flow.profile.v1'),'guest gameplay profile preserved');
 delete globalThis.CarveAccount;
 console.log('PASS storage: only completed runs queued, account pinned through reload and frozen import payload');
+
+const guestLocal=new Map(),guestSession=new Map(),preview={local:guestLocal,session:guestSession,search:'?flow=1'};
+game=loadGame(preview);
+const alias=game.Profile.name;
+assert.match(alias,/^Guest-[a-f\d]{8}$/);
+game.Game.start();game.Journey.peak=1294;game.Journey.finish();
+game=loadGame(preview);
+assert.equal(game.Profile.name,alias);
+assert.equal(game.Profile.records[0].name,alias);
+assert.equal(game.Profile.records[0].ownerScope,'guest');
+const get=id=>document.getElementById(id);
+const savedRun=game.Profile.records[0].id,received=[];
+let configured=false,signedIn=false;
+globalThis.indexedDB=indexedDB;
+globalThis.fetch=async (path,options)=>{
+  if(path==='/api/account'){
+    if(options.body){assert.equal(JSON.parse(options.body).action,'verify');signedIn=true;}
+    return Response.json({configured,providers:{email:configured},account:signedIn?{scope:accountA,label:'Test climber'}:null});
+  }
+  assert.equal(path,'/api/shared-progress');
+  assert.equal(options.headers['X-Carve-Account'],accountA);
+  if(options.body)received.push(JSON.parse(options.body));
+  return Response.json({account_scope:accountA,contract_version:1,accepted:received.at(-1)?.event_id,results:received});
+};
+const accountSource=(await readFile(new URL('../src/storage/account.mjs',import.meta.url),'utf8'))
+  .replace("'./contract.mjs'",JSON.stringify(new URL('../shared/contract.mjs',import.meta.url).href))
+  .replace("'./outbox.mjs'",JSON.stringify(outboxModule));
+await import('data:text/javascript;base64,'+Buffer.from(accountSource).toString('base64'));
+await get('account-open').onclick();
+assert.equal(get('challenge-save-score').hidden,true,'unconfigured signup is not offered');
+configured=true;await get('account-open').onclick();get('account-close').onclick();
+assert.equal(get('challenge-save-score').hidden,false);
+game.Profile.storageAvailable=false;CarveAccount.renderSaveInvite();
+assert.equal(get('challenge-save-score').hidden,true,'a temporary score cannot promise a durable import');
+game.Profile.storageAvailable=true;CarveAccount.renderSaveInvite();
+await get('challenge-save-score').onclick();
+assert(get('account-dialog').open&&!get('challenge-result').open);
+await get('account-verify').onclick();
+assert.equal(received.length,0,'sign-in alone leaves the guest run local');
+await get('account-import').onclick();await get('account-import-confirm').onclick();
+assert.equal(received.length,1);
+assert.equal(received[0].payload.run_id,savedRun);
+assert.equal(game.Profile.records[0].ownerScope,'guest','copy keeps the source score');
+console.log('PASS guest scores: generated alias persists, signup follows a saved result, and explicit import copies it once');

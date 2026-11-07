@@ -6,6 +6,20 @@ the next evidence-based task rather than treating a checkpoint as a new decision
 for the user. Preserve all existing data and virtual devices. Device testing is
 Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
 
+## Release sequencing update — 2026-11-06
+
+- [x] Defer paid Apple Developer enrollment and membership-dependent signing work
+  to the final App Store preparation phase, as requested by the user.
+- [ ] Before App Store submission, allow time for membership activation,
+  eligible QA signing, successful real sign-in/return and final release testing.
+  These remain release requirements.
+- Continue local development and fresh-data QA with the existing private
+  fixtures. Staging stays private and the current web/mobile PRs stay unmerged.
+- Active platforms are browser and native iOS/Android, including tablets.
+  Windows/Steam is out of the active roadmap by user decision.
+  Retain the shared gameplay and account/data goal and the separate course/rules
+  provenance.
+
 ## Active web milestone: camera, reading flow and route decisions
 
 Branch `codex/flow-and-encounters`, preview entry `/?flow=1`. See

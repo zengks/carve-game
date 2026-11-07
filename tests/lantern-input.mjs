@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {installDomStubs} from './harness.mjs';
+const course=JSON.parse(await readFile(new URL('../shared/common-lantern-reach-v1.json',import.meta.url),'utf8'));
+const local=new Map();installDomStubs({local});
+const get=id=>document.getElementById(id);
+get('world').focus=()=>{};get('stage').clientWidth=390;
+get('stage').getBoundingClientRect=()=>({width:390,height:600});
+let frame;globalThis.requestAnimationFrame=fn=>{frame=fn;};
+globalThis.fetch=async()=>Response.json(course);
+const code=(await readFile(new URL('../src/lantern/game.mjs',import.meta.url),'utf8'))
+ .replace("'./rules.mjs'",JSON.stringify(new URL('../shared/lantern-rules.mjs',import.meta.url).href));
+await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+const event=(pointerId,extra={})=>({pointerId,isPrimary:true,button:0,clientX:195,preventDefault(){},...extra});
+let now=performance.now();
+function ticks(n){for(let i=0;i<n;i++){now+=1000/120;frame(now);}}
+const read=()=>JSON.parse(local.get('carve.common.lantern-reach.v1')).run;
+get('continue').onclick();ticks(2);
+get('pad').onpointerdown(event(1));get('pad').onpointerdown(event(2));
+get('pad').onpointermove(event(2,{clientX:0}));
+ticks(50);get('pad').onpointerup(event(1,{clientX:230}));ticks(1);get('pause').onclick();
+assert.equal(read().launches,1,'one owner releases one launch');
+assert(read().vx>300,'final drag aim reaches the release tick');
+assert.equal(read().status,'paused');
+get('scheme').value='two';get('scheme').onchange({});
+get('continue').onclick();ticks(2);
+get('left').onpointerdown(event(3));
+get('pad').onpointerdown(event(4,{isPrimary:false}));
+assert(get('pad').classList.contains('active'),'second thumb may own the charge pad');
+get('pad').onpointercancel(event(4,{isPrimary:false}));
+assert.equal(read().status,'paused','owned touch cancellation pauses without launch');
+assert.equal(read().launches,1);
+get('continue').onclick();ticks(2);
+get('pad').onpointerdown(event(5));
+get('pad').onlostpointercapture(event(5));
+assert.equal(read().status,'paused','lost capture retires the held contact');
+assert.equal(read().charge,0);
+console.log('PASS Lantern controls: one-pointer ownership, final-axis release, simultaneous second-thumb charge and cancellation/lost-capture safety.');

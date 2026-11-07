@@ -15,9 +15,15 @@ export function createGameServer() {
     if(path.startsWith('/api/native-broker/')||path==='/native/authorize'){await native(req,res);return;}
     if(['/api/account','/api/shared-progress'].includes(path)){await account(req,res);return;}
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
+    if(path==='/lantern'){res.writeHead(308,{Location:'/lantern/'}).end();return;}
     if (['/classic', '/classic/', '/classic/index.html', '/src/carve.html'].includes(path)) { res.writeHead(308, {Location:'/'}).end(); return; }
     const files = {
       '/': ['src/expedition.html', 'text/html; charset=utf-8'],
+      '/lantern/':['src/lantern/index.html','text/html; charset=utf-8'],
+      '/lantern/game.mjs':['src/lantern/game.mjs','text/javascript; charset=utf-8'],
+      '/lantern/rules.mjs':['shared/lantern-rules.mjs','text/javascript; charset=utf-8'],
+      '/lantern/course.json':['shared/common-lantern-reach-v1.json','application/json'],
+      '/lantern/style.css':['src/lantern/style.css','text/css; charset=utf-8'],
       '/music-demos/': ['src/music-demos/index.html', 'text/html; charset=utf-8'],
       '/expedition/': ['src/expedition.html', 'text/html; charset=utf-8'],
       '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8'],

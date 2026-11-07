@@ -1,5 +1,6 @@
 // TEST ENTRYPOINT ONLY. Production routes never import this module.
 import {createServer} from 'node:http';
+import {createServer as createHttpsServer} from 'node:https';
 import {Readable} from 'node:stream';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
@@ -12,29 +13,32 @@ import {createNativeDatabase} from '../../server/native-database.mjs';
 import {createNativeFetchHandler} from '../../server/native-vercel.mjs';
 import {createNativeProgressHandler} from '../../server/native-progress.mjs';
 const secret=()=>randomBytes(32).toString('base64url');
-export async function createNativeIntegrationFixture({artifactDirectory,adminConnectionString=process.env.CARVE_NATIVE_TEST_ADMIN_URL,progress=false}={}){
+export const privateBrokerHost='carve-private-qa.test';
+export async function createNativeIntegrationFixture({artifactDirectory,adminConnectionString=process.env.CARVE_NATIVE_TEST_ADMIN_URL,progress=false,privateTls,privateIosAppId}={}){
  const adminURL=new URL(adminConnectionString??'http://invalid');
  if(adminURL.protocol!=='postgres:'||adminURL.hostname!=='127.0.0.1'||adminURL.pathname!=='/postgres')throw Error('Explicit loopback PostgreSQL admin URL required');
+ if(privateIosAppId!==undefined&&(!privateTls||typeof privateIosAppId!=='string'||privateIosAppId!==privateIosAppId.trim()||!/^[A-Z0-9]{10}\.com\.carve\.authqa\.q[0-9]{13}\.staging$/.test(privateIosAppId)))throw Error('Isolated signed iOS QA application identifier required');
  const databaseName='carve_shared_test_native_'+randomUUID().replaceAll('-','');
  const admin=new pg.Pool({connectionString:adminURL.href});
  try{await admin.query('CREATE DATABASE '+databaseName);}finally{await admin.end();}
  const url=new URL(adminURL);url.pathname='/'+databaseName;
- const pool=new pg.Pool({connectionString:url.href});let db,server,qaServer;
+ const pool=new pg.Pool({connectionString:url.href});let db,server,qaServer,httpsServer;
  const capability=secret(),clockBase=Math.floor(Date.now()/1000)*1000;let clock=clockBase,hold=false,held=null,closed=false,holdProgress=false,heldProgress=null;
  const codes=new Map(),subjects={alpha:'synthetic-alpha-'+databaseName,beta:'synthetic-beta-'+databaseName,gamma:'synthetic-gamma-'+databaseName};
  let requests=0,callbacks=0,grant_attempts=0,trapHits=0;
  const client_ids=['fixture-ios','fixture-android'];
- const broker_url='https://broker.carve.example.test/native/authorize';
- const return_targets=Object.fromEntries(client_ids.map(id=>[id,'https://carve.example.test/'+id.slice(8)+'/return']));
+ const appOrigin=privateTls?'https://'+privateBrokerHost:'https://broker.carve.example.test';
+ const broker_url=appOrigin+'/native/authorize';
+ const return_targets=Object.fromEntries(client_ids.map(id=>[id,privateTls?appOrigin+'/native/return/'+id.slice(8):'https://carve.example.test/'+id.slice(8)+'/return']));
  const closeServer=async s=>{if(s?.listening){s.closeAllConnections();await new Promise(r=>s.close(r));}};
- const close=async()=>{held?.release();heldProgress?.release();held=null;heldProgress=null;await closeServer(qaServer);await closeServer(server);await db?.close();await pool.end();closed=true;return {listener_closed:true,database_connections_closed:true};};
+ const close=async()=>{held?.release();heldProgress?.release();held=null;heldProgress=null;await closeServer(httpsServer);await closeServer(qaServer);await closeServer(server);await db?.close();await pool.end();closed=true;return {listener_closed:true,database_connections_closed:true};};
  try{
   await pool.query(await readFile(new URL('../../server/schema.sql',import.meta.url),'utf8'));
   await pool.query(await readFile(new URL('../../server/native-schema.sql',import.meta.url),'utf8'));
   if(progress)await pool.query(await readFile(new URL('../../server/native-progress-schema.sql',import.meta.url),'utf8'));
   db=createNativeDatabase(url.href);
   const rsa=await generateKeyPair('RS256'),jwk={...await exportJWK(rsa.publicKey),kid:'isolated-native-key',alg:'RS256'};
-  const env={CARVE_APP_ORIGIN:'https://broker.carve.example.test',CARVE_SESSION_SECRET:randomBytes(32).toString('hex'),CARVE_SHARED_DATABASE_URL:url.href,
+  const env={CARVE_APP_ORIGIN:appOrigin,CARVE_SESSION_SECRET:randomBytes(32).toString('hex'),CARVE_SHARED_DATABASE_URL:url.href,
    CARVE_NATIVE_CLIENTS:JSON.stringify(Object.fromEntries(client_ids.map(id=>[id,{redirect_uri:return_targets[id],broker_url}]))),
    CARVE_GOOGLE_CLIENT_ID:'synthetic-web-client',CARVE_GOOGLE_CLIENT_SECRET:secret(),
    CARVE_APPLE_SERVICE_ID:'synthetic-apple-service',CARVE_APPLE_TEAM_ID:'SYNTHETIC',CARVE_APPLE_KEY_ID:'isolated-native-key'};
@@ -53,7 +57,7 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
   }});
   const fetchHandler=createNativeFetchHandler(handler);
   const progressHandler=progress?createNativeFetchHandler(createNativeProgressHandler({env,database:db,now:()=>clock})):null;
-  server=createServer(async(req,res)=>{
+  const serveBroker=async(req,res)=>{
    requests++;if(req.url==='/_trap'){trapHits++;res.writeHead(400).end();return;}
    const isProgress=new URL(req.url,env.CARVE_APP_ORIGIN).pathname==='/api/native-progress/v1';
    if(isProgress&&progress&&holdProgress){holdProgress=false;await new Promise(release=>{heldProgress={release};});}
@@ -62,7 +66,8 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
    for(const [k,v]of response.headers)if(k!=='set-cookie')res.setHeader(k,v);
    const cookies=response.headers.getSetCookie();if(cookies.length)res.setHeader('Set-Cookie',cookies);
    res.end(Buffer.from(await response.arrayBuffer()));
-  });
+  };
+  server=createServer(serveBroker);
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
   const origin='http://127.0.0.1:'+server.address().port;
   const complete=async q=>{
@@ -115,7 +120,27 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
   });
   await new Promise((resolve,reject)=>{qaServer.once('error',reject);qaServer.listen(0,'127.0.0.1',resolve);});
   const qa_origin='http://127.0.0.1:'+qaServer.address().port;
+  if(privateTls){
+   httpsServer=createHttpsServer(privateTls,async(req,res)=>{
+    res.setHeader('Cache-Control','no-store');
+    res.setHeader('Referrer-Policy','no-referrer');
+    if(req.headers.host!==privateBrokerHost||!req.url.startsWith('/'))return res.writeHead(421).end();
+    if(privateIosAppId&&req.method==='GET'&&req.url==='/.well-known/apple-app-site-association'){
+     return res.writeHead(200,{'Content-Type':'application/json'}).end(JSON.stringify({webcredentials:{apps:[privateIosAppId]}}));
+    }
+    if(req.method==='POST'&&(req.url==='/api/native-broker/v1'||(progress&&req.url==='/api/native-progress/v1')))return serveBroker(req,res);
+    const launch=new URL(appOrigin+req.url);
+    if(req.method!=='GET'||launch.pathname!=='/native/authorize'||[...launch.searchParams.keys()].join()!=='flow_id')return res.writeHead(404).end();
+    try{
+     // Complete locally so a QA browser never redirects to an actual provider.
+     const proof=await complete({flow_id:launch.searchParams.get('flow_id'),identity:'alpha'});
+     if(!proof.return_uri)return res.writeHead(proof.status).end();
+     res.writeHead(303,{Location:proof.return_uri}).end();
+    }catch{res.writeHead(400).end();}
+   });
+   await new Promise((resolve,reject)=>{httpsServer.once('error',reject);httpsServer.listen(0,'127.0.0.1',resolve);});
+  }
   if(artifactDirectory){await mkdir(artifactDirectory,{recursive:true,mode:0o700});await writeFile(join(artifactDirectory,'isolation.json'),JSON.stringify({database:databaseName,created_fresh:true,retained:true,origin,qa_origin},null,2),{mode:0o600});}
-  return {kind:'actual-native-broker',isolation:{fresh:true,retained_data_access:false},origin,qa_origin,capability,client_ids,broker_url,return_targets,stats,close,databaseName,closed:()=>closed};
+  return {kind:'actual-native-broker',isolation:{fresh:true,retained_data_access:false},origin,qa_origin,capability,client_ids,broker_url,return_targets,stats,close,databaseName,closed:()=>closed,httpsAddress:httpsServer?.address()};
  }catch(e){await close();throw e;}
 }

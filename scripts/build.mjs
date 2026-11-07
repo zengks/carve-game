@@ -63,6 +63,14 @@ export async function build(outputDir = join(root, 'dist'), { production = false
   await writeFile(join(outputDir, 'site.webmanifest'), manifest);
   // Auditions are deliberately absent from every production build.
   if (!production) {
+    const rules=await hashedAsset('lantern-rules.mjs',await readFile(join(root,'shared/lantern-rules.mjs'),'utf8'));
+    const course=await hashedAsset('lantern-course.json',await readFile(join(root,'shared/common-lantern-reach-v1.json'),'utf8'));
+    const game=await hashedAsset('lantern-game.mjs',(await readFile(join(root,'src/lantern/game.mjs'),'utf8'))
+      .replace('./rules.mjs',rules).replace('./course.json',course));
+    const style=await hashedAsset('lantern.css',await readFile(join(root,'src/lantern/style.css'),'utf8'));
+    const page=(await readFile(join(root,'src/lantern/index.html'),'utf8')).replace('/lantern/game.mjs',game).replace('/lantern/style.css',style);
+    await mkdir(join(outputDir,'lantern'),{recursive:true});
+    await writeFile(join(outputDir,'lantern/index.html'),page);
     await mkdir(join(outputDir, 'music-demos'), {recursive:true});
     await mkdir(join(outputDir, 'assets/music/demos'), {recursive:true});
     await copyFile(join(root, 'src/music-demos/index.html'), join(outputDir, 'music-demos/index.html'));
