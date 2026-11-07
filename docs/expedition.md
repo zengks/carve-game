@@ -6,8 +6,9 @@ The user deferred paid Apple Developer enrollment to the final App Store
 preparation phase. Schedule activation, eligible development signing,
 successful real sign-in and HTTPS return testing, and final release qualification
 before submission. Continue private local development in the meantime.
-Windows/Steam is being evaluated for effort and cost. A port has not been
-authorized. Preserve the common gameplay/data goal and existing versioned records.
+The user selected browser and native iOS/Android, including tablets, as the
+active platforms. Windows/Steam is out of the active roadmap. Preserve the
+common gameplay/data goal and existing versioned records.
 
 ## Post-launch revenue capability — 2026-10-30
 

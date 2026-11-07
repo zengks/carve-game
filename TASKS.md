@@ -15,8 +15,10 @@ Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
   These remain release requirements.
 - Continue local development and fresh-data QA with the existing private
   fixtures. Staging stays private and the current web/mobile PRs stay unmerged.
-- Estimate Windows/Steam readiness before starting a port. Retain the shared
-  gameplay and account/data goal and the separate course/rules provenance.
+- Active platforms are browser and native iOS/Android, including tablets.
+  Windows/Steam is out of the active roadmap by user decision.
+  Retain the shared gameplay and account/data goal and the separate course/rules
+  provenance.
 
 ## Active web milestone: camera, reading flow and route decisions
 
