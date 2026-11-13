@@ -73,3 +73,10 @@ two-thumb/left-hand preferences across reload, with no document overflow in
 portrait emulation. These checks do not establish a full manual browser finish
 or physical-touch comfort. Vercel project authentication remains enabled for
 all deployments except custom domains; no access settings were changed.
+
+Subsequently, the documentation checkpoint's deployed build at
+<https://carve-game-q1thhyikh-zengksoutlookcoms-projects.vercel.app/lantern/>
+completed through actual one-pad mouse holds: 147 m, two lanterns, three lives,
+18.3 active seconds and zero falls. The summit result survived reload. This
+supersedes the partial browser completion limit above, while physical-touch
+comfort and newcomer replay interest remain unverified.

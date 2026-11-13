@@ -48,3 +48,11 @@ for(const charge of [40,55,90]){
  const snapshot=structuredClone(run);pauseRun(run);stepRun(run,{held:true},course);assert.deepEqual(run,snapshot);
 }
 console.log('PASS Lantern Reach: timing boundaries, cancellation, fresh input, rescue, three lives, camp recovery and input-only GOOD/PERFECT completion.');
+const neutral=start();
+for(let i=0;i<6000&&neutral.status==='playing';i++){
+ stepRun(neutral,{held:neutral.charge<55,aim:0},course);
+}
+assert.equal(neutral.status,'won','neutral one-thumb holds can finish without drag assistance');
+assert.equal(neutral.lives,3);
+assert.equal(neutral.checkpoint,'camp');
+console.log('PASS Lantern Reach: neutral one-thumb route reaches camp and summit without losing a life.');
