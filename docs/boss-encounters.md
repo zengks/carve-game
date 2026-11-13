@@ -53,3 +53,21 @@ wallet transaction. Shared cloud ownership follows the existing storage plan.
   Return restored the original summit result with all three climb lives.
 - This is browser pointer evidence, not a physical touchscreen playthrough or
   proof that a first-time player will find the boss comfortable or fun.
+- Follow-up `0882361` passed the full build and both Node CI runtimes. The
+  390 × 844 preview completed Lantern Reach and opened Bellkeeper, with no
+  horizontal or vertical overflow. Boss header, accessible description, action
+  labels, movement and pause were checked; viewport settings were restored.
+
+## Native verification
+
+The native plan is `carve-mobile/docs/bellkeeper-preview.md`. Native revisions
+`bc277b1` and `e4aad20` mirror the canonical course and fixture byte-for-byte,
+pass 59 headless and 68 scene checks, and verify the same three-rope finish.
+Android API 36 OS input completed Lantern Reach, reloaded its result, opened
+Bellkeeper, paused, returned to the unchanged summit and reopened the saved
+boss attempt. The Android target was shut down with its apps and data retained.
+The full boss win is input-fixture evidence, separate from the OS entry/return
+checks. iOS 26.5 also passed all 68 exported scene checks and completed the
+Lantern climb and cold reload through OS touch input, followed by boss entry,
+warning, pause, return to the same summit result and saved boss reentry.
+Full hands-on boss clears and newcomer warning/difficulty tuning remain open.

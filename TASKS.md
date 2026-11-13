@@ -26,8 +26,11 @@ Branch `codex/bellkeeper-preview`. See [boss plan](docs/boss-encounters.md).
 
 - [x] Agree optional milestone encounters and preserve completed climbs.
 - [x] Define Bellkeeper ropes, warning/swing/rest cycle and separate boss lives.
-- [ ] Build and verify browser and native encounter entry, play, recovery and return.
-- [ ] Verify durable cosmetic recognition and best time, separate from climb scores.
+- [x] Build browser/native encounters; verify full wins by input fixtures and
+  browser adapter tests, plus browser and iOS/Android OS entry/pause/return.
+- [x] Verify durable cosmetic recognition and best time, separate from climb scores.
+- [ ] Complete hands-on boss clears and assess warning timing with new players;
+  automated wins and OS entry checks do not establish difficulty or enjoyment.
 - [ ] Review difficulty with newcomers before adding Frost Warden or Echo Climber.
 
 ## Shared playable section — Lantern Reach
