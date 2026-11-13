@@ -31,7 +31,10 @@ See [shared course rules](docs/common-playable-slice.md).
   optional two-thumb controls, local recovery and bounded completed results.
 - [x] Verify full input-handler completion, required build and Node 24/26 CI
   at `3344e16`; hosted preview charge/release, pause and reload also pass.
-- [ ] Complete isolated iOS/Android builds and OS touch-input runs to the bell.
+- [x] Build isolated iOS/Android previews; Android OS one-thumb run reaches
+  the bell and retains its result after cold relaunch (mobile PR46 `47ed448`).
+- [ ] Finish iOS OS-touch climb: tap/hold, fall and cold recovery pass, but the
+  timed XCTest sequence is acknowledged without additional game launches.
 - [ ] Observe newcomer comfort and replay interest before expanding the course.
 
 Keep both PRs unmerged and staging private. Do not mix this section's results

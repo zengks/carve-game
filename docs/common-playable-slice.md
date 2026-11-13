@@ -80,3 +80,25 @@ completed through actual one-pad mouse holds: 147 m, two lanterns, three lives,
 18.3 active seconds and zero falls. The summit result survived reload. This
 supersedes the partial browser completion limit above, while physical-touch
 comfort and newcomer replay interest remain unverified.
+
+### Native checkpoint — 2026-11-13
+
+Mobile draft PR46 at `47ed448` includes isolated iOS/Android previews and
+matching course/fixture bytes. Native timing was corrected to advance the
+fixed-step simulation from bounded elapsed time under slow rendering.
+
+Android API 36 completed via 15 OS-delivered one-thumb holds (30 verified
+touch events): 147 m, two lanterns, two lives and one deliberate fall. Cold
+recovery, terminal relaunch, and replay/result deduplication passed.
+
+iOS 26.5 passed 51 in-app checks, ordinary OS tap/hold input, deliberate fall,
+exact cold recovery and explicit continuation. Its timed XCTest sequence was
+acknowledged twice but caused no additional launches, even after checking the
+pad point and target PID. The iOS OS-touch finish, terminal reload and replay
+remain unverified. PosterBoard remained healthy during the checked interval.
+
+Native evidence is retained under
+`carve-mobile/.local/broker-os/sliceq1794596740606/`; both owned test targets
+were stopped. The native preservation audit matched 154 prior simulator
+states and 94 scoped data digests, with one protected cache checked by metadata
+only. Existing apps and saves were retained. Both PRs remain open drafts.
