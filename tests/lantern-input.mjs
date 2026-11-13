@@ -35,4 +35,21 @@ get('pad').onpointerdown(event(5));
 get('pad').onlostpointercapture(event(5));
 assert.equal(read().status,'paused','lost capture retires the held contact');
 assert.equal(read().charge,0);
-console.log('PASS Lantern controls: one-pointer ownership, final-axis release, simultaneous second-thumb charge and cancellation/lost-capture safety.');
+globalThis.confirm=()=>true;
+get('scheme').value='one';get('scheme').onchange({});
+get('restart').onclick();now=performance.now();ticks(3);
+const parity=JSON.parse(await readFile(new URL('../shared/fixtures/lantern-parity-v1.json',import.meta.url),'utf8'));
+let down=false;
+for(const command of parity.cases.find(v=>v.name==='input-only-55').commands){
+ const {held,aim}=command.input;
+ if(held&&!down)get('pad').onpointerdown(event(10));
+ const positioned=event(10,{clientX:195+40*aim});
+ if(held)get('pad').onpointermove(positioned);
+ else if(down)get('pad').onpointerup(positioned);
+ down=held;ticks(command.repeat);
+}
+assert.equal(read().status,'won','the full course completes through the one-pad UI adapter');
+assert.equal(read().lives,3);
+const results=JSON.parse(local.get('carve.common.lantern-reach.v1.results'));
+assert.equal(results.length,1);assert.equal(results[0].outcome,'won');
+console.log('PASS Lantern controls: ownership, final-axis release, second-thumb charge, cancellation and a complete one-pad climb with one saved result.');
