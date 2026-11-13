@@ -33,8 +33,8 @@ See [shared course rules](docs/common-playable-slice.md).
   at `3344e16`; hosted preview charge/release, pause and reload also pass.
 - [x] Build isolated iOS/Android previews; Android OS one-thumb run reaches
   the bell and retains its result after cold relaunch (mobile PR46 `47ed448`).
-- [ ] Finish iOS OS-touch climb: tap/hold, fall and cold recovery pass, but the
-  timed XCTest sequence is acknowledged without additional game launches.
+- [x] Finish iOS one-thumb climb through simulator digitizer touches; verify
+  the winning receipt after cold relaunch and a fresh replay preserving history.
 - [ ] Observe newcomer comfort and replay interest before expanding the course.
 
 Keep both PRs unmerged and staging private. Do not mix this section's results

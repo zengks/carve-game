@@ -102,3 +102,18 @@ Native evidence is retained under
 were stopped. The native preservation audit matched 154 prior simulator
 states and 94 scoped data digests, with one protected cache checked by metadata
 only. Existing apps and saves were retained. Both PRs remain open drafts.
+
+### iOS touch completion — 2026-11-13
+
+The previous iOS finish blocker is resolved for simulator testing. Desktop
+automation introduced gaps between holds; the successful test delivered
+simulator digitizer touches directly and observed the game's actual state.
+The run reached 147 m with the shortcut lantern, 14 catches, one fall and two
+lives remaining. This shortcut route did not activate camp.
+
+`ios-devicehub-1794600454868/verified-finish.json` under the native evidence
+directory above records 32 matched winning-run touches. A cold app launch
+retained the same winning run ID and receipt. An actual replay tap created a
+fresh run ID with three lives and retained both recorded results, including
+the earlier unsuccessful attempt. No game-state injection was used. This is
+OS-input simulator evidence; physical-device comfort remains unverified.
