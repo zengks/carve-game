@@ -16,7 +16,7 @@ next warning. Three ropes finish the challenge.
 The reference is `shared/common-bellkeeper-v1.json` and
 `shared/bellkeeper-rules.mjs`. At 120 Hz the warning lasts 180, 156 and 132 ticks,
 the sweep 180 and rest 360. The bell crosses x100–290 at the current rope height,
-with radius18. Ropes use a42-unit collection radius. Warnings use text, motion
+with radius 18. Ropes use a 42-unit collection radius. Warnings use text, motion
 and a line as well as color. The camera follows the existing smooth vertical
 movement, and touch ownership/cancellation follows the normal game.
 
@@ -25,7 +25,7 @@ entrance with secured ropes retained and an explicit continuation receipt.
 A new attempt resets the boss. Return saves the boss separately and restores the
 Lantern result. Active reload resumes paused with fresh input required. The
 boss uses `common.bellkeeper-v1` / `bellkeeper-rules-1`, isolated local saves,
-bounded20 result history and durable best-time/golden-bell ownership.
+bounded 20-result history and durable best-time/golden-bell ownership.
 
 The golden bell is an earned cosmetic recognition. It adds no paid benefit or
 wallet transaction. Shared cloud ownership follows the existing storage plan.
@@ -39,4 +39,17 @@ wallet transaction. Shared cloud ownership follows the existing storage plan.
 - Verify actual browser UI and native exported UI with one-thumb controls.
 - Keep previews private, PRs unmerged, and mobile download prompts disabled.
 - Aim for 30–60 seconds for a learned clear, then tune with first-time players.
-  The initial reference route clears in about27 seconds without losing a life.
+  The initial reference route clears in about 27 seconds without losing a life.
+
+## Browser verification — 2026-11-13
+
+- Full build and Node 24/26 CI passed at `2761326`; PR25 remains draft/open.
+- The input-only reference secures all three ropes in 3,236 ticks with three
+  lives. Browser input tests verify the same finish, one recorded result,
+  reload deduplication, persistent reward and unchanged Lantern save/results.
+- In the protected browser preview, one-pad mouse presses completed Lantern
+  Reach at 147 m with two lanterns and three lives. The result unlocked
+  Bellkeeper. A bell hit used one boss life; reload retained recovery, and
+  Return restored the original summit result with all three climb lives.
+- This is browser pointer evidence, not a physical touchscreen playthrough or
+  proof that a first-time player will find the boss comfortable or fun.

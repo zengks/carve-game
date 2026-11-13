@@ -13,6 +13,12 @@ try {
 } catch {}
 
 const $=id=>document.getElementById(id),canvas=$('world'),ctx=canvas.getContext('2d');
+if(bossMode){
+ document.title='CARVE · The Bellkeeper';
+ $('course-name').textContent='THE BELLKEEPER';
+ $('stage').setAttribute('aria-label','Bellkeeper climbing challenge');
+ canvas.setAttribute('aria-label','Avoid the swinging bell and secure three golden ropes while it rests.');
+}
 const saveKey=bossMode?'carve.common.bellkeeper.v1':'carve.common.lantern-reach.v1',preferencesKey='carve.common.lantern-reach.v1.controls';
 let run=newRun(course),runId=crypto.randomUUID(),camera=0,previous=performance.now(),accumulator=0;
 let chargeOwner=null,originX=0,pointerAim=0,lastAim=0;
@@ -71,6 +77,7 @@ function showOverlay(){
   $('detail').textContent = 'The glowing line warns of a swing. Leap clear, then approach the golden rope during REST. Shelves give you room to wait.';
   $('result').textContent = run.tokens.length + '/3 ropes · ' + (run.ticks/120).toFixed(1) + ' s · ' + run.falls + ' falls';
   $('continue').disabled = !bossUnlocked;
+  $('continue').textContent=['won','lost'].includes(status)?'Challenge again':status==='ready'?'Begin the challenge':'Continue challenge';
   if(status==='won'){
    $('description').textContent='Golden bell earned · your climb result is saved.';
    try {
@@ -89,7 +96,7 @@ function begin(){
 $('continue').onclick=begin;
 $('boss-entry').onclick=()=>{save();location.href='?boss=bellkeeper';};
 $('boss-return').onclick=()=>{pause();location.href='/lantern/';};
-$('restart').onclick=()=>{if(confirm('Start a new Lantern Reach run? This replaces this preview attempt.')){run=newRun(course);runId=crypto.randomUUID();camera=0;begin();}};
+$('restart').onclick=()=>{if(confirm('Start a new '+(bossMode?'Bellkeeper':'Lantern Reach')+' run? This replaces this preview attempt.')){run=newRun(course);runId=crypto.randomUUID();camera=0;begin();}};
 $('pause').onclick=pause;
 function configure(event){
  scheme=$('scheme').value;hand=$('hand').value;if(event)pause();
@@ -201,11 +208,11 @@ function draw(now,elapsed){
   const x=bell.stage==='rest'?195:bell.x, y=bell.stage==='rest'?Y-70:Y;
   ctx.fillStyle=bell.stage==='swing'?'#f0ae66':'#b7a16a';
   ctx.beginPath();ctx.arc(x,y,25,Math.PI,0);ctx.lineTo(x+29,y+24);ctx.lineTo(x-29,y+24);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#f4dda5';ctx.font='bold 12px system-ui';ctx.textAlign='center';
-  ctx.fillText(bell.stage==='warning'?'BELL DRAWING BACK':bell.stage==='swing'?'SWING · KEEP CLEAR':'REST · REACH THE ROPE',195,Y-42);
  }
+ if(!bossMode){
  const bellY=sy(1510);ctx.strokeStyle='#e5c16b';ctx.lineWidth=3;ctx.beginPath();ctx.arc(195,bellY,24,Math.PI,0);ctx.lineTo(219,bellY+13);ctx.lineTo(171,bellY+13);ctx.closePath();ctx.stroke();
  ctx.fillStyle='#e5c16b';ctx.beginPath();ctx.arc(195,bellY+19,4,0,Math.PI*2);ctx.fill();
+ }
  const X=run.x,Y=sy(run.y);ctx.fillStyle='#8be8cc15';ctx.beginPath();ctx.ellipse(X,Y+17,16,5,0,0,Math.PI*2);ctx.fill();
  ctx.save();ctx.translate(X,Y);ctx.rotate(run.grip?run.away*.12:Math.max(-.2,Math.min(.2,run.vx/1200)));
  ctx.fillStyle='#d5ab56';ctx.beginPath();ctx.moveTo(-8,1);ctx.lineTo(-17,13);ctx.lineTo(-3,7);ctx.closePath();ctx.fill();

@@ -24,7 +24,19 @@ const hazard=createBoss(course);resumeRun(hazard);hazard.require_lift=false;
 hazard.bell_ticks=course.bell.warning_ticks[0];hazard.x=100;hazard.y=240;hazard.peak=240;hazard.ground=null;
 stepBoss(hazard,{held:false,aim:0},course);assert.equal(hazard.status,'recovery');assert.equal(hazard.lives,2);
 const saved=structuredClone(hazard);stepBoss(hazard,{held:true,aim:1},course);assert.deepEqual(hazard,saved);
+for(const lives of [1,0]){
+ resumeRun(hazard);hazard.require_lift=false;hazard.bell_ticks=course.bell.warning_ticks[0];
+ hazard.x=100;hazard.y=240;hazard.ground=null;
+ stepBoss(hazard,{held:false,aim:0},course);
+ assert.equal(hazard.lives,lives);assert.equal(hazard.status,lives?'recovery':'lost');
+}
+assert.equal(restoreBoss(hazard,course).status,'lost');
+const resting=createBoss(course);resumeRun(resting);resting.require_lift=false;
+resting.x=300;resting.y=240;resting.peak=240;
+stepBoss(resting,{held:false,aim:0},course);assert.equal(resting.tokens.length,0,'warning does not grant a rope');
+resting.bell_ticks=course.bell.warning_ticks[0]+course.bell.sweep_ticks;
+stepBoss(resting,{held:false,aim:0},course);assert.deepEqual(resting.tokens,['rope-1'],'rest grants the current rope');
 const paused=createBoss(course);resumeRun(paused);pauseRun(paused);stepBoss(paused,{held:true},course);assert.equal(paused.bell_ticks,0);
 assert.equal(restoreBoss({...run,tokens:['rope-3']},course),null);
 assert.equal(restoreBoss({...run,bell_ticks:-1},course),null);
-console.log('PASS Bellkeeper: input-only three-rope win, safe recovery, pause, strict restore and terminal idempotency.');
+console.log('PASS Bellkeeper: input-only three-rope win, rest-only ropes, three-life failure, safe recovery, pause, strict restore and terminal idempotency.');
