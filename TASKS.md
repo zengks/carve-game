@@ -20,6 +20,23 @@ Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
   Retain the shared gameplay and account/data goal and the separate course/rules
   provenance.
 
+## Shared playable section — Lantern Reach
+
+Branch `codex/common-playable-slice`; browser changes also feed draft PR25.
+See [shared course rules](docs/common-playable-slice.md).
+
+- [x] Agree course geometry, charge timing, collision, three lives, camp,
+  lanterns and finish rules with carve-mobile; share eight parity fixtures.
+- [x] Build the preview-only `/lantern/` browser section with one-thumb input,
+  optional two-thumb controls, local recovery and bounded completed results.
+- [x] Verify full input-handler completion, required build and Node 24/26 CI
+  at `3344e16`; hosted preview charge/release, pause and reload also pass.
+- [ ] Complete isolated iOS/Android builds and OS touch-input runs to the bell.
+- [ ] Observe newcomer comfort and replay interest before expanding the course.
+
+Keep both PRs unmerged and staging private. Do not mix this section's results
+with older courses or enable payments or mobile download prompts.
+
 ## Active web milestone: camera, reading flow and route decisions
 
 Branch `codex/flow-and-encounters`, preview entry `/?flow=1`. See

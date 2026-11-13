@@ -56,3 +56,20 @@ checkpoint recovery, terminal lives, corrupted snapshots and complete GOOD
 and PERFECT input-only routes. Native verifies the same state vectors within
 1e-5 numeric tolerance. Browser/device UI checks qualify the adapter separately.
 Player comfort and replay interest still need observation with newcomers.
+
+### Browser checkpoint — 2026-11-13
+
+`3344e16` passes the full `npm run build` suite and Node 24/26 CI. The actual
+browser module's DOM input harness completes the GOOD reference route using
+one-pad pointer handlers, retains three lives and writes one winning result.
+This is scripted adapter evidence, separate from human playtesting.
+
+The deployed preview was checked at
+<https://carve-game-re2xgg6st-zengksoutlookcoms-projects.vercel.app/lantern/>.
+Continuous mouse holds reached 30 m with three lives; pause and reload retained
+height, lives and elapsed time. No browser console errors were observed.
+The preceding identical gameplay build also retained a fall receipt and
+two-thumb/left-hand preferences across reload, with no document overflow in
+portrait emulation. These checks do not establish a full manual browser finish
+or physical-touch comfort. Vercel project authentication remains enabled for
+all deployments except custom domains; no access settings were changed.
