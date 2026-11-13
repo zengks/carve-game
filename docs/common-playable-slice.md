@@ -117,3 +117,15 @@ retained the same winning run ID and receipt. An actual replay tap created a
 fresh run ID with three lives and retained both recorded results, including
 the earlier unsuccessful attempt. No game-state injection was used. This is
 OS-input simulator evidence; physical-device comfort remains unverified.
+
+The integrated test then passed from an empty save on another isolated iOS
+26.5 simulator, at mobile checkpoint `a0e0588`. It passed 51 embedded checks,
+deliberate fall and cold recovery, 32 adaptive digitizer events, camp activation,
+and the bell at 147 m with two lanterns, 14 catches and two lives. Cold win
+reload and fresh replay retained exactly one completed result. The report at
+`carve-mobile/.local/broker-os/sliceq1794601189509/ios-run-1794601331984/report.json`
+records completion and cleanup success with XCTest exit zero. The mobile chat
+reported 35 PosterBoard samples with one PID, exit zero and no attributed crash.
+The final native preservation audit matched all 155 retained simulator
+identities/states and 97 scoped app/vault/emulator digests; one protected cache
+was metadata-only. All iOS simulators were stopped after verification.
