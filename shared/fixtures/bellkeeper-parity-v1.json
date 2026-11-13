@@ -1,0 +1,384 @@
+{
+  "commands": [
+    {
+      "repeat": 359,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 43,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 61,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 363,
+      "input": {
+        "held": false,
+        "aim": 0
+      }
+    },
+    {
+      "repeat": 336,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 16,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 7,
+      "input": {
+        "held": false,
+        "aim": 0
+      }
+    },
+    {
+      "repeat": 62,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 61,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 73,
+      "input": {
+        "held": false,
+        "aim": 0
+      }
+    },
+    {
+      "repeat": 7,
+      "input": {
+        "held": true,
+        "aim": 0
+      }
+    },
+    {
+      "repeat": 305,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 16,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 7,
+      "input": {
+        "held": false,
+        "aim": 0
+      }
+    },
+    {
+      "repeat": 62,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 61,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 73,
+      "input": {
+        "held": false,
+        "aim": 0
+      }
+    }
+  ],
+  "expected": {
+    "course_id": "common.bellkeeper-v1",
+    "rules_version": "bellkeeper-rules-1",
+    "x": 330,
+    "y": 1088.7555555555573,
+    "vx": 0,
+    "vy": -509.99999999999903,
+    "status": "won",
+    "ground": null,
+    "grip": null,
+    "away": 1,
+    "charge": 0,
+    "held": false,
+    "require_lift": false,
+    "last_wall": null,
+    "ticks": 3236,
+    "lives": 3,
+    "falls": 0,
+    "peak": 1238.6722222222236,
+    "checkpoint": null,
+    "tokens": [
+      "rope-1",
+      "rope-2",
+      "rope-3"
+    ],
+    "catches": 10,
+    "launches": 13,
+    "notice": "The Bellkeeper is quiet. Golden bell earned!",
+    "bell_ticks": 0
+  }
+}

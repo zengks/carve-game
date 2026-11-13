@@ -20,6 +20,16 @@ Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
   Retain the shared gameplay and account/data goal and the separate course/rules
   provenance.
 
+## Optional boss preview — Bellkeeper
+
+Branch `codex/bellkeeper-preview`. See [boss plan](docs/boss-encounters.md).
+
+- [x] Agree optional milestone encounters and preserve completed climbs.
+- [x] Define Bellkeeper ropes, warning/swing/rest cycle and separate boss lives.
+- [ ] Build and verify browser and native encounter entry, play, recovery and return.
+- [ ] Verify durable cosmetic recognition and best time, separate from climb scores.
+- [ ] Review difficulty with newcomers before adding Frost Warden or Echo Climber.
+
 ## Shared playable section — Lantern Reach
 
 Branch `codex/common-playable-slice`; browser changes also feed draft PR25.

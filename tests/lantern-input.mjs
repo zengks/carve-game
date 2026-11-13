@@ -9,6 +9,7 @@ get('stage').getBoundingClientRect=()=>({width:390,height:600});
 let frame;globalThis.requestAnimationFrame=fn=>{frame=fn;};
 globalThis.fetch=async()=>Response.json(course);
 const code=(await readFile(new URL('../src/lantern/game.mjs',import.meta.url),'utf8'))
+ .replace("'./bellkeeper.mjs'",JSON.stringify(new URL('../shared/bellkeeper-rules.mjs',import.meta.url).href))
  .replace("'./rules.mjs'",JSON.stringify(new URL('../shared/lantern-rules.mjs',import.meta.url).href));
 await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
 const event=(pointerId,extra={})=>({pointerId,isPrimary:true,button:0,clientX:195,preventDefault(){},...extra});
@@ -53,3 +54,32 @@ assert.equal(read().lives,3);
 const results=JSON.parse(local.get('carve.common.lantern-reach.v1.results'));
 assert.equal(results.length,1);assert.equal(results[0].outcome,'won');
 console.log('PASS Lantern controls: ownership, final-axis release, second-thumb charge, cancellation and a complete one-pad climb with one saved result.');
+const climbSave=local.get('carve.common.lantern-reach.v1');
+const climbResults=local.get('carve.common.lantern-reach.v1.results');
+const bossCourse=JSON.parse(await readFile(new URL('../shared/common-bellkeeper-v1.json',import.meta.url),'utf8'));
+location.search='?boss=bellkeeper';globalThis.fetch=async()=>Response.json(bossCourse);
+await import('data:text/javascript;base64,'+Buffer.from(code+'\n// boss entry').toString('base64'));
+assert.equal(get('continue').disabled,false);
+get('continue').onclick();now=performance.now();ticks(2);down=false;
+const bossFixture=JSON.parse(await readFile(new URL('../shared/fixtures/bellkeeper-parity-v1.json',import.meta.url),'utf8'));
+for(const command of bossFixture.commands){
+ const {held,aim}=command.input;
+ if(held&&!down)get('pad').onpointerdown(event(20));
+ const position=event(20,{clientX:195+40*aim});
+ if(held)get('pad').onpointermove(position);
+ else if(down)get('pad').onpointerup(position);
+ down=held;ticks(command.repeat);
+}
+const bossKey='carve.common.bellkeeper.v1';
+assert.equal(JSON.parse(local.get(bossKey)).run.status,'won');
+assert.equal(JSON.parse(local.get(bossKey+'.results')).length,1);
+assert.equal(JSON.parse(local.get(bossKey+'.reward')).golden_bell,true);
+assert.equal(local.get('carve.common.lantern-reach.v1'),climbSave);
+assert.equal(local.get('carve.common.lantern-reach.v1.results'),climbResults);
+await import('data:text/javascript;base64,'+Buffer.from(code+'\n// boss reload').toString('base64'));
+assert.equal(JSON.parse(local.get(bossKey+'.results')).length,1,'reload never duplicates the boss result');
+get('continue').onclick();
+assert.equal(JSON.parse(local.get(bossKey)).run.tokens.length,0);
+assert.equal(JSON.parse(local.get(bossKey+'.reward')).golden_bell,true);
+assert.equal(local.get('carve.common.lantern-reach.v1'),climbSave);
+console.log('PASS Bellkeeper UI: unlocked entry, one-thumb finish, isolated climb save, durable reward, reload deduplication and replay.');

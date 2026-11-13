@@ -1,8 +1,20 @@
 import {createRun,restoreRun,pauseRun,resumeRun,stepRun,quality} from './rules.mjs';
-const course=await (await fetch('./course.json')).json();
+import {createBoss,restoreBoss,stepBoss,bellState} from './bellkeeper.mjs';
+const bossMode = new URLSearchParams(location.search).get('boss') === 'bellkeeper';
+const course = await (await fetch(bossMode ? './bellkeeper.json' : './course.json')).json();
+const newRun = bossMode ? createBoss : createRun;
+const restore = bossMode ? restoreBoss : restoreRun;
+const step = bossMode ? stepBoss : stepRun;
+let bossUnlocked = false;
+try {
+ const saved = JSON.parse(localStorage.getItem('carve.common.lantern-reach.v1'));
+ const records = JSON.parse(localStorage.getItem('carve.common.lantern-reach.v1.results') || '[]');
+ bossUnlocked = saved?.run?.status === 'won' || records.some(r => r.outcome === 'won');
+} catch {}
+
 const $=id=>document.getElementById(id),canvas=$('world'),ctx=canvas.getContext('2d');
-const saveKey='carve.common.lantern-reach.v1',preferencesKey=saveKey+'.controls';
-let run=createRun(course),runId=crypto.randomUUID(),camera=0,previous=performance.now(),accumulator=0;
+const saveKey=bossMode?'carve.common.bellkeeper.v1':'carve.common.lantern-reach.v1',preferencesKey='carve.common.lantern-reach.v1.controls';
+let run=newRun(course),runId=crypto.randomUUID(),camera=0,previous=performance.now(),accumulator=0;
 let chargeOwner=null,originX=0,pointerAim=0,lastAim=0;
 const keys=new Set(),leftOwners=new Set(),rightOwners=new Set();
 let scheme='one',hand='right',muted=false,audio=null,audioUnlocked=false,lastNotice='',noticeUntil=0,storageOK=true;
@@ -11,7 +23,7 @@ try{
  if(['one','two'].includes(prefs?.scheme))scheme=prefs.scheme;
  if(['left','right'].includes(prefs?.hand))hand=prefs.hand;
  const saved=JSON.parse(localStorage.getItem(saveKey));
- const restored=restoreRun(saved?.run,course);
+ const restored=restore(saved?.run,course);
  if(restored&&typeof saved.run_id==='string'){run=restored;runId=saved.run_id;}
 }catch{storageOK=false;}
 function save(){
@@ -23,6 +35,12 @@ function recordResult(){
  try{
   const records=JSON.parse(localStorage.getItem(saveKey+'.results')??'[]');
   if(!Array.isArray(records)||records.some(r=>r.run_id===runId))return;
+  if(bossMode&&run.status==='won'){
+   const rewardKey='carve.common.bellkeeper.v1.reward';
+   const prior=JSON.parse(localStorage.getItem(rewardKey)||'null');
+   const best=Number.isSafeInteger(prior?.best_ticks)&&prior.best_ticks>0?Math.min(prior.best_ticks,run.ticks):run.ticks;
+   localStorage.setItem(rewardKey,JSON.stringify({golden_bell:true,best_ticks:best}));
+  }
   records.unshift({run_id:runId,course_id:course.course_id,rules_version:course.rules_version,
    outcome:run.status,height_m:Math.floor(run.peak/10),active_ticks:run.ticks,falls:run.falls,tokens:[...run.tokens]});
   localStorage.setItem(saveKey+'.results',JSON.stringify(records.slice(0,20)));
@@ -45,14 +63,33 @@ function showOverlay(){
  $('result').textContent=run.ticks?Math.floor(run.peak/10)+' m reached · '+run.tokens.length+'/4 lanterns · '+(run.ticks/120).toFixed(1)+' s · '+run.falls+' falls':'Three lives. Reach the bell at 148 m.';
  $('continue').textContent=['won','lost'].includes(status)?'Climb again':status==='ready'?'Begin the climb':'Continue climbing';
  $('restart').hidden=!['paused','recovery'].includes(status);
+ $('boss-entry').hidden = bossMode || status !== 'won';
+ $('boss-return').hidden = !bossMode;
+ if (bossMode) {
+  $('title').textContent = status === 'won' ? 'The Bellkeeper rests' : status === 'lost' ? 'Try the bell again' : status === 'recovery' ? 'Caught by the bell' : status === 'paused' ? 'Your challenge is safe' : 'The Bellkeeper';
+  $('description').textContent = bossUnlocked ? 'Secure three ropes while the bell rests.' : 'Complete Lantern Reach to unlock this challenge.';
+  $('detail').textContent = 'The glowing line warns of a swing. Leap clear, then approach the golden rope during REST. Shelves give you room to wait.';
+  $('result').textContent = run.tokens.length + '/3 ropes · ' + (run.ticks/120).toFixed(1) + ' s · ' + run.falls + ' falls';
+  $('continue').disabled = !bossUnlocked;
+  if(status==='won'){
+   $('description').textContent='Golden bell earned · your climb result is saved.';
+   try {
+    const reward=JSON.parse(localStorage.getItem(saveKey+'.reward'));
+    $('detail').textContent='Best recorded clear: '+(reward.best_ticks/120).toFixed(1)+' s. Play again to improve your time.';
+   }catch{}
+  }
+ }
  $('save-note').textContent=storageOK?'This preview keeps its own local save. Earlier CARVE progress stays separate.':'Browser storage is unavailable. Keep this tab open to retain this attempt.';
 }
 function begin(){
- if(['won','lost'].includes(run.status)){run=createRun(course);runId=crypto.randomUUID();camera=0;}
+ if(bossMode&&!bossUnlocked)return;
+ if(['won','lost'].includes(run.status)){run=newRun(course);runId=crypto.randomUUID();camera=0;}
  clearInput();resumeRun(run);previous=performance.now();accumulator=0;audioUnlocked=true;save();showOverlay();canvas.focus({preventScroll:true});
 }
 $('continue').onclick=begin;
-$('restart').onclick=()=>{if(confirm('Start a new Lantern Reach run? This replaces this preview attempt.')){run=createRun(course);runId=crypto.randomUUID();camera=0;begin();}};
+$('boss-entry').onclick=()=>{save();location.href='?boss=bellkeeper';};
+$('boss-return').onclick=()=>{pause();location.href='/lantern/';};
+$('restart').onclick=()=>{if(confirm('Start a new Lantern Reach run? This replaces this preview attempt.')){run=newRun(course);runId=crypto.randomUUID();camera=0;begin();}};
 $('pause').onclick=pause;
 function configure(event){
  scheme=$('scheme').value;hand=$('hand').value;if(event)pause();
@@ -140,6 +177,7 @@ function draw(now,elapsed){
    ctx.fillStyle='#91b89c';for(let xx=x;xx<x+w;xx+=17)ctx.fillRect(xx,top-3,9,4);
   }
  }
+ if(!bossMode){
  ctx.fillStyle=run.checkpoint?'#aff0c8':'#6d9696';ctx.font='bold 10px system-ui';ctx.textAlign='right';ctx.fillText(run.checkpoint?'CAMP LIT':'LIGHT CAMP',328,sy(654));
  const campGlow=ctx.createRadialGradient(321,sy(636),1,321,sy(636),38);
  campGlow.addColorStop(0,run.checkpoint?'#adf1c884':'#6cc9de66');campGlow.addColorStop(1,'#6cc9de00');
@@ -147,12 +185,24 @@ function draw(now,elapsed){
  ctx.strokeStyle=run.checkpoint?'#c5f7d8':'#8be5e4';ctx.lineWidth=2;ctx.strokeRect(315,sy(636)-8,12,16);
  ctx.fillStyle='#d1b677';ctx.textAlign='left';ctx.fillText('GOLDEN SHORTCUT',84,sy(965));
  ctx.fillStyle='#99c9c1';ctx.fillText('RESCUE SHELF',58,sy(345));
+ }
  for(const t of course.tokens){
+  if(bossMode && t.id !== course.tokens[Math.min(run.tokens.length,2)].id)continue;
   if(run.tokens.includes(t.id))continue;
   const [x,y]=t.position,Y=sy(y);if(Y< -30||Y>H+30)continue;
   const glow=ctx.createRadialGradient(x,Y,0,x,Y,27);glow.addColorStop(0,'#f7dc8a65');glow.addColorStop(1,'#f7dc8a00');
   ctx.fillStyle=glow;ctx.fillRect(x-27,Y-27,54,54);
   ctx.save();ctx.translate(x,Y+Math.sin(now*.003)*3);ctx.rotate(Math.PI/4);ctx.fillStyle='#f2d277';ctx.fillRect(-5,-5,10,10);ctx.restore();
+ }
+ if(bossMode){
+  const bell=bellState(run,course),Y=sy(bell.y);
+  ctx.strokeStyle=bell.stage==='warning'?'#ffbb77':'#e4c879';ctx.lineWidth=3;
+  ctx.setLineDash([7,6]);ctx.beginPath();ctx.moveTo(50,Y);ctx.lineTo(340,Y);ctx.stroke();ctx.setLineDash([]);
+  const x=bell.stage==='rest'?195:bell.x, y=bell.stage==='rest'?Y-70:Y;
+  ctx.fillStyle=bell.stage==='swing'?'#f0ae66':'#b7a16a';
+  ctx.beginPath();ctx.arc(x,y,25,Math.PI,0);ctx.lineTo(x+29,y+24);ctx.lineTo(x-29,y+24);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#f4dda5';ctx.font='bold 12px system-ui';ctx.textAlign='center';
+  ctx.fillText(bell.stage==='warning'?'BELL DRAWING BACK':bell.stage==='swing'?'SWING · KEEP CLEAR':'REST · REACH THE ROPE',195,Y-42);
  }
  const bellY=sy(1510);ctx.strokeStyle='#e5c16b';ctx.lineWidth=3;ctx.beginPath();ctx.arc(195,bellY,24,Math.PI,0);ctx.lineTo(219,bellY+13);ctx.lineTo(171,bellY+13);ctx.closePath();ctx.stroke();
  ctx.fillStyle='#e5c16b';ctx.beginPath();ctx.arc(195,bellY+19,4,0,Math.PI*2);ctx.fill();
@@ -168,9 +218,11 @@ function draw(now,elapsed){
   ctx.lineWidth=3;ctx.beginPath();ctx.arc(X,Y,19,-Math.PI/2,-Math.PI/2+2*Math.PI*Math.min(run.charge/147,1));ctx.stroke();
  }
  $('height').textContent=Math.floor(run.peak/10)+' m';$('lives').textContent='♥ '.repeat(run.lives).trim();$('lanterns').textContent=run.tokens.length+' / 4 lanterns';
+ if(bossMode)$('lanterns').textContent=run.tokens.length+' / 3 ropes';
  $('charge').style.width=(run.charge/147*100)+'%';
  $('quality').textContent=run.charge?quality(run.charge,course).toUpperCase()+' · release to leap':run.grip?'Caught · hold to charge from zero':'Hold again in flight to catch';
  $('instruction').textContent=run.launches===0?'HOLD · DRAG TO AIM · RELEASE':run.y>1400?'REACH THE SUMMIT BELL':run.y>700&&run.y<1050?'GOLD PILLAR · SHORTER CROSSING, SMALLER TARGET':run.checkpoint?'CAMP LIT · FIND YOUR NEXT LANTERN':'BLUE WALLS LEAD TO THE SAFE CAMP';
+ if(bossMode)$('instruction').textContent=bellState(run,course).stage==='rest'?'REST · REACH THE GOLDEN ROPE':'WATCH THE BELL · LEAP CLEAR OF THE LINE';
  if(run.notice!==lastNotice){
   lastNotice=run.notice;noticeUntil=now+4500;
   if(run.notice.includes('lantern')||run.notice.includes('Lantern'))sound(620);else if(run.notice.includes('release'))sound(330);
@@ -186,7 +238,7 @@ function frame(now){
   const padAim=scheme==='one'?(chargeOwner===null?lastAim:pointerAim):(rightOwners.size?1:0)-(leftOwners.size?1:0);
   const held=chargeOwner!==null||keys.has('Space'),aim=Math.max(-1,Math.min(1,keyboardAim+padAim));
   let steps=0;
-  while(accumulator>=1/120&&steps<12){stepRun(run,{held,aim},course);accumulator-=1/120;steps++;if(run.status!=='playing')break;}
+  while(accumulator>=1/120&&steps<12){step(run,{held,aim},course);accumulator-=1/120;steps++;if(run.status!=='playing')break;}
   if(steps)lastAim=0;
   if(run.status!=='playing'){clearInput();save();showOverlay();if(run.status==='won')sound(880);}
   if(now-savedAt>1500){save();savedAt=now;}
