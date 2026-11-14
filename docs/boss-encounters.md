@@ -15,7 +15,7 @@ next warning. Three ropes finish the challenge.
 
 The reference is `shared/common-bellkeeper-v1.json` and
 `shared/bellkeeper-rules.mjs`. At 120 Hz the warning lasts 180, 156 and 132 ticks,
-the sweep 180 and rest 360. The bell crosses x100–290 at the current rope height,
+the sweep 180 and rest 540. The bell crosses x100–290 at 60 units above the current rope,
 with radius 18. Ropes use a 42-unit collection radius. Warnings use text, motion
 and a line as well as color. The camera follows the existing smooth vertical
 movement, and touch ownership/cancellation follows the normal game.
@@ -24,7 +24,7 @@ Three boss lives belong to each attempt. A hit returns the player to the
 entrance with secured ropes retained and an explicit continuation receipt.
 A new attempt resets the boss. Return saves the boss separately and restores the
 Lantern result. Active reload resumes paused with fresh input required. The
-boss uses `common.bellkeeper-v1` / `bellkeeper-rules-1`, isolated local saves,
+boss uses `common.bellkeeper-v1` / `bellkeeper-rules-2`, isolated local saves,
 bounded 20-result history and durable best-time/golden-bell ownership.
 
 The golden bell is an earned cosmetic recognition. It adds no paid benefit or
@@ -39,7 +39,35 @@ wallet transaction. Shared cloud ownership follows the existing storage plan.
 - Verify actual browser UI and native exported UI with one-thumb controls.
 - Keep previews private, PRs unmerged, and mobile download prompts disabled.
 - Aim for 30–60 seconds for a learned clear, then tune with first-time players.
-  The initial reference route clears in about 27 seconds without losing a life.
+  The initial rules-1 reference route cleared in about 27 seconds without losing
+  a life; the tuned rules-2 reference clears in about 19 seconds.
+
+## One-thumb playthrough tuning — 2026-11-14
+
+The browser attempt secured the first rope with three lives, then lost a life
+at the second shelf. The original sweep intersected the advertised waiting
+area. Rules 2 moves the sweep 60 units overhead and extends REST to 4.5 seconds,
+so normal GOOD releases can reach the next shelf without requiring PERFECT
+timing. All three shelves are tested for safety across a complete cycle;
+airborne contact with the higher sweep still costs one life.
+
+The browser now names the next rope's side and height and explains letting go
+to land, waiting for REST and dragging away from a shelf. Recovery wording
+refers to ropes rather than lanterns. Short desktop pause screens use compact
+spacing. The new `carve.common.bellkeeper.v2` slot leaves rules-1 saves, results
+and rewards intact; best times are not combined across the two balance versions.
+The full input-only reference and browser adapter clear three ropes with three
+lives in 2,274 ticks. These automated traces alone are not hands-on playthrough proof.
+
+The deployed `dca0427` browser preview was then completed through adaptive
+one-pad mouse holds and drags: **42.4 seconds active time, three ropes, three
+lives, zero falls**. Pauses were used to inspect the route. No state injection
+or hidden-state controller drove this run. The victory, golden bell and best
+time survived reload; Return retained the parent Lantern result (147 m,
+two lanterns, three lives, 18.3 seconds). Desktop pause/result buttons fit
+after the spacing adjustment. A lingering post-victory WARNING cue was fixed
+and covered by the browser adapter test. This remains pointer-driven browser
+evidence, separate from native OS touch and physical-device ergonomics.
 
 ## Browser verification — 2026-11-13
 

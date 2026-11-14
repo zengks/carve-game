@@ -76,6 +76,7 @@ const bossKey='carve.common.bellkeeper.v2';
 assert.equal(JSON.parse(local.get(bossKey)).run.status,'won');
 assert.equal(JSON.parse(local.get(bossKey+'.results')).length,1);
 assert.equal(JSON.parse(local.get(bossKey+'.reward')).golden_bell,true);
+assert.equal(get('instruction').textContent,'BELLKEEPER COMPLETE','victory never shows an active swing warning');
 assert.equal(local.get('carve.common.lantern-reach.v1'),climbSave);
 assert.equal(local.get('carve.common.lantern-reach.v1.results'),climbResults);
 for(const suffix of ['', '.results', '.reward'])assert.equal(local.get(oldBoss+suffix),'retained earlier preview '+suffix);

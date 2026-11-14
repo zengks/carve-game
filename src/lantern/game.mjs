@@ -236,6 +236,10 @@ function draw(now,elapsed){
   const direction=rope.position[0]<195?'LEFT':'RIGHT';
   $('instruction').textContent='ROPE '+(bell.phase+1)+' · '+direction+' · '+Math.round(rope.position[1]/10)+' m · '+bell.stage.toUpperCase();
   if(!run.charge)$('quality').textContent=run.ground?'Shelf safe · drag toward the next rope':run.grip?'Caught · charge, then release':'Let go above a rope shelf to land';
+  if(['won','lost'].includes(run.status)){
+   $('instruction').textContent=run.status==='won'?'BELLKEEPER COMPLETE':'CHALLENGE COMPLETE';
+   $('quality').textContent='Review your result, retry or return to Lantern Reach';
+  }
  }
  if(run.notice!==lastNotice){
   lastNotice=run.notice;noticeUntil=now+4500;
