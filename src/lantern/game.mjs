@@ -19,7 +19,7 @@ if(bossMode){
  $('stage').setAttribute('aria-label','Bellkeeper climbing challenge');
  canvas.setAttribute('aria-label','Avoid the swinging bell and secure three golden ropes while it rests.');
 }
-const saveKey=bossMode?'carve.common.bellkeeper.v1':'carve.common.lantern-reach.v1',preferencesKey='carve.common.lantern-reach.v1.controls';
+const saveKey=bossMode?'carve.common.bellkeeper.v2':'carve.common.lantern-reach.v1',preferencesKey='carve.common.lantern-reach.v1.controls';
 let run=newRun(course),runId=crypto.randomUUID(),camera=0,previous=performance.now(),accumulator=0;
 let chargeOwner=null,originX=0,pointerAim=0,lastAim=0;
 const keys=new Set(),leftOwners=new Set(),rightOwners=new Set();
@@ -42,7 +42,7 @@ function recordResult(){
   const records=JSON.parse(localStorage.getItem(saveKey+'.results')??'[]');
   if(!Array.isArray(records)||records.some(r=>r.run_id===runId))return;
   if(bossMode&&run.status==='won'){
-   const rewardKey='carve.common.bellkeeper.v1.reward';
+   const rewardKey=saveKey+'.reward';
    const prior=JSON.parse(localStorage.getItem(rewardKey)||'null');
    const best=Number.isSafeInteger(prior?.best_ticks)&&prior.best_ticks>0?Math.min(prior.best_ticks,run.ticks):run.ticks;
    localStorage.setItem(rewardKey,JSON.stringify({golden_bell:true,best_ticks:best}));
@@ -72,9 +72,11 @@ function showOverlay(){
  $('boss-entry').hidden = bossMode || status !== 'won';
  $('boss-return').hidden = !bossMode;
  if (bossMode) {
-  $('title').textContent = status === 'won' ? 'The Bellkeeper rests' : status === 'lost' ? 'Try the bell again' : status === 'recovery' ? 'Caught by the bell' : status === 'paused' ? 'Your challenge is safe' : 'The Bellkeeper';
+  $('title').textContent = status === 'won' ? 'The Bellkeeper rests' : status === 'lost' ? 'Try the bell again' : status === 'recovery' ? 'Take a breath' : status === 'paused' ? 'Your challenge is safe' : 'The Bellkeeper';
   $('description').textContent = bossUnlocked ? 'Secure three ropes while the bell rests.' : 'Complete Lantern Reach to unlock this challenge.';
-  $('detail').textContent = 'The glowing line warns of a swing. Leap clear, then approach the golden rope during REST. Shelves give you room to wait.';
+  $('detail').textContent = 'Wait for REST, then climb. Let go above a rope shelf to land safely. Drag toward the next rope to leave the shelf.';
+  if(status==='paused')$('detail').textContent='Resume with a fresh touch. Land on shelves to wait safely beneath the swing.';
+  if(['recovery','lost'].includes(status))$('description').textContent=run.notice;
   $('result').textContent = run.tokens.length + '/3 ropes · ' + (run.ticks/120).toFixed(1) + ' s · ' + run.falls + ' falls';
   $('continue').disabled = !bossUnlocked;
   $('continue').textContent=['won','lost'].includes(status)?'Challenge again':status==='ready'?'Begin the challenge':'Continue challenge';
@@ -229,7 +231,12 @@ function draw(now,elapsed){
  $('charge').style.width=(run.charge/147*100)+'%';
  $('quality').textContent=run.charge?quality(run.charge,course).toUpperCase()+' · release to leap':run.grip?'Caught · hold to charge from zero':'Hold again in flight to catch';
  $('instruction').textContent=run.launches===0?'HOLD · DRAG TO AIM · RELEASE':run.y>1400?'REACH THE SUMMIT BELL':run.y>700&&run.y<1050?'GOLD PILLAR · SHORTER CROSSING, SMALLER TARGET':run.checkpoint?'CAMP LIT · FIND YOUR NEXT LANTERN':'BLUE WALLS LEAD TO THE SAFE CAMP';
- if(bossMode)$('instruction').textContent=bellState(run,course).stage==='rest'?'REST · REACH THE GOLDEN ROPE':'WATCH THE BELL · LEAP CLEAR OF THE LINE';
+ if(bossMode){
+  const bell=bellState(run,course),rope=course.tokens[bell.phase];
+  const direction=rope.position[0]<195?'LEFT':'RIGHT';
+  $('instruction').textContent='ROPE '+(bell.phase+1)+' · '+direction+' · '+Math.round(rope.position[1]/10)+' m · '+bell.stage.toUpperCase();
+  if(!run.charge)$('quality').textContent=run.ground?'Shelf safe · drag toward the next rope':run.grip?'Caught · charge, then release':'Let go above a rope shelf to land';
+ }
  if(run.notice!==lastNotice){
   lastNotice=run.notice;noticeUntil=now+4500;
   if(run.notice.includes('lantern')||run.notice.includes('Lantern'))sound(620);else if(run.notice.includes('release'))sound(330);

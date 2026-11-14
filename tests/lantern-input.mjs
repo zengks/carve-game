@@ -57,6 +57,8 @@ console.log('PASS Lantern controls: ownership, final-axis release, second-thumb 
 const climbSave=local.get('carve.common.lantern-reach.v1');
 const climbResults=local.get('carve.common.lantern-reach.v1.results');
 const bossCourse=JSON.parse(await readFile(new URL('../shared/common-bellkeeper-v1.json',import.meta.url),'utf8'));
+const oldBoss='carve.common.bellkeeper.v1';
+for(const suffix of ['', '.results', '.reward'])local.set(oldBoss+suffix,'retained earlier preview '+suffix);
 location.search='?boss=bellkeeper';globalThis.fetch=async()=>Response.json(bossCourse);
 await import('data:text/javascript;base64,'+Buffer.from(code+'\n// boss entry').toString('base64'));
 assert.equal(get('continue').disabled,false);
@@ -70,12 +72,13 @@ for(const command of bossFixture.commands){
  else if(down)get('pad').onpointerup(position);
  down=held;ticks(command.repeat);
 }
-const bossKey='carve.common.bellkeeper.v1';
+const bossKey='carve.common.bellkeeper.v2';
 assert.equal(JSON.parse(local.get(bossKey)).run.status,'won');
 assert.equal(JSON.parse(local.get(bossKey+'.results')).length,1);
 assert.equal(JSON.parse(local.get(bossKey+'.reward')).golden_bell,true);
 assert.equal(local.get('carve.common.lantern-reach.v1'),climbSave);
 assert.equal(local.get('carve.common.lantern-reach.v1.results'),climbResults);
+for(const suffix of ['', '.results', '.reward'])assert.equal(local.get(oldBoss+suffix),'retained earlier preview '+suffix);
 await import('data:text/javascript;base64,'+Buffer.from(code+'\n// boss reload').toString('base64'));
 assert.equal(JSON.parse(local.get(bossKey+'.results')).length,1,'reload never duplicates the boss result');
 get('continue').onclick();

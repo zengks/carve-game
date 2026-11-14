@@ -1,6 +1,6 @@
 {
   "course_id": "common.bellkeeper-v1",
-  "rules_version": "bellkeeper-rules-1",
+  "rules_version": "bellkeeper-rules-2",
   "title": "The Bellkeeper",
   "step_hz": 120,
   "width": 390,
@@ -146,13 +146,14 @@
     }
   ],
   "bell": {
+    "height_above_rope": 60,
     "warning_ticks": [
       180,
       156,
       132
     ],
     "sweep_ticks": 180,
-    "rest_ticks": 360,
+    "rest_ticks": 540,
     "radius": 18,
     "rope_radius": 42
   }

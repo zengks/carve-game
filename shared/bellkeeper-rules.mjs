@@ -20,13 +20,16 @@ export function bellState(run, course) {
   const stage = tick < warning ? 'warning' : tick < warning + course.bell.sweep_ticks ? 'swing' : 'rest';
   const travel = Math.max(0, Math.min(1, (tick - warning) / course.bell.sweep_ticks));
   return {phase, stage, x: phase % 2 ? 290 - travel * 190 : 100 + travel * 190,
-    y: course.tokens[phase].position[1], remaining: cycle - tick};
+    y: course.tokens[phase].position[1] + course.bell.height_above_rope, remaining: cycle - tick};
 }
 
 export function stepBoss(run, input, course) {
   if (run.status !== 'playing') return;
   // Rope collection has its own resting window. Reuse all climbing physics.
   stepRun(run, input, {...course, tokens: []});
+  if (run.status === 'recovery' || run.status === 'lost') {
+    run.notice = run.lives ? 'One life lost. Your secured ropes are kept.' : 'Three lives used. Your secured ropes and time are in this result.';
+  }
   if (run.status !== 'playing') return;
   run.bell_ticks++;
   const bell = bellState(run, course);
