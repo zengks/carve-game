@@ -102,3 +102,38 @@ The scaffolding caps a binding at 64 intents and retains their audit state; this
 is not a final production retention/rate policy. Completed native gameplay data,
 shared bounty, entitlements and purchases are still outside this milestone.
 No fixture result establishes live OAuth, native SDK or production readiness.
+
+## Private HTTPS QA
+
+With OpenSSL and a loopback PostgreSQL QA instance, run
+`node tests/private-native-https.mjs` using the same isolated test database
+environment as `npm run test:database`. The test starts the real broker handler
+on an ephemeral loopback TLS listener, uses a temporary certificate for
+`carve-private-qa.test`, creates a fresh database and closes its listeners and
+connections afterward. It retains the synthetic database for inspection.
+
+The browser entry point completes a signed synthetic provider flow locally.
+Native exchange uses the production handler, with the exact portless HTTPS app
+return, state, PKCE verifier and one-use code. The test client connects to the
+ephemeral port with the reserved hostname for HTTP and TLS and trusts the
+temporary certificate only for those requests. System DNS, keychain, trust
+settings and hosted configuration stay untouched.
+
+This fixture checks HTTPS transport and the exchange. Native OS association is
+separate. A positive iOS test needs a development-signed QA build with
+`webcredentials:carve-private-qa.test?mode=developer`, an opted-in target and
+private HTTPS serving an AASA that matches the signed application identifier.
+Once carve-mobile's signing preflight produces an association, use its exact
+output with `CARVE_NATIVE_TEST_ADMIN_URL` set to the loopback QA admin connection:
+
+```sh
+node tests/serve-private-ios-qa.mjs /path/to/apple-app-site-association /path/to/tls-key.pem /path/to/tls-cert.pem
+```
+
+The command accepts only the isolated iOS QA application identifier, serves
+the matching JSON at `/.well-known/apple-app-site-association`, and prints the
+ephemeral loopback port. The TLS certificate must match the QA hostname.
+Connect canonical port 443 to the listener through the owned test target's
+private network and trust configuration. Stop the fixture with Ctrl+C after
+the run. The default fixture serves no association, and neither path uses
+provider or Vercel credentials.

@@ -6,6 +6,55 @@ the next evidence-based task rather than treating a checkpoint as a new decision
 for the user. Preserve all existing data and virtual devices. Device testing is
 Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
 
+## Release sequencing update — 2026-11-06
+
+- [x] Defer paid Apple Developer enrollment and membership-dependent signing work
+  to the final App Store preparation phase, as requested by the user.
+- [ ] Before App Store submission, allow time for membership activation,
+  eligible QA signing, successful real sign-in/return and final release testing.
+  These remain release requirements.
+- Continue local development and fresh-data QA with the existing private
+  fixtures. Staging stays private and the current web/mobile PRs stay unmerged.
+- Active platforms are browser and native iOS/Android, including tablets.
+  Windows/Steam is out of the active roadmap by user decision.
+  Retain the shared gameplay and account/data goal and the separate course/rules
+  provenance.
+
+## Optional boss preview — Bellkeeper
+
+Branch `codex/bellkeeper-preview`. See [boss plan](docs/boss-encounters.md).
+
+- [x] Agree optional milestone encounters and preserve completed climbs.
+- [x] Define Bellkeeper ropes, warning/swing/rest cycle and separate boss lives.
+- [x] Build browser/native encounters; verify full wins by input fixtures and
+  browser adapter tests, plus browser and iOS/Android OS entry/pause/return.
+- [x] Verify durable cosmetic recognition and best time, separate from climb scores.
+- [x] Complete adaptive one-pad browser clears and full native OS-touch clears
+  on iOS/Android; fix unsafe waiting shelves and ignored rapid first touches.
+- [ ] Assess warning timing with new players and physical devices; successful
+  browser and virtual-device runs do not establish comfort or enjoyment.
+- [ ] Review difficulty with newcomers before adding Frost Warden or Echo Climber.
+
+## Shared playable section — Lantern Reach
+
+Branch `codex/common-playable-slice`; browser changes also feed draft PR25.
+See [shared course rules](docs/common-playable-slice.md).
+
+- [x] Agree course geometry, charge timing, collision, three lives, camp,
+  lanterns and finish rules with carve-mobile; share eight parity fixtures.
+- [x] Build the preview-only `/lantern/` browser section with one-thumb input,
+  optional two-thumb controls, local recovery and bounded completed results.
+- [x] Verify full input-handler completion, required build and Node 24/26 CI
+  at `3344e16`; hosted preview charge/release, pause and reload also pass.
+- [x] Build isolated iOS/Android previews; Android OS one-thumb run reaches
+  the bell and retains its result after cold relaunch (mobile PR46 `47ed448`).
+- [x] Finish iOS one-thumb climb through simulator digitizer touches; verify
+  the winning receipt after cold relaunch and a fresh replay preserving history.
+- [ ] Observe newcomer comfort and replay interest before expanding the course.
+
+Keep both PRs unmerged and staging private. Do not mix this section's results
+with older courses or enable payments or mobile download prompts.
+
 ## Active web milestone: camera, reading flow and route decisions
 
 Branch `codex/flow-and-encounters`, preview entry `/?flow=1`. See

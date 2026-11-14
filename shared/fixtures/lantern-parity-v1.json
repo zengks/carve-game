@@ -1,0 +1,877 @@
+{
+  "course_id": "common.lantern-reach-v1",
+  "rules_version": "lantern-rules-1",
+  "initial": "createRun; resumeRun; one step with held false",
+  "tolerance": 0.00001,
+  "cases": [
+    {
+      "name": "ground-good-release",
+      "patch": {},
+      "commands": [
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 50,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        }
+      ],
+      "expected": {
+        "course_id": "common.lantern-reach-v1",
+        "rules_version": "lantern-rules-1",
+        "x": 330,
+        "y": 122.748888888889,
+        "vx": 0,
+        "vy": 0,
+        "status": "playing",
+        "ground": null,
+        "grip": "east",
+        "away": -1,
+        "charge": 7,
+        "held": true,
+        "require_lift": false,
+        "last_wall": null,
+        "ticks": 107,
+        "lives": 3,
+        "falls": 0,
+        "peak": 122.748888888889,
+        "checkpoint": null,
+        "tokens": [],
+        "catches": 1,
+        "launches": 1,
+        "notice": "Caught. Charge from zero, then release."
+      }
+    },
+    {
+      "name": "grip-expiry",
+      "patch": {
+        "x": 60,
+        "y": 220,
+        "ground": null,
+        "grip": "west",
+        "away": 1
+      },
+      "commands": [
+        {
+          "repeat": 147,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 5,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        }
+      ],
+      "expected": {
+        "course_id": "common.lantern-reach-v1",
+        "rules_version": "lantern-rules-1",
+        "x": 62.875,
+        "y": 216.96666666666667,
+        "vx": 70,
+        "vy": -79,
+        "status": "playing",
+        "ground": null,
+        "grip": null,
+        "away": 1,
+        "charge": 0,
+        "held": false,
+        "require_lift": true,
+        "last_wall": "west",
+        "ticks": 153,
+        "lives": 3,
+        "falls": 0,
+        "peak": 220,
+        "checkpoint": null,
+        "tokens": [],
+        "catches": 0,
+        "launches": 0,
+        "notice": "Overheld. Lift your thumb, then catch again."
+      }
+    },
+    {
+      "name": "cancel-wins",
+      "patch": {
+        "x": 330,
+        "y": 400,
+        "ground": null,
+        "grip": "east",
+        "away": -1,
+        "charge": 84,
+        "held": true
+      },
+      "commands": [
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1,
+            "cancel": true
+          }
+        }
+      ],
+      "expected": {
+        "course_id": "common.lantern-reach-v1",
+        "rules_version": "lantern-rules-1",
+        "x": 330,
+        "y": 400,
+        "vx": 0,
+        "vy": 0,
+        "status": "paused",
+        "ground": null,
+        "grip": "east",
+        "away": -1,
+        "charge": 0,
+        "held": false,
+        "require_lift": true,
+        "last_wall": null,
+        "ticks": 1,
+        "lives": 3,
+        "falls": 0,
+        "peak": 12,
+        "checkpoint": null,
+        "tokens": [],
+        "catches": 0,
+        "launches": 0,
+        "notice": "Hold, aim, release."
+      }
+    },
+    {
+      "name": "rescue-shelf",
+      "patch": {
+        "x": 100,
+        "y": 370,
+        "ground": null,
+        "vy": -200
+      },
+      "commands": [
+        {
+          "repeat": 80,
+          "input": {
+            "held": false,
+            "aim": 0
+          }
+        }
+      ],
+      "expected": {
+        "course_id": "common.lantern-reach-v1",
+        "rules_version": "lantern-rules-1",
+        "x": 100,
+        "y": 344,
+        "vx": 0,
+        "vy": 0,
+        "status": "playing",
+        "ground": "rescue",
+        "grip": null,
+        "away": 1,
+        "charge": 0,
+        "held": false,
+        "require_lift": false,
+        "last_wall": null,
+        "ticks": 81,
+        "lives": 3,
+        "falls": 0,
+        "peak": 368.27222222222224,
+        "checkpoint": null,
+        "tokens": [],
+        "catches": 0,
+        "launches": 0,
+        "notice": "Rescue shelf caught you. Your lives are safe."
+      }
+    },
+    {
+      "name": "camp-beacon",
+      "patch": {
+        "x": 310,
+        "y": 650,
+        "ground": null
+      },
+      "commands": [
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 0
+          }
+        }
+      ],
+      "expected": {
+        "course_id": "common.lantern-reach-v1",
+        "rules_version": "lantern-rules-1",
+        "x": 310,
+        "y": 649.9388888888889,
+        "vx": 0,
+        "vy": -7.333333333333333,
+        "status": "playing",
+        "ground": null,
+        "grip": null,
+        "away": 1,
+        "charge": 0,
+        "held": false,
+        "require_lift": false,
+        "last_wall": null,
+        "ticks": 2,
+        "lives": 3,
+        "falls": 0,
+        "peak": 649.9388888888889,
+        "checkpoint": "camp",
+        "tokens": [],
+        "catches": 0,
+        "launches": 0,
+        "notice": "Camp lit. Falls return here."
+      }
+    },
+    {
+      "name": "third-fall",
+      "patch": {
+        "y": -200,
+        "ground": null,
+        "lives": 1,
+        "falls": 2
+      },
+      "commands": [
+        {
+          "repeat": 2,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        }
+      ],
+      "expected": {
+        "course_id": "common.lantern-reach-v1",
+        "rules_version": "lantern-rules-1",
+        "x": 195,
+        "y": 12,
+        "vx": 0,
+        "vy": 0,
+        "status": "lost",
+        "ground": "start",
+        "grip": null,
+        "away": 1,
+        "charge": 0,
+        "held": false,
+        "require_lift": true,
+        "last_wall": null,
+        "ticks": 2,
+        "lives": 0,
+        "falls": 3,
+        "peak": 12,
+        "checkpoint": null,
+        "tokens": [],
+        "catches": 0,
+        "launches": 0,
+        "notice": "Three lives used. Your lanterns and height are in this run’s result."
+      }
+    },
+    {
+      "name": "input-only-55",
+      "patch": {},
+      "commands": [
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 43,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 37,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 37,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 55,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 12,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        }
+      ],
+      "expected": {
+        "course_id": "common.lantern-reach-v1",
+        "rules_version": "lantern-rules-1",
+        "x": 288.8333333333331,
+        "y": 1502.4277777777793,
+        "vx": -380,
+        "vy": 384.6666666666669,
+        "status": "won",
+        "ground": null,
+        "grip": null,
+        "away": -1,
+        "charge": 0,
+        "held": false,
+        "require_lift": false,
+        "last_wall": null,
+        "ticks": 1764,
+        "lives": 3,
+        "falls": 0,
+        "peak": 1502.4277777777793,
+        "checkpoint": "camp",
+        "tokens": [
+          "shortcut-light"
+        ],
+        "catches": 13,
+        "launches": 14,
+        "notice": "Lantern Reach complete!"
+      }
+    },
+    {
+      "name": "input-only-90",
+      "patch": {},
+      "commands": [
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 42,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 37,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 37,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 85,
+          "input": {
+            "held": true,
+            "aim": -1
+          }
+        },
+        {
+          "repeat": 90,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 1,
+          "input": {
+            "held": false,
+            "aim": 1
+          }
+        },
+        {
+          "repeat": 12,
+          "input": {
+            "held": true,
+            "aim": 1
+          }
+        }
+      ],
+      "expected": {
+        "course_id": "common.lantern-reach-v1",
+        "rules_version": "lantern-rules-1",
+        "x": 101.16666666666671,
+        "y": 1495.7622222222249,
+        "vx": 380,
+        "vy": 434.6666666666668,
+        "status": "won",
+        "ground": null,
+        "grip": null,
+        "away": 1,
+        "charge": 0,
+        "held": false,
+        "require_lift": false,
+        "last_wall": null,
+        "ticks": 1725,
+        "lives": 3,
+        "falls": 0,
+        "peak": 1495.7622222222249,
+        "checkpoint": null,
+        "tokens": [
+          "shortcut-light"
+        ],
+        "catches": 10,
+        "launches": 11,
+        "notice": "Lantern Reach complete!"
+      }
+    }
+  ]
+}

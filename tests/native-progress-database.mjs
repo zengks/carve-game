@@ -2,12 +2,15 @@ import assert from 'node:assert/strict';
 import {randomBytes,randomUUID,createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import pg from 'pg';
+import {createDatabase} from '../server/database.mjs';
 import {createNativeProgressIntegrationFixture} from './lib/native-progress-fixture.mjs';
 const token=()=>randomBytes(32).toString('base64url'),hash=s=>createHash('sha256').update(s).digest('hex'),challenge=s=>createHash('sha256').update(s).digest('base64url');
 let admin=process.env.CARVE_NATIVE_TEST_ADMIN_URL;
 if(!admin){const u=new URL(process.env.CARVE_TEST_DATABASE_URL??'http://invalid');if(u.hostname!=='127.0.0.1'||!u.pathname.startsWith('/carve_shared_test_'))throw Error('Fresh loopback QA database required');u.pathname='/postgres';admin=u.href;}
 const f=await createNativeProgressIntegrationFixture({adminConnectionString:admin});
 const dbURL=new URL(admin);dbURL.pathname='/'+f.databaseName;const pool=new pg.Pool({connectionString:dbURL.href});
+const web=createDatabase(dbURL.href);
+const identity=name=>({issuer:'https://accounts.google.com',subject:`synthetic-${name}-${f.databaseName}`});
 const base=JSON.parse(await readFile(new URL('../shared/fixtures/native-first-ascent-v1.json',import.meta.url),'utf8'));
 let checks=0;const ok=(condition,label)=>{assert(condition,label);checks++;};
 const client=(id='fixture-ios')=>({id,binding:token(),session:null,scope:null,player:null});
@@ -33,11 +36,17 @@ try{
  const sessionBefore=(await pool.query('select data from carve_shared_v1.native_instances where client_id=$1 and binding_hash=$2',[ios.id,hash(ios.binding)])).rows[0].data.sessions[hash(ios.session)];
  const first=(await progress(ios)).data;
  ok(first.revision===0&&!first.completed&&first.tutorial_mask===0&&first.bests.length===0&&first.recent_events.length===0,'empty native snapshot');
+ const webBefore=await web.read(identity('alpha'));
+ ok(webBefore.player_id===ios.player&&webBefore.native_results.length===0,'same web account has no native result before copy');
  const original=event(ios,{}, {active_ms:42000,best_chain:7,falls:2,tutorial_mask:17});
  const accepted=await progress(ios,'write',original);ok(accepted.status===200&&accepted.data.revision===1&&accepted.data.completed,'first completed result');assert.deepEqual(accepted.data.accepted_event,original);checks++;
  const originalReceipt=(await pool.query('select received_at from carve_shared_v1.native_completed_results where player_id=$1 and event_id=$2',[ios.player,original.event_id])).rows[0].received_at.getTime();
  const repeats=await Promise.all(Array.from({length:6},()=>progress(ios,'write',original)));
  ok(repeats.every(r=>r.status===200&&r.data.revision===1),'concurrent retry has one immutable receipt/revision');
+ const webAfter=await web.read(identity('alpha'));
+ assert.deepEqual(webAfter.native_results,[original],'web reads the exact same First Ascent event once after copy');checks++;
+ ok(webAfter.results.length===0&&(await web.read(identity('beta'))).native_results.length===0,'native results stay separate from Flow and other accounts');
+ assert.deepEqual((await progress(android)).data.recent_events,[original],'other mobile platform reads the same event');checks++;
  const changed=structuredClone(original);changed.payload.active_ms++;
  ok((await progress(ios,'write',changed)).data.error==='event_conflict','changed retry rejects');
  ok((await progress(android,'write',original)).data.error==='platform_mismatch','strict platform also applies on retry');
@@ -97,4 +106,4 @@ try{
  ok((await progress(ios)).status===401,'original expiry remains enforced');
  console.log(`PASS native progress PostgreSQL: ${checks} assertions, signed synthetic auth, idempotency/conflicts, coherent snapshots, platform/account isolation, RLS and revocation/expiry races`);
  console.log('Fresh native progress database retained; no existing app/database/profile data used.');
-}finally{await qa('release').catch(()=>{});await pool.end();await f.close();await assert.rejects(fetch(f.origin));await assert.rejects(fetch(f.qa_origin));}
+}finally{await qa('release').catch(()=>{});await web.close();await pool.end();await f.close();await assert.rejects(fetch(f.origin));await assert.rejects(fetch(f.qa_origin));}

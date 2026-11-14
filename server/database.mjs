@@ -32,7 +32,12 @@ export function createDatabase(connectionString) {
   const snapshot=async(c,id)=>{
     const results=await c.query('select event from carve_shared_v1.completed_results where player_id=$1 order by received_at desc,event_id limit 100',[id]);
     const progress=await c.query('select course_id,rules_version,mode,testing,best_height,unlocks,lessons from carve_shared_v1.course_progress where player_id=$1 order by course_id,rules_version,mode,testing',[id]);
-    return {contract_version:1,player_id:id,results:results.rows.map(r=>r.event),progress:progress.rows,validation:'client_reported',
+    // Web-only deployments can still sync Flow without access to the native schema.
+    const {rows:[{readable}]}=await c.query("select has_table_privilege(to_regclass('carve_shared_v1.native_completed_results'),'SELECT') as readable");
+    const nativeResults=readable?(await c.query(
+      'select event from carve_shared_v1.native_completed_results where player_id=$1 order by received_at desc,event_id limit 20',[id]
+    )).rows.map(r=>r.event):[];
+    return {contract_version:1,player_id:id,results:results.rows.map(r=>r.event),native_results:nativeResults,progress:progress.rows,validation:'client_reported',
       bounty:{status:'not_connected'},purchases:{status:'not_implemented'}};
   };
   return {close:()=>pool.end(),resolve:identity=>transaction(c=>principal(c,identity)),

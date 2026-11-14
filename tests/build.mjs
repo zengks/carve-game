@@ -11,6 +11,12 @@ try {
   const html = await readFile(join(output, 'index.html'), 'utf8');
   const manifest = JSON.parse(await readFile(join(output, 'site.webmanifest'), 'utf8'));
   const assets = await readdir(join(output, 'assets/cache'));
+  const lantern=await readFile(join(output,'lantern/index.html'),'utf8');
+  assert(lantern.includes('noindex,nofollow'));
+  for(const match of lantern.matchAll(/(?:src|href)="(\/assets\/cache\/[^"]+)"/g))await readFile(join(output,match[1]));
+  const lanternModule=lantern.match(/type="module" src="([^"]+)"/)[1];
+  const lanternCode=await readFile(join(output,lanternModule),'utf8');
+  for(const match of lanternCode.matchAll(/(?:from |fetch\()'([^']+)'/g))await readFile(join(output,match[1]));
   assert(assets.some(n => /^expedition\.[a-f\d]{16}\.js$/.test(n)));
   assert(assets.some(n => /^expedition\.[a-f\d]{16}\.css$/.test(n)));
   for (const name of assets) {
@@ -53,6 +59,7 @@ try {
   assert(previewCode.includes('const TESTING = true;'));assert(productionCode.includes('const TESTING = false;'));
   assert.equal(previewCode.replace('const TESTING = true;','const TESTING = false;'),productionCode,'only the compile-time testing gate differs');
   const files = await readdir(join(output,'production'),{recursive:true});
+  assert(!files.some(f=>f.startsWith('lantern/')||f.includes('lantern-')),'shared gameplay slice remains preview-only');
   assert(!files.some(f=>f.includes('music-demos')||f.startsWith('assets/music/')), 'music auditions never ship in production');
   const audition=await readFile(join(output,'preview/music-demos/index.html'),'utf8');
   assert.equal((audition.match(/<audio controls preload="metadata"/g)||[]).length,3);

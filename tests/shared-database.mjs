@@ -12,6 +12,7 @@ try{
   const fixture=JSON.parse(await readFile(new URL('../shared/fixtures/web-flow-v1.json',import.meta.url),'utf8'));
   const identity={issuer:'http://isolated-auth.test',subject:crypto.randomUUID()},other={...identity,subject:crypto.randomUUID()};
   const first=await db.read(identity),second=await db.read(other);
+  assert.deepEqual(first.native_results,[],'web-only schema still returns Flow snapshots');
   assert.notEqual(first.player_id,second.player_id);assert.notEqual(first.player_id,identity.subject);
   const replies=await Promise.all(Array.from({length:8},()=>db.write(identity,fixture)));
   assert(replies.every(r=>r.player_id===first.player_id&&r.accepted===fixture.event_id));
