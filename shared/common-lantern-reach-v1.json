@@ -1,0 +1,34 @@
+{
+  "course_id": "common.lantern-reach-v1",
+  "rules_version": "lantern-rules-1",
+  "title": "Lantern Reach",
+  "step_hz": 120,
+  "width": 390,
+  "rules": {
+    "gravity": 880, "fall_speed": 680, "steer_acceleration": 600,
+    "horizontal_speed": 380, "aim_adjustment": 100,
+    "half_width": 10, "half_height": 12,
+    "charge_ticks": [32, 84, 111, 147],
+    "launch": {"early": [185, 300], "good": [320, 480], "perfect": [345, 530], "late": [230, 350]},
+    "ground_horizontal": 0.72, "ground_vertical": 0.98,
+    "lives": 3, "fall_below_checkpoint": 180, "token_radius": 22
+  },
+  "start": [195, 12],
+  "checkpoint_zone": [280, 612, 60, 200],
+  "goal_zone": [100, 1474, 190, 180],
+  "surfaces": [
+    {"id": "start", "rect": [135, -14, 120, 14], "kind": "start"},
+    {"id": "west", "rect": [40, 40, 10, 1400], "kind": "wall", "grip": true},
+    {"id": "east", "rect": [340, 50, 10, 1410], "kind": "wall", "grip": true},
+    {"id": "rescue", "rect": [50, 320, 120, 12], "kind": "rescue"},
+    {"id": "camp", "rect": [245, 600, 95, 12], "kind": "checkpoint", "spawn": [292, 624]},
+    {"id": "shortcut", "rect": [190, 720, 10, 220], "kind": "shortcut", "grip": true},
+    {"id": "summit", "rect": [50, 1460, 290, 14], "kind": "summit"}
+  ],
+  "tokens": [
+    {"id": "first-light", "position": [90, 225]},
+    {"id": "camp-light", "position": [300, 690]},
+    {"id": "shortcut-light", "position": [216, 975]},
+    {"id": "last-light", "position": [90, 1300]}
+  ]
+}

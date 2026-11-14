@@ -56,6 +56,17 @@ export async function build(outputDir = join(root, 'dist'), { production = false
     await mkdir(join(outputDir, destination, '..'), {recursive:true});
     await writeFile(join(outputDir, destination), source.replace('</head>', `${telemetry}</head>`));
   }
+  const rules=await hashedAsset('lantern-rules.mjs',await readFile(join(root,'shared/lantern-rules.mjs'),'utf8'));
+  const course=await hashedAsset('lantern-course.json',await readFile(join(root,'shared/common-lantern-reach-v1.json'),'utf8'));
+  const bossRules=await hashedAsset('lantern-bellkeeper.mjs',(await readFile(join(root,'shared/bellkeeper-rules.mjs'),'utf8')).replace('./lantern-rules.mjs',rules));
+  const bossCourse=await hashedAsset('lantern-bellkeeper.json',await readFile(join(root,'shared/common-bellkeeper-v1.json'),'utf8'));
+  const game=await hashedAsset('lantern-game.mjs',(await readFile(join(root,'src/lantern/game.mjs'),'utf8'))
+    .replace('./rules.mjs',rules).replace('./course.json',course).replace('./bellkeeper.mjs',bossRules).replace('./bellkeeper.json',bossCourse));
+  const style=await hashedAsset('lantern.css',await readFile(join(root,'src/lantern/style.css'),'utf8'));
+  let page=(await readFile(join(root,'src/lantern/index.html'),'utf8')).replace('/lantern/game.mjs',game).replace('/lantern/style.css',style);
+  if(production)page=page.replace('content="noindex,nofollow"','content="index,follow"');
+  await mkdir(join(outputDir,'lantern'),{recursive:true});
+  await writeFile(join(outputDir,'lantern/index.html'),page);
   await writeFile(join(outputDir, 'site.webmanifest'), manifest);
   for (const file of ['robots.txt', 'sitemap.xml', 'googlefd0692e33131ffd2.html']) {
     await copyFile(join(root, file), join(outputDir, file));
