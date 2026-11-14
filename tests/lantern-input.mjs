@@ -16,7 +16,7 @@ const event=(pointerId,extra={})=>({pointerId,isPrimary:true,button:0,clientX:19
 let now=performance.now();
 function ticks(n){for(let i=0;i<n;i++){now+=1000/120;frame(now);}}
 const read=()=>JSON.parse(local.get('carve.common.lantern-reach.v1')).run;
-get('continue').onclick();ticks(2);
+get('continue').onclick();
 get('pad').onpointerdown(event(1));get('pad').onpointerdown(event(2));
 get('pad').onpointermove(event(2,{clientX:0}));
 ticks(50);get('pad').onpointerup(event(1,{clientX:230}));ticks(1);get('pause').onclick();

@@ -116,6 +116,8 @@ function aimFromPointer(e){
 $('pad').onpointerdown=e=>{
  if(run.status!=='playing'||chargeOwner!==null||(scheme==='one'&&!e.isPrimary)||e.button!==0)return;
  e.preventDefault();chargeOwner=e.pointerId;originX=e.clientX;pointerAim=0;lastAim=0;
+ // A new pad contact proves the lift even before the first post-resume frame.
+ run.require_lift=false;
  $('pad').setPointerCapture(e.pointerId);$('pad').classList.add('active');
 };
 $('pad').onpointermove=e=>{if(e.pointerId===chargeOwner){e.preventDefault();aimFromPointer(e);}};

@@ -69,6 +69,12 @@ after the spacing adjustment. A lingering post-victory WARNING cue was fixed
 and covered by the browser adapter test. This remains pointer-driven browser
 evidence, separate from native OS touch and physical-device ergonomics.
 
+The final phone-sized check also exposed a rapid-start input race: a new pad
+contact before the first neutral frame after Begin/Resume was ignored for its
+entire hold. A failing regression reproduced zero launches; accepting that
+validated new contact as the required lift fixes it. Existing pointer-owner,
+extra-finger, cancellation and completed-run tests continue to pass.
+
 ## Browser verification — 2026-11-13
 
 - Full build and Node 24/26 CI passed at `2761326`; PR25 remains draft/open.
