@@ -29,8 +29,10 @@ Branch `codex/bellkeeper-preview`. See [boss plan](docs/boss-encounters.md).
 - [x] Build browser/native encounters; verify full wins by input fixtures and
   browser adapter tests, plus browser and iOS/Android OS entry/pause/return.
 - [x] Verify durable cosmetic recognition and best time, separate from climb scores.
-- [ ] Complete hands-on boss clears and assess warning timing with new players;
-  automated wins and OS entry checks do not establish difficulty or enjoyment.
+- [x] Complete adaptive one-pad browser clears and full native OS-touch clears
+  on iOS/Android; fix unsafe waiting shelves and ignored rapid first touches.
+- [ ] Assess warning timing with new players and physical devices; successful
+  browser and virtual-device runs do not establish comfort or enjoyment.
 - [ ] Review difficulty with newcomers before adding Frost Warden or Echo Climber.
 
 ## Shared playable section — Lantern Reach

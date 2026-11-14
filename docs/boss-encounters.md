@@ -75,6 +75,13 @@ entire hold. A failing regression reproduced zero launches; accepting that
 validated new contact as the required lift fixes it. Existing pointer-owner,
 extra-finger, cancellation and completed-run tests continue to pass.
 
+Final browser revision `b5424e6` passed the full build and Node 24/26 CI. A
+second adaptive one-pad playthrough at 390 × 844 completed all three ropes
+with three lives, zero falls and 56.4 seconds active time. The final victory
+cue is correct and the page has no horizontal or vertical overflow. The
+viewport override was restored. Screenshot evidence is retained locally in
+`.local/bellkeeper-playthrough/browser-phone-win.jpg`.
+
 ## Browser verification — 2026-11-13
 
 - Full build and Node 24/26 CI passed at `2761326`; PR25 remains draft/open.
@@ -104,4 +111,20 @@ The full boss win is input-fixture evidence, separate from the OS entry/return
 checks. iOS 26.5 also passed all 68 exported scene checks and completed the
 Lantern climb and cold reload through OS touch input, followed by boss entry,
 warning, pause, return to the same summit result and saved boss reentry.
-Full hands-on boss clears and newcomer warning/difficulty tuning remain open.
+These initial checks stopped at entry/return. Full clears followed on November 14.
+
+### Full one-thumb OS runs — 2026-11-14
+
+Native mirrored the rules-2 course and input fixture byte-for-byte. The final
+native build includes the same rapid fresh-touch fix and passes 71 exported
+scene assertions. OS-delivered one-pad down/drag/up input completed the entire
+boss on Android API 36 (2,336 ticks, 19.47 seconds) and iOS 26.5 (2,695 ticks,
+22.46 seconds). Both secured three ropes with three lives and zero falls in
+42 input events, retained the cold victory receipt, and verified a fresh retry
+without changing the parent Lantern result. These are adaptive QA touch runs
+on virtual devices, not human playtests or physical-device comfort evidence.
+
+Reports are retained in the mobile checkout under
+`.local/broker-os/sliceq1794691457178/android-run-1794691701479/report.json` and
+`.local/broker-os/sliceq1794691457178/ios-run-1794691611528/report.json`.
+First-time difficulty and retention testing remain future work.
