@@ -1,5 +1,15 @@
 # CARVE continuous improvement
 
+## Browser Lantern Reach and Bellkeeper release — 2026-11-14
+
+The user authorized the tested browser gameplay release to main. Release branch
+`codex/release-bellkeeper` carries the shared climb, optional tuned boss, local
+saves and controls from `codex/bellkeeper-preview`. It starts from current main
+so the released terrain, avatars and existing save handling remain intact.
+The course is available at `/lantern/` through the game menu. Unfinished
+account/storage/music work stays on its existing draft branches; native PR46
+remains unmerged. Mobile download prompts and payments remain disabled.
+
 The user requests continued useful work without routine approval prompts. Keep
 meaningful checkpoints, coordinate directly with the mobile chat and continue to
 the next evidence-based task rather than treating a checkpoint as a new decision

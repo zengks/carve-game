@@ -47,6 +47,21 @@ try {
   assert(previewCode.includes('const TESTING = true;'));assert(productionCode.includes('const TESTING = false;'));
   assert.equal(previewCode.replace('const TESTING = true;','const TESTING = false;'),productionCode,'only the compile-time testing gate differs');
   const files = await readdir(join(output,'production'),{recursive:true});
+  assert(production.includes('href="/lantern/"'), 'the released climb is reachable from the game menu');
+  for(const environment of ['preview','production']){
+    const page=await readFile(join(output,environment,'lantern/index.html'),'utf8');
+    assert(page.includes(environment==='production'?'content="index,follow"':'content="noindex,nofollow"'));
+    assert(!page.includes('This preview'));
+    const modulePath=page.match(/src="([^\"]+\.mjs)"/)[1];
+    const code=await readFile(join(output,environment,modulePath),'utf8');
+    for(const path of [...page.matchAll(/(?:src|href)="(\/assets\/cache\/[^\"]+)"/g),...code.matchAll(/'(\/assets\/cache\/[^']+)'/g)].map(m=>m[1]))await readFile(join(output,environment,path));
+    const bossPath=code.match(/from '(\/assets\/cache\/lantern-bellkeeper\.[^']+\.mjs)'/)[1];
+    const boss=await readFile(join(output,environment,bossPath),'utf8');
+    await readFile(join(output,environment,boss.match(/from '([^']+)'/)[1]));
+    assert(code.includes('carve.common.bellkeeper.v2'));
+    assert(!code.includes('mobile-handoff')&&!code.includes('/api/'));
+  }
+  assert(!files.some(f=>/^(api|server|staging-auth|supabase|music-demos)\//.test(f)), 'gameplay release excludes unfinished hosted work and auditions');
   assert(!files.some(f=>f.startsWith('classic/') || /^assets\/cache\/carve\.[a-f\d]{16}\.(js|css)$/.test(f)), 'retired course and its bundles are not published');
   assert(!production.includes('/classic/') && !production.includes('original summit'));
   for (const path of ['/classic','/classic/','/classic/index.html','/src/carve.html']) assert(config.redirects.some(r=>r.source===path && r.destination==='/' && r.permanent));

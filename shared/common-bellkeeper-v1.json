@@ -1,0 +1,160 @@
+{
+  "course_id": "common.bellkeeper-v1",
+  "rules_version": "bellkeeper-rules-2",
+  "title": "The Bellkeeper",
+  "step_hz": 120,
+  "width": 390,
+  "rules": {
+    "gravity": 880,
+    "fall_speed": 680,
+    "steer_acceleration": 600,
+    "horizontal_speed": 380,
+    "aim_adjustment": 100,
+    "half_width": 10,
+    "half_height": 12,
+    "charge_ticks": [
+      32,
+      84,
+      111,
+      147
+    ],
+    "launch": {
+      "early": [
+        185,
+        300
+      ],
+      "good": [
+        320,
+        480
+      ],
+      "perfect": [
+        345,
+        530
+      ],
+      "late": [
+        230,
+        350
+      ]
+    },
+    "ground_horizontal": 0.72,
+    "ground_vertical": 0.98,
+    "lives": 3,
+    "fall_below_checkpoint": 180,
+    "token_radius": 22
+  },
+  "start": [
+    195,
+    12
+  ],
+  "checkpoint_zone": [
+    -1000,
+    -1000,
+    1,
+    1
+  ],
+  "goal_zone": [
+    -1000,
+    -1000,
+    1,
+    1
+  ],
+  "surfaces": [
+    {
+      "id": "start",
+      "rect": [
+        135,
+        -14,
+        120,
+        14
+      ],
+      "kind": "start"
+    },
+    {
+      "id": "west",
+      "rect": [
+        40,
+        40,
+        10,
+        1400
+      ],
+      "kind": "wall",
+      "grip": true
+    },
+    {
+      "id": "east",
+      "rect": [
+        340,
+        50,
+        10,
+        1410
+      ],
+      "kind": "wall",
+      "grip": true
+    },
+    {
+      "id": "rope-1",
+      "rect": [
+        245,
+        216,
+        95,
+        12
+      ],
+      "kind": "rescue"
+    },
+    {
+      "id": "rope-2",
+      "rect": [
+        50,
+        626,
+        95,
+        12
+      ],
+      "kind": "rescue"
+    },
+    {
+      "id": "rope-3",
+      "rect": [
+        245,
+        1036,
+        95,
+        12
+      ],
+      "kind": "rescue"
+    }
+  ],
+  "tokens": [
+    {
+      "id": "rope-1",
+      "position": [
+        300,
+        240
+      ]
+    },
+    {
+      "id": "rope-2",
+      "position": [
+        90,
+        650
+      ]
+    },
+    {
+      "id": "rope-3",
+      "position": [
+        300,
+        1060
+      ]
+    }
+  ],
+  "bell": {
+    "height_above_rope": 60,
+    "warning_ticks": [
+      180,
+      156,
+      132
+    ],
+    "sweep_ticks": 180,
+    "rest_ticks": 540,
+    "radius": 18,
+    "rope_radius": 42
+  }
+}
