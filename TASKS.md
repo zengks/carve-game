@@ -1,5 +1,26 @@
 # CARVE continuous improvement
 
+## Active preview: Expedition milestone bosses — 2026-11-14
+
+The user corrected the product direction: Expedition is the only game entry.
+Lantern Reach is no longer a separate selectable mode. Branch
+`codex/expedition-bellkeeper` starts from production `8a5c261`; do not merge or
+change production during this milestone.
+
+- [x] Agree on optional 300 m entry, frozen parent state, one attempt, readable receipt and exact-ledge return.
+- [x] Reuse Bellkeeper rules 2 and one-/two-thumb controls inside Expedition.
+- [x] Preserve legacy saves; redirect the old Lantern route to Expedition.
+- [x] Test accepted-attempt reload, blocked saving, duplicate claims, final-life loss and withdrawal.
+- [x] Verify desktop/phone preview and Node 24/26 checks; record synthetic vs manual evidence limits.
+- [x] Manually climb from ground past 300 m using one-thumb controls, win Bellkeeper and continue from the entry ledge on the hosted preview. Reached 417 m; boss cleared with one encounter life left. Pauses used; physical-device/new-player qualification remains open.
+- [ ] Native prerequisite: port real Expedition terrain/lives/wallet/skills/contracts before integrating the encounter. Do not rename the finite Lantern QA course to Expedition.
+
+Shared acceptance vectors: `shared/fixtures/expedition-bellkeeper-v1.json`.
+Mobile plan checkpoint: `codex/expedition-native-parity-plan` at `ec370bb` (canonical outcome fixture mirrored).
+Both platforms retain all old app/save data. Mobile prompts/payments stay off.
+See `docs/expedition-bellkeeper.md` for the current contract and evidence.
+
+
 ## Browser release: first-climb guidance — 2026-11-14
 
 Branch `codex/first-climb-guidance` starts from released `853d876`.
@@ -23,7 +44,7 @@ The user authorized the tested browser gameplay release to main. Release branch
 `codex/release-bellkeeper` carries the shared climb, optional tuned boss, local
 saves and controls from `codex/bellkeeper-preview`. It starts from current main
 so the released terrain, avatars and existing save handling remain intact.
-The course is available at `/lantern/` through the game menu. Unfinished
+Historical release: the course was available at `/lantern/` through the game menu; the active preview above retires that separate entry. Unfinished
 account/storage/music work stays on its existing draft branches; native PR46
 remains unmerged. Mobile download prompts and payments remain disabled.
 

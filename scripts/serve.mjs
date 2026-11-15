@@ -6,19 +6,19 @@ export function createGameServer() {
   return createServer(async (req, res) => {
     const path = new URL(req.url, 'http://localhost').pathname;
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
-    if (['/classic', '/classic/', '/classic/index.html', '/src/carve.html'].includes(path)) { res.writeHead(308, {Location:'/'}).end(); return; }
+    if (path==='/lantern'||path.startsWith('/lantern/')||['/classic', '/classic/', '/classic/index.html', '/src/carve.html'].includes(path)) { res.writeHead(308, {Location:'/'}).end(); return; }
     const files = {
       '/': ['src/expedition.html', 'text/html; charset=utf-8'],
       '/expedition/': ['src/expedition.html', 'text/html; charset=utf-8'],
-      '/lantern/':['src/lantern/index.html','text/html; charset=utf-8'],
-      '/lantern/game.mjs':['src/lantern/game.mjs','text/javascript'],
-      '/lantern/style.css':['src/lantern/style.css','text/css'],
-      '/lantern/rules.mjs':['shared/lantern-rules.mjs','text/javascript'],
-      '/lantern/coaching.mjs':['shared/lantern-coaching.mjs','text/javascript'],
-      '/lantern/lantern-rules.mjs':['shared/lantern-rules.mjs','text/javascript'],
-      '/lantern/course.json':['shared/common-lantern-reach-v1.json','application/json'],
-      '/lantern/bellkeeper.mjs':['shared/bellkeeper-rules.mjs','text/javascript'],
-      '/lantern/bellkeeper.json':['shared/common-bellkeeper-v1.json','application/json'],
+      '/encounters/bellkeeper/':['src/lantern/index.html','text/html; charset=utf-8'],
+      '/encounters/bellkeeper/game.mjs':['src/lantern/game.mjs','text/javascript'],
+      '/encounters/bellkeeper/style.css':['src/lantern/style.css','text/css'],
+      '/encounters/bellkeeper/rules.mjs':['shared/lantern-rules.mjs','text/javascript'],
+      '/encounters/bellkeeper/coaching.mjs':['shared/lantern-coaching.mjs','text/javascript'],
+      '/encounters/bellkeeper/lantern-rules.mjs':['shared/lantern-rules.mjs','text/javascript'],
+      '/encounters/bellkeeper/course.json':['shared/common-lantern-reach-v1.json','application/json'],
+      '/encounters/bellkeeper/bellkeeper.mjs':['shared/bellkeeper-rules.mjs','text/javascript'],
+      '/encounters/bellkeeper/bellkeeper.json':['shared/common-bellkeeper-v1.json','application/json'],
       '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8'],
       '/sitemap.xml': ['sitemap.xml', 'application/xml; charset=utf-8'],
       '/site.webmanifest': ['site.webmanifest', 'application/manifest+json'],
