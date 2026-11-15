@@ -1,6 +1,6 @@
 # CARVE continuous improvement
 
-## Preview: first-climb guidance — 2026-11-14
+## Browser release: first-climb guidance — 2026-11-14
 
 Branch `codex/first-climb-guidance` starts from released `853d876`.
 Coordinate the `lantern-coaching-1` presentation contract with mobile; retain
@@ -11,8 +11,11 @@ Lantern rules 1, Bellkeeper rules 2 and all existing saves unchanged.
 - [x] Verify browser preview at desktop/phone sizes and native iOS/Android adapters.
 - [ ] Record new-player understanding and replay-interest evidence when available.
 
-No merge or production deployment is authorized for this milestone. Mobile
-download prompts, payments and unfinished shared-storage releases stay disabled.
+The user subsequently authorized the browser release: PR27 merged at `e57a065`.
+Live verification found a first-frame keyboard press issue; the focused
+`codex/keyboard-fresh-press` follow-up adds fresh-key and stale-repeat regression
+coverage before release. Native changes remain unmerged. Mobile download
+prompts, payments and unfinished shared-storage releases stay disabled.
 
 ## Browser Lantern Reach and Bellkeeper release — 2026-11-14
 

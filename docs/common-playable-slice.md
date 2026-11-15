@@ -122,6 +122,14 @@ automation results; physical-phone/tablet comfort and newcomer understanding
 remain unverified. Web PR27, mobile PR46 and the new native preview branch stay
 unmerged; production remains browser commit `853d876` with downloads disabled.
 
+The user subsequently authorized browser publication on 2026-11-14. PR27 merged
+at `e57a065`; live one-pad summit and reload/fall recovery passed. Desktop
+verification exposed a first-frame Space press being rejected by the fresh-input
+gate. The follow-up recognizes a new Space keydown, like a new pad contact, while
+ignoring auto-repeat without a current key owner. Regression cases cover the
+first resumed frame, stale repeats after resume, and repeats after overholding.
+The native release boundary and mobile download prompt remain unchanged.
+
 ### Browser checkpoint — 2026-11-13
 
 `3344e16` passes the full `npm run build` suite and Node 24/26 CI. The actual

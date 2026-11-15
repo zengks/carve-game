@@ -140,7 +140,11 @@ for(const [id,owners]of [['left',leftOwners],['right',rightOwners]]){
 addEventListener('keydown',e=>{
  if(e.ctrlKey||e.metaKey||e.altKey||/INPUT|SELECT|BUTTON/.test(e.target.tagName))return;
  if(e.code==='Escape'||e.code==='KeyP'){if(!e.repeat)pause();return;}
- if(['Space','ArrowLeft','ArrowRight','KeyA','KeyD'].includes(e.code)){e.preventDefault();if(run.status==='playing')keys.add(e.code);}
+ if(['Space','ArrowLeft','ArrowRight','KeyA','KeyD'].includes(e.code)){
+  e.preventDefault();if(run.status!=='playing'||(e.repeat&&!keys.has(e.code)))return;
+  if(e.code==='Space'&&!e.repeat)run.require_lift=false;
+  keys.add(e.code);
+ }
 });
 addEventListener('keyup',e=>{if(keys.delete(e.code))e.preventDefault();});
 addEventListener('blur',pause);addEventListener('pagehide',()=>{pause();save();});
