@@ -1,7 +1,10 @@
 import {createRun,restoreRun,pauseRun,resumeRun,stepRun,quality} from './rules.mjs';
 import {createBoss,restoreBoss,stepBoss,bellState} from './bellkeeper.mjs';
 import {climbCoaching} from './coaching.mjs';
-const bossMode = new URLSearchParams(location.search).get('boss') === 'bellkeeper';
+const integrated = location.pathname?.startsWith('/encounters/bellkeeper');
+let bridge=null;
+if(integrated){try{bridge=window.parent!==window?window.parent.CARVEBellkeeper?.(window):null;}catch{}}
+const bossMode = integrated || new URLSearchParams(location.search).get('boss') === 'bellkeeper';
 const course = await (await fetch(bossMode ? './bellkeeper.json' : './course.json')).json();
 const newRun = bossMode ? createBoss : createRun;
 const restore = bossMode ? restoreBoss : restoreRun;
@@ -12,6 +15,7 @@ try {
  const records = JSON.parse(localStorage.getItem('carve.common.lantern-reach.v1.results') || '[]');
  bossUnlocked = saved?.run?.status === 'won' || records.some(r => r.outcome === 'won');
 } catch {}
+if(integrated)bossUnlocked=!!bridge;
 
 const $=id=>document.getElementById(id),canvas=$('world'),ctx=canvas.getContext('2d');
 if(bossMode){
@@ -25,7 +29,7 @@ let run=newRun(course),runId=crypto.randomUUID(),camera=0,previous=performance.n
 let chargeOwner=null,originX=0,pointerAim=0,lastAim=0;
 const keys=new Set(),leftOwners=new Set(),rightOwners=new Set();
 let scheme='one',hand='right',muted=false,audio=null,audioUnlocked=false,lastNotice='',noticeUntil=0,storageOK=true;
-try{
+if(!integrated)try{
  const prefs=JSON.parse(localStorage.getItem(preferencesKey));
  if(['one','two'].includes(prefs?.scheme))scheme=prefs.scheme;
  if(['left','right'].includes(prefs?.hand))hand=prefs.hand;
@@ -33,12 +37,17 @@ try{
  const restored=restore(saved?.run,course);
  if(restored&&typeof saved.run_id==='string'){run=restored;runId=saved.run_id;}
 }catch{storageOK=false;}
+if(integrated&&bridge){
+ scheme=bridge.scheme;hand=bridge.hand;
+ if(bridge.run){const restored=restore(bridge.run,course);if(restored)run=restored;else bossUnlocked=false;}
+}
 function save(){
+ if(integrated){storageOK=!!bridge&&bossUnlocked&&bridge.save(run,{scheme,hand});return storageOK;}
  try{localStorage.setItem(saveKey,JSON.stringify({run_id:runId,run}));}
  catch{storageOK=false;}
 }
 function recordResult(){
- if(!['won','lost'].includes(run.status))return;
+ if(integrated||!['won','lost'].includes(run.status))return;
  try{
   const records=JSON.parse(localStorage.getItem(saveKey+'.results')??'[]');
   if(!Array.isArray(records)||records.some(r=>r.run_id===runId))return;
@@ -90,23 +99,44 @@ function showOverlay(){
    }catch{}
   }
  }
+ if(integrated){
+  const terminal=['won','lost'].includes(status);
+  $('restart').hidden=true;$('boss-return').hidden=terminal||!bridge;
+  $('boss-return').textContent='Withdraw · spend this attempt';
+  $('continue').textContent=terminal?'Review complete · return to Expedition':status==='ready'?'Enter the bell tower':'Continue challenge';
+  $('title').textContent=!bossUnlocked?'Enter from Expedition':status==='lost'?'The Bellkeeper holds the tower':$('title').textContent;
+  if(!bossUnlocked){$('description').textContent=bridge?'This encounter save could not be restored. Your Expedition is preserved. Withdraw to return safely.':'Reach 300 m in Expedition and stop on a safe ledge to enter.';$('detail').textContent='The Bellkeeper is part of your Expedition.';}
+  else if(terminal){
+   $('description').textContent=status==='won'?'+30 bounty earned · awarded once when you return.':bridge.mode==='challenge'?'−1 Expedition life · '+(bridge.lives-1)+' remain.':'Practice · no life penalty.';
+   $('detail').textContent=status==='lost'&&bridge.lives===1?'Returning will end and record this Expedition. Your bounty and best height are kept.':'Returning to your entry ledge at '+bridge.height+' m. Your skill charges, camp contract and climb are unchanged.';
+  }else if(status==='ready')$('description').textContent='Three encounter lives. Secure three ropes during REST. Your Expedition is waiting at '+bridge.height+' m.';
+  $('save-note').textContent=storageOK?'Saved with this Expedition on this tab. Reload restores the encounter.':'Saving is unavailable. Keep this tab open and retry; no new attempt will be started.';
+  return;
+ }
  $('save-note').textContent=storageOK?'Saved on this device. Expedition progress stays separate.':'Browser storage is unavailable. Keep this tab open to retain this attempt.';
 }
 function begin(){
  if(bossMode&&!bossUnlocked)return;
+ if(integrated&&['won','lost'].includes(run.status)){returnToExpedition(run.status);return;}
  if(['won','lost'].includes(run.status)){run=newRun(course);runId=crypto.randomUUID();camera=0;}
- clearInput();resumeRun(run);previous=performance.now();accumulator=0;audioUnlocked=true;save();showOverlay();canvas.focus({preventScroll:true});
+ clearInput();resumeRun(run);previous=performance.now();accumulator=0;audioUnlocked=true;if(integrated&&!save()){pauseRun(run);showOverlay();return;}save();showOverlay();canvas.focus({preventScroll:true});
 }
 $('continue').onclick=begin;
 $('boss-entry').onclick=()=>{save();location.href='?boss=bellkeeper';};
-$('boss-return').onclick=()=>{pause();location.href='/lantern/';};
+function returnToExpedition(outcome){
+ clearInput();if(outcome!=='withdrawn'&&!save()){showOverlay();return;}
+ if(!bridge?.finish(outcome)){$('save-note').textContent='Could not save the return. Keep this tab open and try again; rewards cannot be duplicated.';}
+}
+function withdraw(){pause();if(confirm('Withdraw from Bellkeeper? This spends your one attempt for this Expedition. No bounty or life penalty.'))returnToExpedition('withdrawn');}
+$('boss-return').onclick=()=>{if(integrated){withdraw();return;}pause();location.href='/lantern/';};
+if(integrated)$('game-home').onclick=e=>{if(!bridge)return;e.preventDefault();if(['won','lost'].includes(run.status))returnToExpedition(run.status);else withdraw();};
 $('restart').onclick=()=>{if(confirm('Start a new '+(bossMode?'Bellkeeper':'Lantern Reach')+' run? This replaces this attempt.')){run=newRun(course);runId=crypto.randomUUID();camera=0;begin();}};
 $('pause').onclick=pause;
 function configure(event){
  scheme=$('scheme').value;hand=$('hand').value;if(event)pause();
  $('controls').classList.toggle('two',scheme==='two');$('controls').classList.toggle('left',hand==='left');$('two-steer').hidden=scheme!=='two';
  $('pad-detail').textContent=scheme==='one'?'drag ← to aim → · release to leap':'hold to catch · release to leap';
- try{localStorage.setItem(preferencesKey,JSON.stringify({scheme,hand}));}catch{}
+ if(!integrated)try{localStorage.setItem(preferencesKey,JSON.stringify({scheme,hand}));}catch{}
  showOverlay();
 }
 $('scheme').value=scheme;$('hand').value=hand;
@@ -248,7 +278,7 @@ function draw(now,elapsed){
   $('quality').textContent=run.charge?quality(run.charge,course).toUpperCase()+' · release to leap':run.ground?'Shelf safe · drag toward the next rope':run.grip?'Caught · charge, then release':'Let go above a rope shelf to land';
   if(['won','lost'].includes(run.status)){
    $('instruction').textContent=run.status==='won'?'BELLKEEPER COMPLETE':'CHALLENGE COMPLETE';
-   $('quality').textContent='Review your result, retry or return to Lantern Reach';
+   $('quality').textContent=integrated?'Review your result, then return to Expedition':'Review your result, retry or return to Lantern Reach';
   }
  }
  if(run.notice!==lastNotice){
@@ -269,7 +299,7 @@ function frame(now){
   while(accumulator>=1/120&&steps<12){step(run,{held,aim},course);accumulator-=1/120;steps++;if(run.status!=='playing')break;}
   if(steps)lastAim=0;
   if(run.status!=='playing'){clearInput();save();showOverlay();if(run.status==='won')sound(880);}
-  if(now-savedAt>1500){save();savedAt=now;}
+  if(now-savedAt>1500){if(integrated&&!save()){pauseRun(run);clearInput();showOverlay();}else if(!integrated)save();savedAt=now;}
  }
  draw(now,elapsed);requestAnimationFrame(frame);
 }

@@ -23,6 +23,16 @@
       "source": "/classic/index.html",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/lantern",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lantern/:path*",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "headers": [
@@ -54,7 +64,7 @@
       ]
     },
     {
-      "source": "/lantern/:path*",
+      "source": "/encounters/bellkeeper/:path*",
       "headers": [
         {
           "key": "Cache-Control",
