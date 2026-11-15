@@ -8,7 +8,7 @@ Lantern rules 1, Bellkeeper rules 2 and all existing saves unchanged.
 
 - [x] Replace conflicting EARLY-release advice with state-based hold/release/catch cues.
 - [x] Add shared boundary/priority cases; explain optional lanterns, pause controls and recovery destination.
-- [ ] Verify browser preview at desktop/phone sizes and native iOS/Android adapters.
+- [x] Verify browser preview at desktop/phone sizes and native iOS/Android adapters.
 - [ ] Record new-player understanding and replay-interest evidence when available.
 
 No merge or production deployment is authorized for this milestone. Mobile

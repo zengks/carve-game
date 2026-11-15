@@ -101,6 +101,27 @@ Local checks also covered overholding, paused reload and a compact 320 × 568
 layout. Screenshots remain under `.local/first-climb-guidance/` (not published).
 These are browser pointer/viewport checks, not physical-phone or newcomer tests.
 
+Native checkpoint `edd6fce` on `codex/lantern-first-climb-coaching` retains
+gameplay checkpoint `2163353`. Its 26-case coaching fixture matches the browser
+byte-for-byte (SHA256 `4faf3a876caecfe0267aeab88e0acabc427c62f4b520d5ed5be9ac10b7a4fc41`).
+Both isolated builds passed 104 exported checks. Automated OS-delivered touches
+then completed Lantern Reach with camp, two lanterns and two lives after a
+deliberate fall: iOS 24.2 seconds, Android 22.1 seconds. Both retained recovery
+and winning receipts after cold launch, won Bellkeeper with three lives,
+retained its reward through retry/return, and replayed without losing the win.
+
+Independent report reads confirmed completion and cleanup at mobile paths
+`.local/broker-os/sliceq1794715146258/ios-run-1794715558715/report.json` and
+`.local/broker-os/sliceq1794715618894/android-run-1794715875815/report.json`.
+The first Android attempt lacked its offline touch driver; its app/save were
+retained, preflight was repaired, and a fresh target passed. Mobile reports all
+three owned targets stopped with data retained, 160 prior identities/states and
+110 data digests matching (one protected OS cache metadata-only), plus 39 stable
+PosterBoard samples and a clean delayed crash scan. These are virtual-device
+automation results; physical-phone/tablet comfort and newcomer understanding
+remain unverified. Web PR27, mobile PR46 and the new native preview branch stay
+unmerged; production remains browser commit `853d876` with downloads disabled.
+
 ### Browser checkpoint — 2026-11-13
 
 `3344e16` passes the full `npm run build` suite and Node 24/26 CI. The actual
