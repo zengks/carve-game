@@ -17,6 +17,19 @@ const event=(pointerId,extra={})=>({pointerId,isPrimary:true,button:0,clientX:19
 let now=performance.now();
 function ticks(n){for(let i=0;i<n;i++){now+=1000/120;frame(now);}}
 const read=()=>JSON.parse(local.get('carve.common.lantern-reach.v1')).run;
+const key=(type,extra={})=>dispatchWindow(type,{code:'Space',target:{tagName:'CANVAS'},repeat:false,...extra});
+get('continue').onclick();
+key('keydown');ticks(20);
+assert.equal(get('instruction').textContent,'Keep holding until GOOD.','a fresh Space press charges before the first resumed frame');
+ticks(30);key('keyup');ticks(2);get('pause').onclick();
+assert.equal(read().launches,1,'fresh keyboard release launches once');
+globalThis.confirm=()=>true;get('restart').onclick();now=performance.now();ticks(3);
+key('keydown',{repeat:true});ticks(50);key('keyup');ticks(2);get('pause').onclick();
+assert.equal(read().launches,0,'an old held key repeating after resume cannot start charging');
+get('restart').onclick();now=performance.now();
+key('keydown');ticks(160);key('keydown',{repeat:true});ticks(50);key('keyup');ticks(2);get('pause').onclick();
+assert.equal(read().launches,0,'auto-repeat cannot restart an expired charge');
+get('restart').onclick();now=performance.now();
 get('continue').onclick();
 get('pad').onpointerdown(event(1));get('pad').onpointerdown(event(2));
 get('pad').onpointermove(event(2,{clientX:0}));
