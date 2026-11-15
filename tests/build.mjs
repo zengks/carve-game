@@ -49,7 +49,7 @@ try {
   const files = await readdir(join(output,'production'),{recursive:true});
   assert(!production.includes('href="/lantern/"'), 'Expedition is the only game entry');
   assert(!files.some(f=>f.startsWith('lantern/')), 'no standalone Lantern page is published');
-  assert(config.redirects.some(r=>r.source==='/lantern/:path*'&&r.destination==='/'));
+  for(const source of ['/lantern','/lantern/','/lantern/index.html','/lantern/:path*'])assert(config.redirects.some(r=>r.source===source&&r.destination==='/'));
   for(const environment of ['preview','production']){
     const page=await readFile(join(output,environment,'encounters/bellkeeper/index.html'),'utf8');
     assert(page.includes('content="noindex,nofollow"'));

@@ -30,6 +30,16 @@
       "permanent": true
     },
     {
+      "source": "/lantern/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lantern/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
       "source": "/lantern/:path*",
       "destination": "/",
       "permanent": true
