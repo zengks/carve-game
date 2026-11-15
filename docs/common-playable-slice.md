@@ -88,6 +88,19 @@ boss return. Preserve every prior save and virtual device. Browser pointer
 checks, scripted adapter routes and emulator/simulator OS-touch checks are
 separate evidence; newcomer understanding and physical comfort remain open.
 
+Browser checkpoint `f400932` passed the full local build and Node 24/26 push
+and PR checks. Draft PR27's protected preview is
+<https://carve-game-d6g65t82t-zengksoutlookcoms-projects.vercel.app/lantern/>.
+At a 390 × 844 viewport, real pointer holds completed the summit at 147 m,
+two lanterns, three lives, zero falls and 18.3 active seconds. Reload retained
+the result. A separate replay with two-thumb/left-hand controls deliberately
+fell: the recovery panel showed the start destination and two lives remaining,
+and reload preserved both the receipt and control preferences. Desktop pause
+help and keyboard input were checked; no browser console errors were captured.
+Local checks also covered overholding, paused reload and a compact 320 × 568
+layout. Screenshots remain under `.local/first-climb-guidance/` (not published).
+These are browser pointer/viewport checks, not physical-phone or newcomer tests.
+
 ### Browser checkpoint — 2026-11-13
 
 `3344e16` passes the full `npm run build` suite and Node 24/26 CI. The actual
