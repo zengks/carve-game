@@ -2,7 +2,7 @@ import {createRun,restoreRun,pauseRun,resumeRun,stepRun,quality} from './rules.m
 import {createBoss,restoreBoss,stepBoss,bellState} from './bellkeeper.mjs';
 import {climbCoaching} from './coaching.mjs';
 const integrated = location.pathname?.startsWith('/encounters/bellkeeper');
-let bridge=null;
+let bridge=null,returned=false;
 if(integrated){try{bridge=window.parent!==window?window.parent.CARVEBellkeeper?.(window):null;}catch{}}
 const bossMode = integrated || new URLSearchParams(location.search).get('boss') === 'bellkeeper';
 const course = await (await fetch(bossMode ? './bellkeeper.json' : './course.json')).json();
@@ -110,7 +110,7 @@ function showOverlay(){
    $('description').textContent=status==='won'?'+30 bounty earned · awarded once when you return.':bridge.mode==='challenge'?'−1 Expedition life · '+(bridge.lives-1)+' remain.':'Practice · no life penalty.';
    $('detail').textContent=status==='lost'&&bridge.lives===1?'Returning will end and record this Expedition. Your bounty and best height are kept.':'Returning to your entry ledge at '+bridge.height+' m. Your skill charges, camp contract and climb are unchanged.';
   }else if(status==='ready')$('description').textContent='Three encounter lives. Secure three ropes during REST. Your Expedition is waiting at '+bridge.height+' m.';
-  $('save-note').textContent=storageOK?'Saved with this Expedition on this tab. Reload restores the encounter.':'Saving is unavailable. Keep this tab open and retry; no new attempt will be started.';
+  $('save-note').textContent=!bridge?'Start or resume your Expedition using the CARVE link above.':storageOK?'Saved with this Expedition on this tab. Reload restores the encounter.':'Saving is unavailable. Keep this tab open and retry; no new attempt will be started.';
   return;
  }
  $('save-note').textContent=storageOK?'Saved on this device. Expedition progress stays separate.':'Browser storage is unavailable. Keep this tab open to retain this attempt.';
@@ -125,7 +125,7 @@ $('continue').onclick=begin;
 $('boss-entry').onclick=()=>{save();location.href='?boss=bellkeeper';};
 function returnToExpedition(outcome){
  clearInput();if(outcome!=='withdrawn'&&!save()){showOverlay();return;}
- if(!bridge?.finish(outcome)){$('save-note').textContent='Could not save the return. Keep this tab open and try again; rewards cannot be duplicated.';}
+ if(bridge?.finish(outcome))returned=true;else $('save-note').textContent='Could not save the return. Keep this tab open and try again; rewards cannot be duplicated.';
 }
 function withdraw(){pause();if(confirm('Withdraw from Bellkeeper? This spends your one attempt for this Expedition. No bounty or life penalty.'))returnToExpedition('withdrawn');}
 $('boss-return').onclick=()=>{if(integrated){withdraw();return;}pause();location.href='/lantern/';};
@@ -195,6 +195,7 @@ function sound(frequency){
 $('mute').onclick=()=>{muted=!muted;$('mute').textContent=muted?'Sound off':'Sound on';$('mute').setAttribute('aria-pressed',String(muted));};
 function draw(now,elapsed){
  const rect=$('stage').getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+ if(!rect.width||!rect.height)return;
  if(canvas.width!==Math.round(rect.width*dpr)||canvas.height!==Math.round(rect.height*dpr)){canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);}
  const scale=rect.width/390,H=rect.height/scale;
  ctx.setTransform(dpr*scale,0,0,dpr*scale,0,0);
@@ -289,6 +290,7 @@ function draw(now,elapsed){
 }
 let savedAt=0;
 function frame(now){
+ if(returned)return;
  const elapsed=Math.min((now-previous)/1000,.1);previous=now;
  if(run.status==='playing'){
   accumulator+=elapsed;

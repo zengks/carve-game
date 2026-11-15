@@ -50,7 +50,7 @@ purchase grants. No shared live database, billing or account state is changed.
 
 ## Native scope
 
-Mobile plan `codex/expedition-native-parity-plan` at `bdaf54b` records this product
+Mobile plan `codex/expedition-native-parity-plan` at `ec370bb` records this product
 correction. Native currently has finite First Ascent/Lantern QA courses and the
 rules-2 boss, but no Expedition world, wallet, lives mode, skills or contracts.
 Port those real systems before exposing this flow. Do not relabel the finite
@@ -65,4 +65,19 @@ withdrawal, final-life Game Over, and unchanged historical saves. The full
 one-thumb boss win is driven through pointer handlers using the canonical
 fixture; it is not a manual/physical-device completion claim.
 
-Desktop/mobile-size browser and remote CI evidence will be recorded after checks.
+Browser verification used isolated, visibly labeled synthetic 300 m checkpoints
+on localhost; no existing save was overwritten. At desktop and 390×844 sizes:
+briefing/acceptance, inherited one-thumb controls, manual hold/release jump,
+encounter reload, withdrawal confirmation, win/loss receipts, exact-ledge return,
+and final-life Game Over/reload were checked. Fixed return focus, retained
+encounter preferences, and retired the hidden arena render loop after returning.
+The current terrain/relic tests also preserve an active camp contract and Overdrive.
+
+Hosted preview `8635b32` passed desktop keyboard and phone-size one-pad input,
+reload recovery, menu removal and direct-arena refusal. Both GitHub Node 24/26
+push and PR checks passed. A follow-up checkpoint tightens the current-course
+regressions and removes the loading-state Lantern labels; final preview evidence
+is maintained on PR29. Native mirrored fixture checkpoint is `ec370bb`.
+
+No full manual Expedition-to-boss victory or physical-device evidence is claimed.
+Native port remains unimplemented; all native PRs remain unmerged.

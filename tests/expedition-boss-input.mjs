@@ -33,6 +33,7 @@ assert(get('description').textContent.includes('+30 bounty'));assert(get('detail
 await load();assert.equal(get('title').textContent,'The Bellkeeper rests');assert.equal(snapshot.status,'won');
 canFinish=false;get('continue').onclick();assert.deepEqual(returns,[]);assert(get('save-note').textContent.includes('Could not save'));
 canFinish=true;get('continue').onclick();assert.deepEqual(returns,['won']);
+let requested=false;globalThis.requestAnimationFrame=()=>{requested=true;};frame(performance.now());assert(!requested,'the closed iframe retires its animation loop');
 // No legacy local records, preferences or reward keys are changed.
 assert.deepEqual([...local],[['carve.common.lantern-reach.v1','legacy climb'],['carve.common.bellkeeper.v2','legacy boss']]);
 await load({run:createBoss(course)});canSave=false;get('continue').onclick();assert.equal(get('title').textContent,'Your challenge is safe');assert(get('save-note').textContent.includes('Saving is unavailable'));

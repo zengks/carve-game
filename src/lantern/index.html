@@ -9,20 +9,20 @@
 <body>
 <main>
   <header><a id="game-home" href="/" aria-label="Back to CARVE">CARVE<span id="course-name">BELLKEEPER</span></a><div><button id="mute" aria-pressed="false" aria-label="Mute sound">Sound on</button><button id="pause">Pause</button></div></header>
-  <section id="stage" aria-label="Lantern Reach climbing course">
-    <canvas id="world" tabindex="0" aria-label="Climb the blue walls, light camp, and reach the summit bell."></canvas>
-    <div id="hud"><span id="height">0 m</span><span id="lives">♥ ♥ ♥</span><span id="lanterns">0 / 4 lanterns</span></div>
+  <section id="stage" aria-label="Bellkeeper climbing challenge">
+    <canvas id="world" tabindex="0" aria-label="Avoid the swinging bell and secure three ropes while it rests."></canvas>
+    <div id="hud"><span id="height">0 m</span><span id="lives">♥ ♥ ♥</span><span id="lanterns">0 / 3 ropes</span></div>
     <div id="caption" role="status" aria-live="polite"></div>
     <section id="overlay" aria-labelledby="title">
       <div class="card">
         <p class="eyebrow">AN EXPEDITION ENCOUNTER</p><h1 id="title">The Bellkeeper</h1>
-        <p id="description">Light the mountain, one leap at a time.</p>
+        <p id="description">An optional encounter within Expedition, unlocked at 300 m.</p>
         <p id="detail">Hold to charge. Drag to aim. Release to leap. Hold again in flight to catch a blue wall.</p>
-        <p id="result"></p><button id="continue" class="primary">Begin the climb</button>
+        <p id="result"></p><button id="continue" class="primary" disabled>Loading encounter…</button>
         <button id="boss-entry" class="primary" hidden>Challenge the Bellkeeper</button>
         <button id="boss-return" class="quiet" hidden>Return to Expedition</button>
         <button id="restart" class="quiet" hidden>Start a new run</button>
-        <p id="save-note">Saved on this device. Three lives per run.</p>
+        <p id="save-note">Your Expedition stays safely at its entry ledge.</p>
       </div>
     </section>
   </section>

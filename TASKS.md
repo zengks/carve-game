@@ -11,11 +11,11 @@ change production during this milestone.
 - [x] Reuse Bellkeeper rules 2 and one-/two-thumb controls inside Expedition.
 - [x] Preserve legacy saves; redirect the old Lantern route to Expedition.
 - [x] Test accepted-attempt reload, blocked saving, duplicate claims, final-life loss and withdrawal.
-- [ ] Verify desktop/phone preview and Node 24/26 checks.
+- [x] Verify desktop/phone preview and Node 24/26 checks; record synthetic vs manual evidence limits.
 - [ ] Native prerequisite: port real Expedition terrain/lives/wallet/skills/contracts before integrating the encounter. Do not rename the finite Lantern QA course to Expedition.
 
 Shared acceptance vectors: `shared/fixtures/expedition-bellkeeper-v1.json`.
-Mobile plan checkpoint: `codex/expedition-native-parity-plan` at `bdaf54b`.
+Mobile plan checkpoint: `codex/expedition-native-parity-plan` at `ec370bb` (canonical outcome fixture mirrored).
 Both platforms retain all old app/save data. Mobile prompts/payments stay off.
 See `docs/expedition-bellkeeper.md` for the current contract and evidence.
 

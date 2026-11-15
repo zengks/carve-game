@@ -2907,7 +2907,7 @@
           document.getElementById('pausebtn').focus?.({preventScroll:true});Game.windowFocused=!document.hidden;Input.clear();
           if(Journey.mode==='challenge'&&Journey.lives===0){Journey.finish('gameover');return true;}
           Journey.notify('BELLKEEPER · '+(outcome==='won'?'+30 bounty':outcome==='lost'?(Journey.mode==='challenge'?'−1 Expedition life':'Practice attempt complete'):'attempt withdrawn')+' · returning to your entry ledge',true);
-          Game.startReturn({kind:'boss',origin:{x:Cam.x,y:Cam.y},to:Math.floor((Player.y-64)/10)});return true;
+          Game.syncHUD();Game.startReturn({kind:'boss',origin:{x:Cam.x,y:Cam.y},to:Math.floor((Player.y-64)/10)});return true;
         },
         init(){
           window.CARVEBellkeeper=child=>this.connect(child);

@@ -9,13 +9,14 @@ const terminal=createBoss(course);resumeRun(terminal);
 for(const command of fixture.commands)for(let i=0;i<command.repeat;i++)stepBoss(terminal,command.input,course);
 assert.equal(terminal.status,'won');
 const lost={...createBoss(course),status:'lost',lives:0,falls:3};assert(restoreBoss(lost,course));
+const load=options=>loadGame({search:'?terrain=1&relics=1',...options});
 const get=id=>document.getElementById(id);
 function setup(options={}){
- const g=loadGame(options);g.Journey.selectedMode='challenge';newRun(g);
+ const g=load(options);g.Journey.selectedMode='challenge';newRun(g);
  g.Level.ensure(3300);
  const b=g.Level.blocks.find(b=>b.y+b.h>=3064&&b.feature!=='spring'&&!b.mechanic&&!b.hazard);
  assert(b);Object.assign(g.Player,{x:b.x,y:b.y+b.h,vx:0,vy:0,onGround:true,state:'GROUND',carve:null,pole:null});
- g.Journey.peak=g.Player.y;g.Journey.cooldown=17;g.Game.flow=42;
+ g.Journey.peak=g.Player.y;g.Journey.cooldown=17;g.Game.flow=42;g.Routes.contract={kind:'courier',state:'active',start:11,targets:['shard:11']};g.Routes.used=[11];g.Routes.overdrive=1;
  return g;
 }
 function connect(g){const child={};get('boss-frame').contentWindow=child;return g.BossEncounter.connect(child);}
@@ -42,15 +43,15 @@ for(const [outcome,before,after,reward] of cases){
  assert(bridge.save(outcome==='won'?terminal:outcome==='lost'?lost:createBoss(course),{scheme:'one',hand:'left'}));
  g.Game.togglePause();assert(g.Game.paused,'parent cannot resume behind the arena');
  assert(g.RunSave.read(),'active encounter is recoverable');
- const reloaded=loadGame({local,session});g=reloaded;
+ const reloaded=load({local,session});g=reloaded;
  assert(g.BossEncounter.active());assert(g.Game.paused);assert.equal(g.Journey.lives,before);
  const resumed=connect(g);assert(resumed);assert.equal(resumed.scheme,'one');assert.equal(resumed.hand,'left');assert.equal(resumed.run.status,outcome==='won'?'won':outcome==='lost'?'lost':'ready');
  assert(resumed.finish(outcome));assert.equal(g.Journey.lives,after);assert.equal(g.Profile.coins,coins+reward);
  assert(!resumed.finish(outcome),'duplicate return rejected');assert(!bridge.finish(outcome),'detached callback rejected');
- assert.equal(g.Journey.cooldown,17);assert.equal(g.Game.flow,42);assert.equal(g.Player.x,position.x);assert.equal(g.Player.y,position.y);
+ assert.equal(g.Routes.contract.state,'active');assert.deepEqual(g.Routes.contract.targets,['shard:11']);assert.equal(g.Routes.overdrive,1);assert.equal(g.Journey.cooldown,17);assert.equal(g.Game.flow,42);assert.equal(g.Player.x,position.x);assert.equal(g.Player.y,position.y);
  if(after===0){assert.equal(g.Journey.result.outcome,'gameover');assert.equal(g.RunSave.readResult().lives,0);}
  else{
-  assert(g.Game.returning);g.Game.tickReturn(2);assert(!g.Game.paused);assert(!g.BossEncounter.available());
+  assert(g.Game.returning);if(after!==null)assert.equal(get('run-mode-status')['aria-label'],`Challenge: ${after} of 3 lives remaining`);g.Game.tickReturn(2);assert(!g.Game.paused);assert(!g.BossEncounter.available());
   // Settled runs must remain loadable after leaving the entry ledge.
   g.Player.onGround=false;g.Player.state='AIR';g.RunSave.write();assert(g.RunSave.read());
  }
@@ -59,12 +60,13 @@ for(const [outcome,before,after,reward] of cases){
 const local=new Map(),session=new Map();g=setup({local,session});let bridge=accepted(g);bridge.save(terminal);
 const coins=g.Profile.coins,write=sessionStorage.setItem;
 sessionStorage.setItem=()=>{throw Error('quota');};assert(!bridge.finish('won'));assert.equal(g.Profile.coins,coins+30);assert(g.BossEncounter.active());sessionStorage.setItem=write;
-g=loadGame({local,session});bridge=connect(g);assert(bridge.finish('won'));assert.equal(g.Profile.coins,coins+30);
+g=load({local,session});bridge=connect(g);assert(bridge.finish('won'));assert.equal(g.Profile.coins,coins+30);
 // A blocked wallet never consumes the win.
 g=setup();bridge=accepted(g);bridge.save(terminal);const walletWrite=localStorage.setItem;localStorage.setItem=()=>{throw Error('quota');};assert(!bridge.finish('won'));assert(g.BossEncounter.active());localStorage.setItem=walletWrite;assert(bridge.finish('won'));
 // A failed life commit rolls back; last-life terminal envelope is recoverable.
 g=setup();g.Journey.lives=1;bridge=accepted(g);bridge.save(lost);const save=sessionStorage.setItem;sessionStorage.setItem=()=>{throw Error('quota');};assert(!bridge.finish('lost'));assert.equal(g.Journey.lives,1);sessionStorage.setItem=save;
 g.BossEncounter.state.phase='settled';g.BossEncounter.state.outcome='lost';g.Journey.lives=0;assert(g.RunSave.write());assert(g.RunSave.read());
+g=setup({production:true});bridge=accepted(g);bridge.save(terminal);assert(bridge.finish('won'));assert.equal(g.Journey.mode,'challenge');
 // Older saves have no encounter metadata and remain supported.
 g=setup();g.RunSave.write();let data=JSON.parse(sessionStorage.getItem(g.RunSave.key));delete data.boss;sessionStorage.setItem(g.RunSave.key,JSON.stringify(data));assert(g.RunSave.read());
 data.boss={version:1,milestone:301,phase:'playing',outcome:null,run:null};sessionStorage.setItem(g.RunSave.key,JSON.stringify(data));assert.equal(g.RunSave.read(),null);
