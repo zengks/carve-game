@@ -14,6 +14,7 @@ export function createGameServer() {
       '/lantern/game.mjs':['src/lantern/game.mjs','text/javascript'],
       '/lantern/style.css':['src/lantern/style.css','text/css'],
       '/lantern/rules.mjs':['shared/lantern-rules.mjs','text/javascript'],
+      '/lantern/coaching.mjs':['shared/lantern-coaching.mjs','text/javascript'],
       '/lantern/lantern-rules.mjs':['shared/lantern-rules.mjs','text/javascript'],
       '/lantern/course.json':['shared/common-lantern-reach-v1.json','application/json'],
       '/lantern/bellkeeper.mjs':['shared/bellkeeper-rules.mjs','text/javascript'],

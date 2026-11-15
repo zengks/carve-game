@@ -1,8 +1,18 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createRun,restoreRun,resumeRun,pauseRun,stepRun,quality} from '../shared/lantern-rules.mjs';
+import {climbCoaching} from '../shared/lantern-coaching.mjs';
 const course=JSON.parse(await readFile(new URL('../shared/common-lantern-reach-v1.json',import.meta.url),'utf8'));
 const parity=JSON.parse(await readFile(new URL('../shared/fixtures/lantern-parity-v1.json',import.meta.url),'utf8'));
+const coachingCases=JSON.parse(await readFile(new URL('../shared/fixtures/lantern-coaching-v1.json',import.meta.url),'utf8'));
+for(const vector of coachingCases.cases){
+ const run={...createRun(course),status:'playing',...vector.patch};
+ const before=structuredClone(run),cue=climbCoaching(run,course,vector.options);
+ assert.equal(cue.id,vector.id,vector.name);assert.equal(cue.action,vector.action,vector.name);
+ if(vector.objective)assert.equal(cue.objective,vector.objective,vector.name);
+ assert.deepEqual(run,before,'coaching never mutates physics or saves');
+}
+console.log('PASS 26 shared coaching cases: charge boundaries, hold ownership, catch, steering, objectives and terminal priority.');
 for(const vector of parity.cases){
  const s=createRun(course);resumeRun(s);stepRun(s,{held:false},course);Object.assign(s,vector.patch);
  for(const command of vector.commands)for(let i=0;i<command.repeat;i++)stepRun(s,command.input,course);

@@ -1,5 +1,19 @@
 # CARVE continuous improvement
 
+## Preview: first-climb guidance — 2026-11-14
+
+Branch `codex/first-climb-guidance` starts from released `853d876`.
+Coordinate the `lantern-coaching-1` presentation contract with mobile; retain
+Lantern rules 1, Bellkeeper rules 2 and all existing saves unchanged.
+
+- [x] Replace conflicting EARLY-release advice with state-based hold/release/catch cues.
+- [x] Add shared boundary/priority cases; explain optional lanterns, pause controls and recovery destination.
+- [x] Verify browser preview at desktop/phone sizes and native iOS/Android adapters.
+- [ ] Record new-player understanding and replay-interest evidence when available.
+
+No merge or production deployment is authorized for this milestone. Mobile
+download prompts, payments and unfinished shared-storage releases stay disabled.
+
 ## Browser Lantern Reach and Bellkeeper release — 2026-11-14
 
 The user authorized the tested browser gameplay release to main. Release branch

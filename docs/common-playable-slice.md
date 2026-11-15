@@ -1,6 +1,6 @@
 # Lantern Reach shared playable section
 
-Browser and mobile implement the same finite preview course
+Browser and mobile implement the same finite course
 `common.lantern-reach-v1`, with rules `lantern-rules-1`. The numeric source is
 `shared/common-lantern-reach-v1.json`; the reference simulation is
 `shared/lantern-rules.mjs`. Native mirrors these in GDScript and runs the
@@ -49,13 +49,78 @@ reclassified. The section has no account, cloud upload, spending or paid effect.
 
 ## Verification and release boundary
 
-The browser entry is `/lantern/`, included in preview builds only.
-The current released browser game and native First Ascent remain preserved.
+The browser entry is `/lantern/`, released by authorized PR26 at `853d876` on
+2026-11-14. Native remains a preview; the existing Expedition and native First
+Ascent saves remain separate. Subsequent coaching changes stay on preview
+branches until separately authorized for release.
 The reference tests cover charge boundaries, input cancellation, rescue,
 checkpoint recovery, terminal lives, corrupted snapshots and complete GOOD
 and PERFECT input-only routes. Native verifies the same state vectors within
 1e-5 numeric tolerance. Browser/device UI checks qualify the adapter separately.
 Player comfort and replay interest still need observation with newcomers.
+
+### First-climb coaching contract — 2026-11-14
+
+`lantern-coaching-1` is presentation only. Its canonical selector is
+`shared/lantern-coaching.mjs`, with 26 scenarios in
+`shared/fixtures/lantern-coaching-v1.json`. It derives `{id, action, objective}`
+from existing run state, charge thresholds, control scheme and current held
+input. It never writes the run, adds tutorial save flags, or changes the frozen
+course, physics, lives, scoring, parity fixture or Bellkeeper rules.
+
+Priority: terminal/ready/pause/recovery; a held input that needs lifting;
+airborne catch/aim; supported hold; fresh catch; EARLY charge; GOOD/PERFECT
+release; LATE urgent release. The held input comes from the adapter's active
+pad/keyboard owner, not a stale notice. This distinguishes an expired held
+contact from a resumed run with no contact. Native may substitute the visible
+CARVE/STEER button names; meaning, cue IDs and objectives stay aligned.
+
+The immediate action appears beside the charge meter. A secondary objective
+explains camp, the rescue shelf or the summit without replacing catch/release
+timing. Initial instructions explain that lanterns are optional. Pause repeats
+three control steps with the selected steering scheme. Recovery identifies the
+return point, remaining lives and retained height/lanterns. Bellkeeper keeps
+its existing separate instructions.
+
+Acceptance: test charge boundaries and retired touches, both control schemes,
+fresh entry, full one-thumb summit, pause/reload, fall/recovery and separate
+boss return. Preserve every prior save and virtual device. Browser pointer
+checks, scripted adapter routes and emulator/simulator OS-touch checks are
+separate evidence; newcomer understanding and physical comfort remain open.
+
+Browser checkpoint `f400932` passed the full local build and Node 24/26 push
+and PR checks. Draft PR27's protected preview is
+<https://carve-game-d6g65t82t-zengksoutlookcoms-projects.vercel.app/lantern/>.
+At a 390 × 844 viewport, real pointer holds completed the summit at 147 m,
+two lanterns, three lives, zero falls and 18.3 active seconds. Reload retained
+the result. A separate replay with two-thumb/left-hand controls deliberately
+fell: the recovery panel showed the start destination and two lives remaining,
+and reload preserved both the receipt and control preferences. Desktop pause
+help and keyboard input were checked; no browser console errors were captured.
+Local checks also covered overholding, paused reload and a compact 320 × 568
+layout. Screenshots remain under `.local/first-climb-guidance/` (not published).
+These are browser pointer/viewport checks, not physical-phone or newcomer tests.
+
+Native checkpoint `edd6fce` on `codex/lantern-first-climb-coaching` retains
+gameplay checkpoint `2163353`. Its 26-case coaching fixture matches the browser
+byte-for-byte (SHA256 `4faf3a876caecfe0267aeab88e0acabc427c62f4b520d5ed5be9ac10b7a4fc41`).
+Both isolated builds passed 104 exported checks. Automated OS-delivered touches
+then completed Lantern Reach with camp, two lanterns and two lives after a
+deliberate fall: iOS 24.2 seconds, Android 22.1 seconds. Both retained recovery
+and winning receipts after cold launch, won Bellkeeper with three lives,
+retained its reward through retry/return, and replayed without losing the win.
+
+Independent report reads confirmed completion and cleanup at mobile paths
+`.local/broker-os/sliceq1794715146258/ios-run-1794715558715/report.json` and
+`.local/broker-os/sliceq1794715618894/android-run-1794715875815/report.json`.
+The first Android attempt lacked its offline touch driver; its app/save were
+retained, preflight was repaired, and a fresh target passed. Mobile reports all
+three owned targets stopped with data retained, 160 prior identities/states and
+110 data digests matching (one protected OS cache metadata-only), plus 39 stable
+PosterBoard samples and a clean delayed crash scan. These are virtual-device
+automation results; physical-phone/tablet comfort and newcomer understanding
+remain unverified. Web PR27, mobile PR46 and the new native preview branch stay
+unmerged; production remains browser commit `853d876` with downloads disabled.
 
 ### Browser checkpoint — 2026-11-13
 

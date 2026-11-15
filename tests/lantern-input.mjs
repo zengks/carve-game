@@ -9,6 +9,7 @@ get('stage').getBoundingClientRect=()=>({width:390,height:600});
 let frame;globalThis.requestAnimationFrame=fn=>{frame=fn;};
 globalThis.fetch=async()=>Response.json(course);
 const code=(await readFile(new URL('../src/lantern/game.mjs',import.meta.url),'utf8'))
+ .replace("'./coaching.mjs'",JSON.stringify(new URL('../shared/lantern-coaching.mjs',import.meta.url).href))
  .replace("'./bellkeeper.mjs'",JSON.stringify(new URL('../shared/bellkeeper-rules.mjs',import.meta.url).href))
  .replace("'./rules.mjs'",JSON.stringify(new URL('../shared/lantern-rules.mjs',import.meta.url).href));
 await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
@@ -19,11 +20,15 @@ const read=()=>JSON.parse(local.get('carve.common.lantern-reach.v1')).run;
 get('continue').onclick();
 get('pad').onpointerdown(event(1));get('pad').onpointerdown(event(2));
 get('pad').onpointermove(event(2,{clientX:0}));
-ticks(50);get('pad').onpointerup(event(1,{clientX:230}));ticks(1);get('pause').onclick();
+ticks(20);assert.equal(get('instruction').textContent,'Keep holding until GOOD.');
+ticks(30);assert.equal(get('instruction').textContent,'Release to jump.');
+get('pad').onpointerup(event(1,{clientX:230}));ticks(1);
+assert.equal(get('instruction').textContent,'Hold again to catch the wall.');get('pause').onclick();
 assert.equal(read().launches,1,'one owner releases one launch');
 assert(read().vx>300,'final drag aim reaches the release tick');
 assert.equal(read().status,'paused');
 get('scheme').value='two';get('scheme').onchange({});
+assert(get('detail').textContent.includes('Use the arrows to steer.'));
 get('continue').onclick();ticks(2);
 get('left').onpointerdown(event(3));
 get('pad').onpointerdown(event(4,{isPrimary:false}));
@@ -36,6 +41,7 @@ get('pad').onpointerdown(event(5));
 get('pad').onlostpointercapture(event(5));
 assert.equal(read().status,'paused','lost capture retires the held contact');
 assert.equal(read().charge,0);
+assert(get('detail').textContent.includes('Hold again to catch.'));
 globalThis.confirm=()=>true;
 get('scheme').value='one';get('scheme').onchange({});
 get('restart').onclick();now=performance.now();ticks(3);

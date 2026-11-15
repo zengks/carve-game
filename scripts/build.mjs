@@ -60,8 +60,9 @@ export async function build(outputDir = join(root, 'dist'), { production = false
   const course=await hashedAsset('lantern-course.json',await readFile(join(root,'shared/common-lantern-reach-v1.json'),'utf8'));
   const bossRules=await hashedAsset('lantern-bellkeeper.mjs',(await readFile(join(root,'shared/bellkeeper-rules.mjs'),'utf8')).replace('./lantern-rules.mjs',rules));
   const bossCourse=await hashedAsset('lantern-bellkeeper.json',await readFile(join(root,'shared/common-bellkeeper-v1.json'),'utf8'));
+  const coaching=await hashedAsset('lantern-coaching.mjs',await readFile(join(root,'shared/lantern-coaching.mjs'),'utf8'));
   const game=await hashedAsset('lantern-game.mjs',(await readFile(join(root,'src/lantern/game.mjs'),'utf8'))
-    .replace('./rules.mjs',rules).replace('./course.json',course).replace('./bellkeeper.mjs',bossRules).replace('./bellkeeper.json',bossCourse));
+    .replace('./rules.mjs',rules).replace('./course.json',course).replace('./bellkeeper.mjs',bossRules).replace('./bellkeeper.json',bossCourse).replace('./coaching.mjs',coaching));
   const style=await hashedAsset('lantern.css',await readFile(join(root,'src/lantern/style.css'),'utf8'));
   let page=(await readFile(join(root,'src/lantern/index.html'),'utf8')).replace('/lantern/game.mjs',game).replace('/lantern/style.css',style);
   if(production)page=page.replace('content="noindex,nofollow"','content="index,follow"');
