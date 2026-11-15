@@ -12,6 +12,7 @@ change production during this milestone.
 - [x] Preserve legacy saves; redirect the old Lantern route to Expedition.
 - [x] Test accepted-attempt reload, blocked saving, duplicate claims, final-life loss and withdrawal.
 - [x] Verify desktop/phone preview and Node 24/26 checks; record synthetic vs manual evidence limits.
+- [x] Manually climb from ground past 300 m using one-thumb controls, win Bellkeeper and continue from the entry ledge on the hosted preview. Reached 417 m; boss cleared with one encounter life left. Pauses used; physical-device/new-player qualification remains open.
 - [ ] Native prerequisite: port real Expedition terrain/lives/wallet/skills/contracts before integrating the encounter. Do not rename the finite Lantern QA course to Expedition.
 
 Shared acceptance vectors: `shared/fixtures/expedition-bellkeeper-v1.json`.

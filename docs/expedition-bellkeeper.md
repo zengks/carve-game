@@ -79,5 +79,35 @@ push and PR checks passed. A follow-up checkpoint tightens the current-course
 regressions and removes the loading-state Lantern labels; final preview evidence
 is maintained on PR29. Native mirrored fixture checkpoint is `ec370bb`.
 
-No full manual Expedition-to-boss victory or physical-device evidence is claimed.
-Native port remains unimplemented; all native PRs remain unmerged.
+### Manual hosted round trip — 2026-11-14
+
+Preview gameplay commit `45074af`, `/?terrain=1`, 390×844 browser viewport:
+
+- Started a fresh Challenge run at ground level. Used only the visible one-thumb
+  pad for movement, with normal Rocket Pulse, Surge and camp actions. No seeded
+  save, fixture policy or game-state injection was used.
+- Passed 300 m with all three lives. Entry correctly stayed unavailable on the
+  moving ferry. Reached a 417 m peak, then entered from a solid ledge at 392 m.
+- Cleared all three Bellkeeper ropes in 27.4 seconds of encounter time, with two
+  falls and one encounter life remaining. The first rope was secured by landing
+  and waiting; subsequent fresh wall catches reached ropes two and three.
+- The readable win receipt stated +30 bounty and the 392 m return. Confirming it
+  showed the return transition, restored the 392 m ledge, score 1,877 and all three
+  Expedition lives. The journal retained the Courier contract's completed/paid
+  state (it finished before boss entry), and recorded the boss reward. The
+  resulting displayed wallet was 165 bounty.
+- A fresh one-thumb hold/release then jumped from the return ledge to 417 m.
+  The continuing run was left paused and preserved in its preview tab.
+
+The playthrough used pauses between observations and browser-delivered pointer
+gestures. Early/mistimed releases caused failed approaches; later fresh holds
+succeeded without changing physics. No reproducible gameplay defect was found
+that justified retuning the shared rules in this pass. Automated checks remain
+the evidence for exact skill/contract freezing, reward deduplication and failure
+paths; the manual run does not replace those checks.
+
+Results and limits were sent directly to carve-mobile. Native reported separate
+one-thumb OS-touch boss wins on its iOS simulator and Android emulator; that is
+not an integrated native Expedition round trip. The native Expedition port
+remains unimplemented, all native PRs remain unmerged, and physical-device comfort
+and uninterrupted first-time-player difficulty remain unverified.
