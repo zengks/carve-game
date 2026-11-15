@@ -1,0 +1,33 @@
+{
+  "contract": "lantern-coaching-1",
+  "course_id": "common.lantern-reach-v1",
+  "rules_version": "lantern-rules-1",
+  "cases": [
+    {"name":"ready ignores old touch","patch":{"status":"ready","require_lift":true},"options":{"pressed":true},"id":"ready","action":"First, hold to charge."},
+    {"name":"ground idle","patch":{},"options":{"pressed":false},"id":"hold","action":"Hold to charge."},
+    {"name":"early zero","patch":{"charge":0},"options":{"pressed":true},"id":"charge","action":"Keep holding until GOOD."},
+    {"name":"early end","patch":{"charge":31},"options":{"pressed":true},"id":"charge","action":"Keep holding until GOOD."},
+    {"name":"good start","patch":{"charge":32},"options":{"pressed":true},"id":"release","action":"Release to jump."},
+    {"name":"good end","patch":{"charge":83},"options":{"pressed":true},"id":"release","action":"Release to jump."},
+    {"name":"perfect start","patch":{"charge":84},"options":{"pressed":true},"id":"release","action":"Release to jump."},
+    {"name":"perfect end","patch":{"charge":110},"options":{"pressed":true},"id":"release","action":"Release to jump."},
+    {"name":"late start","patch":{"charge":111},"options":{"pressed":true},"id":"late","action":"Release now."},
+    {"name":"late end","patch":{"charge":146},"options":{"pressed":true},"id":"late","action":"Release now."},
+    {"name":"expired held ground","patch":{"require_lift":true},"options":{"pressed":true},"id":"lift","action":"Lift, then press again."},
+    {"name":"expired held air","patch":{"require_lift":true,"ground":null},"options":{"pressed":true},"id":"lift","action":"Lift, then press again."},
+    {"name":"resume has no contact","patch":{"require_lift":true,"notice":"Overheld. Lift your thumb, then catch again."},"options":{"pressed":false},"id":"hold","action":"Hold to charge."},
+    {"name":"flight without contact","patch":{"ground":null},"options":{"pressed":false},"id":"catch","action":"Hold again to catch the wall."},
+    {"name":"flight holding one thumb","patch":{"ground":null},"options":{"pressed":true},"id":"aim","action":"Keep holding. Drag toward the next wall."},
+    {"name":"flight holding two thumbs","patch":{"ground":null},"options":{"pressed":true,"scheme":"two"},"id":"aim","action":"Keep holding. Use arrows toward the next wall."},
+    {"name":"fresh wall catch","patch":{"ground":null,"grip":"west"},"options":{"pressed":true},"id":"caught","action":"Caught! Keep holding."},
+    {"name":"caught charging","patch":{"ground":null,"grip":"west","charge":20},"options":{"pressed":true},"id":"charge","action":"Keep holding until GOOD."},
+    {"name":"rescue shelf","patch":{"ground":"rescue"},"options":{"pressed":false},"id":"hold","action":"Hold to charge.","objective":"Rescue shelf: no life lost."},
+    {"name":"camp while flying","patch":{"ground":null,"checkpoint":"camp"},"options":{"pressed":false},"id":"catch","action":"Hold again to catch the wall.","objective":"Camp lit. Falls return here and cost one life."},
+    {"name":"summit approach","patch":{"ground":null,"y":1410},"options":{"pressed":false},"id":"catch","action":"Hold again to catch the wall.","objective":"Reach the summit bell."},
+    {"name":"paused old contact","patch":{"status":"paused","require_lift":true},"options":{"pressed":true},"id":"paused","action":"Climb paused. Continue with a fresh touch."},
+    {"name":"recovery start","patch":{"status":"recovery"},"options":{"pressed":false},"id":"recovery","action":"One life lost. Continue when ready.","objective":"Return to the start. Height and lanterns are kept."},
+    {"name":"recovery camp","patch":{"status":"recovery","checkpoint":"camp"},"options":{"pressed":false},"id":"recovery","action":"One life lost. Continue when ready.","objective":"Return to camp. Height and lanterns are kept."},
+    {"name":"win retires held cue","patch":{"status":"won","charge":40},"options":{"pressed":true},"id":"won","action":"Climb complete."},
+    {"name":"loss retires held cue","patch":{"status":"lost","require_lift":true},"options":{"pressed":true},"id":"lost","action":"Three lives used."}
+  ]
+}

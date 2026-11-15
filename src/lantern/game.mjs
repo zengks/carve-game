@@ -1,5 +1,6 @@
 import {createRun,restoreRun,pauseRun,resumeRun,stepRun,quality} from './rules.mjs';
 import {createBoss,restoreBoss,stepBoss,bellState} from './bellkeeper.mjs';
+import {climbCoaching} from './coaching.mjs';
 const bossMode = new URLSearchParams(location.search).get('boss') === 'bellkeeper';
 const course = await (await fetch(bossMode ? './bellkeeper.json' : './course.json')).json();
 const newRun = bossMode ? createBoss : createRun;
@@ -65,8 +66,9 @@ function showOverlay(){
  recordResult();
  $('title').textContent=status==='won'?'You lit Lantern Reach':status==='lost'?'Every climb teaches you':status==='recovery'?'Take a breath':status==='paused'?'Your climb is safe':'Lantern Reach';
  $('description').textContent=status==='won'?'The summit bell is yours. Can you find another lantern?':status==='lost'?'Three lives used. Choose a new route on your next attempt.':status==='recovery'?run.notice:status==='paused'?'Resume with a fresh touch when you are ready.':'A little courage. A brighter way up.';
- $('detail').textContent=status==='ready'?'Hold to charge. Drag to aim. Release to leap. Hold again in flight to catch a blue wall.':status==='recovery'?'Your height record and collected lanterns are kept. The blue camp saves your next recovery point.':status==='paused'?'Blue walls are the steady route. The narrow gold pillar offers a quicker crossing and a bonus lantern.':'Blue walls, a safe camp, and a golden shortcut. Every lantern is an optional challenge.';
- $('result').textContent=run.ticks?Math.floor(run.peak/10)+' m reached · '+run.tokens.length+'/4 lanterns · '+(run.ticks/120).toFixed(1)+' s · '+run.falls+' falls':'Three lives. Reach the bell at 148 m.';
+ const steering=scheme==='two'?'Use the arrows to steer.':'Drag on the pad to aim.';
+ $('detail').textContent=status==='ready'?'Hold the pad until GOOD, then release to jump. Hold again in flight to catch a blue wall. Follow the prompts below as you climb.':status==='recovery'?'Return to '+(run.checkpoint?'camp':'the start')+' with '+run.lives+' '+(run.lives===1?'life':'lives')+' left. Height and lanterns are kept. Light the blue camp to save a higher return point.':status==='paused'?'1. Hold until GOOD. 2. Release to jump. 3. Hold again to catch. '+steering+' Keyboard: hold/release Space; arrows steer.':'Blue walls, a safe camp, and a golden shortcut. Every lantern is an optional challenge.';
+ $('result').textContent=run.ticks?Math.floor(run.peak/10)+' m reached · '+run.tokens.length+'/4 lanterns · '+(run.ticks/120).toFixed(1)+' s · '+run.falls+' falls':'Three lives · Reach the summit bell · Lanterns optional';
  $('continue').textContent=['won','lost'].includes(status)?'Climb again':status==='ready'?'Begin the climb':'Continue climbing';
  $('restart').hidden=!['paused','recovery'].includes(status);
  $('boss-entry').hidden = bossMode || status !== 'won';
@@ -105,6 +107,7 @@ function configure(event){
  $('controls').classList.toggle('two',scheme==='two');$('controls').classList.toggle('left',hand==='left');$('two-steer').hidden=scheme!=='two';
  $('pad-detail').textContent=scheme==='one'?'drag ← to aim → · release to leap':'hold to catch · release to leap';
  try{localStorage.setItem(preferencesKey,JSON.stringify({scheme,hand}));}catch{}
+ showOverlay();
 }
 $('scheme').value=scheme;$('hand').value=hand;
 $('scheme').onchange=configure;$('hand').onchange=configure;configure();
@@ -231,13 +234,14 @@ function draw(now,elapsed){
  $('height').textContent=Math.floor(run.peak/10)+' m';$('lives').textContent='♥ '.repeat(run.lives).trim();$('lanterns').textContent=run.tokens.length+' / 4 lanterns';
  if(bossMode)$('lanterns').textContent=run.tokens.length+' / 3 ropes';
  $('charge').style.width=(run.charge/147*100)+'%';
- $('quality').textContent=run.charge?quality(run.charge,course).toUpperCase()+' · release to leap':run.grip?'Caught · hold to charge from zero':'Hold again in flight to catch';
- $('instruction').textContent=run.launches===0?'HOLD · DRAG TO AIM · RELEASE':run.y>1400?'REACH THE SUMMIT BELL':run.y>700&&run.y<1050?'GOLD PILLAR · SHORTER CROSSING, SMALLER TARGET':run.checkpoint?'CAMP LIT · FIND YOUR NEXT LANTERN':'BLUE WALLS LEAD TO THE SAFE CAMP';
+ const coaching=climbCoaching(run,course,{scheme,pressed:chargeOwner!==null||keys.has('Space')});
+ $('instruction').textContent=coaching.action;
+ $('quality').textContent=(run.charge?quality(run.charge,course).toUpperCase()+' · ':'')+coaching.objective;
  if(bossMode){
   const bell=bellState(run,course),rope=course.tokens[bell.phase];
   const direction=rope.position[0]<195?'LEFT':'RIGHT';
   $('instruction').textContent='ROPE '+(bell.phase+1)+' · '+direction+' · '+Math.round(rope.position[1]/10)+' m · '+bell.stage.toUpperCase();
-  if(!run.charge)$('quality').textContent=run.ground?'Shelf safe · drag toward the next rope':run.grip?'Caught · charge, then release':'Let go above a rope shelf to land';
+  $('quality').textContent=run.charge?quality(run.charge,course).toUpperCase()+' · release to leap':run.ground?'Shelf safe · drag toward the next rope':run.grip?'Caught · charge, then release':'Let go above a rope shelf to land';
   if(['won','lost'].includes(run.status)){
    $('instruction').textContent=run.status==='won'?'BELLKEEPER COMPLETE':'CHALLENGE COMPLETE';
    $('quality').textContent='Review your result, retry or return to Lantern Reach';

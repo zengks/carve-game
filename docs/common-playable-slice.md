@@ -1,6 +1,6 @@
 # Lantern Reach shared playable section
 
-Browser and mobile implement the same finite preview course
+Browser and mobile implement the same finite course
 `common.lantern-reach-v1`, with rules `lantern-rules-1`. The numeric source is
 `shared/common-lantern-reach-v1.json`; the reference simulation is
 `shared/lantern-rules.mjs`. Native mirrors these in GDScript and runs the
@@ -49,13 +49,44 @@ reclassified. The section has no account, cloud upload, spending or paid effect.
 
 ## Verification and release boundary
 
-The browser entry is `/lantern/`, included in preview builds only.
-The current released browser game and native First Ascent remain preserved.
+The browser entry is `/lantern/`, released by authorized PR26 at `853d876` on
+2026-11-14. Native remains a preview; the existing Expedition and native First
+Ascent saves remain separate. Subsequent coaching changes stay on preview
+branches until separately authorized for release.
 The reference tests cover charge boundaries, input cancellation, rescue,
 checkpoint recovery, terminal lives, corrupted snapshots and complete GOOD
 and PERFECT input-only routes. Native verifies the same state vectors within
 1e-5 numeric tolerance. Browser/device UI checks qualify the adapter separately.
 Player comfort and replay interest still need observation with newcomers.
+
+### First-climb coaching contract — 2026-11-14
+
+`lantern-coaching-1` is presentation only. Its canonical selector is
+`shared/lantern-coaching.mjs`, with 26 scenarios in
+`shared/fixtures/lantern-coaching-v1.json`. It derives `{id, action, objective}`
+from existing run state, charge thresholds, control scheme and current held
+input. It never writes the run, adds tutorial save flags, or changes the frozen
+course, physics, lives, scoring, parity fixture or Bellkeeper rules.
+
+Priority: terminal/ready/pause/recovery; a held input that needs lifting;
+airborne catch/aim; supported hold; fresh catch; EARLY charge; GOOD/PERFECT
+release; LATE urgent release. The held input comes from the adapter's active
+pad/keyboard owner, not a stale notice. This distinguishes an expired held
+contact from a resumed run with no contact. Native may substitute the visible
+CARVE/STEER button names; meaning, cue IDs and objectives stay aligned.
+
+The immediate action appears beside the charge meter. A secondary objective
+explains camp, the rescue shelf or the summit without replacing catch/release
+timing. Initial instructions explain that lanterns are optional. Pause repeats
+three control steps with the selected steering scheme. Recovery identifies the
+return point, remaining lives and retained height/lanterns. Bellkeeper keeps
+its existing separate instructions.
+
+Acceptance: test charge boundaries and retired touches, both control schemes,
+fresh entry, full one-thumb summit, pause/reload, fall/recovery and separate
+boss return. Preserve every prior save and virtual device. Browser pointer
+checks, scripted adapter routes and emulator/simulator OS-touch checks are
+separate evidence; newcomer understanding and physical comfort remain open.
 
 ### Browser checkpoint — 2026-11-13
 
