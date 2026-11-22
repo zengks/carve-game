@@ -64,10 +64,9 @@ export async function build(outputDir = join(root, 'dist'), { production = false
   const game=await hashedAsset('lantern-game.mjs',(await readFile(join(root,'src/lantern/game.mjs'),'utf8'))
     .replace('./rules.mjs',rules).replace('./course.json',course).replace('./bellkeeper.mjs',bossRules).replace('./bellkeeper.json',bossCourse).replace('./coaching.mjs',coaching));
   const style=await hashedAsset('lantern.css',await readFile(join(root,'src/lantern/style.css'),'utf8'));
-  let page=(await readFile(join(root,'src/lantern/index.html'),'utf8')).replace('/lantern/game.mjs',game).replace('/lantern/style.css',style);
-  if(production)page=page.replace('content="noindex,nofollow"','content="index,follow"');
-  await mkdir(join(outputDir,'lantern'),{recursive:true});
-  await writeFile(join(outputDir,'lantern/index.html'),page);
+  let page=(await readFile(join(root,'src/lantern/index.html'),'utf8')).replace('/encounters/bellkeeper/game.mjs',game).replace('/encounters/bellkeeper/style.css',style);
+  await mkdir(join(outputDir,'encounters/bellkeeper'),{recursive:true});
+  await writeFile(join(outputDir,'encounters/bellkeeper/index.html'),page);
   await writeFile(join(outputDir, 'site.webmanifest'), manifest);
   for (const file of ['robots.txt', 'sitemap.xml', 'googlefd0692e33131ffd2.html']) {
     await copyFile(join(root, file), join(outputDir, file));

@@ -268,6 +268,9 @@
       #menu kbd { white-space: nowrap; padding: 2px 5px; }
       #menu #help-open { font-size: 12px; padding: 10px 16px; }
       dialog { margin: auto; width: min(520px, 92vw); max-height: 90dvh; overflow-y: auto; padding: 26px; border: 1px solid var(--line); border-radius: 18px; background: #101829; color: var(--ink); }
+      #boss-dialog:has(iframe:not([hidden])) { width:100vw; max-width:100vw; height:100dvh; max-height:100dvh; padding:0; border:0; border-radius:0; overflow:hidden; }
+      #boss-frame { width:100%; height:100%; border:0; display:block; }
+      #boss-frame[hidden], #boss-brief[hidden] { display:none; }
       dialog::backdrop { background: #030711d9; backdrop-filter: blur(5px); }
       dialog h2 { color: var(--cyan); font-size: 24px; }
       dialog p { margin-top: 16px; color: var(--ink); font-size: 14px; line-height: 1.6; }
@@ -730,7 +733,6 @@
         <div class="menu-actions">
           <div class="climber-identity"><label class="name-label">Climber name <input id="climber-name" maxlength="16" autocomplete="nickname" value="Climber" /></label><button class="btn ghost" id="avatar-open" aria-haspopup="dialog" aria-label="Choose climber · current: Aster"><canvas id="avatar-current" width="80" height="80" aria-hidden="true"></canvas><span><small>CHOOSE CLIMBER →</small><strong id="avatar-current-name">Aster</strong></span></button></div><p id="avatar-save-status" role="status"></p>
           <button class="btn" id="play">Begin expedition ▸</button>
-          <a class="btn ghost" href="/lantern/" style="text-decoration:none">Lantern Reach + Bellkeeper ▸</a>
           <div class="menu-options"><button class="btn ghost" id="mode-open" aria-haspopup="dialog">Practice · ∞</button><button class="btn ghost" id="touch-toggle" aria-haspopup="dialog">Controls</button></div>
         </div>
         <div class="keys">
@@ -788,7 +790,7 @@
       </details>
       <details>
         <summary>Landmarks, skills and rifts</summary>
-        <p>The route leads through Launch Garden, Wind Gap, The Fork, Second Chance and Observatory, then keeps climbing. Look for The Fork's violet shortcut and Second Chance's lower cyan rescue wall. Gold chevrons mark springboards.</p>
+        <p>The route leads through Launch Garden, Wind Gap, The Fork, Second Chance and Observatory, then keeps climbing. Look for The Fork's violet shortcut and Second Chance's lower cyan rescue wall. Gold chevrons mark springboards. At 300 m, stop on a solid ledge to challenge the Bellkeeper. You can skip it or reopen it from Pause.</p>
         <p>Good releases build Flow. Press X or K for Surge, and C, L or Q for your equipped skill. On touch, use the action buttons between launches. Earn bounty from shards, height milestones and contracts, then unlock skills in the Workshop. Nearby purple rifts open with E or Enter rift. A missed trial can cost altitude.</p>
       </details>
       </div>
@@ -804,7 +806,7 @@
         <h1 class="title">HOLD</h1>
         <p class="tag" id="pause-message">Time to read the next line.</p>
         <button class="btn" id="resume">Resume</button>
-        <button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost hidden" id="relic-loadout" aria-haspopup="dialog">Relics</button><button class="btn ghost" id="journal-open">Journal</button><button class="btn ghost hidden" id="camp-pause">Stop at camp</button><button class="btn ghost" id="bank-open">Bank run</button><button class="btn ghost" id="controls-pause" aria-haspopup="dialog">Controls</button></div>
+        <button class="btn ghost" id="restart1">Restart</button><div class="expedition-links"><button class="btn ghost" id="workshop-pause">Workshop</button><button class="btn ghost" id="records-pause">Records</button><button class="btn ghost hidden" id="relic-loadout" aria-haspopup="dialog">Relics</button><button class="btn ghost" id="journal-open">Journal</button><button class="btn ghost hidden" id="camp-pause">Stop at camp</button><button class="btn ghost hidden" id="boss-pause">Bellkeeper · 300 m</button><button class="btn ghost" id="bank-open">Bank run</button><button class="btn ghost" id="controls-pause" aria-haspopup="dialog">Controls</button></div>
       </div>
     </div>
 
@@ -846,6 +848,14 @@
     <dialog id="journal-dialog" aria-labelledby="journal-title"><div class="rift-body"><h2 id="journal-title">Field journal</h2><details><summary>How bounty, Flow and lives work</summary><p>Gold shards earn bounty. Spend it on skill unlocks or camp services. Surge spends 26 Flow for a dash, separate from skill recharge. Perfect catches earn more Flow; neither currency is a life. Gold walls save the place you return to after losing a life.</p><p>Public runs have 3 lives. Your height record and bounty survive Game Over. Optional camp contracts risk only their stated deposit, and marked directional rings need you to cross in the arrow's direction.</p><p>Hollow gold shards above central ledges pay 1 bounty; wall-side shards pay 2 or 4. Both count for Courier, so the high route can finish its goal without diving below the ledges.</p><p>In the new course, skills recharge by climbing: a PERFECT fresh catch restores 3 points, GOOD restores 2, other catches 1; a shard restores 1 and a directional ring 4. Waiting does not refill skills. Contracts can grant a ready skill, one Overdrive activation or a life.</p></details><details id="terrain-guide" class="hidden" open><summary>Living terrain · read before exploring</summary><p>Solid glowing edges show the surfaces you can land on or catch. Decorative roots, crystals and machinery are scenery. Mushroom caps are automatic springs: land, lift your thumb, then press again to catch.</p><p>↔ Cloud ferry: a slow moving, one-way landing deck. It carries you sideways while standing or charging. Jump through it from below. No extra button.</p><p>Cracked shelf: optional amber stepping stone. First landing or catch starts a 1.8-second climb-clock countdown. Jump before it breaks; it regrows 5 seconds later. The warning bar drains even while charging. Safe walls and camps never crumble.</p><p>◇ Crystal bell: make a PERFECT release from its marked wall or top to earn +12 Flow and restore 4 skill recharge points, once per bell per run. GOOD catches still work normally. No currency, skill or perfect release is required to climb.</p><p>Hanging gardens, wind kites, hollow arches, root bridges and observatory drums change the scenery; their glowing grip and landing edges keep the original collision rules. Course records stay separate from earlier routes.</p></details><ol id="journal-entries"></ol></div><div class="rift-actions"><button class="btn ghost" id="camp-guide">Plan the next camp</button><button class="btn" id="journal-close">Back</button></div></dialog>
     <dialog id="skill-dialog" aria-labelledby="skill-title"><div class="rift-body"><div class="eyebrow">understand your equipment</div><h2 id="skill-title"></h2><p id="skill-copy"></p><p>Use between catches, after lifting your thumb. Changing equipment never refills your skill. In the new course, fresh catches and shards recharge it; waiting does not. You can read all skills again in the Workshop.</p></div><div class="rift-actions"><button class="btn" id="skill-confirm">Use this skill</button><button class="btn ghost" id="skill-cancel">Keep climbing</button></div></dialog>
     <dialog id="camp-dialog" aria-labelledby="camp-title"><div class="rift-body"><div class="eyebrow">a moment to choose</div><h2 id="camp-title">Trail camp</h2><p id="camp-copy"></p><p id="camp-status" role="status"></p><div id="camp-options"></div></div><div class="rift-actions"><button class="btn" id="camp-repair">Restore one life · 18 bounty</button><button class="btn ghost hidden" id="camp-rift">Explore nearby rift</button><button class="btn ghost" id="camp-close">Leave camp</button></div></dialog>
+    <dialog id="boss-dialog" aria-labelledby="boss-title">
+      <section id="boss-brief"><h2 id="boss-title">The Bellkeeper · 300 m</h2>
+        <p>Leave your Expedition safely on this ledge. Hold, drag and release to climb the bell tower; secure three ropes while the bell rests.</p>
+        <p id="boss-terms"></p><p id="boss-error" role="status"></p>
+        <button class="btn" id="boss-accept">Accept one attempt</button><button class="btn ghost" id="boss-decline">Keep climbing</button>
+      </section>
+      <iframe id="boss-frame" title="Bellkeeper milestone encounter" hidden></iframe>
+    </dialog>
     <dialog id="bank-dialog" aria-labelledby="bank-title"><h2 id="bank-title">Bank this expedition?</h2><p>Your highest altitude joins this browser's records. Bounty and unlocks are kept. The next expedition starts at the ground.</p><button class="btn" id="bank-cancel" autofocus>Keep climbing</button><button class="btn ghost" id="bank-confirm">Bank &amp; end run</button></dialog>
 
     <dialog id="challenge-result" aria-labelledby="challenge-result-title">
@@ -2435,7 +2445,7 @@
           this.seed = Math.floor(Math.random() * 2147483646) + 1;
           this.id = Date.now().toString(36) + '-' + this.seed.toString(36);
           Object.assign(this,{peak:64,fallAnchor:64,rescues:0,shards:0,clean:0,wins:0,cooldown:0,wingTime:0,quests:[0,0,0],rift:null,nearest:null,lastUI:''});
-          this.collected = new Set(); this.visited = new Set(); Relics.reset(); Journal.entries=[]; Routes.reset();
+          BossEncounter.reset(); this.collected = new Set(); this.visited = new Set(); Relics.reset(); Journal.entries=[]; Routes.reset();
         },
         recovering() { return Player.vy < -120 && Player.y < this.fallAnchor-160; },
         onRescue(block) {
@@ -2563,7 +2573,7 @@
           if (!Game.running) return false;
           this.peak = Math.max(this.peak,Player.y);
           const result = this.mode === 'challenge' ? {id:this.id,course:Level.course,name:this.name,avatar:this.avatar,mode:this.mode,lives:this.lives,controls:{scheme:Game.controlScheme,hand:Game.controlHand},touch:document.body.classList.contains('istouch'),outcome,height:Math.floor((this.peak - 64) / 10),score:Game.score,time:Game.time,portals:this.wins,relics:RELIC_TRIAL ? {version:1,owned:[...Relics.owned]} : null} : null;
-          Profile.record(outcome); Game.running = false; Game.paused = false; Game.acc = 0; Game.awaitingGrip = false; this.rift = null; Relics.offer=null; document.getElementById('relic-dialog').close(); RunSave.clear(); Input.clear();
+          Profile.record(outcome); Game.running = false; Game.paused = false; Game.acc = 0; Game.awaitingGrip = false; this.rift = null; Relics.offer=null; document.getElementById('relic-dialog').close(); if(!(this.lives===0&&BossEncounter.state?.phase==='settled'&&BossEncounter.state.outcome==='lost'))RunSave.clear(); Input.clear();
           for (const id of ['paused','hud','flowwrap','coach','pausebtn','run-mode-status','expedition-status','contractline','ability','portal-enter']) show(id,false);
           show('menu',true); Game.needsRender = true; this.menuStatus();
           if (result) { this.result = result; RunSave.writeResult(result); this.renderResult(); }
@@ -2688,7 +2698,8 @@
           const nextCampRow=Math.max(0,Math.ceil((Player.y-1498)/1380))*6+5;
           const campHeight=Math.floor((348+nextCampRow*230-64)/10);
           const frontier=FLOW_TRIAL&&Player.y>=7050?'TRAIL '+(Math.floor(Math.max(0,Player.y-150)/6900)+1)+' · '+encounter.name+' · camp '+campHeight+' m ↑':contract;
-          const line=active?(falling?'RECOVERY · '+Math.max(0,Math.ceil((Player.y-Level.fallFloor())/10))+' m to fall limit':encounter.name)+' · '+Routes.kinds[active.kind].name+' '+active.targets.length+'/'+Routes.kinds[active.kind].goal:frontier;
+          const bossHint=!BossEncounter.state&&Player.y>=3064?' · Bellkeeper unlocked: stop on a solid ledge':'';
+          const line=(active?(falling?'RECOVERY · '+Math.max(0,Math.ceil((Player.y-Level.fallFloor())/10))+' m to fall limit':encounter.name)+' · '+Routes.kinds[active.kind].name+' '+active.targets.length+'/'+Routes.kinds[active.kind].goal:frontier)+bossHint;
           if (document.getElementById('contractline').textContent !== line) document.getElementById('contractline').textContent = line;
           const modeBadge = document.getElementById('run-mode-status');
           const modeText = this.mode === 'challenge' ? 'Challenge · ' + '♥'.repeat(this.lives) + '♡'.repeat(3 - this.lives) : 'Practice · ∞ lives';
@@ -2701,14 +2712,16 @@
           button.setAttribute('aria-label',label);
           const portalButton = document.getElementById('portal-enter');
           const cache=Relics.availableRow()!==null, camp=!!Routes.beacon();
+          show('boss-pause',Game.paused&&BossEncounter.available());
           show('camp-pause',Game.running&&Game.paused&&camp&&!Game.returning);
-          const portalLabel = cache ? (document.body.classList.contains('istouch') ? 'Relic cache' : 'Inspect relic cache · E') : camp ? 'Stop at camp · E / tap' : document.body.classList.contains('istouch') ? 'Enter rift' : 'Enter secret rift · E';
+          const boss=BossEncounter.available()&&!BossEncounter.dismissed;
+          const portalLabel = boss ? 'Bellkeeper · 300 m · E / tap' : cache ? (document.body.classList.contains('istouch') ? 'Relic cache' : 'Inspect relic cache · E') : camp ? 'Stop at camp · E / tap' : document.body.classList.contains('istouch') ? 'Enter rift' : 'Enter secret rift · E';
           if (portalButton.textContent !== portalLabel) portalButton.textContent = portalLabel;
-          show('portal-enter',Game.running && !Game.paused && (cache || camp || !!this.nearest));
+          show('portal-enter',Game.running && !Game.paused && (boss || cache || camp || !!this.nearest));
           if(RELIC_TRIAL)document.getElementById('relic-loadout').textContent=`Relics · ${Relics.owned.length}/3`;
           show('ability',Game.running); show('expedition-status',Game.running); show('contractline',Game.running);
         },
-        openNearby(){if(Relics.availableRow()!==null)return Relics.open(true);if(Routes.beacon())return Routes.open();return this.enterPortal();},
+        openNearby(){if(BossEncounter.available()&&!BossEncounter.dismissed)return BossEncounter.open();if(Relics.availableRow()!==null)return Relics.open(true);if(Routes.beacon())return Routes.open();return this.enterPortal();},
         enterPortal() {
           if (!Game.running || Game.paused || !this.nearest) return false;
           const p = this.nearest;
@@ -2843,6 +2856,67 @@
         },
       };
 
+      // The parent run is the only encounter save. Wallet claims share the camp ledger.
+      const BossEncounter = {
+        state:null, dismissed:false,
+        active(){return this.state?.phase==='playing';},
+        valid(s){return s==null || (s.version===1&&s.milestone===300&&['playing','settled'].includes(s.phase)&&[null,'won','lost','withdrawn'].includes(s.outcome)&&
+          (s.run===null || (s.run&&['ready','playing','paused','recovery','won','lost'].includes(s.run.status)&&Number.isInteger(s.run.lives)&&s.run.lives>=0&&s.run.lives<=3&&Array.isArray(s.run.tokens)&&s.run.tokens.length<=3&&Number.isInteger(s.run.bell_ticks)&&s.run.bell_ticks>=0))&&
+          (!s.controls||(['one','two'].includes(s.controls.scheme)&&['left','right'].includes(s.controls.hand)))&&(s.phase==='playing'?s.outcome===null:s.outcome!==null));},
+        available(){return !this.state&&Game.running&&!Game.returning&&!Journey.rift&&!Relics.offer&&Player.y>=3064&&Player.onGround&&Player.state==='GROUND'&&Math.abs(Player.vx)<=30&&!Input.manualHeld()&&Level.blocks.some(b=>!b.hazard&&!['ferry','crumble'].includes(b.mechanic)&&b.feature!=='spring'&&Player.x+Player.w>b.x&&Player.x<b.x+b.w&&Math.abs(Player.y-b.y-b.h)<3);},
+        reset(){this.state=null;this.dismissed=false;},
+        open(){
+          if(!this.available()||document.querySelector('dialog[open]'))return false;
+          if(!Game.paused)Game.togglePause();show('paused',false);Input.clear();
+          document.getElementById('boss-brief').hidden=false;document.getElementById('boss-frame').hidden=true;
+          document.getElementById('boss-terms').textContent='Three encounter lives. Win: +30 bounty once. Lose: '+(Journey.mode==='challenge'?'one Expedition life; losing your last life ends this run.':'no Practice life penalty.')+' Your height, skill charges and camp contract are frozen. Withdrawing after acceptance spends this attempt, with no reward or life penalty.';
+          document.getElementById('boss-error').textContent='';document.getElementById('boss-dialog').showModal();return true;
+        },
+        decline(){if(this.active())return;this.dismissed=true;document.getElementById('boss-dialog').close();Input.clear();show('paused',true);Game.syncHUD();},
+        accept(){
+          if(!this.available())return false;
+          this.state={version:1,milestone:300,phase:'playing',outcome:null,run:null};
+          if(!RunSave.write()){this.state=null;document.getElementById('boss-error').textContent='Saving is unavailable. Your attempt has not started. Keep this tab open and try again.';return false;}
+          this.mount();return true;
+        },
+        mount(){
+          Game.paused=true;Input.clear();show('paused',false);
+          document.getElementById('boss-brief').hidden=true;
+          const frame=document.getElementById('boss-frame');frame.hidden=false;frame.src='/encounters/bellkeeper/';
+          const dialog=document.getElementById('boss-dialog');if(!dialog.open)dialog.showModal();
+        },
+        connect(child){
+          if(!this.active()||child!==document.getElementById('boss-frame').contentWindow)return null;
+          const state=this.state;
+          return {mode:Journey.mode,lives:Journey.lives,height:Math.floor((Player.y-64)/10),run:state.run?JSON.parse(JSON.stringify(state.run)):null,scheme:state.controls?.scheme||Game.controlScheme,hand:state.controls?.hand||Game.controlHand,
+            save:(run,controls=state.controls)=>{if(child!==document.getElementById('boss-frame').contentWindow||this.state!==state||!this.active())return false;const next={...state,controls,run:JSON.parse(JSON.stringify(run))};if(!this.valid(next))return false;const old=state.run,oldControls=state.controls;state.run=next.run;state.controls=controls;if(RunSave.write())return true;state.run=old;state.controls=oldControls;return false;},
+            finish:outcome=>child===document.getElementById('boss-frame').contentWindow&&this.state===state&&this.complete(outcome)};
+        },
+        complete(outcome){
+          const s=this.state;if(!this.active()||!['won','lost','withdrawn'].includes(outcome))return false;
+          if(outcome!=='withdrawn'&&s.run?.status!==outcome)return false;
+          if(outcome==='withdrawn'&&['won','lost'].includes(s.run?.status))return false;
+          if(outcome==='won'){
+            Profile.load();if(!Profile.routeLedger.includes(Journey.id+':bellkeeper:300')&&!Routes.transaction('bellkeeper:300',30))return false;
+          }
+          const lives=Journey.lives;
+          if(outcome==='lost'&&Journey.mode==='challenge')Journey.lives--;
+          s.phase='settled';s.outcome=outcome;
+          if(!RunSave.write()){s.phase='playing';s.outcome=null;Journey.lives=lives;return false;}
+          const frame=document.getElementById('boss-frame');frame.hidden=true;document.getElementById('boss-dialog').close();
+          document.getElementById('pausebtn').focus?.({preventScroll:true});Game.windowFocused=!document.hidden;Input.clear();
+          if(Journey.mode==='challenge'&&Journey.lives===0){Journey.finish('gameover');return true;}
+          Journey.notify('BELLKEEPER · '+(outcome==='won'?'+30 bounty':outcome==='lost'?(Journey.mode==='challenge'?'−1 Expedition life':'Practice attempt complete'):'attempt withdrawn')+' · returning to your entry ledge',true);
+          Game.syncHUD();Game.startReturn({kind:'boss',origin:{x:Cam.x,y:Cam.y},to:Math.floor((Player.y-64)/10)});return true;
+        },
+        init(){
+          window.CARVEBellkeeper=child=>this.connect(child);
+          document.getElementById('boss-pause').onclick=()=>this.open();
+          document.getElementById('boss-accept').onclick=()=>this.accept();document.getElementById('boss-decline').onclick=()=>this.decline();
+          document.getElementById('boss-dialog').addEventListener('cancel',e=>{e.preventDefault();if(!this.active())this.decline();});
+        },
+      };
+
       const RunSave = {
         key:LIVING_PLATFORMS ? (TESTING ? (RELIC_TRIAL ? 'carve.terrain-relic.run.v1' : 'carve.terrain.run.v1') : (RELIC_TRIAL ? 'carve.public-terrain-relic.run.v1' : 'carve.public-terrain.run.v1')) : FLOW_TRIAL ? (TESTING ? (RELIC_TRIAL ? 'carve.flow-relic.run.v1' : 'carve.flow.run.v1') : (RELIC_TRIAL ? 'carve.public-flow-relic.run.v1' : 'carve.public-flow.run.v1')) : !TESTING ? (RELIC_TRIAL ? 'carve.public-relic.run.v1' : 'carve.public.run.v1') : RELIC_TRIAL ? 'carve.relic-trial.run.v1' : 'carve.variety.run.v1', incompatibleCourse:false,
         gameFields:['flow','score','combo','bestChain','perfects','time','comboTimer','lesson','noticeTime'],
@@ -2854,7 +2928,7 @@
           const pick = (o,fields) => Object.fromEntries(fields.map(k=>[k,o[k]]));
           const d = {version:1,course:Level.course,controlsUsed:Journey.controlsUsed,mode:Journey.mode,lives:Journey.lives,seed:Journey.seed,id:Journey.id,name:Journey.name,avatar:Journey.avatar,game:pick(Game,this.gameFields),player:pick(Player,this.playerFields),journey:pick(Journey,this.journeyFields),
             state:Player.state,onGround:Player.onGround,respawn:{...Player.respawn},checkpoint:Player.checkpoint && {id:Player.checkpoint.id,x:Player.checkpoint.x,y:Player.checkpoint.y,kind:'check'},
-            rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,relics:Relics.snapshot(),camera:{x:Cam.x,y:Cam.y},journal:Journal.entries,route:Routes.snapshot(),terrain:Terrain.snapshot(),
+            rewarded:[...Game.rewarded],collected:[...Journey.collected],visited:[...Journey.visited],quests:Journey.quests,rift:Journey.rift,relics:Relics.snapshot(),camera:{x:Cam.x,y:Cam.y},journal:Journal.entries,route:Routes.snapshot(),boss:BossEncounter.state,terrain:Terrain.snapshot(),
             carve:Player.carve && {type:Player.carve.type,charge:Player.carve.charge,block:Player.carve.block.id,manual:!!Player.carve.manual},
             pole:Player.pole && {...pick(Player.pole,['ang','r','angVel','charge']),ref:Player.pole.ref.id,manual:!!Player.pole.manual},
             touch:document.body.classList.contains('istouch'),controls:{scheme:Game.controlScheme,hand:Game.controlHand},notice:Game.notice};
@@ -2879,7 +2953,7 @@
             const d = JSON.parse(raw); this.incompatibleCourse = d?.version === 1 && d.course === 3;
             const numeric = (o,fields) => o && fields.every(k=>Number.isFinite(o[k]) && typeof o[k] === 'number' && Math.abs(o[k]) <= 1e12);
             if (d && d.mode === undefined && d.lives === undefined) { d.mode = 'practice'; d.lives = null; }
-            if (!d || (!TESTING && d.mode !== 'challenge') || !['practice','challenge'].includes(d.mode) || (d.mode === 'practice' ? d.lives !== null : !Number.isInteger(d.lives) || d.lives < 1 || d.lives > 3)) return null;
+            if (!d || (!TESTING && d.mode !== 'challenge') || !['practice','challenge'].includes(d.mode) || (d.mode === 'practice' ? d.lives !== null : !Number.isInteger(d.lives) || d.lives < 0 || d.lives > 3 || (d.lives===0&&!(d.boss?.phase==='settled'&&d.boss.outcome==='lost')))) return null;
             if (d.controls !== undefined && (!d.controls || !['one','two'].includes(d.controls.scheme) || !['left','right'].includes(d.controls.hand))) return null;
             if ([d.carve,d.pole].some(grip=>grip && grip.manual !== undefined && typeof grip.manual !== 'boolean')) return null;
             const ids = a => Array.isArray(a) && a.length <= 800 && a.every(id=>typeof id === 'string' && /^[btrspv]:\d+:?\d*$/.test(id));
@@ -2892,7 +2966,7 @@
             if (d.state === 'CARVE' ? (!d.carve || !['wallL','wallR','rail'].includes(d.carve.type) || typeof d.carve.block !== 'string' || !numeric(d.carve,['charge']) || d.carve.charge < 0 || d.carve.charge > 1.3) : !!d.carve) return null;
             if (d.state === 'POLE' ? (!d.pole || typeof d.pole.ref !== 'string' || !numeric(d.pole,['ang','angVel','r','charge']) || d.pole.r < 48 || d.pole.r > T.POLE_GRAB || d.pole.charge < 0 || d.pole.charge > 1.3) : !!d.pole) return null;
             if(d.camera&&!numeric(d.camera,['x','y']))return null;
-            if(!Routes.valid(d.route)||!Terrain.valid(d.terrain,d.game.time))return null;
+            if(!BossEncounter.valid(d.boss)||(d.boss?.phase==='playing'&&(!d.onGround||d.state!=='GROUND'||d.rift||d.relics?.offer))||!Routes.valid(d.route)||!Terrain.valid(d.terrain,d.game.time))return null;
             if (!Relics.valid(d.relics,d.seed) || (d.rift && d.relics?.offer) || (d.relics?.offer && (!d.onGround || d.state!=='GROUND' || Math.abs(d.player.vx)>30))) return null;
             if (d.rift) {
               const r = d.rift;
@@ -2933,6 +3007,7 @@
           if (Journey.rift?.phase === 'result' && !Journey.rift.receipt) Journey.returnToClimb(false);
           else if (Journey.rift) { Journey.renderRift(); document.getElementById('rift-dialog').showModal(); }
           else if(Relics.offer) { Relics.render(); document.getElementById('relic-dialog').showModal(); }
+          BossEncounter.state=d.boss||null; if(d.lives===0){Journey.finish('gameover');return true;}if(BossEncounter.active())BossEncounter.mount();
           Game.lastHUD = {}; Game.syncHUD(); return true;
         },
       };
@@ -2981,7 +3056,7 @@
           Input.init();
           this.bindUI();
           this.bindTouch();
-          Journey.init(); Relics.init();
+          Journey.init(); BossEncounter.init(); Relics.init();
           this.syncMute();
           document.addEventListener("visibilitychange", () => {
             if (document.hidden && this.running && !this.paused) this.togglePause();
@@ -3052,7 +3127,7 @@
           Cam.x=receipt.origin.x;Cam.y=receipt.origin.y;
           document.getElementById('return-label').textContent=receipt.kind==='recovery'?'CHECKPOINT RECOVERY':receipt.kind==='camp'?'STOPPING AT CAMP':receipt.kind==='hook'?'SKYHOOK TRANSFER':'RETURNING TO THE CLIMB';
           document.getElementById('return-title').textContent=receipt.to+' m · safe ledge';
-          document.getElementById('return-copy').textContent=receipt.kind==='recovery'?(Journey.mode==='challenge'?'Returning to your checkpoint after losing one life. '+Journey.lives+' of 3 lives remain. ':'Returning to your checkpoint. Testing Practice has unlimited recovery. ')+'Your height record is kept.':receipt.kind==='camp'?'Taking a safe rest at the nearby beacon. Read your contract choices before continuing.':receipt.kind==='hook'?'Your hook carries you to a safe anchor. Fresh input controls the next catch.':receipt.success?'Your rift shortcut carries you to this ledge. Fresh input will control the next jump.':'Returning to the checkpoint route after the rift setback. Your best height is kept. Fresh input controls the next jump.';
+          document.getElementById('return-copy').textContent=receipt.kind==='recovery'?(Journey.mode==='challenge'?'Returning to your checkpoint after losing one life. '+Journey.lives+' of 3 lives remain. ':'Returning to your checkpoint. Testing Practice has unlimited recovery. ')+'Your height record is kept.':receipt.kind==='camp'?'Taking a safe rest at the nearby beacon. Read your contract choices before continuing.':receipt.kind==='boss'?'Back at the exact ledge where you entered. Your Expedition height, skill charges and camp contract are unchanged. Fresh input controls the next jump.':receipt.kind==='hook'?'Your hook carries you to a safe anchor. Fresh input controls the next catch.':receipt.success?'Your rift shortcut carries you to this ledge. Fresh input will control the next jump.':'Returning to the checkpoint route after the rift setback. Your best height is kept. Fresh input controls the next jump.';
           show('return-layer',true);this.needsRender=true;
         },
         tickReturn(dt) {
@@ -3064,6 +3139,7 @@
           if(r.elapsed>=1){this.returning=null;show('return-layer',false);Input.clear();this.acc=0;if(Number.isInteger(r.camp)){this.paused=true;Routes.present(r.camp);}else{this.paused=false;Sfx.resume();}RunSave.write();}
         },
         togglePause() {
+          if(BossEncounter.active())return;
           if(this.returning){this.windowFocused=false;this.tickReturn(0);this.windowFocused=true;return;}
           if (!this.running) return;
           if(!this.paused)this.awaitingGrip=!!(Player.carve||Player.pole);
