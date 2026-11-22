@@ -39,3 +39,10 @@ and Booleans exactly, and allow for floating point differences on decimal fields
 These are simulation comparisons. The shared Bellkeeper outcome fixture covers
 settlement semantics. One-thumb delivery, reload through the app lifecycle,
 boss completion and return still need device-level tests on the native build.
+
+`shared/fixtures/expedition-rifts-v1.json` records the released first portal
+(`v:0`, seed 1). It covers free briefing dismissal and reopening, two Pendulum
+seals, a Pendulum miss, all four Echo glyphs, and cold restarts mid-game and at
+the result. Samples include the unadvanced climb clock, wallet, lives, travel,
+and the confirmation transition. Run `node tests/expedition-rift-reference.mjs`
+to verify it, or add `--write` to regenerate it.

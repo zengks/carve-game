@@ -1,0 +1,975 @@
+{
+  "web_commit": "c4dffb61dd5385f5e3760b5a4e02757100450f0c",
+  "cases": {
+    "decline": [
+      {
+        "action": "ground near portal 0",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": false,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [],
+        "rift": null
+      },
+      {
+        "action": "open briefing",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "brief",
+          "elapsed": 0,
+          "ready": false,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "decline",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": false,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [],
+        "rift": null
+      },
+      {
+        "action": "reopen",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.075,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "brief",
+          "elapsed": 0,
+          "ready": false,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "pulse": [
+      {
+        "action": "ground near portal 0",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": false,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [],
+        "rift": null
+      },
+      {
+        "action": "open briefing",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "brief",
+          "elapsed": 0,
+          "ready": false,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "accept",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "playing",
+          "elapsed": 0,
+          "ready": true,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "seal at 0.32",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "playing",
+          "elapsed": 0.5466038333446621,
+          "ready": true,
+          "progress": 1,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "cold restart after first seal",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "playing",
+          "elapsed": 0.5466038333446621,
+          "ready": false,
+          "progress": 1,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "seal at 0.68",
+        "player": {
+          "x": 198,
+          "y": 1001,
+          "state": "AIR",
+          "onGround": false
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 20,
+        "wins": 1,
+        "peak": 1001,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "result",
+          "elapsed": 0.8813928273779712,
+          "ready": false,
+          "progress": 2,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "win": true,
+          "receipt": {
+            "from": 0,
+            "to": 93,
+            "success": true,
+            "prize": 20,
+            "bonus": 0
+          }
+        }
+      },
+      {
+        "action": "cold restart at receipt",
+        "player": {
+          "x": 198,
+          "y": 1001,
+          "state": "AIR",
+          "onGround": false
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 20,
+        "wins": 1,
+        "peak": 1001,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "result",
+          "elapsed": 0.8813928273779712,
+          "ready": false,
+          "progress": 2,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "win": true,
+          "receipt": {
+            "from": 0,
+            "to": 93,
+            "success": true,
+            "prize": 20,
+            "bonus": 0
+          }
+        }
+      },
+      {
+        "action": "confirm return",
+        "player": {
+          "x": 198,
+          "y": 1001,
+          "state": "AIR",
+          "onGround": false
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": true,
+        "lives": 3,
+        "coins": 20,
+        "wins": 1,
+        "peak": 1001,
+        "visited": [
+          "v:0"
+        ],
+        "rift": null
+      },
+      {
+        "action": "return transition complete",
+        "player": {
+          "x": 198,
+          "y": 1001,
+          "state": "AIR",
+          "onGround": false
+        },
+        "time": 0.06666666666666667,
+        "paused": false,
+        "returning": false,
+        "lives": 3,
+        "coins": 20,
+        "wins": 1,
+        "peak": 1001,
+        "visited": [
+          "v:0"
+        ],
+        "rift": null
+      }
+    ],
+    "memory": [
+      {
+        "action": "ground near portal 0",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": false,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [],
+        "rift": null
+      },
+      {
+        "action": "open briefing",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "brief",
+          "elapsed": 0,
+          "ready": false,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "accept",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "memory",
+          "phase": "playing",
+          "elapsed": 0,
+          "ready": true,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "ignore glyph during reveal",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "memory",
+          "phase": "playing",
+          "elapsed": 0,
+          "ready": true,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "first glyph",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "memory",
+          "phase": "playing",
+          "elapsed": 3.2,
+          "ready": true,
+          "progress": 1,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "cold restart mid-memory",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "memory",
+          "phase": "playing",
+          "elapsed": 3.2,
+          "ready": false,
+          "progress": 1,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "glyph 0",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "memory",
+          "phase": "playing",
+          "elapsed": 3.2,
+          "ready": true,
+          "progress": 2,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "glyph 0",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "memory",
+          "phase": "playing",
+          "elapsed": 3.2,
+          "ready": true,
+          "progress": 3,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "glyph 0",
+        "player": {
+          "x": 198,
+          "y": 1001,
+          "state": "AIR",
+          "onGround": false
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 20,
+        "wins": 1,
+        "peak": 1001,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "memory",
+          "phase": "result",
+          "elapsed": 3.2,
+          "ready": false,
+          "progress": 4,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "win": true,
+          "receipt": {
+            "from": 0,
+            "to": 93,
+            "success": true,
+            "prize": 20,
+            "bonus": 0
+          }
+        }
+      },
+      {
+        "action": "cold restart at receipt",
+        "player": {
+          "x": 198,
+          "y": 1001,
+          "state": "AIR",
+          "onGround": false
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 20,
+        "wins": 1,
+        "peak": 1001,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "memory",
+          "phase": "result",
+          "elapsed": 3.2,
+          "ready": false,
+          "progress": 4,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "win": true,
+          "receipt": {
+            "from": 0,
+            "to": 93,
+            "success": true,
+            "prize": 20,
+            "bonus": 0
+          }
+        }
+      },
+      {
+        "action": "confirm return",
+        "player": {
+          "x": 198,
+          "y": 1001,
+          "state": "AIR",
+          "onGround": false
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": true,
+        "lives": 3,
+        "coins": 20,
+        "wins": 1,
+        "peak": 1001,
+        "visited": [
+          "v:0"
+        ],
+        "rift": null
+      },
+      {
+        "action": "return transition complete",
+        "player": {
+          "x": 198,
+          "y": 1001,
+          "state": "AIR",
+          "onGround": false
+        },
+        "time": 0.06666666666666667,
+        "paused": false,
+        "returning": false,
+        "lives": 3,
+        "coins": 20,
+        "wins": 1,
+        "peak": 1001,
+        "visited": [
+          "v:0"
+        ],
+        "rift": null
+      }
+    ],
+    "miss": [
+      {
+        "action": "ground near portal 0",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": false,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [],
+        "rift": null
+      },
+      {
+        "action": "open briefing",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "brief",
+          "elapsed": 0,
+          "ready": false,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "accept",
+        "player": {
+          "x": 450,
+          "y": 62,
+          "state": "GROUND",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "playing",
+          "elapsed": 0,
+          "ready": true,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "action": "miss at zero elapsed",
+        "player": {
+          "x": 450,
+          "y": 64,
+          "state": "AIR",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "result",
+          "elapsed": 0,
+          "ready": false,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "win": false,
+          "receipt": {
+            "from": 0,
+            "to": 0,
+            "success": false,
+            "prize": 0,
+            "bonus": 0
+          }
+        }
+      },
+      {
+        "action": "cold restart at receipt",
+        "player": {
+          "x": 450,
+          "y": 64,
+          "state": "AIR",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": {
+          "id": "v:0",
+          "row": 0,
+          "type": "pulse",
+          "phase": "result",
+          "elapsed": 0,
+          "ready": false,
+          "progress": 0,
+          "sequence": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "win": false,
+          "receipt": {
+            "from": 0,
+            "to": 0,
+            "success": false,
+            "prize": 0,
+            "bonus": 0
+          }
+        }
+      },
+      {
+        "action": "confirm return",
+        "player": {
+          "x": 450,
+          "y": 64,
+          "state": "AIR",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": true,
+        "returning": true,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": null
+      },
+      {
+        "action": "return transition complete",
+        "player": {
+          "x": 450,
+          "y": 64,
+          "state": "AIR",
+          "onGround": true
+        },
+        "time": 0.06666666666666667,
+        "paused": false,
+        "returning": false,
+        "lives": 3,
+        "coins": 0,
+        "wins": 0,
+        "peak": 64,
+        "visited": [
+          "v:0"
+        ],
+        "rift": null
+      }
+    ]
+  }
+}
