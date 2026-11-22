@@ -16,7 +16,8 @@ revision. Keep the fixture out of production exports.
   at the given time. `homeX` is the static origin. The generator also checks
   that returning from nearby and far higher windows reconstructs the same IDs
   and geometry.
-- Seven fixed-step traces for ground launch and steering, GOOD and PERFECT
+- Eight fixed-step traces for neutral ground release and a fresh air hold, ground
+  launch and steering, GOOD and PERFECT
   catches and releases, overhold expiry, a checkpoint fall, the Courier stake
   and Rocket Pulse, and an input-only climb from ground to Bellkeeper eligibility.
   The wall, fall and camp cases start from deliberately placed states. The

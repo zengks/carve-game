@@ -104,6 +104,17 @@ function clock(hz, catchWall) {
 }
 
 const traces = [
+  trace('neutral_ground_then_fresh_air_hold', 1, () => {}, ({g, emit, step, mark}) => {
+    step(8);
+    assert(g.Player.onGround);
+    emit('down'); mark('ground_pointerdown');
+    step(31); mark('neutral_ground_charge');
+    emit('up'); assert(g.Player.vx > 0 && g.Player.vy > 0); mark('neutral_ground_release');
+    step(4); emit('down'); step(6); mark('neutral_air_approach');
+    for (let i = 0; i < 30 && !g.Player.carve; i++) step();
+    assert.equal(g.Player.carve?.block.id, 'b:0:3'); mark('fresh_hold_caught_wall');
+    step(42); emit('up'); mark('neutral_perfect_wall_release');
+  }),
   trace('ground_launch_and_steering', 1, () => {}, ({g, emit, step, mark}) => {
     emit('down'); step(36); mark('ground_perfect');
     emit('move', -40); emit('up'); mark('release_with_left_aim');
