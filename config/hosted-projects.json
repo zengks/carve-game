@@ -1,0 +1,15 @@
+{
+  "contract_version": 1,
+  "staging": {
+    "supabase_project_ref": "ffxcsgtissldpkuxgxvo",
+    "region": "ca-central-1",
+    "vercel_project_id": "prj_zHwA5QqAGGMI1tWa6hdiHmM0lhAT",
+    "origin": "https://carve-staging-zengksoutlookcoms-projects.vercel.app"
+  },
+  "production": {
+    "supabase_project_ref": "zeosjsyugyxqeeacpkpx",
+    "region": "ca-central-1",
+    "vercel_project_id": "prj_rCOnKa8dwQ0Ek8iS2eIL8DCBRT2e",
+    "origin": "https://carve-game.vercel.app"
+  }
+}

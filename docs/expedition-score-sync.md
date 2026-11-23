@@ -41,7 +41,8 @@ readiness branch reuses verified TLS and checks the pinned Supabase project
 and restricted runtime login. The browser Auth URL must match the same
 project. Email code requests stay disabled until the
 operator explicitly enables `CARVE_EMAIL_SIGN_IN_ENABLED=true` after delivery
-verification.
+verification. The existing staging-only storage health route checks TLS, RLS,
+restricted login and the immutable results grants using catalog metadata.
 
 `npm run build` exercises the full browser suite. The additional
 `tests/expedition-score-database.mjs` test uses a fresh retained loopback
