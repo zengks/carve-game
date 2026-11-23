@@ -51,7 +51,17 @@ export function openOutbox(indexedDB, name='carve.shared.outbox.v1', validate=va
       };},true);
     },
     async cache(scope,snapshot) {
-      return transaction((store,done)=>{store.put({key:scope+':snapshot',scope,snapshot});done(true);},true);
+      return transaction((store,done,tx)=>{
+        const key=scope+':snapshot',request=store.get(key);
+        request.onsuccess=()=>{
+          const prior=request.result?.snapshot;
+          if(Number.isSafeInteger(snapshot.revision)&&Number.isSafeInteger(prior?.revision)){
+            if(prior.revision>snapshot.revision){done(prior);return;}
+            if(prior.revision===snapshot.revision&&canonical(prior.results)!==canonical(snapshot.results)){tx.abort();return;}
+          }
+          store.put({key,scope,snapshot});done(snapshot);
+        };
+      },true);
     },
     async cached(scope) {
       return transaction((store,done)=>{const request=store.get(scope+':snapshot');request.onsuccess=()=>done(request.result?.snapshot??null);});

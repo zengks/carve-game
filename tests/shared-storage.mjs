@@ -42,6 +42,15 @@ assert.equal(await outbox.cached(accountB),null);assert.equal((await outbox.cach
 await outbox.close();
 console.log('PASS storage: transactional queue survives restart/offline, deduplicates and isolates guest/account receipts');
 
+const oldSnapshot={revision:1,results:[event]},latestSnapshot={revision:2,results:[event,changed]};
+const otherTab=openOutbox(indexedDB,name);
+outbox=openOutbox(indexedDB,name);
+await outbox.cache(accountA,latestSnapshot);
+assert.deepEqual(await otherTab.cache(accountA,oldSnapshot),latestSnapshot,'a delayed tab cannot roll back the cached snapshot');
+await assert.rejects(otherTab.cache(accountA,{...latestSnapshot,results:[]}));
+assert.deepEqual(await outbox.cached(accountA),latestSnapshot);
+await otherTab.close();await outbox.close();
+
 const local=new Map(),session=new Map(),game=loadGame({local,session,search:'?terrain=1'});
 const records=()=>globalThis.CarveGameStorage.expeditionRecords().map(r=>expeditionEvent(r,true)).filter(Boolean);
 assert.equal(globalThis.CarveGameStorage.scorePreview,true);

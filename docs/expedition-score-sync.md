@@ -27,7 +27,8 @@ Each account and testing bucket has a revision equal to its accepted result
 count. Repeating the same result keeps the revision unchanged. Changing a
 stored event returns a conflict. Each mode displays up to ten results sorted by
 height descending, score descending, active time ascending and event ID
-ascending. Private result rows and original course data reuse the existing
+ascending. The browser cache retains the highest observed revision across tabs.
+Private result rows and original course data reuse the existing
 schema. No database migration is needed for this increment.
 
 ## Preview and tests
@@ -43,5 +44,13 @@ PostgreSQL database and the actual HTTP handlers, with signed synthetic
 Google identities and the browser account module driven through test DOM
 handlers. It covers the confirmation boundary, review cancellation, shared
 reads on iOS and Android transport, lost receipts, account switches and
-unchanged legacy courses. Hosted credentials and OS UI testing require
-their own acceptance evidence.
+unchanged legacy courses. The 33 assertions pass against a fresh local
+database. Separate checks drive the built preview in Chromium at
+1366×768 with mouse input and 390×844 with touch input, using synthetic sign-in
+and the loopback database. Both verify no upload on cancel, one on confirm
+and preservation of the source result.
+
+Anonymous requests to the branch preview and Expedition score endpoint are
+redirected to Vercel Authentication. Hosted account writes were exercised
+only in the isolated loopback fixture. Existing hosted staging authentication
+and database configuration were kept as found.

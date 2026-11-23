@@ -79,10 +79,8 @@ async function synchronize() {
     const generation=epoch;
     const currentScope=()=>epoch===generation?scope():null;
     const saveSnapshot=async value=>{
-      if(snapshot && (value.revision<snapshot.revision||
-        (value.revision===snapshot.revision&&canonical(value.results)!==canonical(snapshot.results))))throw new Error('invalid_receipt');
-      await outbox.cache(owner,value);
-      if(currentScope()===owner)snapshot=value;
+      const latest=await outbox.cache(owner,value);
+      if(currentScope()===owner)snapshot=latest;
     };
     // The queue contains only batches approved with Confirm copy.
     await flushOutbox({outbox,scope:owner,currentScope,
