@@ -53,7 +53,7 @@ const fresh=user=>!!user?.binding&&Number.isFinite(user.fresh_at)&&user.fresh_at
 
 export function createAccountHandler({env=process.env,authFactory=createClient,database,oidc=createOidc(env)}={}) {
   const config=configuration(env),codec=config?cookieCodec(env.CARVE_SESSION_SECRET,{secure:config.secure}):null;
-  let db=database;const databaseFor=()=>db??=createDatabase(env.CARVE_SHARED_DATABASE_URL);
+  let db=database;const databaseFor=()=>db??=createDatabase(env.CARVE_SHARED_DATABASE_URL,env);
   const checkScope=(req,user)=>{if(req.headers['x-carve-account']!==user.scope)throw error('account_changed',409);};
   function auth(){return authFactory(config.backend,env.CARVE_SUPABASE_PUBLISHABLE_KEY,{auth:{
     persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,

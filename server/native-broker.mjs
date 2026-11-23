@@ -71,7 +71,7 @@ export {configFor as nativeConfiguration,actor as nativeActor,acknowledge as ack
 
 export function createNativeBrokerHandler({env=process.env,database,oidc=createOidc(env),now=()=>Date.now(),beforeGrant=async()=>{}}={}){
  const config=configFor(env);let db=database;
- const store=()=>db??=createNativeDatabase(env.CARVE_SHARED_DATABASE_URL);
+ const store=()=>db??=createNativeDatabase(env.CARVE_SHARED_DATABASE_URL,env);
  const codec=config?cookieCodec(env.CARVE_SESSION_SECRET,{secure:config.secure,now}):null;
  const cookieName=p=>(config.secure?'__Host-':'')+'carve-native-'+p;
  const readCookie=(req,p)=>{

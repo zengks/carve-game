@@ -1,4 +1,5 @@
 import pg from 'pg';
+import {postgresOptions} from './postgres.mjs';
 import {createHash} from 'node:crypto';
 import {canonical,validateEvent} from '../shared/contract.mjs';
 import {digest} from './oidc.mjs';
@@ -20,9 +21,8 @@ export const resolvePrincipal=async(c,identity)=>{
   };
 
 // Separate private schema; never call the older native game's fixed-course RPCs.
-export function createDatabase(connectionString) {
-  const pool=new pg.Pool({connectionString,max:3,connectionTimeoutMillis:5000,
-    idleTimeoutMillis:10000,statement_timeout:5000});
+export function createDatabase(connectionString,env=process.env) {
+  const pool=new pg.Pool(postgresOptions(connectionString,{max:3,env}));
   const transaction=async fn=>{
     const c=await pool.connect();
     try {await c.query('BEGIN');const result=await fn(c);await c.query('COMMIT');return result;}
