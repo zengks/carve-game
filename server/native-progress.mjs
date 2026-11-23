@@ -2,6 +2,7 @@ import {createNativeDatabase} from './native-database.mjs';
 import {nativeConfiguration,nativeActor,acknowledgeNativeActor,readNativeBody} from './native-broker.mjs';
 import {parseStrictJSON} from './strict-json.mjs';
 import {validateNativeEvent,exactKeys} from '../shared/native-progress.mjs';
+import {validateExpeditionEvent} from '../shared/contract.mjs';
 import {digest,equal} from './oidc.mjs';
 const fail=(code,status=400)=>{throw Object.assign(Error(code),{status});};
 function configured(env){
@@ -27,11 +28,14 @@ export function createNativeProgressHandler({env=process.env,database,now=()=>Da
    const b=parseStrictJSON(await readNativeBody(req));
    if(!b||typeof b!=='object'||Array.isArray(b))fail('invalid_request');
    if(b.contract_version!==1)fail('unsupported_contract');
-   if(!['read','write'].includes(b.action)||!exactKeys(b,['contract_version','action','client_id','account_scope','testing',...(b.action==='write'?['event']:[])])||typeof b.account_scope!=='string'||!/^[a-f\d]{64}$/.test(b.account_scope)||typeof b.testing!=='boolean')fail('invalid_request');
+   if(!['read','write','expedition_read','expedition_write'].includes(b.action))fail('invalid_request');
+   const expedition=b.action.startsWith('expedition_'), write=b.action.endsWith('write');
+   if(expedition&&env.CARVE_EXPEDITION_SYNC_ENABLED!=='1')fail('not_configured',503);
+   if(!exactKeys(b,['contract_version','action','client_id','account_scope','testing',...(write?['event']:[])])||typeof b.account_scope!=='string'||!/^[a-f\d]{64}$/.test(b.account_scope)||typeof b.testing!=='boolean')fail('invalid_request');
    const client=b.client_id,binding=req.headers['x-carve-native-binding'];
    if(typeof client!=='string'||!Object.hasOwn(config.platforms,client)||typeof binding!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(binding))fail('client_rejected',403);
-   if(b.action==='write'){
-    validateNativeEvent(b.event);if(b.event.payload.testing!==b.testing)fail('invalid_event');
+   if(write){
+    (expedition?validateExpeditionEvent:validateNativeEvent)(b.event);if(b.event.payload.testing!==b.testing)fail('invalid_event');
     if(b.event.source_platform!==config.platforms[client])fail('platform_mismatch');
    }
    db??=createNativeDatabase(env.CARVE_SHARED_DATABASE_URL);
@@ -39,10 +43,11 @@ export function createNativeProgressHandler({env=process.env,database,now=()=>Da
     const actor=nativeActor(state,req,now());if(!equal(actor.scope,b.account_scope))fail('account_changed',409);
     await tx.nativeProgress.owner(actor);
     acknowledgeNativeActor(state,actor);
-    const snapshot=b.action==='write'?await tx.nativeProgress.write(actor,b.event):await tx.nativeProgress.read(actor,b.testing);
+    const snapshot=expedition?await tx.expedition(actor,b.testing,b.event):
+      write?await tx.nativeProgress.write(actor,b.event):await tx.nativeProgress.read(actor,b.testing);
     // Recheck the unchanged original expiry after waiting on any SQL lock.
     nativeActor(state,req,now());
-    return {contract_version:1,client_id:client,result:b.action==='write'?'accepted':'snapshot',player_id:actor.player_id,account_scope:actor.scope,...snapshot};
+    return {contract_version:1,client_id:client,result:write?'accepted':'snapshot',player_id:actor.player_id,account_scope:actor.scope,...snapshot};
    });json(200,reply);
   }catch(e){
    const validation=['invalid_event','unsupported_course'].includes(e.message),missing=e.message==='handoff_rejected';

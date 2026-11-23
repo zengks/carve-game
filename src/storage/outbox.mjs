@@ -1,6 +1,6 @@
 import {canonical,validateEvent} from './contract.mjs';
 
-export function openOutbox(indexedDB, name='carve.shared.outbox.v1') {
+export function openOutbox(indexedDB, name='carve.shared.outbox.v1', validate=validateEvent) {
   let opening;
   const database=()=>opening??=new Promise((resolve,reject)=>{
     if(!indexedDB)return reject(new Error('storage_unavailable'));
@@ -18,11 +18,17 @@ export function openOutbox(indexedDB, name='carve.shared.outbox.v1') {
     });
   }
   const key=(scope,event)=>scope+':'+event.event_id;
-  return {
-    async put(scope,event) {
-      validateEvent(event);
-      if(!/^(guest|[a-f\d]{64})$/.test(scope))throw new Error('invalid_scope');
-      return transaction((store,done,tx)=>{
+  async function putAll(scope,events) {
+    if(!/^(guest|[a-f\d]{64})$/.test(scope))throw new Error('invalid_scope');
+    const unique=new Map();
+    for(const event of events){
+      validate(event);
+      const prior=unique.get(event.event_id);
+      if(prior&&canonical(prior)!==canonical(event))throw new Error('event_conflict');
+      unique.set(event.event_id,event);
+    }
+    return transaction((store,done,tx)=>{
+      for(const event of unique.values()){
         const k=key(scope,event),read=store.get(k);
         read.onsuccess=()=>{
           const old=read.result;
@@ -30,8 +36,12 @@ export function openOutbox(indexedDB, name='carve.shared.outbox.v1') {
           if(!old)store.put({key:k,scope,event,state:'pending'});
           done(!old);
         };
-      },true);
-    },
+      }
+    },true);
+  }
+  return {
+    put:(scope,event)=>putAll(scope,[event]),
+    putAll,
     async list(scope) {
       return transaction((store,done)=>{const request=store.getAll();request.onsuccess=()=>done(request.result.filter(r=>r.scope===scope&&r.state==='pending').map(r=>r.event));});
     },
@@ -52,14 +62,16 @@ export function openOutbox(indexedDB, name='carve.shared.outbox.v1') {
 
 // Auth identity and owner are rechecked server-side on every batch. In-flight
 // account changes stop processing and never apply the previous owner's reply.
-export async function flushOutbox({outbox,scope,currentScope,send,onSnapshot=()=>{}}) {
+export async function flushOutbox({outbox,scope,currentScope,send,onSnapshot=()=>{},matches=(reply,event)=>reply.accepted===event.event_id,saveSnapshot=reply=>outbox.cache(scope,reply)}) {
   if(!scope||scope==='guest')return;
   for(const event of await outbox.list(scope)) {
     if(currentScope()!==scope)return;
     const reply=await send(event);
     if(currentScope()!==scope)return;
-    if(reply.accepted!==event.event_id || reply.contract_version!==1)throw new Error('invalid_receipt');
+    if(reply.contract_version!==1||!matches(reply,event))throw new Error('invalid_receipt');
+    await saveSnapshot(reply);
+    if(currentScope()!==scope)return;
     await outbox.acknowledge(scope,event);
-    await outbox.cache(scope,reply);onSnapshot(reply);
+    onSnapshot(reply);
   }
 }

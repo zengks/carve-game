@@ -53,6 +53,8 @@ try {
   assert(previewCode.includes('const TESTING = true;'));assert(productionCode.includes('const TESTING = false;'));
   assert.equal(previewCode.replace('const TESTING = true;','const TESTING = false;'),productionCode,'only the compile-time testing gate differs');
   const files = await readdir(join(output,'production'),{recursive:true});
+  assert(!files.some(f=>/^assets\/cache\/storage-/.test(f)));
+  assert(!production.includes('/storage/account.mjs'));
   assert(!files.some(f=>f.includes('music-demos')||f.startsWith('assets/music/')), 'music auditions never ship in production');
   const audition=await readFile(join(output,'preview/music-demos/index.html'),'utf8');
   assert.equal((audition.match(/<audio controls preload="metadata"/g)||[]).length,3);
@@ -70,6 +72,23 @@ try {
     const midi=await readFile(new URL(`../assets/music/demos/${track.midi}`,import.meta.url));assert.equal(midi.subarray(0,4).toString(),'MThd');
   }
   assert(!files.some(f=>f.startsWith('server/')||f.startsWith('shared/')||f.endsWith('.sql')),'private backend/schema never published as static assets');
+  assert(!production.includes('href="/lantern/"'), 'Expedition is the only game entry');
+  assert(!files.some(f=>f.startsWith('lantern/')), 'no standalone Lantern page is published');
+  for(const source of ['/lantern','/lantern/','/lantern/index.html','/lantern/:path*'])assert(config.redirects.some(r=>r.source===source&&r.destination==='/'));
+  for(const environment of ['preview','production']){
+    const page=await readFile(join(output,environment,'encounters/bellkeeper/index.html'),'utf8');
+    assert(page.includes('content="noindex,nofollow"'));
+    assert(!page.includes('This preview'));
+    const modulePath=page.match(/src="([^\"]+\.mjs)"/)[1];
+    const code=await readFile(join(output,environment,modulePath),'utf8');
+    for(const path of [...page.matchAll(/(?:src|href)="(\/assets\/cache\/[^\"]+)"/g),...code.matchAll(/'(\/assets\/cache\/[^']+)'/g)].map(m=>m[1]))await readFile(join(output,environment,path));
+    const bossPath=code.match(/from '(\/assets\/cache\/lantern-bellkeeper\.[^']+\.mjs)'/)[1];
+    const boss=await readFile(join(output,environment,bossPath),'utf8');
+    await readFile(join(output,environment,boss.match(/from '([^']+)'/)[1]));
+    assert(code.includes('carve.common.bellkeeper.v2'));
+    assert(!code.includes('mobile-handoff')&&!code.includes('/api/'));
+  }
+  assert(!files.some(f=>/^(api|server|staging-auth|supabase|music-demos)\//.test(f)), 'gameplay release excludes unfinished hosted work and auditions');
   assert(!files.some(f=>f.startsWith('classic/') || /^assets\/cache\/carve\.[a-f\d]{16}\.(js|css)$/.test(f)), 'retired course and its bundles are not published');
   assert(!production.includes('/classic/') && !production.includes('original summit'));
   for (const path of ['/classic','/classic/','/classic/index.html','/src/carve.html']) assert(config.redirects.some(r=>r.source===path && r.destination==='/' && r.permanent));

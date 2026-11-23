@@ -1,0 +1,20 @@
+{
+  "contract": "expedition-bellkeeper-1",
+  "milestone_m": 300,
+  "height_basis": "current",
+  "entry": "stationary solid support, no held input",
+  "encounter_course": "common.bellkeeper-v1",
+  "encounter_rules": "bellkeeper-rules-2",
+  "encounter_lives": 3,
+  "attempts_per_run": 1,
+  "receipt_confirmation_required": true,
+  "return": "captured entry ledge; parent simulation frozen",
+  "cases": [
+    {"outcome": "dismiss", "mode": "challenge", "lives_before": 3, "lives_after": 3, "bounty_delta": 0, "consumes_attempt": false, "game_over": false},
+    {"outcome": "won", "mode": "challenge", "lives_before": 3, "lives_after": 3, "bounty_delta": 30, "consumes_attempt": true, "game_over": false},
+    {"outcome": "lost", "mode": "challenge", "lives_before": 3, "lives_after": 2, "bounty_delta": 0, "consumes_attempt": true, "game_over": false},
+    {"outcome": "lost", "mode": "challenge", "lives_before": 1, "lives_after": 0, "bounty_delta": 0, "consumes_attempt": true, "game_over": true},
+    {"outcome": "withdrawn", "mode": "challenge", "lives_before": 3, "lives_after": 3, "bounty_delta": 0, "consumes_attempt": true, "game_over": false},
+    {"outcome": "lost", "mode": "practice", "lives_before": null, "lives_after": null, "bounty_delta": 0, "consumes_attempt": true, "game_over": false}
+  ]
+}

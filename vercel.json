@@ -24,6 +24,26 @@
       "source": "/classic/index.html",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/lantern",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lantern/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lantern/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lantern/:path*",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "headers": [
@@ -47,6 +67,15 @@
     },
     {
       "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/encounters/bellkeeper/:path*",
       "headers": [
         {
           "key": "Cache-Control",

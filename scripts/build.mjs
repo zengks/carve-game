@@ -17,9 +17,12 @@ export async function build(outputDir = join(root, 'dist'), { production = false
     return path;
   };
   const entries = [['src/expedition.html', 'index.html', 'expedition']];
-  const contractPath=await hashedAsset('storage-contract.mjs',await readFile(join(root,'shared/contract.mjs'),'utf8'));
-  const outboxPath=await hashedAsset('storage-outbox.mjs',(await readFile(join(root,'src/storage/outbox.mjs'),'utf8')).replaceAll('./contract.mjs',contractPath));
-  const accountPath=await hashedAsset('storage-account.mjs',(await readFile(join(root,'src/storage/account.mjs'),'utf8')).replaceAll('./contract.mjs',contractPath).replaceAll('./outbox.mjs',outboxPath));
+  let accountPath;
+  if (!production) {
+    const contractPath=await hashedAsset('storage-contract.mjs',await readFile(join(root,'shared/contract.mjs'),'utf8'));
+    const outboxPath=await hashedAsset('storage-outbox.mjs',(await readFile(join(root,'src/storage/outbox.mjs'),'utf8')).replaceAll('./contract.mjs',contractPath));
+    accountPath=await hashedAsset('storage-account.mjs',(await readFile(join(root,'src/storage/account.mjs'),'utf8')).replaceAll('./contract.mjs',contractPath).replaceAll('./outbox.mjs',outboxPath));
+  }
   const branding = new Map();
   let manifest = await readFile(join(root, 'site.webmanifest'), 'utf8');
   for (const name of ['carve-logo.webp', 'favicon-96.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'social-card.png', 'favicon.ico']) {
@@ -43,7 +46,8 @@ export async function build(outputDir = join(root, 'dist'), { production = false
 `;
   for (const [entry, destination, assetPrefix] of entries) {
     let source = await readFile(join(root, entry), 'utf8');
-    source=source.replace('/storage/account.mjs',accountPath);
+    source=source.replace('<script type="module" src="/storage/account.mjs"></script>',
+      accountPath?`<script type="module" src="${accountPath}"></script>`:'');
     if (production) {
       // Preview pages stay unindexed; only the explicit production build is public.
       source = source.replace('const TESTING = true;', 'const TESTING = false;').replace('Practice · ∞</button>', 'Challenge · 3 lives</button>').replace('Endless Expedition preview</title>', 'Endless Expedition</title>')
@@ -60,6 +64,17 @@ export async function build(outputDir = join(root, 'dist'), { production = false
     await mkdir(join(outputDir, destination, '..'), {recursive:true});
     await writeFile(join(outputDir, destination), source.replace('</head>', `${telemetry}</head>`));
   }
+  const rules=await hashedAsset('lantern-rules.mjs',await readFile(join(root,'shared/lantern-rules.mjs'),'utf8'));
+  const course=await hashedAsset('lantern-course.json',await readFile(join(root,'shared/common-lantern-reach-v1.json'),'utf8'));
+  const bossRules=await hashedAsset('lantern-bellkeeper.mjs',(await readFile(join(root,'shared/bellkeeper-rules.mjs'),'utf8')).replace('./lantern-rules.mjs',rules));
+  const bossCourse=await hashedAsset('lantern-bellkeeper.json',await readFile(join(root,'shared/common-bellkeeper-v1.json'),'utf8'));
+  const coaching=await hashedAsset('lantern-coaching.mjs',await readFile(join(root,'shared/lantern-coaching.mjs'),'utf8'));
+  const game=await hashedAsset('lantern-game.mjs',(await readFile(join(root,'src/lantern/game.mjs'),'utf8'))
+    .replace('./rules.mjs',rules).replace('./course.json',course).replace('./bellkeeper.mjs',bossRules).replace('./bellkeeper.json',bossCourse).replace('./coaching.mjs',coaching));
+  const style=await hashedAsset('lantern.css',await readFile(join(root,'src/lantern/style.css'),'utf8'));
+  let page=(await readFile(join(root,'src/lantern/index.html'),'utf8')).replace('/encounters/bellkeeper/game.mjs',game).replace('/encounters/bellkeeper/style.css',style);
+  await mkdir(join(outputDir,'encounters/bellkeeper'),{recursive:true});
+  await writeFile(join(outputDir,'encounters/bellkeeper/index.html'),page);
   await writeFile(join(outputDir, 'site.webmanifest'), manifest);
   // Auditions are deliberately absent from every production build.
   if (!production) {

@@ -1,4 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
+import {validateExpeditionEvent} from '../shared/contract.mjs';
+import {parseStrictJSON} from './strict-json.mjs';
 import {cookieCodec} from './session.mjs';
 import {createDatabase} from './database.mjs';
 import {validateEvent} from '../shared/contract.mjs';
@@ -90,7 +92,7 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
     // The temporary Auth proof is no longer our application session.
     await client.admin.signOut(reply.data.session.access_token,'local').catch(()=>{});return proof;
   }
-  const redirect=(res,outcome)=>{res.statusCode=303;res.setHeader('Location','/?flow=1&account='+outcome);res.end();};
+  const redirect=(res,outcome)=>{res.statusCode=303;res.setHeader('Location','/?'+(env.CARVE_EXPEDITION_SYNC_ENABLED==='1'?'terrain':'flow')+'=1&account='+outcome);res.end();};
   async function providerReturn(req,res,provider,value){
     try{
       const pending=codec.read(req,'oauth');
@@ -114,7 +116,7 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
   return async function account(req,res){
     res.setHeader('Cache-Control','private, no-store');res.setHeader('Vary','Cookie');
     res.setHeader('Referrer-Policy','no-referrer');res.setHeader('X-Content-Type-Options','nosniff');
-    const url=new URL(req.url,'http://local'),progress=url.pathname==='/api/shared-progress';
+    const url=new URL(req.url,'http://local'),expedition=url.pathname==='/api/expedition-progress',progress=expedition||url.pathname==='/api/shared-progress';
     try{
       if(!['GET','POST'].includes(req.method)){res.setHeader('Allow','GET, POST');throw error('method_not_allowed',405);}
       if(!config){if(progress||req.method==='POST')throw error('not_configured',503);return json(res,200,{configured:false,account:null,providers:{email:false,apple:false,google:false},link_offer:null});}
@@ -133,6 +135,20 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
         return await providerReturn(req,res,provider,staged);
       }
       if(req.method==='POST'&&(req.headers.origin!==config.origin||req.headers['sec-fetch-site']==='cross-site'))throw error('origin_rejected',403);
+      if(expedition){
+        if(env.CARVE_EXPEDITION_SYNC_ENABLED!=='1')throw error('not_configured',503);
+        if(!/^\?testing=(true|false)$/.test(url.search))throw error('invalid_request');
+        const user=await identity(req,res);if(!user)throw error('sign_in_required',401);checkScope(req,user);
+        const testing=url.searchParams.get('testing')==='true';
+        let event;
+        if(req.method==='POST'){
+          if((req.headers['content-type']??'').split(';')[0].trim().toLowerCase()!=='application/json')throw error('json_required',415);
+          event=validateExpeditionEvent(parseStrictJSON(await rawBody(req)));
+          if(event.source_platform!=='web'||event.payload.testing!==testing)throw error('invalid_event');
+        }
+        return json(res,200,{contract_version:1,account_scope:user.scope,player_id:user.player_id,
+          result:event?'accepted':'snapshot',...await databaseFor().expedition(user,testing,event)});
+      }
       if(req.method==='GET'){
         const user=await identity(req,res);
         if(progress){if(!user)throw error('sign_in_required',401);checkScope(req,user);return json(res,200,{...await databaseFor().read(user),account_scope:user.scope});}

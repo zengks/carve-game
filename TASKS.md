@@ -1,10 +1,103 @@
 # CARVE continuous improvement
 
+## Expedition shared score preview
+
+Branch `codex/expedition-score-sync` joins the released Expedition game to
+the existing account preview. Test explicit completed-result copy across the
+browser and native using the same fresh private account data. Keep the native
+PR48 draft, preserve original saves, and leave the live deployment unchanged.
+See [the scoring contract and evidence](docs/expedition-score-sync.md).
+
+## Active preview: Expedition milestone bosses — 2026-11-14
+
+The user corrected the product direction: Expedition is the only game entry.
+Lantern Reach is no longer a separate selectable mode. Branch
+`codex/expedition-bellkeeper` starts from production `8a5c261`; do not merge or
+change production during this milestone.
+
+- [x] Agree on optional 300 m entry, frozen parent state, one attempt, readable receipt and exact-ledge return.
+- [x] Reuse Bellkeeper rules 2 and one-/two-thumb controls inside Expedition.
+- [x] Preserve legacy saves; redirect the old Lantern route to Expedition.
+- [x] Test accepted-attempt reload, blocked saving, duplicate claims, final-life loss and withdrawal.
+- [x] Verify desktop/phone preview and Node 24/26 checks; record synthetic vs manual evidence limits.
+- [x] Manually climb from ground past 300 m using one-thumb controls, win Bellkeeper and continue from the entry ledge on the hosted preview. Reached 417 m; boss cleared with one encounter life left. Pauses used; physical-device/new-player qualification remains open.
+- [ ] Native prerequisite: port real Expedition terrain/lives/wallet/skills/contracts before integrating the encounter. Do not rename the finite Lantern QA course to Expedition.
+
+Shared acceptance vectors: `shared/fixtures/expedition-bellkeeper-v1.json`.
+Mobile plan checkpoint: `codex/expedition-native-parity-plan` at `ec370bb` (canonical outcome fixture mirrored).
+Both platforms retain all old app/save data. Mobile prompts/payments stay off.
+See `docs/expedition-bellkeeper.md` for the current contract and evidence.
+
+
+## Browser release: first-climb guidance — 2026-11-14
+
+Branch `codex/first-climb-guidance` starts from released `853d876`.
+Coordinate the `lantern-coaching-1` presentation contract with mobile; retain
+Lantern rules 1, Bellkeeper rules 2 and all existing saves unchanged.
+
+- [x] Replace conflicting EARLY-release advice with state-based hold/release/catch cues.
+- [x] Add shared boundary/priority cases; explain optional lanterns, pause controls and recovery destination.
+- [x] Verify browser preview at desktop/phone sizes and native iOS/Android adapters.
+- [ ] Record new-player understanding and replay-interest evidence when available.
+
+The user subsequently authorized the browser release: PR27 merged at `e57a065`.
+Live verification found a first-frame keyboard press issue; the focused
+`codex/keyboard-fresh-press` follow-up adds fresh-key and stale-repeat regression
+coverage before release. Native changes remain unmerged. Mobile download
+prompts, payments and unfinished shared-storage releases stay disabled.
+
+## Browser Lantern Reach and Bellkeeper release — 2026-11-14
+
+The user authorized the tested browser gameplay release to main. Release branch
+`codex/release-bellkeeper` carries the shared climb, optional tuned boss, local
+saves and controls from `codex/bellkeeper-preview`. It starts from current main
+so the released terrain, avatars and existing save handling remain intact.
+Historical release: the course was available at `/lantern/` through the game menu; the active preview above retires that separate entry. Unfinished
+account/storage/music work stays on its existing draft branches; native PR46
+remains unmerged. Mobile download prompts and payments remain disabled.
+
 The user requests continued useful work without routine approval prompts. Keep
 meaningful checkpoints, coordinate directly with the mobile chat and continue to
 the next evidence-based task rather than treating a checkpoint as a new decision
 for the user. Preserve all existing data and virtual devices. Device testing is
 Android-emulator/iOS-simulator only; do not require phone unlocks or user input.
+
+## Release: Living Terrain and avatars — 2026-11-02
+
+User authorized merge of PR22 and Vercel production deployment after checks.
+
+- [x] Correct the preview-only terrain gate: public root always uses the new course.
+- [x] Preserve old Flow saves/records, explicit progress carry, current-wallet priority and testing save isolation.
+- [x] Pass full local production build plus nine actual compiled-artifact release checks.
+- [x] Inspect the compiled public browser build with new art/avatar and Challenge-only selection.
+- [x] Verify release code Node 24/26 CI and final branch preview.
+- Release execution receipt (merge SHA, production Ready and live desktop/mobile
+  checks) is maintained in [PR22](https://github.com/zengks/carve-game/pull/22).
+  The mobile download prompt stays disabled.
+
+## Preview continuation: selectable climbers — 2026-11-02
+
+Same `codex/living-platforms` / draft PR22; [avatar contract](docs/avatars.md).
+
+- [x] Replace the blank capsule with six original themed character silhouettes.
+- [x] Add a pre-start portrait picker, explicit confirm/cancel and keyboard access.
+- [x] Persist preferences and bind active-run/result appearance without physics changes.
+- [x] Preserve legacy saves, pending imports, wallet updates and blocked-storage play.
+- [x] Check browser sizes, selection/cancel, keyboard and reload; full build and Node 24/26 CI pass.
+- [x] Share stable IDs, art source and scoped evidence with mobile; native sync/port remains separate.
+
+## Preview milestone: Living Terrain — 2026-11-02
+
+Branch `codex/living-platforms`, entry `/?terrain=1`; [design and acceptance](docs/living-terrain.md).
+
+- [x] Research official platformer references and design original themed objects.
+- [x] Add distinct garden, kite, crystal, cistern, observatory, mushroom and camp art.
+- [x] Add optional cloud ferries, cracked shelves and precision bells with readable cues.
+- [x] Isolate experimental profiles/results/runs and persist transient surface state.
+- [x] Preserve stable main-route geometry; six seeded no-skill scripted climbs reach 1,000 m.
+- [x] Verify real browser rendering/input/reload in desktop, portrait and landscape.
+- [x] Pass full Node 24/26 checks and verify branch deployment; main/live remain unchanged.
+- [x] Share exact contracts/evidence and incorporate mobile review; native port and player-fun evaluation remain separate.
 
 ## Active web milestone: camera, reading flow and route decisions
 

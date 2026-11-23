@@ -1,0 +1,33 @@
+{
+  "web": {
+    "contract_version": 1,
+    "event_id": "carve.expedition-v1:web:abc123-def456",
+    "kind": "completed_run",
+    "course_id": "carve.expedition-v1",
+    "rules_version": "terrain-v1",
+    "mode": "challenge",
+    "source_platform": "web",
+    "payload": {"run_id":"abc123-def456","height_m":419,"score":1025,"active_ms":55432,"outcome":"banked","testing":true}
+  },
+  "ios": {
+    "contract_version": 1,
+    "event_id": "carve.expedition-v1:ios:308faefc-cb58-41d5-9617-9175f693d254",
+    "kind": "completed_run",
+    "course_id": "carve.expedition-v1",
+    "rules_version": "terrain-v1",
+    "mode": "challenge",
+    "source_platform": "ios",
+    "payload": {"run_id":"308faefc-cb58-41d5-9617-9175f693d254","height_m":419,"score":1025,"active_ms":55432,"outcome":"gameover","testing":true}
+  },
+  "android": {
+    "contract_version": 1,
+    "event_id": "carve.expedition-v1:android:ca949cc8-e51d-4621-a88e-52a54a999277",
+    "kind": "completed_run",
+    "course_id": "carve.expedition-v1",
+    "rules_version": "terrain-v1",
+    "mode": "practice",
+    "source_platform": "android",
+    "payload": {"run_id":"ca949cc8-e51d-4621-a88e-52a54a999277","height_m":612,"score":1522,"active_ms":78834,"outcome":"banked","testing":true}
+  },
+  "ranked_after_copy": ["ios","web","android"]
+}

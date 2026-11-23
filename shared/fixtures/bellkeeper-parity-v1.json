@@ -1,0 +1,300 @@
+{
+  "commands": [
+    {
+      "repeat": 359,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 43,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 61,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 60,
+      "input": {
+        "held": false,
+        "aim": 0
+      }
+    },
+    {
+      "repeat": 8,
+      "input": {
+        "held": true,
+        "aim": 0
+      }
+    },
+    {
+      "repeat": 328,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 85,
+      "input": {
+        "held": true,
+        "aim": -1
+      }
+    },
+    {
+      "repeat": 55,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 1,
+      "input": {
+        "held": false,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 61,
+      "input": {
+        "held": true,
+        "aim": 1
+      }
+    },
+    {
+      "repeat": 57,
+      "input": {
+        "held": false,
+        "aim": 0
+      }
+    }
+  ],
+  "expected": {
+    "course_id": "common.bellkeeper-v1",
+    "rules_version": "bellkeeper-rules-2",
+    "x": 330,
+    "y": 1089.3388888888912,
+    "vx": 0,
+    "vy": -392.666666666666,
+    "status": "won",
+    "ground": null,
+    "grip": null,
+    "away": 1,
+    "charge": 0,
+    "held": false,
+    "require_lift": false,
+    "last_wall": null,
+    "ticks": 2274,
+    "lives": 3,
+    "falls": 0,
+    "peak": 1178.588888888891,
+    "checkpoint": null,
+    "tokens": [
+      "rope-1",
+      "rope-2",
+      "rope-3"
+    ],
+    "catches": 9,
+    "launches": 11,
+    "notice": "The Bellkeeper is quiet. Golden bell earned!",
+    "bell_ticks": 0
+  }
+}

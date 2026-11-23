@@ -1,5 +1,18 @@
 # Endless Expedition
 
+## Current direction: one Expedition, milestone encounters — 2026-11-14
+
+Expedition is the sole game. Optional boss entrances unlock during the climb at
+milestone heights. Lantern Reach is retired as a separately selectable mode;
+its tested movement/rendering code can support encounters without becoming a
+second product. The first encounter is Bellkeeper at current height ≥300 m,
+entered from a stable ledge. [Contract and acceptance](expedition-bellkeeper.md).
+Browser implementation is preview-only. Native currently lacks Expedition's
+endless world, wallet, skills and contracts; its parity plan must port those
+systems before claiming the same game. Keep existing finite QA exports and
+saves intact, with no compatible wallet/leaderboard claim.
+
+
 ## Post-launch revenue capability — 2026-10-30
 
 The user explicitly requires both browser and native CARVE to have the ability

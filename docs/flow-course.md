@@ -1,6 +1,9 @@
-# Flow and encounter rework
+# Flow and encounter rework (movement baseline)
 
-This release follows `bfc7bff`. Public builds use Flow at `/`, with no query
+This baseline follows `bfc7bff`. It is superseded at the public root by
+[Living Terrain](living-terrain.md); the camera, controls and encounter rules
+below remain its movement baseline. The following paragraph records the prior
+Flow release, not the current production course. Public builds use Flow at `/`, with no query
 flag required. Testing previews use `/?flow=1`; the test-only root retains the
 earlier course for regression coverage. Public builds always select Flow and
 three-life Challenge; query parameters cannot select the old course or testing

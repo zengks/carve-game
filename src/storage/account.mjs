@@ -1,9 +1,11 @@
-import {completedEvent} from './contract.mjs';
+import {canonical, expeditionEvent, EXPEDITION_COURSE, EXPEDITION_RULES, validateExpeditionEvent} from './contract.mjs';
 import {openOutbox,flushOutbox} from './outbox.mjs';
 
+if (window.CarveGameStorage.scorePreview) {
 const $=id=>document.getElementById(id);
-const outbox=openOutbox(globalThis.indexedDB);
-let session={configured:false,account:null,providers:{}},snapshot=null,busy=false,syncing=false,epoch=0;
+const outbox=openOutbox(globalThis.indexedDB,'carve.expedition.outbox.v1',validateExpeditionEvent);
+const progressPath='/api/expedition-progress?testing=true';
+let session={configured:false,account:null,providers:{}},snapshot=null,copyOffer=null,busy=false,syncing=false,epoch=0;
 const scope=()=>session.account?.scope??'guest';
 const message=text=>{$('account-status').textContent=text;};
 async function request(path,body,owner) {
@@ -25,7 +27,7 @@ const explanation=e=>({invalid_email:'Enter a valid email address.',invalid_code
 function renderSnapshot() {
   const rows=$('account-results');rows.textContent='';
   for(const event of snapshot?.results??[]) {
-    const li=document.createElement('li');li.textContent=`${event.payload.height_m} m · ${event.mode} · ${event.payload.testing?'testing · ':''}${event.course_id} · unverified`;rows.appendChild(li);
+    const li=document.createElement('li');li.textContent=`${event.payload.height_m} m · ${event.payload.score} points · ${event.mode} · ${event.source_platform}`;rows.appendChild(li);
   }
   if(!rows.children.length)rows.textContent='No shared results loaded.';
 }
@@ -45,16 +47,28 @@ function render() {
   $('account-link-copy').textContent=signed&&session.link_offer?'Connect '+session.link_offer.label+' to '+session.account.label+'? This will not merge another account’s progress.':'';
   for(const id of ['account-link-confirm','account-link-cancel'])$(id).disabled=busy;
   for(const id of ['account-send','account-verify'])$(id).disabled=busy||!session.providers.email;
-  for(const id of ['account-sync','account-import','account-signout'])$(id).disabled=busy;
+  $('account-copy-review').hidden=!signed||!copyOffer;
+  for(const id of ['account-sync','account-import','account-signout','account-import-confirm','account-import-cancel'])$(id).disabled=busy;
   $('account-config').textContent=!session.configured?'Cloud sign-in is not configured in this preview. You can keep playing as a guest.':
     !session.providers.apple||!session.providers.google?'Email code is available. Apple and Google need their provider credentials configured.':'';
   renderSnapshot();
 }
 async function refresh() {
   const version=++epoch,next=await request('/api/account');if(version!==epoch)return;
-  session=next;const owner=scope();snapshot=null;render();
+  const prior=scope();session=next;const owner=scope();
+  if(owner!==prior){snapshot=null;copyOffer=null;}render();
   const saved=owner==='guest'?null:await outbox.cached(owner);
-  if(version!==epoch||scope()!==owner)return;snapshot=saved;render();
+  if(version!==epoch||scope()!==owner)return;
+  if(saved&&(!snapshot||saved.revision>=snapshot.revision))snapshot=saved;
+  render();
+}
+function validateSnapshot(value,owner,result) {
+  if(value.contract_version!==1||value.account_scope!==owner||value.result!==result||
+    value.course_id!==EXPEDITION_COURSE||value.rules_version!==EXPEDITION_RULES||value.testing!==true||
+    value.validation!=='client_reported'||!Number.isSafeInteger(value.revision)||value.revision<0||
+    !Array.isArray(value.results)||value.results.length>20||value.results.length>value.revision)throw new Error('invalid_receipt');
+  for(const event of value.results)if(!validateExpeditionEvent(event).payload.testing)throw new Error('invalid_receipt');
+  return value;
 }
 async function synchronize() {
   if(syncing||scope()==='guest')return;
@@ -62,19 +76,24 @@ async function synchronize() {
   try {
     // Refresh first: another tab could have changed the cookie owner.
     await refresh();if(scope()!==owner){message('The account changed. Pending results stayed with their original account.');return;}
-    // Recover retained completed account records after a transient IndexedDB
-    // failure. Guest records still require explicit import; live runs are ignored.
-    for(const {record,profile,testing} of window.CarveGameStorage.accountRecords(owner)) {
-      const event=completedEvent(record,profile,testing);if(event)await outbox.put(owner,event);
-    }
-    const send=async event=>{
-      const reply=await request('/api/shared-progress',{...event},owner);
-      if(reply.account_scope!==owner)throw new Error('sign_in_required');return reply;
+    const generation=epoch;
+    const currentScope=()=>epoch===generation?scope():null;
+    const saveSnapshot=async value=>{
+      if(snapshot && (value.revision<snapshot.revision||
+        (value.revision===snapshot.revision&&canonical(value.results)!==canonical(snapshot.results))))throw new Error('invalid_receipt');
+      await outbox.cache(owner,value);
+      if(currentScope()===owner)snapshot=value;
     };
-    await flushOutbox({outbox,scope:owner,currentScope:scope,send,onSnapshot:value=>{snapshot=value;}});
-    const value=await request('/api/shared-progress',undefined,owner);
-    if(scope()!==owner||value.account_scope!==owner)return;
-    snapshot=value;await outbox.cache(owner,value);renderSnapshot();message('Completed results are synced. Unfinished climbs stay on this device.');
+    // The queue contains only batches approved with Confirm copy.
+    await flushOutbox({outbox,scope:owner,currentScope,
+      send:async event=>validateSnapshot(await request(progressPath,event,owner),owner,'accepted'),
+      matches:(reply,event)=>canonical(reply.accepted_event)===canonical(event),
+      saveSnapshot,
+    });
+    if(currentScope()!==owner)return;
+    const value=validateSnapshot(await request(progressPath,undefined,owner),owner,'snapshot');
+    if(currentScope()!==owner)return;
+    await saveSnapshot(value);renderSnapshot();message('Shared results updated.');
   } catch(e){message(explanation(e));}finally{syncing=false;}
 }
 async function act(fn) {
@@ -82,27 +101,20 @@ async function act(fn) {
   try{await fn();}catch(e){message(explanation(e));}finally{busy=false;render();}
 }
 
-window.CarveAccount={scope,completed(record,profile,owner,testing) {
-  try {
-    const event=completedEvent(record,profile,testing);if(!event)return;
-    outbox.put(owner??'guest',event).then(()=>{
-      if(scope()===owner&&owner!=='guest')return synchronize();
-    }).catch(e=>message(explanation(e)));
-  }catch(e){message(explanation(e));}
-}};
 $('account-open').hidden=false;
 $('account-open').onclick=()=>{
   if(window.CarveGameStorage.running())return;
-  $('account-dialog').showModal();act(async()=>{await refresh();message(scope()==='guest'?'Sign in optionally; guest progress is never imported automatically.':'Choose Sync or explicitly import completed guest records.');});
+  $('account-dialog').showModal();act(async()=>{await refresh();message(scope()==='guest'?'Sign in to share completed Expedition results across devices.':'Review local results to choose what to copy.');});
 };
 $('account-close').onclick=()=>$('account-dialog').close();
+$('account-dialog').addEventListener('close',()=>{copyOffer=null;render();});
 $('account-send').onclick=()=>act(async()=>{
   await request('/api/account',{action:'email',email:$('account-email').value.trim()});
   message('If delivery is available, your email will contain a sign-in code. Enter it below.');$('account-code').focus();
 });
 $('account-verify').onclick=()=>act(async()=>{
   await request('/api/account',{action:'verify',email:$('account-email').value.trim(),code:$('account-code').value.trim()});
-  $('account-code').value='';await refresh();message('Signed in. Guest data stays local unless you choose Import.');await synchronize();
+  $('account-code').value='';await refresh();await synchronize();
 });
 for(const provider of ['apple','google'])$('account-'+provider).onclick=()=>act(async()=>{
   const result=await request('/api/account',{action:'oauth',provider});location.assign(result.url);
@@ -124,22 +136,27 @@ $('account-link-cancel').onclick=()=>act(async()=>{
   await request('/api/account',{action:'cancel-link'},scope());await refresh();message('Connection cancelled. No sign-in method was added.');
 });
 $('account-signout').onclick=()=>act(async()=>{
-  await request('/api/account',{action:'signout'});++epoch;session={...session,account:null,link_offer:null};snapshot=null;render();
+  await request('/api/account',{action:'signout'});++epoch;session={...session,account:null,link_offer:null};snapshot=null;copyOffer=null;render();
   message('Signed out. Pending account results are kept separately; guest play is ready.');
 });
 $('account-sync').onclick=()=>act(synchronize);
 $('account-import').onclick=()=>act(async()=>{
+  await refresh();
   const owner=scope();if(owner==='guest')return;
-  const candidates=window.CarveGameStorage.guestRecords().map(({record,profile,testing})=>completedEvent(record,profile,testing)).filter(Boolean);
-  if(!candidates.length){$('account-import-confirm').hidden=true;message('No completed guest Flow records are available to import. Your existing saves are kept.');return;}
-  $('account-import-copy').textContent=`Import ${candidates.length} completed Flow results into ${session.account.label}? These are unverified personal records. Active climbs, bounty and purchased items will not be imported. Original saves are kept.`;
-  $('account-import-confirm').hidden=false;
-  $('account-import-confirm').onclick=()=>act(async()=>{
-    if(scope()!==owner)throw new Error('sign_in_required');
-    await refresh();if(scope()!==owner)throw new Error('sign_in_required');
-    for(const event of candidates)await outbox.put(owner,event);
-    $('account-import-confirm').hidden=true;await synchronize();
+  const events=window.CarveGameStorage.expeditionRecords().flatMap(record=>{
+    try { const event=expeditionEvent(record,true);return event?[event]:[]; } catch { return []; }
   });
+  copyOffer=events.length?{owner,events}:null;
+  if(!copyOffer){message('No completed Expedition results are available to copy.');return;}
+  $('account-import-copy').textContent=`Copy ${events.length} completed Expedition ${events.length===1?'result':'results'} to ${session.account.label}? Your original results, active climb, bounty and skills stay on this device.`;
+});
+$('account-import-cancel').onclick=()=>{copyOffer=null;render();};
+$('account-import-confirm').onclick=()=>act(async()=>{
+  const offer=copyOffer;if(!offer)return;
+  await refresh();
+  if(copyOffer!==offer||scope()!==offer.owner)throw new Error('account_changed');
+  await outbox.putAll(offer.owner,offer.events);
+  copyOffer=null;await synchronize();
 });
 window.addEventListener('online',()=>{synchronize();});
 // A cookie can change in another tab; never keep another user's log visible.
@@ -151,3 +168,4 @@ refresh().then(()=>{
       session.link_offer?'Review and confirm this new sign-in method.':'Signed in. Guest records remain local unless explicitly imported.');
   }
 }).catch(e=>{render();message(explanation(e));});
+}

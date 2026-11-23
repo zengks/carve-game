@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {indexedDB} from 'fake-indexeddb';
 import {loadGame} from './harness.mjs';
-import {validateEvent,completedEvent,canonical} from '../shared/contract.mjs';
+import {validateEvent,expeditionEvent,validateExpeditionEvent} from '../shared/contract.mjs';
 // Node uses the same source as the browser; the dev/build server maps imports.
 import {readFile} from 'node:fs/promises';
 const source=(await readFile(new URL('../src/storage/outbox.mjs',import.meta.url),'utf8'))
@@ -42,17 +42,21 @@ assert.equal(await outbox.cached(accountB),null);assert.equal((await outbox.cach
 await outbox.close();
 console.log('PASS storage: transactional queue survives restart/offline, deduplicates and isolates guest/account receipts');
 
-const local=new Map(),session=new Map();let game=loadGame({local,session,search:'?flow=1'});
-let completed=[];globalThis.CarveAccount={scope:()=>accountA,completed:(...args)=>completed.push(args)};
-game.Game.start();game.Journey.peak=1294;game.Profile.record();assert.equal(completed.length,0);
-game.RunSave.write();game=loadGame({local,session,search:'?flow=1'});assert.equal(game.Journey.cloudOwner,accountA);
-globalThis.CarveAccount={scope:()=>accountB,completed:(...args)=>completed.push(args)};
-game.Journey.finish();assert.equal(completed.length,1);assert.equal(completed[0][2],accountA,'resumed climb retains original owner');
-const [record,profile,,testing]=completed[0];const e=completedEvent(record,profile,testing);
-assert.equal(globalThis.CarveGameStorage.accountRecords(accountA).length,1,'retained account completion available to recover a failed queue write');
-assert.equal(globalThis.CarveGameStorage.accountRecords(accountB).length,0);
-assert.equal(globalThis.CarveGameStorage.guestRecords().length,0,'account recovery never imports guest data implicitly');
-profile.unlocked.push('hook');assert.equal(canonical(completedEvent(record,profile,testing)),canonical(e),'completion progress frozen');
-assert(local.has('carve.flow.profile.v1'),'guest gameplay profile preserved');
-delete globalThis.CarveAccount;
-console.log('PASS storage: only completed runs queued, account pinned through reload and frozen import payload');
+const local=new Map(),session=new Map(),game=loadGame({local,session,search:'?terrain=1'});
+const records=()=>globalThis.CarveGameStorage.expeditionRecords().map(r=>expeditionEvent(r,true)).filter(Boolean);
+assert.equal(globalThis.CarveGameStorage.scorePreview,true);
+game.Game.start();game.Journey.peak=1294;game.Profile.record();assert.equal(records().length,0);
+game.RunSave.write();game.Journey.finish('banked');
+assert.equal(records().length,1);
+assert.equal(records()[0].payload.height_m,123);
+assert.deepEqual(Object.keys(records()[0].payload).sort(),['active_ms','height_m','outcome','run_id','score','testing']);
+loadGame({local,session,search:'?terrain=1'});assert.equal(records().length,1,'local completion is retained');
+loadGame({production:true});assert.equal(globalThis.CarveGameStorage.scorePreview,false);
+loadGame({search:'?flow=1'});assert.equal(globalThis.CarveGameStorage.scorePreview,false);
+const vectors=JSON.parse(await readFile(new URL('../shared/fixtures/expedition-scores-v1.json',import.meta.url)));
+for(const platform of ['web','ios','android'])validateExpeditionEvent(vectors[platform]);
+for(const mutate of [e=>e.payload.outcome='active',e=>e.payload.bounty=300,e=>e.mode='replay',
+  e=>e.payload.height_m=0,e=>e.payload.active_ms=.1,e=>e.source_platform='android',e=>e.rules_version='first-ascent-1']){
+  const bad=structuredClone(vectors.web);mutate(bad);assert.throws(()=>validateExpeditionEvent(bad),/invalid_event/);
+}
+console.log('PASS storage: only completed, positive-height Expedition results are eligible for review on the dedicated preview');

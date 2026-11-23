@@ -11,15 +11,17 @@ import {createNativeBrokerHandler} from '../../server/native-broker.mjs';
 import {createNativeDatabase} from '../../server/native-database.mjs';
 import {createNativeFetchHandler} from '../../server/native-vercel.mjs';
 import {createNativeProgressHandler} from '../../server/native-progress.mjs';
+import {createAccountHandler} from '../../server/account.mjs';
+import {createDatabase} from '../../server/database.mjs';
 const secret=()=>randomBytes(32).toString('base64url');
-export async function createNativeIntegrationFixture({artifactDirectory,adminConnectionString=process.env.CARVE_NATIVE_TEST_ADMIN_URL,progress=false}={}){
+export async function createNativeIntegrationFixture({artifactDirectory,adminConnectionString=process.env.CARVE_NATIVE_TEST_ADMIN_URL,progress=false,expedition=false}={}){
  const adminURL=new URL(adminConnectionString??'http://invalid');
  if(adminURL.protocol!=='postgres:'||adminURL.hostname!=='127.0.0.1'||adminURL.pathname!=='/postgres')throw Error('Explicit loopback PostgreSQL admin URL required');
  const databaseName='carve_shared_test_native_'+randomUUID().replaceAll('-','');
  const admin=new pg.Pool({connectionString:adminURL.href});
  try{await admin.query('CREATE DATABASE '+databaseName);}finally{await admin.end();}
  const url=new URL(adminURL);url.pathname='/'+databaseName;
- const pool=new pg.Pool({connectionString:url.href});let db,server,qaServer;
+ const pool=new pg.Pool({connectionString:url.href});let db,webDB,webHandler,server,qaServer;
  const capability=secret(),clockBase=Math.floor(Date.now()/1000)*1000;let clock=clockBase,hold=false,held=null,closed=false,holdProgress=false,heldProgress=null;
  const codes=new Map(),subjects={alpha:'synthetic-alpha-'+databaseName,beta:'synthetic-beta-'+databaseName,gamma:'synthetic-gamma-'+databaseName};
  let requests=0,callbacks=0,grant_attempts=0,trapHits=0;
@@ -27,7 +29,7 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
  const broker_url='https://broker.carve.example.test/native/authorize';
  const return_targets=Object.fromEntries(client_ids.map(id=>[id,'https://carve.example.test/'+id.slice(8)+'/return']));
  const closeServer=async s=>{if(s?.listening){s.closeAllConnections();await new Promise(r=>s.close(r));}};
- const close=async()=>{held?.release();heldProgress?.release();held=null;heldProgress=null;await closeServer(qaServer);await closeServer(server);await db?.close();await pool.end();closed=true;return {listener_closed:true,database_connections_closed:true};};
+ const close=async()=>{held?.release();heldProgress?.release();held=null;heldProgress=null;await closeServer(qaServer);await closeServer(server);await db?.close();await webDB?.close();await pool.end();closed=true;return {listener_closed:true,database_connections_closed:true};};
  try{
   await pool.query(await readFile(new URL('../../server/schema.sql',import.meta.url),'utf8'));
   await pool.query(await readFile(new URL('../../server/native-schema.sql',import.meta.url),'utf8'));
@@ -39,6 +41,7 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
    CARVE_GOOGLE_CLIENT_ID:'synthetic-web-client',CARVE_GOOGLE_CLIENT_SECRET:secret(),
    CARVE_APPLE_SERVICE_ID:'synthetic-apple-service',CARVE_APPLE_TEAM_ID:'SYNTHETIC',CARVE_APPLE_KEY_ID:'isolated-native-key'};
   if(progress)env.CARVE_NATIVE_PROGRESS_CLIENTS=JSON.stringify({'fixture-ios':'ios','fixture-android':'android'});
+  if(expedition)env.CARVE_EXPEDITION_SYNC_ENABLED='1';
   // Apple client-secret signing is exercised too; never a real developer key.
   const apple=await generateKeyPair('ES256',{extractable:true});
   const {exportPKCS8}=await import('jose');env.CARVE_APPLE_PRIVATE_KEY=await exportPKCS8(apple.privateKey);
@@ -55,7 +58,9 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
   const progressHandler=progress?createNativeFetchHandler(createNativeProgressHandler({env,database:db,now:()=>clock})):null;
   server=createServer(async(req,res)=>{
    requests++;if(req.url==='/_trap'){trapHits++;res.writeHead(400).end();return;}
-   const isProgress=new URL(req.url,env.CARVE_APP_ORIGIN).pathname==='/api/native-progress/v1';
+   const path=new URL(req.url,env.CARVE_APP_ORIGIN).pathname;
+   if(webHandler&&['/api/account','/api/expedition-progress','/api/shared-progress'].includes(path))return webHandler(req,res);
+   const isProgress=path==='/api/native-progress/v1';
    if(isProgress&&progress&&holdProgress){holdProgress=false;await new Promise(release=>{heldProgress={release};});}
    const request=new Request(env.CARVE_APP_ORIGIN+req.url,{method:req.method,headers:req.headers,...(!['GET','HEAD'].includes(req.method)?{body:Readable.toWeb(req),duplex:'half'}:{})});
    const response=await (isProgress&&progressHandler?progressHandler:fetchHandler)(request);res.statusCode=response.status;
@@ -65,18 +70,27 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
   });
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
   const origin='http://127.0.0.1:'+server.address().port;
+  if(expedition){
+   webDB=createDatabase(url.href);
+   webHandler=createAccountHandler({env:{...env,CARVE_APP_ORIGIN:origin,CARVE_SUPABASE_URL:origin,
+    CARVE_SUPABASE_PUBLISHABLE_KEY:'isolated-fixture'},database:webDB,oidc});
+  }
+  const issueCode=async(location,identity,provider,age=0)=>{
+   if(!Object.hasOwn(subjects,identity)||!Number.isSafeInteger(age)||age<0||age>3600000)throw Error('invalid_fixture_request');
+   const redirect=location.searchParams.get('redirect_uri'),client=location.searchParams.get('client_id');
+   const token=await new SignJWT({nonce:location.searchParams.get('nonce'),email:'same-display@example.test',email_verified:true})
+    .setProtectedHeader({alg:'RS256',kid:jwk.kid}).setIssuer(provider==='apple'?'https://appleid.apple.com':'https://accounts.google.com')
+    .setSubject(subjects[identity]).setAudience(client).setIssuedAt(Math.floor((clock-age)/1000)).setExpirationTime(Math.floor(clock/1000)+300).sign(rsa.privateKey);
+   const code=secret();codes.set(code,{token,redirect,client});return code;
+  };
   const complete=async q=>{
    if(!/^[A-Za-z0-9_-]{43}$/.test(q.flow_id)||!Object.hasOwn(subjects,q.identity))throw Error('invalid_fixture_request');
    const launch=await fetch(origin+'/native/authorize?flow_id='+q.flow_id,{redirect:'manual'});
    if(launch.status!==303)return {status:launch.status,error:await launch.json()};
    const location=new URL(launch.headers.get('location')),provider=location.hostname==='appleid.apple.com'?'apple':'google';
-   const redirect=location.searchParams.get('redirect_uri'),client=location.searchParams.get('client_id'),state=location.searchParams.get('state');
+   const redirect=location.searchParams.get('redirect_uri'),state=location.searchParams.get('state');
    if(redirect!==env.CARVE_APP_ORIGIN+'/api/native-broker/callback?provider='+provider)throw Error('unsafe_provider_callback');
-   const age=q.proof_age_ms??0;if(!Number.isSafeInteger(age)||age<0||age>3600000)throw Error('invalid_proof_age');
-   const token=await new SignJWT({nonce:location.searchParams.get('nonce'),email:'same-display@example.test',email_verified:true})
-    .setProtectedHeader({alg:'RS256',kid:jwk.kid}).setIssuer(provider==='apple'?'https://appleid.apple.com':'https://accounts.google.com')
-    .setSubject(subjects[q.identity]).setAudience(client).setIssuedAt(Math.floor((clock-age)/1000)).setExpirationTime(Math.floor(clock/1000)+300).sign(rsa.privateKey);
-   const code=secret();codes.set(code,{token,redirect,client});
+   const code=await issueCode(location,q.identity,provider,q.proof_age_ms);
    const cookies=new Map();const remember=r=>{for(const value of r.headers.getSetCookie()){const [kv]=value.split(';');const at=kv.indexOf('=');cookies.set(kv.slice(0,at),kv.slice(at+1));}};
    remember(launch);const cookie=()=>[...cookies].map(([k,v])=>k+'='+v).join('; ');
    const path=new URL(redirect).pathname+new URL(redirect).search;
@@ -90,6 +104,13 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
    const target=callback.headers.get('location');const u=new URL(target);
    if(!Object.values(return_targets).includes(u.origin+u.pathname)||[...u.searchParams.keys()].sort().join(',')!=='code,state')throw Error('unsafe_app_callback');
    return {return_uri:target};
+  };
+  const completeWeb=async q=>{
+   const location=new URL(q.authorization_url),redirect=location.searchParams.get('redirect_uri');
+   if(location.origin!=='https://accounts.google.com'||redirect!==origin+'/api/account?provider_return=google'||
+    location.searchParams.get('client_id')!==env.CARVE_GOOGLE_CLIENT_ID)throw Error('unsafe_fixture_redirect');
+   const code=await issueCode(location,q.identity,'google');
+   return {return_uri:redirect+'&'+new URLSearchParams({code,state:location.searchParams.get('state')})};
   };
   const stats=async()=>{
    const players=Number((await pool.query('select count(*) from carve_shared_v1.players')).rows[0].count);
@@ -105,6 +126,7 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
     let raw='',size=0;for await(const p of req){size+=p.length;if(size>8192)throw Error('too_large');raw+=p;}
     const q=JSON.parse(raw);let result;
     if(q.action==='complete')result=await complete(q);
+    else if(q.action==='complete-web'&&expedition)result=await completeWeb(q);
     else if(q.action==='advance'){if(!Number.isSafeInteger(q.ms)||q.ms<0||q.ms>3600000)throw Error('invalid_clock');clock+=q.ms;}
     else if(q.action==='hold')hold=true;
     else if(q.action==='hold-progress'&&progress)holdProgress=true;

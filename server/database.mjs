@@ -2,6 +2,7 @@ import pg from 'pg';
 import {createHash} from 'node:crypto';
 import {canonical,validateEvent} from '../shared/contract.mjs';
 import {digest} from './oidc.mjs';
+import {expeditionProgress} from './expedition-progress.mjs';
 
 export const resolvePrincipal=async(c,identity)=>{
     // Lock same identity across concurrent first requests, without locking others.
@@ -30,7 +31,7 @@ export function createDatabase(connectionString) {
   const principal=resolvePrincipal;
   const player=async(c,identity)=>(await principal(c,identity)).player_id;
   const snapshot=async(c,id)=>{
-    const results=await c.query('select event from carve_shared_v1.completed_results where player_id=$1 order by received_at desc,event_id limit 100',[id]);
+    const results=await c.query("select event from carve_shared_v1.completed_results where player_id=$1 and event->>'course_id'='web.flow-v1' order by received_at desc,event_id limit 100",[id]);
     const progress=await c.query('select course_id,rules_version,mode,testing,best_height,unlocks,lessons from carve_shared_v1.course_progress where player_id=$1 order by course_id,rules_version,mode,testing',[id]);
     return {contract_version:1,player_id:id,results:results.rows.map(r=>r.event),progress:progress.rows,validation:'client_reported',
       bounty:{status:'not_connected'},purchases:{status:'not_implemented'}};
@@ -99,6 +100,19 @@ export function createDatabase(connectionString) {
     }),
     cancelOffer:(id,actor)=>transaction(c=>c.query('update carve_shared_v1.link_offers set consumed=true where id=$1 and target_issuer=$2 and target_subject=$3 and binding_hash=$4 and not consumed',
       [id,actor.issuer,actor.subject,digest(actor.binding)])),
+    expedition:(identity,testing,event)=>transaction(async c=>{
+      const args=[identity.binding,identity.issuer,identity.subject];
+      const live="select id from carve_shared_v1.broker_sessions where id=$1 and issuer=$2 and subject=$3 and not revoked and expires_at>clock_timestamp()";
+      const verify=async(lock='')=>{
+        if(!(await c.query(live+lock,args)).rowCount)throw Object.assign(Error('sign_in_required'),{status:401});
+      };
+      await verify(' for update');
+      const principal=await resolvePrincipal(c,identity);
+      if(principal.scope!==identity.scope)throw Object.assign(Error('account_changed'),{status:409});
+      const result=await expeditionProgress(c,principal.player_id,testing,event);
+      await verify();
+      return result;
+    }),
     read:identity=>transaction(async c=>snapshot(c,await player(c,identity))),
     write:(identity,event)=>transaction(async c=>{
       validateEvent(event);const id=await player(c,identity), payload=canonical(event);
