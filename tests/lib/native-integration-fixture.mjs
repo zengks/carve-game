@@ -13,14 +13,17 @@ import {createNativeFetchHandler} from '../../server/native-vercel.mjs';
 import {createNativeProgressHandler} from '../../server/native-progress.mjs';
 import {createAccountHandler} from '../../server/account.mjs';
 import {createDatabase} from '../../server/database.mjs';
+import {runtimeRoleSQL} from '../../server/runtime-role.mjs';
 const secret=()=>randomBytes(32).toString('base64url');
-export async function createNativeIntegrationFixture({artifactDirectory,adminConnectionString=process.env.CARVE_NATIVE_TEST_ADMIN_URL,progress=false,expedition=false}={}){
+export async function createNativeIntegrationFixture({artifactDirectory,adminConnectionString=process.env.CARVE_NATIVE_TEST_ADMIN_URL,progress=false,expedition=false,restrictedRuntime=false}={}){
  const adminURL=new URL(adminConnectionString??'http://invalid');
  if(adminURL.protocol!=='postgres:'||adminURL.hostname!=='127.0.0.1'||adminURL.pathname!=='/postgres')throw Error('Explicit loopback PostgreSQL admin URL required');
  const databaseName='carve_shared_test_native_'+randomUUID().replaceAll('-','');
  const admin=new pg.Pool({connectionString:adminURL.href});
  try{await admin.query('CREATE DATABASE '+databaseName);}finally{await admin.end();}
  const url=new URL(adminURL);url.pathname='/'+databaseName;
+ const runtimeURL=new URL(url);
+ const runtimeRole=restrictedRuntime?'carve_runtime_'+randomBytes(8).toString('hex'):null;
  const pool=new pg.Pool({connectionString:url.href});let db,webDB,webHandler,server,qaServer;
  const capability=secret(),clockBase=Math.floor(Date.now()/1000)*1000;let clock=clockBase,hold=false,held=null,closed=false,holdProgress=false,heldProgress=null;
  const codes=new Map(),subjects={alpha:'synthetic-alpha-'+databaseName,beta:'synthetic-beta-'+databaseName,gamma:'synthetic-gamma-'+databaseName};
@@ -34,9 +37,15 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
   await pool.query(await readFile(new URL('../../server/schema.sql',import.meta.url),'utf8'));
   await pool.query(await readFile(new URL('../../server/native-schema.sql',import.meta.url),'utf8'));
   if(progress)await pool.query(await readFile(new URL('../../server/native-progress-schema.sql',import.meta.url),'utf8'));
-  db=createNativeDatabase(url.href);
+  if(runtimeRole){
+   const password=randomBytes(32).toString('hex');
+   await pool.query(runtimeRoleSQL(runtimeRole));
+   await pool.query(`ALTER ROLE ${runtimeRole} LOGIN PASSWORD '${password}'`);
+   runtimeURL.username=runtimeRole;runtimeURL.password=password;
+  }
+  db=createNativeDatabase(runtimeURL.href,{});
   const rsa=await generateKeyPair('RS256'),jwk={...await exportJWK(rsa.publicKey),kid:'isolated-native-key',alg:'RS256'};
-  const env={CARVE_APP_ORIGIN:'https://broker.carve.example.test',CARVE_SESSION_SECRET:randomBytes(32).toString('hex'),CARVE_SHARED_DATABASE_URL:url.href,
+  const env={CARVE_APP_ORIGIN:'https://broker.carve.example.test',CARVE_SESSION_SECRET:randomBytes(32).toString('hex'),CARVE_SHARED_DATABASE_URL:runtimeURL.href,
    CARVE_NATIVE_CLIENTS:JSON.stringify(Object.fromEntries(client_ids.map(id=>[id,{redirect_uri:return_targets[id],broker_url}]))),
    CARVE_GOOGLE_CLIENT_ID:'synthetic-web-client',CARVE_GOOGLE_CLIENT_SECRET:secret(),
    CARVE_APPLE_SERVICE_ID:'synthetic-apple-service',CARVE_APPLE_TEAM_ID:'SYNTHETIC',CARVE_APPLE_KEY_ID:'isolated-native-key'};
@@ -71,7 +80,7 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
   const origin='http://127.0.0.1:'+server.address().port;
   if(expedition){
-   webDB=createDatabase(url.href);
+   webDB=createDatabase(runtimeURL.href,{});
    webHandler=createAccountHandler({env:{...env,CARVE_APP_ORIGIN:origin,CARVE_SUPABASE_URL:origin,
     CARVE_SUPABASE_PUBLISHABLE_KEY:'isolated-fixture'},database:webDB,oidc});
   }
@@ -138,6 +147,6 @@ export async function createNativeIntegrationFixture({artifactDirectory,adminCon
   await new Promise((resolve,reject)=>{qaServer.once('error',reject);qaServer.listen(0,'127.0.0.1',resolve);});
   const qa_origin='http://127.0.0.1:'+qaServer.address().port;
   if(artifactDirectory){await mkdir(artifactDirectory,{recursive:true,mode:0o700});await writeFile(join(artifactDirectory,'isolation.json'),JSON.stringify({database:databaseName,created_fresh:true,retained:true,origin,qa_origin},null,2),{mode:0o600});}
-  return {kind:'actual-native-broker',isolation:{fresh:true,retained_data_access:false},origin,qa_origin,capability,client_ids,broker_url,return_targets,stats,close,databaseName,closed:()=>closed};
+  return {kind:'actual-native-broker',isolation:{fresh:true,retained_data_access:false},origin,qa_origin,capability,client_ids,broker_url,return_targets,stats,close,databaseName,runtimeRole,closed:()=>closed};
  }catch(e){await close();throw e;}
 }

@@ -38,7 +38,8 @@ The browser preview entry is `/?terrain=1`. Its hosted runtime requires
 session configuration. Both transports reject the feature in production, and
 the production static build omits the account JavaScript bundle. The staging
 readiness branch reuses verified TLS and checks the pinned Supabase project
-and restricted runtime login. Email code requests stay disabled until the
+and restricted runtime login. The browser Auth URL must match the same
+project. Email code requests stay disabled until the
 operator explicitly enables `CARVE_EMAIL_SIGN_IN_ENABLED=true` after delivery
 verification.
 
@@ -48,8 +49,8 @@ PostgreSQL database and the actual HTTP handlers, with signed synthetic
 Google identities and the browser account module driven through test DOM
 handlers. It covers the confirmation boundary, review cancellation, shared
 reads on iOS and Android transport, lost receipts, account switches and
-unchanged legacy courses. The 36 assertions pass against a fresh local
-database. Separate checks drive the built preview in Chromium at
+unchanged legacy courses. The 37 assertions pass against a fresh local
+database with row-level security and the staging runtime grants. Separate checks drive the built preview in Chromium at
 1366×768 with mouse input and 390×844 with touch input, using synthetic sign-in
 and the loopback database. Both verify no upload on cancel, one on confirm
 and preservation of the source result.

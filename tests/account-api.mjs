@@ -79,6 +79,11 @@ try{
   assert.equal(calls.length,before,'blocked email must not call the provider');
   handler=createAccountHandler({env:{...env,CARVE_EMAIL_SIGN_IN_ENABLED:undefined},authFactory:sdk,database});
   assert.equal((await (await call()).json()).providers.email,false);
+  const ref='a'.repeat(20);
+  handler=createAccountHandler({env:{...env,CARVE_EXPECTED_PROJECT_REF:ref},authFactory:sdk,database});
+  assert.equal((await (await call()).json()).configured,false,'unrelated Auth backend is disabled');
+  handler=createAccountHandler({env:{...env,CARVE_EXPECTED_PROJECT_REF:ref,CARVE_SUPABASE_URL:`https://${ref}.supabase.co`},authFactory:sdk,database});
+  assert.equal((await (await call()).json()).configured,true,'expected Auth backend is allowed');
   handler=createAccountHandler({env:{...env,VERCEL_ENV:'production'},authFactory:sdk,database});
   value=await(await call()).json();assert.equal(value.configured,false,'production activation blocked independently');
   handler=createAccountHandler({env:{}});value=await(await call()).json();assert.equal(value.configured,false);assert.equal(value.account,null);

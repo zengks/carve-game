@@ -13,6 +13,8 @@ function configuration(env) {
     if(env.VERCEL_ENV==='production'||origin.origin!==env.CARVE_APP_ORIGIN||backend.pathname!=='/'||
       ![origin,backend].every(u=>!u.username&&!u.password&&(u.protocol==='https:'||(u.protocol==='http:'&&local(u))))||
       !env.CARVE_SUPABASE_PUBLISHABLE_KEY||!/^[a-f\d]{64}$/i.test(env.CARVE_SESSION_SECRET??'')||!env.CARVE_SHARED_DATABASE_URL)return null;
+    const ref=env.CARVE_EXPECTED_PROJECT_REF;
+    if(ref!==undefined&&(!/^[a-z]{20}$/.test(ref)||backend.origin!==`https://${ref}.supabase.co`))return null;
     return {origin:origin.origin,backend:backend.origin,secure:origin.protocol==='https:'};
   }catch{return null;}
 }

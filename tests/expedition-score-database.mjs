@@ -13,7 +13,7 @@ if(!admin){
   if(local.hostname!=='127.0.0.1'||!local.pathname.startsWith('/carve_shared_test_'))throw Error('Fresh loopback QA database required');
   local.pathname='/postgres';admin=local.href;
 }
-const fixture = await createNativeProgressIntegrationFixture({adminConnectionString:admin,expedition:true});
+const fixture = await createNativeProgressIntegrationFixture({adminConnectionString:admin,expedition:true,restrictedRuntime:true});
 const url = new URL(admin);url.pathname='/'+fixture.databaseName;
 const pool = new pg.Pool({connectionString:url.href});
 const network = globalThis.fetch;
@@ -104,6 +104,13 @@ async function browserSignIn(identity) {
 }
 
 try {
+  const {rows:[access]}=await pool.query(`select r.rolsuper,r.rolbypassrls,c.relrowsecurity,
+    has_table_privilege(r.rolname,c.oid,'INSERT') as insert,
+    has_table_privilege(r.rolname,c.oid,'UPDATE') as update,
+    has_table_privilege(r.rolname,c.oid,'DELETE') as delete
+    from pg_roles r cross join pg_class c where r.rolname=$1 and c.oid='carve_shared_v1.completed_results'::regclass`,[fixture.runtimeRole]);
+  check(access,{rolsuper:false,rolbypassrls:false,relrowsecurity:true,insert:true,update:false,delete:false},
+    'actual score requests use the restricted staging role against an RLS table');
   const ios=await login('ios'), android=await login('android'), peer=await login('ios','beta');
   check(ios.player,android.player,'same documented account');
   const local=new Map(),game=loadGame({local,search:'?terrain=1'});
@@ -189,7 +196,7 @@ try {
   await $('account-import-confirm').onclick();
   check(await rows(peer.player),0,'changing account clears the prior confirmation');
   check((await browserFetch(progressPath,{headers:{'X-Carve-Account':scope}})).status,409,'stale scope rejected by server');
-  console.log(`PASS Expedition score sync: ${checks} assertions against actual HTTP and PostgreSQL, with signed synthetic OAuth and browser confirmation handlers.`);
+  console.log(`PASS Expedition score sync: ${checks} assertions against actual HTTP and PostgreSQL, with signed synthetic OAuth, the restricted runtime role and browser confirmation handlers.`);
 } finally {
   globalThis.fetch=network;
   await pool.end();await fixture.close();
