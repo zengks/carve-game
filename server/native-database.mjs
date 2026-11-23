@@ -20,7 +20,7 @@ export function createNativeDatabase(connectionString) {
     const state=row.data;
     const result=await fn(state,{
      nativeProgress:nativeProgressTransaction(c),
-     expedition:(actor,testing,event)=>expeditionProgress(c,actor.player_id,testing,event),
+     expedition:(actor,testing,event)=>expeditionProgress(c,actor,testing,event),
      index:id=>c.query('insert into carve_shared_v1.native_flow_index(id,client_id,binding_hash) values($1,$2,$3)',[id,client,binding]),
      principal:proof=>resolvePrincipal(c,proof),
      async link(actor,proof){

@@ -107,9 +107,7 @@ export function createDatabase(connectionString) {
         if(!(await c.query(live+lock,args)).rowCount)throw Object.assign(Error('sign_in_required'),{status:401});
       };
       await verify(' for update');
-      const principal=await resolvePrincipal(c,identity);
-      if(principal.scope!==identity.scope)throw Object.assign(Error('account_changed'),{status:409});
-      const result=await expeditionProgress(c,principal.player_id,testing,event);
+      const result=await expeditionProgress(c,identity,testing,event);
       await verify();
       return result;
     }),

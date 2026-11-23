@@ -41,7 +41,7 @@ export function createNativeProgressHandler({env=process.env,database,now=()=>Da
    db??=createNativeDatabase(env.CARVE_SHARED_DATABASE_URL);
    const reply=await db.atomic(client,digest(binding),async(state,tx)=>{
     const actor=nativeActor(state,req,now());if(!equal(actor.scope,b.account_scope))fail('account_changed',409);
-    await tx.nativeProgress.owner(actor);
+    if(!expedition)await tx.nativeProgress.owner(actor);
     acknowledgeNativeActor(state,actor);
     const snapshot=expedition?await tx.expedition(actor,b.testing,b.event):
       write?await tx.nativeProgress.write(actor,b.event):await tx.nativeProgress.read(actor,b.testing);

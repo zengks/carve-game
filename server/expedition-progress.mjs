@@ -1,9 +1,16 @@
 import {canonical, EXPEDITION_COURSE, EXPEDITION_RULES, validateExpeditionEvent} from '../shared/contract.mjs';
-import {digest} from './oidc.mjs';
+import {digest, equal} from './oidc.mjs';
 
 // Both transports use the same private player ID and serialize snapshots in a
 // single account/testing bucket. The immutable event count is its revision.
-export async function expeditionProgress(client, player, testing, event) {
+export async function expeditionProgress(client, actor, testing, event) {
+  // Avoid holding a player row lock while waiting on an upload that needs its foreign key.
+  const {rows:[owner]}=await client.query(`select p.id,p.scope_key from carve_shared_v1.identities i
+    join carve_shared_v1.players p on p.id=i.player_id where i.issuer=$1 and i.subject=$2`,[actor.issuer,actor.subject]);
+  if(!owner||owner.id!==actor.player_id||!equal(owner.scope_key,actor.scope)){
+    throw Object.assign(Error('sign_in_required'),{status:401});
+  }
+  const player=owner.id;
   const prefix = EXPEDITION_COURSE + ':%';
   await client.query('select pg_advisory_xact_lock(hashtextextended($1,0))', [EXPEDITION_COURSE+':'+player+':'+testing]);
   let accepted;

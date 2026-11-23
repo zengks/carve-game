@@ -158,17 +158,30 @@ try {
   check((await progress(ios,changed)).data.error,'invalid_event','active result rejected server-side');
   check((await progress(ios,undefined,false)).data.results,[],'test and normal buckets separated');
 
-  const generate=index=>{
-    const event=structuredClone(vectors.ios);event.payload.run_id=randomUUID();
-    event.event_id=event.course_id+':ios:'+event.payload.run_id;event.payload.height_m=500+index;return event;
+  const generate=(index,platform)=>{
+    const event=structuredClone(vectors[platform]);
+    event.payload.run_id=platform==='web'?'other-'+index:randomUUID();
+    event.event_id=event.course_id+':'+platform+':'+event.payload.run_id;
+    event.payload.height_m=500+index;event.mode='challenge';return event;
   };
-  const parallel=await Promise.all(Array.from({length:12},(_,i)=>progress(ios,generate(i))));
-  check(parallel.map(r=>r.data.revision).sort((a,b)=>a-b),Array.from({length:12},(_,i)=>i+4),'each accepted write increments the same revision once');
+  const parallel=await Promise.all(Array.from({length:12},async(_,i)=>{
+    if(i%3===1)return (await progress(ios,generate(i,'ios'))).data;
+    if(i%3===2)return (await progress(android,generate(i,'android'))).data;
+    const event=generate(i,'web');
+    return browserFetch(progressPath,{method:'POST',headers:{'Content-Type':'application/json','X-Carve-Account':scope},
+      body:JSON.stringify(event)}).then(r=>r.json());
+  }));
+  check(parallel.map(r=>r.revision).sort((a,b)=>a-b),Array.from({length:12},(_,i)=>i+4),'concurrent writes from three platforms share one monotone revision');
   const ranked=(await webRead()).results;
   check(ranked.filter(e=>e.mode==='challenge').map(e=>e.payload.height_m),Array.from({length:10},(_,i)=>511-i),'top 10 independently capped by mode');
   check(ranked.filter(e=>e.mode==='practice'),[vectors.android],'Practice remains separate');
   check((await browserFetch('/api/shared-progress',{headers:{'X-Carve-Account':scope}}).then(r=>r.json())).results,[],'legacy web Flow remains separate');
   check((await nativeRequest('/api/native-progress/v1',ios,{action:'read',account_scope:scope,testing:true})).data.recent_events,[],'legacy First Ascent remains separate');
+  const sameRunOtherBucket=structuredClone(vectors.ios);sameRunOtherBucket.payload.testing=false;
+  check((await progress(ios,sameRunOtherBucket)).data.error,'event_conflict','an existing run cannot switch testing buckets');
+  const otherBucket=generate(12,'ios');otherBucket.payload.testing=false;
+  check((await progress(ios,otherBucket)).data.revision,1,'a distinct non-testing result has its own revision');
+  check((await webRead()).revision,15,'non-testing result does not change the testing revision');
 
   await $('account-import').onclick();
   await $('account-signout').onclick();
