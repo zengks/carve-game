@@ -36,7 +36,11 @@ schema. No database migration is needed for this increment.
 The browser preview entry is `/?terrain=1`. Its hosted runtime requires
 `CARVE_EXPEDITION_SYNC_ENABLED=1` alongside the existing account and native
 session configuration. Both transports reject the feature in production, and
-the production static build omits the account JavaScript bundle.
+the production static build omits the account JavaScript bundle. The staging
+readiness branch reuses verified TLS and checks the pinned Supabase project
+and restricted runtime login. Email code requests stay disabled until the
+operator explicitly enables `CARVE_EMAIL_SIGN_IN_ENABLED=true` after delivery
+verification.
 
 `npm run build` exercises the full browser suite. The additional
 `tests/expedition-score-database.mjs` test uses a fresh retained loopback

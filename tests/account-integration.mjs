@@ -27,7 +27,7 @@ const server=createServer(async(req,res)=>{
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const origin='http://127.0.0.1:'+server.address().port;
 handler=createAccountHandler({env:{CARVE_APP_ORIGIN:origin,CARVE_SUPABASE_URL:origin,
-  CARVE_SUPABASE_PUBLISHABLE_KEY:token('anon'),CARVE_SHARED_DATABASE_URL:dburl,CARVE_SESSION_SECRET:'cd'.repeat(32)},database:db});
+  CARVE_EMAIL_SIGN_IN_ENABLED:'true',CARVE_SUPABASE_PUBLISHABLE_KEY:token('anon'),CARVE_SHARED_DATABASE_URL:dburl,CARVE_SESSION_SECRET:'cd'.repeat(32)},database:db});
 const admin=createClient(origin,token('service_role'),{auth:{persistSession:false,autoRefreshToken:false}});
 const call=(path,body,cookie,scope)=>fetch(origin+path,{method:body?'POST':'GET',headers:{
   ...(body?{'Content-Type':'application/json',Origin:origin}:{}),...(cookie?{Cookie:cookie}:{}),...(scope?{'X-Carve-Account':scope}:{})},body:body?JSON.stringify(body):undefined});

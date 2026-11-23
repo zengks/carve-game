@@ -19,6 +19,7 @@ const explanation=e=>({invalid_email:'Enter a valid email address.',invalid_code
   sign_in_required:'Your session has ended. Sign in again; pending results are kept.',event_conflict:'A conflicting result was kept locally for review.',
   account_changed:'The account changed in another tab. Results stayed with their original account.',
   storage_unavailable:'Local sync storage is blocked. Your existing game save is kept; cloud uploads are unavailable.',
+  email_not_ready:'Email sign-in is unavailable in this preview.',
   not_configured:'Cloud sign-in is not configured in this preview.',provider_not_ready:'This provider is awaiting secure account-linking setup.',
   reauth_required:'Sign out and sign in again before connecting another sign-in method. Your saved results are kept.',
   identity_already_owned:'That sign-in method belongs to another CARVE account. Neither account was merged or changed.',
@@ -33,7 +34,8 @@ function renderSnapshot() {
 }
 function render() {
   const signed=scope()!=='guest';
-  $('account-open').textContent=signed?'Account & sync':'Guest · Sign in';
+  const canSignIn=Object.values(session.providers).some(Boolean);
+  $('account-open').textContent=signed?'Account & sync':canSignIn?'Guest · Sign in':'Guest · Account';
   $('account-identity').textContent=signed?'Signed in as '+session.account.label+'.':'Playing as a guest on this device.';
   $('account-signin').hidden=signed;$('account-signed').hidden=!signed;
   $('account-email').disabled=busy||!session.providers.email;$('account-code').disabled=busy||!session.providers.email;
@@ -49,8 +51,8 @@ function render() {
   for(const id of ['account-send','account-verify'])$(id).disabled=busy||!session.providers.email;
   $('account-copy-review').hidden=!signed||!copyOffer;
   for(const id of ['account-sync','account-import','account-signout','account-import-confirm','account-import-cancel'])$(id).disabled=busy;
-  $('account-config').textContent=!session.configured?'Cloud sign-in is not configured in this preview. You can keep playing as a guest.':
-    !session.providers.apple||!session.providers.google?'Email code is available. Apple and Google need their provider credentials configured.':'';
+  $('account-config').hidden=canSignIn||signed;
+  $('account-config').textContent='Cloud sign-in is unavailable here. You can keep playing as a guest.';
   renderSnapshot();
 }
 async function refresh() {
@@ -102,7 +104,7 @@ async function act(fn) {
 $('account-open').hidden=false;
 $('account-open').onclick=()=>{
   if(window.CarveGameStorage.running())return;
-  $('account-dialog').showModal();act(async()=>{await refresh();message(scope()==='guest'?'Sign in to share completed Expedition results across devices.':'Review local results to choose what to copy.');});
+  $('account-dialog').showModal();act(async()=>{await refresh();message(scope()==='guest'?'':'Review local results to choose what to copy.');});
 };
 $('account-close').onclick=()=>$('account-dialog').close();
 $('account-dialog').addEventListener('close',()=>{copyOffer=null;render();});

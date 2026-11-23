@@ -33,7 +33,7 @@ let origin;
 const server=createServer((req,res)=>handler(req,res));
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 origin='http://127.0.0.1:'+server.address().port;
-const env={CARVE_APP_ORIGIN:origin,CARVE_SUPABASE_URL:'http://127.0.0.1:55521',CARVE_SUPABASE_PUBLISHABLE_KEY:'test-key',
+const env={CARVE_APP_ORIGIN:origin,CARVE_SUPABASE_URL:'http://127.0.0.1:55521',CARVE_EMAIL_SIGN_IN_ENABLED:'true',CARVE_SUPABASE_PUBLISHABLE_KEY:'test-key',
   CARVE_SESSION_SECRET:secret,CARVE_SHARED_DATABASE_URL:'postgres://unused',CARVE_OAUTH_LINKING_REVIEWED:'true'};
 let handler=createAccountHandler({env,authFactory:sdk,database});
 const call=(path='/api/account',body,extra={})=>fetch(origin+path,{method:body?'POST':'GET',
@@ -68,6 +68,17 @@ try{
   await handler({url:'/api/account',method:'POST',headers:{origin,'content-type':'application/json'},body:{action:'email',email:'parsed@example.test'}},
     {setHeader(){},getHeader(){},set statusCode(v){parsedStatus=v;},end(){}});
   assert.equal(parsedStatus,200,'Vercel pre-parsed bodies use the same adapter');
+  handler=createAccountHandler({env:{...env,CARVE_EMAIL_SIGN_IN_ENABLED:'false'},authFactory:sdk,database});
+  const before=calls.length;
+  assert.equal((await (await call()).json()).providers.email,false);
+  for(const action of ['email','verify','link-email-send','link-email-verify']){
+    response=await call('/api/account',{action,email:'player@example.test',code:'123456'});
+    assert.equal(response.status,503);
+    assert.equal((await response.json()).error,'email_not_ready');
+  }
+  assert.equal(calls.length,before,'blocked email must not call the provider');
+  handler=createAccountHandler({env:{...env,CARVE_EMAIL_SIGN_IN_ENABLED:undefined},authFactory:sdk,database});
+  assert.equal((await (await call()).json()).providers.email,false);
   handler=createAccountHandler({env:{...env,VERCEL_ENV:'production'},authFactory:sdk,database});
   value=await(await call()).json();assert.equal(value.configured,false,'production activation blocked independently');
   handler=createAccountHandler({env:{}});value=await(await call()).json();assert.equal(value.configured,false);assert.equal(value.account,null);

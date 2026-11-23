@@ -53,6 +53,7 @@ const fresh=user=>!!user?.binding&&Number.isFinite(user.fresh_at)&&user.fresh_at
 
 export function createAccountHandler({env=process.env,authFactory=createClient,database,oidc=createOidc(env)}={}) {
   const config=configuration(env),codec=config?cookieCodec(env.CARVE_SESSION_SECRET,{secure:config.secure}):null;
+  const emailReady=env.CARVE_EMAIL_SIGN_IN_ENABLED==='true';
   let db=database;const databaseFor=()=>db??=createDatabase(env.CARVE_SHARED_DATABASE_URL,env);
   const checkScope=(req,user)=>{if(req.headers['x-carve-account']!==user.scope)throw error('account_changed',409);};
   function auth(){return authFactory(config.backend,env.CARVE_SUPABASE_PUBLISHABLE_KEY,{auth:{
@@ -155,7 +156,7 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
         const offer=codec.read(req,'link');
         const link_offer=user&&fresh(user)&&offer?await databaseFor().offer(offer.id,user):null;
         return json(res,200,{configured:true,account:user?{scope:user.scope,label:user.label,linked:await databaseFor().providers(user),fresh:fresh(user)}:null,
-          providers:{email:true,apple:oidc.ready('apple'),google:oidc.ready('google')},link_offer});
+          providers:{email:emailReady,apple:oidc.ready('apple'),google:oidc.ready('google')},link_offer});
       }
       const value=await body(req);
       if(progress){const user=await identity(req,res);if(!user)throw error('sign_in_required',401);checkScope(req,user);validateEvent(value);return json(res,200,{...await databaseFor().write(user,value),account_scope:user.scope});}
@@ -168,6 +169,7 @@ export function createAccountHandler({env=process.env,authFactory=createClient,d
         for(const purpose of ['session','oauth','callback','link'])codec.write(res,purpose,null);return json(res,200,{ok:true});
       }
       if(['email','verify','link-email-send','link-email-verify'].includes(value.action)){
+        if(!emailReady)throw error('email_not_ready',503);
         const linking=value.action.startsWith('link-'),user=linking?await actor(req,res):null;
         if(!emailValid(value.email))throw error('invalid_email');
         if(['email','link-email-send'].includes(value.action)){
